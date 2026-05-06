@@ -92,7 +92,7 @@ class Siwave(object):
         """Get all ports.
 
         .. deprecated:: pyedb 0.70.0
-                Use :attr:`ports` property instead.
+           Use :attr:`ports` property instead.
 
         Returns
         -------
@@ -657,7 +657,7 @@ class Siwave(object):
         >>> edb.siwave.add_siwave_ac_analysis()
         >>> edb.siwave.add_siwave_dc_analysis2("my_setup")
         """
-        setup = self._pedb.create_siwave_dc_setup(name)
+        setup = self._pedb.simulation_setups.create_siwave_dcir_setup(name=name)
         self.create_exec_file(add_dc=True)
         return setup
 

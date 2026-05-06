@@ -73,18 +73,18 @@ import traceback
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
+from typing_extensions import deprecated
 
 from pyedb.grpc.database.design_options import EdbDesignOptions
 from pyedb.grpc.database.geometry.point_3d_data import Point3DData
 from pyedb.grpc.database.variables import Variable
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.misc.decorators import deprecated as runtime_deprecated, deprecated_property as runtime_deprecated_property
 
 if TYPE_CHECKING:
     from pyedb import Edb
     from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
     from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
     from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
-import warnings
 from zipfile import ZipFile as Zpf
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
@@ -224,10 +224,11 @@ class Edb(EdbInit):
         technology_file: str = None,
         layer_filter: str = None,
         restart_rpc_server=False,
+        remove_existing_aedt: bool = False,
     ):
         edbversion = get_string_version(version)
         self._clean_variables()
-        EdbInit.__init__(self, edbversion=version)
+        EdbInit.__init__(self, version=version)
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
@@ -251,7 +252,7 @@ class Edb(EdbInit):
         self._active_cell = None
         if not float(self.version) >= 2025.2:
             raise "EDB gRPC is only supported with ANSYS release 2025R2 and higher."
-        self.logger.info("Using PyEDB with gRPC as Beta until ANSYS 2025R2 official release.")
+        self.logger.info("Using PyEDB with gRPC as Beta until ANSYS 2027R1 official release.")
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
         self._setups = {}
@@ -277,6 +278,7 @@ class Edb(EdbInit):
             self.log_name = os.path.join(
                 os.path.dirname(edbpath), "pyaedt_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log"
             )
+        self._check_remove_project_files(self.edbpath, remove_existing_aedt)
         if edbpath[-3:] == "zip":
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
@@ -464,7 +466,15 @@ class Edb(EdbInit):
 
     def value(self, val) -> Value | float | str:
         """Convert a value into a pyedb value."""
-        return Value(val, self.active_db) if isinstance(val, str) and "$" in val else Value(val, self.active_cell)
+        if isinstance(val, Value):
+            return val
+        elif isinstance(val, str):
+            if "$" in val:
+                return Value(val, self.active_db)
+            else:
+                return Value(val, self.active_cell)
+        else:
+            return Value(val, self.active_db)
 
     def _value_setter(self, val) -> Value | float | str:
         """Helper for setting variable values with unit handling."""
@@ -546,9 +556,13 @@ class Edb(EdbInit):
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    @deprecated_property("use ports property instead.")
+    @deprecated("Use ports property instead.", category=None)
+    @runtime_deprecated_property("use ports property instead.")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
+
+        .. deprecated:: 0.71.0
+           Use :attr: `ports` instead.
 
         Returns
         -------
@@ -674,7 +688,7 @@ class Edb(EdbInit):
         ]
         return {ter.name: ter for ter in terms}
 
-    def open(self, restart_rpc_server=False) -> bool:
+    def open(self, restart_rpc_server: bool = False) -> bool:
         """Open EDB database.
 
         Returns
@@ -691,11 +705,7 @@ class Edb(EdbInit):
         n_try = 10
         while not self.db and n_try:
             try:
-                self._open(
-                    self.edbpath,
-                    self.isreadonly,
-                    restart_rpc_server=restart_rpc_server,
-                )
+                self._open(self.edbpath, self.isreadonly, restart_rpc_server=restart_rpc_server)
                 n_try -= 1
             except Exception as e:
                 self.logger.error(e.args[0])
@@ -752,7 +762,8 @@ class Edb(EdbInit):
             return self
         return None
 
-    @deprecated("use import_layout_file() instead")
+    @deprecated("Use import_layout_file() instead.", category=None)
+    @runtime_deprecated("Use import_layout_file() instead.")
     def import_layout_pcb(
         self,
         input_file,
@@ -1134,16 +1145,18 @@ class Edb(EdbInit):
         :class:`Stackup <pyedb.grpc.database.stackup.Stackup>`
             Layer stack configuration tools.
         """
-        if self.active_db:
+        if self.active_db and self._stackup is None:
             self._stackup = Stackup(self, self.active_cell.layout.layer_collection)
         return self._stackup
 
     @property
-    @deprecated_property("use excitation_manager property instead.")
+    @deprecated("Use excitation_manager property instead.", category=None)
+    @runtime_deprecated_property("use excitation_manager property instead.")
     def source_excitation(self) -> Optional[SourceExcitation]:
         """Source excitation management.
+
         .. deprecated:: 0.70
-           Use: func:`excitation_manager` property instead.
+           Use :attr:`excitation_manager` property instead.
         Returns
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
@@ -1472,7 +1485,28 @@ class Edb(EdbInit):
                 times = 0
                 time.sleep(0.250)
 
-    @deprecated("use close() instead.")
+    def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
+        """Check for and optionally remove conflicting AEDT project files."""
+        if not edbpath:
+            return
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        for file in files:
+            if os.path.isfile(file):
+                if not remove_existing_aedt:
+                    self.logger.warning(
+                        f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in "
+                        f"HFSS 3D Layout."
+                    )
+                else:
+                    try:
+                        os.unlink(file)
+                        self.logger.info(f"Deleted AEDT project-related file {file}.")
+                    except Exception:
+                        self.logger.info(f"Failed to delete AEDT project-related file {file}.")
+
+    @deprecated("Use close() instead.", category=None)
+    @runtime_deprecated("Use close() instead.")
     def close_edb(self) -> bool:
         """Close EDB and clean up resources.
 
@@ -1492,7 +1526,8 @@ class Edb(EdbInit):
         """
         return self.close()
 
-    @deprecated("use save() instead.")
+    @deprecated("Use save() instead.", category=None)
+    @runtime_deprecated("Use save() instead.")
     def save_edb(self) -> bool:
         """Save current EDB database.
 
@@ -1502,7 +1537,8 @@ class Edb(EdbInit):
         """
         return self.save()
 
-    @deprecated("use save_as() instead.")
+    @deprecated("Use save_as() instead.", category=None)
+    @runtime_deprecated("Use save_as() instead.")
     def save_edb_as(self, fname) -> bool:
         """Save EDB database to new location.
 
@@ -1569,7 +1605,7 @@ class Edb(EdbInit):
                 return False
 
             ControlFile(xml_input=control_file, technology=tech_file, layer_map=map_file).write_xml(control_file_temp)
-            if self.import_layout_pcb(
+            if self.import_layout_file(
                 input_gds,
                 anstranslator_full_path=anstranslator_full_path,
                 use_ppe=use_ppe,
@@ -1645,6 +1681,7 @@ class Edb(EdbInit):
         simple_pad_check=True,
         keep_lines_as_path=False,
         include_voids_in_extents=False,
+        compute_extent_only: bool = False,
     ) -> list:
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
@@ -1725,7 +1762,12 @@ class Edb(EdbInit):
             Whether to compute and include voids in pyaedt extent before the cutout. Cutout time can be affected.
             It works only with Conforming cutout.
             Default is ``False`` to generate extent without voids.
-
+        compute_extent_only : bool, optional
+            Whether to compute the extent only and return the list of points without applying the cutout on the layout.
+            Default is ``False``. If `smart_cutout` flag is enabled the extent returned will be the same as when set tp
+            `False`. Smart cutout feature is destructive with clipping multiple times until criteria is met. Therefore
+            it can be used to compute the extent and check if it is suitable for the cutout before applying it on the
+            layout.
 
         Returns
         -------
@@ -1781,6 +1823,7 @@ class Edb(EdbInit):
         cutout.simple_pad_check = simple_pad_check
         cutout.keep_lines_as_path = keep_lines_as_path
         cutout.include_voids_in_extents = include_voids_in_extents
+        cutout.compute_extent_only = compute_extent_only
         return cutout.run()
 
     @staticmethod
@@ -2315,37 +2358,41 @@ class Edb(EdbInit):
         return SimulationSetups(self)
 
     @property
-    @deprecated_property("use simulation_setups.hfss property instead")
+    @deprecated("Use simulation_setups.hfss property instead.", category=None)
+    @runtime_deprecated_property("use simulation_setups.hfss property instead")
     def hfss_setups(self) -> dict[str, HfssSimulationSetup]:
         """Active HFSS setup in EDB.
 
         .. deprecated:: pyedb 0.67.0
-            Use :attr:`simulation_setups.hfss` instead.
+           Use :attr:`simulation_setups.hfss` instead.
         """
         return self.simulation_setups.hfss
 
     @property
-    @deprecated_property("use simulation_setups.siwave_dcir property instead")
+    @deprecated("Use simulation_setups.siwave_dcir property instead.", category=None)
+    @runtime_deprecated_property("use simulation_setups.siwave_dcir property instead")
     def siwave_dc_setups(self) -> dict[str, SIWaveDCIRSimulationSetup]:
         """Active Siwave DC IR Setups.
 
         .. deprecated:: pyedb 0.67.0
-            Use :attr:`simulation_setups.siwave_dcir` instead.
+           Use :attr:`simulation_setups.siwave_dcir` instead.
 
         """
         return self.simulation_setups.siwave_dcir
 
     @property
-    @deprecated_property("use simulation_setups.siwave property instead")
+    @deprecated("Use simulation_setups.siwave property instead.", category=None)
+    @runtime_deprecated_property("use simulation_setups.siwave property instead")
     def siwave_ac_setups(self) -> dict[str, SiwaveSimulationSetup]:
         """Active Siwave SYZ setups.
 
         .. deprecated:: pyedb 0.67.0
-            Use :attr:`simulation_setups.siwave` instead.
+           Use :attr:`simulation_setups.siwave` instead.
         """
         return self.simulation_setups.siwave
 
-    @deprecated("use simulation_setups.create() instead")
+    @deprecated("Use simulation_setups.create() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create() instead.")
     def create_hfss_setup(
         self, name=None, start_frequency="0GHz", stop_frequency="20GHz", step_frequency="10MHz"
     ) -> HfssSimulationSetup:
@@ -2362,7 +2409,8 @@ class Edb(EdbInit):
             step_freq=self._value_setter(step_frequency),
         )
 
-    @deprecated("use simulation_setups.create_raptor_x_setup() instead")
+    @deprecated("Use simulation_setups.create_raptor_x_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_raptor_x_setup() instead.")
     def create_raptorx_setup(self, name=None) -> RaptorXSimulationSetup:
         """Create RaptorX analysis setup (2024R2+ only).
 
@@ -2371,7 +2419,8 @@ class Edb(EdbInit):
         """
         return self.simulation_setups.create_raptor_x_setup(name=name, start_freq=None, stop_freq=None, step_freq=None)
 
-    @deprecated("use simulation_setups.create_siwave_setup() instead")
+    @deprecated("Use simulation_setups.create_siwave_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_siwave_setup() instead.")
     def create_siwave_syz_setup(self, name=None, **kwargs) -> SiwaveSimulationSetup:
         """Create SIwave SYZ analysis setup.
 
@@ -2380,7 +2429,8 @@ class Edb(EdbInit):
         """
         return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
-    @deprecated("use simulation_setups.create_siwave_dcir_setup() instead")
+    @deprecated("Use simulation_setups.create_siwave_dcir_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_siwave_dcir_setup() instead.")
     def create_siwave_dc_setup(self, name=None, **kwargs) -> SIWaveDCIRSimulationSetup:
         """Create SIwave DC analysis setup.
 
@@ -2607,7 +2657,8 @@ class Edb(EdbInit):
         # If no terminal info provided, return empty list to keep return type consistent.
         return []
 
-    @deprecated("use excitation_manager.create_port() instead")
+    @deprecated("Use excitation_manager.create_port() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_port() instead.")
     def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
         """Create a port.
 
@@ -2617,7 +2668,8 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_port(terminal, ref_terminal, is_circuit_port, name)
 
-    @deprecated("use excitation_manager.create_voltage_probe() instead")
+    @deprecated("Use excitation_manager.create_voltage_probe() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_voltage_probe() instead.")
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
 
@@ -2627,7 +2679,8 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_voltage_probe(terminal, ref_terminal)
 
-    @deprecated("use excitation_manager.create_current_probe() instead")
+    @deprecated("Use excitation_manager.create_voltage_source() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_voltage_source() instead.")
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
 
@@ -2637,7 +2690,8 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_voltage_source(terminal, ref_terminal)
 
-    @deprecated("use excitation_manager.create_current_source() instead")
+    @deprecated("Use excitation_manager.create_current_source() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_current_source() instead.")
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
 
@@ -2647,7 +2701,8 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_current_source(terminal, ref_terminal)
 
-    @deprecated("use excitation_manager.get_point_terminal() instead")
+    @deprecated("Use excitation_manager.get_point_terminal() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.get_point_terminal() instead.")
     def get_point_terminal(self, name, net_name, location, layer):
         """Place terminal between two points.
 
@@ -2787,9 +2842,9 @@ class Edb(EdbInit):
                     parameters.append(val)
         if traces:
             if not trace_net_filter:
-                paths = self.modeler.paths
+                paths = self.layout.paths
             else:
-                paths = [path for path in self.modeler.paths if path.net_name in trace_net_filter]
+                paths = [path for path in self.layout.paths if path.net_name in trace_net_filter]
             for path in paths:
                 net_name = path.net_name
                 if use_relative_variables:
@@ -2914,11 +2969,11 @@ class Edb(EdbInit):
                 ]
 
         if expand_polygons_size:
-            for poly in self.modeler.polygons:
+            for poly in self.layout.polygons:
                 if not poly.is_void:
                     poly.expand(expand_polygons_size)
         if expand_voids_size:
-            for poly in self.modeler.polygons:
+            for poly in self.layout.polygons:
                 if poly.is_void:
                     poly.expand(expand_voids_size, round_corners=False)
                 elif poly.has_voids:
@@ -3010,6 +3065,7 @@ class Edb(EdbInit):
         reference_layer = list(self.stackup.signal_layers.keys())[0]
         if mounting_side.lower() == "bottom":
             reference_layer = list(self.stackup.signal_layers.keys())[-1]
+        reference_layer_thickness = self.stackup.signal_layers[reference_layer].thickness
         if not signal_nets:
             signal_nets = list(self.nets.signal.keys())
 
@@ -3048,12 +3104,48 @@ class Edb(EdbInit):
                 "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
-        cloned_edb = Edb(edbpath=output_edb, edbversion=self.version, restart_rpc_server=True)
+
+        # Cache all data from the original EDB before creating the cloned EDB.
+        # restart_rpc_server=True will invalidate all original EDB primitive objects.
+        void_padstacks_data = []
+        for void, instances in void_padstacks:
+            poly_points = void.polygon_data.points if void.polygon_data is not None else None
+            if poly_points is None:
+                continue
+            inst_data = []
+            for inst in instances:
+                pos = inst.position
+                net = inst.net_name
+                def_name = inst.padstack_def.name if inst.padstack_def is not None else None
+                if pos is not None and net is not None and def_name is not None:
+                    inst_data.append({"position": pos, "net_name": net, "padstack_def_name": def_name})
+            if inst_data:
+                void_padstacks_data.append({"poly_points": poly_points, "instances": inst_data})
+
+        # Cache pad diameters from the original EDB padstack definitions
+        pad_diameter_cache = {}
+        if not terminal_diameter:
+            for item in void_padstacks_data:
+                for inst_info in item["instances"]:
+                    def_name = inst_info["padstack_def_name"]
+                    if def_name not in pad_diameter_cache:
+                        try:
+                            pad_diameter_cache[def_name] = (
+                                self.padstacks.definitions[def_name].pad_by_layer[reference_layer].parameters_values
+                            )
+                        except Exception:
+                            pad_diameter_cache[def_name] = None
+
+        cloned_edb = Edb(
+            edbpath=output_edb,
+            edbversion=self.version,
+            restart_rpc_server=False,
+        )
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",
             layer_type="signal",
-            thickness=self.stackup.signal_layers[reference_layer].thickness,
+            thickness=reference_layer_thickness,
             material="pec",
         )
         if launching_box_thickness:
@@ -3074,31 +3166,29 @@ class Edb(EdbInit):
             material="pec",
             base_layer="ports",
         )
-        for void_info in void_padstacks:
+        for void_info in void_padstacks_data:
             port_poly = cloned_edb.modeler.create_polygon(
-                points=void_info[0].polygon_data, layer_name="ref", net_name="GND"
+                points=void_info["poly_points"], layer_name="ref", net_name="GND"
             )
             pec_poly = cloned_edb.modeler.create_polygon(
-                points=port_poly.polygon_data, layer_name="port_pec", net_name="GND"
+                points=port_poly.polygon_data.core, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 
-        for void_info in void_padstacks:
-            for inst in void_info[1]:
+        for void_info in void_padstacks_data:
+            for inst_info in void_info["instances"]:
                 if not terminal_diameter:
-                    pad_diameter = (
-                        self.padstacks.definitions[inst.padstack_def.name]
-                        .pad_by_layer[reference_layer]
-                        .parameters_values
-                    )
+                    pad_diameter = pad_diameter_cache.get(inst_info["padstack_def_name"])
                 else:
                     pad_diameter = Value(terminal_diameter)
+                if not pad_diameter:
+                    continue
                 _temp_circle = cloned_edb.modeler.create_circle(
                     layer_name="ports",
-                    x=inst.position[0],
-                    y=inst.position[1],
+                    x=inst_info["position"][0],
+                    y=inst_info["position"][1],
                     radius=pad_diameter[0] / 2,
-                    net_name=inst.net_name,
+                    net_name=inst_info["net_name"],
                 )
                 if not _temp_circle:
                     self.logger.error(
@@ -3301,9 +3391,12 @@ class Edb(EdbInit):
     def copy_cell_from_edb(self, edb_path: Union[Path, str]):
         """Copy Cells from another Edb Database into this Database."""
         edb2 = Edb(edbpath=edb_path, edbversion=self.version)
-        cells = self.copy_cells([edb2.active_cell])
-        cell = cells[0]
-        cell.is_blackbox = True
+        try:
+            cells = self.copy_cells([edb2.active_cell])
+            cell = cells[0]
+            cell.is_blackbox = True
+        finally:
+            edb2.close(terminate_rpc_session=False)
 
     def _init_objects(self):
         """Initialize commonly used cached objects for the gRPC EDB implementation.

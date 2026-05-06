@@ -49,7 +49,11 @@
             </Material>
         </Materials>
         <Layers LengthUnit="mm">
-            <Layer Material="copper" Name="1_Top" Thickness="3.5000000000000004e-02" Type="conductor" FillMaterial="Solder Resist" EtchFactor="0.0"/>
+            <Layer Material="copper" Name="1_Top" Thickness="3.5000000000000004e-02" Type="conductor" FillMaterial="Solder Resist" EtchFactor="0.0">
+                <HuraySurfaceRoughness NoduleRadius="0.5um" HallHuraySurfaceRatio="2.9"></HuraySurfaceRoughness>
+				<HurayBottomSurfaceRoughness NoduleRadius="0.5um" HallHuraySurfaceRatio="2.9"></HurayBottomSurfaceRoughness>
+				<HuraySideSurfaceRoughness NoduleRadius="0.5um" HallHuraySurfaceRatio="2.9"></HuraySideSurfaceRoughness>
+            </Layer>
             <Layer Material="copper" Name="Inner1" Thickness="1.7000000000000003e-02" Type="conductor" FillMaterial="Megtron4_2" EtchFactor="0.0"/>
             <Layer Material="Megtron4_2" Name="DE2" Thickness="8.8e-02" Type="dielectric"/>
             <Layer Material="copper" Name="Inner2" Thickness="1.7000000000000003e-02" Type="conductor" FillMaterial="Megtron4_2" EtchFactor="0.0"/>

@@ -28,7 +28,7 @@ from ansys.edb.core.definition.component_model import (
     NPortComponentModel as CoreNPortComponentModel,
 )
 
-from pyedb.dotnet.database.definition.component_model import ComponentModel
+from pyedb.grpc.database.definition.component_model import ComponentModel
 from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
 

@@ -26,15 +26,17 @@ from ansys.edb.core.primitive.bondwire import (
     BondwireType as CoreBondWireType,
 )
 
+from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
 
-class Bondwire:
+class Bondwire(Primitive):
     """Class representing a bond-wire object."""
 
-    def __init__(self, _pedb, core):
+    def __init__(self, pedb, core):
+        Primitive.__init__(self, pedb, core)
         self.core = core
-        self._pedb = _pedb
+        self._pedb = pedb
 
     @classmethod
     def create(

@@ -21,11 +21,12 @@
 # SOFTWARE.
 
 import os
-import secrets
+import platform
+import socket
 import sys
 import time
 
-from ansys.edb.core.session import launch_session
+from ansys.edb.core.session import MOD as _SESSION_MOD, launch_session
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
@@ -39,6 +40,7 @@ from pyedb.generic.settings import settings
 from pyedb.misc.misc import list_installed_ansysem
 
 latency_delay = 0.1
+_IS_WINDOWS = platform.system() == "Windows"
 
 
 class RpcSession:
@@ -48,6 +50,41 @@ class RpcSession:
     rpc_session = None
     base_path = None
     port = 10000
+    server_pid = 0
+    _open_db_count = 0  # number of EDB databases currently open against this server
+    _owns_session = False  # True only when RpcSession launched the server itself
+
+    @staticmethod
+    def acquire():
+        """Increment the open-database reference counter.
+
+        Must be called each time a database is successfully created or opened so that
+        the RPC server is not shut down while other databases are still in use.
+        """
+        RpcSession._open_db_count += 1
+        settings.logger.info(f"RPC session acquired (open databases: {RpcSession._open_db_count})")
+
+    @staticmethod
+    def release():
+        """
+        Decrement the open-database reference counter.
+
+        The RPC server is **not** shut down when the counter reaches zero.
+        Use :meth:`close` (or pass ``terminate_rpc_session=True`` to the EDB
+        ``close`` method) to explicitly terminate the server.  For standalone
+        scripts the ``atexit`` handler registered by :class:`EdbInit` ensures
+        the server process is cleaned up on interpreter exit.
+
+        Returns
+        -------
+        bool
+            ``True`` when the counter has reached zero (no more open databases),
+            ``False`` otherwise.
+        """
+        if RpcSession._open_db_count > 0:
+            RpcSession._open_db_count -= 1
+        settings.logger.info(f"RPC session released (open databases: {RpcSession._open_db_count})")
+        return RpcSession._open_db_count == 0
 
     @staticmethod
     def start(edb_version, port=0, restart_server=False):
@@ -74,7 +111,13 @@ class RpcSession:
             To be used with caution, default value is `False`.
         """
         if not port:
-            RpcSession.port = RpcSession.__get_random_free_port()
+            # Only allocate a new port when we are about to start a fresh
+            # server.  If the server is already running we must keep the port
+            # it is currently listening on; re-randomising it here would make
+            # the client point to a different port than the live server.
+            if not RpcSession.rpc_session or not RpcSession._is_server_alive():
+                RpcSession.port = RpcSession.__get_random_free_port()
+            # else: keep RpcSession.port as-is
         else:
             RpcSession.port = port
         if not edb_version:  # pragma: no cover
@@ -102,12 +145,17 @@ class RpcSession:
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = RpcSession.base_path
         oa_directory = os.path.join(RpcSession.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oa_directory
-        os.environ["PATH"] = "{};{}".format(os.environ["PATH"], RpcSession.base_path)
+        os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], RpcSession.base_path])
 
-        if RpcSession.pid:
-            if restart_server:
-                settings.logger.logger.info("Restarting RPC server")
-                RpcSession.kill()
+        if RpcSession.rpc_session:
+            # Validate the existing session is still alive
+            if not RpcSession._is_server_alive():
+                settings.logger.warning("RPC server process is no longer alive. Cleaning up stale session.")
+                RpcSession._reset_session_state()
+                RpcSession.__start_rpc_server()
+            elif restart_server:
+                settings.logger.info("Restarting RPC server.")
+                RpcSession.close()
                 RpcSession.__start_rpc_server()
             else:
                 settings.logger.info(f"Server already running on port {RpcSession.port}")
@@ -130,12 +178,41 @@ class RpcSession:
 
     @staticmethod
     def __start_rpc_server():
-        RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
+        preexisting = _SESSION_MOD.current_session is not None
+        if preexisting:
+            # A session already exists in the underlying module. Adopt it
+            # directly instead of calling launch_session which may throw or
+            # behave unexpectedly when a session is already active.
+            RpcSession.rpc_session = _SESSION_MOD.current_session
+            RpcSession._owns_session = False
+            start_managing(IOMangementType.READ_AND_WRITE)
+            time.sleep(latency_delay)
+            if RpcSession.rpc_session and hasattr(RpcSession.rpc_session, "local_server_proc"):
+                proc = RpcSession.rpc_session.local_server_proc
+                if proc is not None and hasattr(proc, "pid"):
+                    RpcSession.pid = proc.pid
+            settings.logger.info("Attached to preexisting gRPC session")
+            return
+        max_attempts = 3 if _IS_WINDOWS else 1
+        for attempt in range(max_attempts):
+            try:
+                RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
+                break
+            except Exception as e:
+                settings.logger.warning(f"launch_session attempt {attempt + 1}/{max_attempts} failed: {e}")
+                if attempt < max_attempts - 1:
+                    # Pick a new random port and retry
+                    RpcSession.port = RpcSession.__get_random_free_port()
+                    time.sleep(2.0)
+                else:
+                    settings.logger.error("All launch_session attempts failed.")
+                    raise
+        RpcSession._owns_session = True
         start_managing(IOMangementType.READ_AND_WRITE)
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
-            settings.logger.logger.info("Grpc session started")
+            settings.logger.info("Grpc session started")
 
     @staticmethod
     def kill():
@@ -174,21 +251,107 @@ class RpcSession:
         """Terminate the current RPC session. Must be executed at the end of the script to close properly the session.
         If not executed, users should force restarting the process using the flag `restart_server`=`True`.
         """
-        if RpcSession.rpc_session:
-            end_managing()
-            RpcSession.rpc_session.disconnect()
-            time.sleep(latency_delay)
-            RpcSession.__get_process_id()
+        if RpcSession.rpc_session and RpcSession._owns_session:
+            server_proc = None
+            try:
+                server_proc = RpcSession.rpc_session.local_server_proc
+            except Exception as e:  # nosec B110
+                settings.logger.debug(f"Could not retrieve server process handle: {e}")
+            try:
+                end_managing()
+            except Exception as e:  # nosec B110
+                settings.logger.debug(f"end_managing() raised during close: {e}")
+            try:
+                RpcSession.rpc_session.disconnect()
+            except Exception as e:  # nosec B110
+                settings.logger.debug(f"disconnect() raised during close: {e}")
+            # Wait for the server process to fully exit so the port is released
+            # before the next session starts.
+            RpcSession._wait_for_process_exit(server_proc, timeout=10.0)
+        RpcSession._reset_session_state()
+
+    @staticmethod
+    def _wait_for_process_exit(proc, timeout=10.0):
+        """Wait for the RPC server process to fully exit.
+
+        A uniform grace period is applied after process exit to allow the OS
+        to fully release the socket.  Port conflicts are avoided upstream by
+        always using dynamic port allocation (``socket.bind(('', 0))``).
+        Linux gets a slightly longer grace period because the EDB server
+        binary (a Windows-native process running under a compatibility layer
+        in CI) takes longer to relinquish its resources there.
+        """
+        if proc is None:
+            time.sleep(1.0)
+            return
+        try:
+            pid = proc.pid if hasattr(proc, "pid") else None
+            if pid is None:
+                time.sleep(1.0)
+                return
+            p = psutil.Process(pid)
+            p.wait(timeout=timeout)
+            # Brief grace period after process exit so the OS can fully release
+            # the socket.  Linux needs slightly more time than Windows.
+            time.sleep(1.0 if not _IS_WINDOWS else 0.5)
+        except psutil.NoSuchProcess:
+            # Already gone
+            pass
+        except psutil.TimeoutExpired:
+            settings.logger.warning(f"RPC server process {pid} did not exit within {timeout}s. Attempting to kill it.")
+            try:
+                p.kill()
+                p.wait(timeout=3.0)
+            except Exception as e:  # nosec B110
+                settings.logger.debug(f"Failed to force-kill RPC server process {pid}: {e}")
+        except Exception:
+            time.sleep(1.0)
+
+    @staticmethod
+    def _is_server_alive():
+        if not RpcSession.rpc_session:
+            return False
+        try:
+            proc = RpcSession.rpc_session.local_server_proc
+            if proc is None:
+                return False
+            return psutil.pid_exists(proc.pid) and proc.poll() is None
+        except Exception:
+            return False
+
+    @staticmethod
+    def _reset_session_state():
+        """
+        Reset all session state to initial values.
+
+        Clears the session reference, PIDs, ref count, and the underlying
+        ``ansys.edb.core.session`` module's ``current_session`` to prevent
+        ``__start_rpc_server`` from falsely detecting a preexisting session.
+        """
+        clear_upstream_session = RpcSession._owns_session
+        RpcSession.rpc_session = None
+        RpcSession.pid = 0
+        RpcSession.server_pid = 0
+        RpcSession._open_db_count = 0
+        RpcSession._owns_session = False
+        # Clear the global session reference so the next launch_session()
+        # call does not attach to a dead session.
+        try:
+            if clear_upstream_session:
+                _SESSION_MOD.current_session = None
+        except Exception as e:  # nosec B110
+            settings.logger.debug(f"Could not clear current_session: {e}")
 
     @staticmethod
     def __get_random_free_port():
-        """"""
-        secure_random = secrets.SystemRandom()
-        port = secure_random.randint(49152, 65535)
-        while True:
-            used_ports = [conn.laddr[1] for conn in psutil.net_connections()]
-            if port in used_ports:
-                port = secure_random.randint(49152, 65535)
-            else:
-                break
-        return port
+        """Return an unused ephemeral port by letting the OS bind to port 0.
+
+        Using ``socket.bind(('', 0))`` avoids the TOCTOU (time-of-check /
+        time-of-use) race condition that occurs when first listing occupied
+        ports with psutil and then trying to connect on the chosen port.
+        """
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            # SO_REUSEADDR is intentionally *not* set so that two concurrent
+            # callers never get the same port.
+            sock.bind(("", 0))
+            return sock.getsockname()[1]

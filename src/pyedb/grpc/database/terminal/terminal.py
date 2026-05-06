@@ -29,7 +29,6 @@ from pyedb.grpc.database.inner.conn_obj import ConnObj
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-import re
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
 from ansys.edb.core.terminal.terminal import (
@@ -96,30 +95,7 @@ class Terminal(ConnObj):
     @property
     def _hfss_port_property(self):
         """HFSS port property."""
-        hfss_prop = re.search(r"HFSS\(.*?\)", self._edb_properties)
-        p = {}
-        if hfss_prop:
-            hfss_type = re.search(r"'HFSS Type'='([^']+)'", hfss_prop.group())
-            orientation = re.search(r"'Orientation'='([^']+)'", hfss_prop.group())
-            horizontal_ef = re.search(r"'Horizontal Extent Factor'='([^']+)'", hfss_prop.group())
-            vertical_ef = re.search(r"'Vertical Extent Factor'='([^']+)'", hfss_prop.group())
-            radial_ef = re.search(r"'Radial Extent Factor'='([^']+)'", hfss_prop.group())
-            pec_w = re.search(r"'PEC Launch Width'='([^']+)'", hfss_prop.group())
-
-            p["HFSS Type"] = hfss_type.group(1) if hfss_type else ""
-            p["Orientation"] = orientation.group(1) if orientation else ""
-            p["Horizontal Extent Factor"] = float(horizontal_ef.group(1)) if horizontal_ef else ""
-            p["Vertical Extent Factor"] = float(vertical_ef.group(1)) if vertical_ef else ""
-            p["Radial Extent Factor"] = float(radial_ef.group(1)) if radial_ef else ""
-            p["PEC Launch Width"] = pec_w.group(1) if pec_w else ""
-        else:
-            p["HFSS Type"] = ""
-            p["Orientation"] = ""
-            p["Horizontal Extent Factor"] = ""
-            p["Vertical Extent Factor"] = ""
-            p["Radial Extent Factor"] = ""
-            p["PEC Launch Width"] = ""
-        return p
+        return self._hfss_properties
 
     @property
     def horizontal_extent_factor(self) -> float:
@@ -130,12 +106,12 @@ class Terminal(ConnObj):
         float
             Extent value.
         """
-        return self._hfss_port_property["Horizontal Extent Factor"]
+        return self._hfss_port_property.horizontal_extent_factor
 
     @horizontal_extent_factor.setter
     def horizontal_extent_factor(self, value):
         p = self._hfss_port_property
-        p["Horizontal Extent Factor"] = value
+        p.horizontal_extent_factor = value
         self._hfss_port_property = p
 
     @property
@@ -148,16 +124,16 @@ class Terminal(ConnObj):
             Vertical extent value.
 
         """
-        return self._hfss_port_property["Vertical Extent Factor"]
+        return self._hfss_port_property.vertical_extent_factor
 
     @vertical_extent_factor.setter
     def vertical_extent_factor(self, value):
         p = self._hfss_port_property
-        p["Vertical Extent Factor"] = value
+        p.vertical_extent_factor = value
         self._hfss_port_property = p
 
     @property
-    def pec_launch_width(self) -> float:
+    def pec_launch_width(self) -> str:
         """Launch width for the printed electronic component (PEC).
 
         Returns
@@ -165,12 +141,12 @@ class Terminal(ConnObj):
         float
             Pec launch width value.
         """
-        return self._hfss_port_property["PEC Launch Width"]
+        return self._hfss_port_property.pec_launch_width
 
     @pec_launch_width.setter
     def pec_launch_width(self, value):
         p = self._hfss_port_property
-        p["PEC Launch Width"] = value
+        p.pec_launch_width = value
         self._hfss_port_property = p
 
     @property
@@ -181,21 +157,17 @@ class Terminal(ConnObj):
 
     @_hfss_port_property.setter
     def _hfss_port_property(self, value):
-        txt = []
-        for k, v in value.items():
-            txt.append("'{}'='{}'".format(k, v))
-        txt = ",".join(txt)
-        self._edb_properties = "HFSS({})".format(txt)
+        self._hfss_properties = value
 
     @property
     def hfss_type(self) -> str:
         """HFSS port type."""
-        return self._hfss_port_property["HFSS Type"]
+        return self._hfss_port_property.hfss_type
 
     @hfss_type.setter
     def hfss_type(self, value):
         p = self._hfss_port_property
-        p["HFSS Type"] = value
+        p.hfss_type = value
         self._hfss_port_property = p
 
     @property
@@ -212,6 +184,31 @@ class Terminal(ConnObj):
     @do_renormalize.setter
     def do_renormalize(self, value):
         self.port_post_processing_prop.do_renormalize = value
+
+    @property
+    def do_deembed(self) -> bool:
+        """Determine whether port deembed is enabled.
+        Returns
+        """
+        return self.port_post_processing_prop.do_deembed
+
+    @do_deembed.setter
+    def do_deembed(self, value):
+        self.port_post_processing_prop.do_deembed = value
+
+    @property
+    @deprecated_property("use do_deembed property instead")
+    def deembed(self) -> bool:
+        """Determine whether port deembed is enabled.
+
+        .. deprecated:: 0.71.0
+            The `deembed` property is deprecated. Please use `do_deembed` instead.
+        """
+        return self.port_post_processing_prop.do_deembed
+
+    @deembed.setter
+    def deembed(self, value):
+        self.port_post_processing_prop.do_deembed = value
 
     @property
     def renormalization_impedance(self) -> float:
@@ -234,7 +231,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        str : name of the net.
+        str
+            Name of the net.
         """
         if self.core.is_null:
             return ""
@@ -300,7 +298,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        float : amplitude value.
+        float
+            Amplitude value.
         """
         return Value(self.core.source_amplitude)
 
@@ -314,7 +313,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        float : phase value.
+        float
+            Phase value.
         """
         return Value(self.core.source_phase)
 
@@ -361,7 +361,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        float : impedance value.
+        float
+            Impedance value.
 
         """
         return Value(self.core.impedance)
@@ -406,7 +407,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        str : net name.
+        str
+            Net name.
 
         """
         if self.reference_object:
@@ -572,7 +574,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        float : source magnitude.
+        float
+            Source magnitude.
         """
         return Value(self.core.source_amplitude)
 
@@ -586,7 +589,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        float : source phase.
+        float
+            Source phase.
 
         """
         return Value(self.core.source_phase)
@@ -661,7 +665,7 @@ class Terminal(ConnObj):
         """Check if the terminal is a circuit terminal.
 
         .. deprecated:: 0.70.0
-            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+           use :attr: `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
 
         Returns
         -------
@@ -676,7 +680,7 @@ class Terminal(ConnObj):
         """Set whether the terminal is a circuit terminal.
 
         .. deprecated:: 0.70.0
-            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+           Use :attr: `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
 
         Parameters
         ----------

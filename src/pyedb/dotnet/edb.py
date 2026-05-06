@@ -40,6 +40,8 @@ from typing import Any, Dict, List, Union
 import warnings
 from zipfile import ZipFile as zpf
 
+from typing_extensions import deprecated
+
 from pyedb.configuration.configuration import Configuration
 import pyedb.dotnet
 from pyedb.dotnet.database.cell.layout import Layout
@@ -95,15 +97,19 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SIwaveSimulationSetup,
 )
 from pyedb.dotnet.database.utilities.value import Value
-from pyedb.dotnet.database.Variables import decompose_variable_value
 from pyedb.edb_logger import EdbLogger
-from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
+from pyedb.generic.constants import AEDT_UNITS, SolverType, decompose_variable_value, unit_converter
 from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
-from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property, execution_timer
+from pyedb.misc.decorators import (
+    deprecate_argument_name,
+    deprecated as runtime_deprecated,
+    deprecated_property as runtime_deprecated_property,
+    execution_timer,
+)
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflows.utilities.cutout import Cutout
 
@@ -506,12 +512,13 @@ class Edb:
         return d_var
 
     @property
-    @deprecated_property("use base_path property instead.")
+    @deprecated("Use base_path property instead.", category=None)
+    @runtime_deprecated_property("use base_path property instead.")
     def ansys_em_path(self) -> str:
         """Base path for EDB installation.
 
         .. deprecated:: 0.70.0
-            use :attr:`base_path` property instead.
+           Use :attr:`base_path` property instead.
 
         Returns
         -------
@@ -571,12 +578,13 @@ class Edb:
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    @deprecated_property("use ports property instead.")
+    @deprecated("Use ports property instead.", category=None)
+    @runtime_deprecated_property("use ports property instead.")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
         .. deprecated:: 0.70.0
-            Use :attr:`ports <pyedb.dotnet.database.edb_data.ports.G
+           Use :attr:`ports <pyedb.dotnet.database.edb_data.ports.G
 
         Returns
         -------
@@ -1038,12 +1046,13 @@ class Edb:
         return Stackup(self, self.layout.layer_collection)
 
     @property
-    @deprecated_property("use excitation_manager property instead.")
+    @deprecated("Use excitation_manager property instead.", category=None)
+    @runtime_deprecated_property("use excitation_manager property instead.")
     def source_excitation(self) -> SourceExcitation:
         """Source excitation management.
 
         .. deprecated:: 0.70.0
-           Use: func:`excitation_manager` property instead.
+           Use: attr:`excitation_manager` property instead.
         Returns
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
@@ -1067,7 +1076,7 @@ class Edb:
         return None
 
     @property
-    def materials(self) -> Materials | None:
+    def materials(self) -> Materials:
         """Material Database.
 
         Returns
@@ -1218,7 +1227,7 @@ class Edb:
             return
 
     @property
-    def modeler(self) -> Modeler | None:
+    def modeler(self) -> Modeler:
         """Core primitives modeler.
 
         Returns
@@ -1479,12 +1488,13 @@ class Edb:
                 times = 0
                 time.sleep(0.250)
 
-    @deprecated("use close method instead.")
+    @deprecated("Use close() instead.", category=None)
+    @runtime_deprecated("Use close() instead.")
     def close_edb(self) -> bool:
         """Close EDB and cleanup variables.
 
-        . deprecated:: pyedb 0.47.0
-        Use: func:`close` instead.
+        .. deprecated:: pyedb 0.47.0
+           Use: func:`close` instead.
 
         Returns
         -------
@@ -1516,12 +1526,13 @@ class Edb:
         self._clean_variables()
         return True
 
-    @deprecated("use save method instead.")
+    @deprecated("Use save() instead.", category=None)
+    @runtime_deprecated("Use save() instead.")
     def save_edb(self) -> bool:
         """Save the EDB file.
 
-        . deprecated:: pyedb 0.47.0
-        Use: func:`save` instead.
+        .. deprecated:: pyedb 0.47.0
+           Use: func:`save` instead.
 
         Returns
         -------
@@ -1546,12 +1557,13 @@ class Edb:
         self._wait_for_file_release()
         return True
 
-    @deprecated("use save_as method instead.")
+    @deprecated("Use save_as() instead.", category=None)
+    @runtime_deprecated("Use save_as() instead.")
     def save_edb_as(self, path) -> bool:
         """Save the EDB file as another file.
 
-        . deprecated:: pyedb 0.47.0
-        Use: func:`save_as` instead.
+        .. deprecated:: pyedb 0.47.0
+           Use: func:`save_as` instead.
 
 
         Parameters
@@ -1903,6 +1915,7 @@ class Edb:
         simple_pad_check=True,
         keep_lines_as_path=False,
         include_voids_in_extents=False,
+        compute_extent_only=False,
     ) -> list[list[float | complex | Any]] | list | list[list] | None:
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
@@ -2039,6 +2052,7 @@ class Edb:
         cutout.simple_pad_check = simple_pad_check
         cutout.keep_lines_as_path = keep_lines_as_path
         cutout.include_voids_in_extents = include_voids_in_extents
+        cutout.compute_extent_only = compute_extent_only
         return cutout.run()
 
     def _create_cutout_legacy(
@@ -3277,32 +3291,35 @@ class Edb:
         """
         return {name: i for name, i in self.setups.items() if isinstance(i, SIwaveSimulationSetup)}
 
-    @deprecated("use simulation_setups.create_hfss_setup instead")
+    @deprecated("Use simulation_setups.create_hfss_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_hfss_setup() instead.")
     def create_hfss_setup(self, name=None):
         """Create an HFSS simulation setup from a template.
 
         .. deprecated:: 0.70.0
-                Use :func:`legacy.simulation_setups.create_hfss_setup` instead.
+           Use :func:`legacy.simulation_setups.create_hfss_setup` instead.
 
         """
         return self.simulation_setups.create_hfss_setup(name)
 
-    @deprecated("use simulation_setups.create_raptor_x_setup instead")
+    @deprecated("Use simulation_setups.create_raptor_x_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_raptor_x_setup() instead.")
     def create_raptorx_setup(self, name=None):
         """Create a RaptorX simulation setup.
 
         .. deprecated:: 0.70.0
-                Use :func:`legacy.simulation_setups.create_raptor_x_setup` instead.
+           Use :func:`legacy.simulation_setups.create_raptor_x_setup` instead.
 
         """
         return self.simulation_setups.create_raptor_x_setup(name)
 
-    @deprecated("use simulation_setups.create_hfss_pi_setup instead")
+    @deprecated("Use simulation_setups.create_hfss_pi_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_hfss_pi_setup() instead.")
     def create_hfsspi_setup(self, name=None):
         """Create an HFSS PI simulation setup from a template.
 
         .. deprecated:: 0.70.0
-                Use :func:`legacy.simulation_setups.create_hfss_pi_setup` instead.
+           Use :func:`legacy.simulation_setups.create_hfss_pi_setup` instead.
 
         Parameters
         ----------
@@ -3317,22 +3334,24 @@ class Edb:
         """
         return self.simulation_setups.create_hfss_pi_setup(name=name)
 
-    @deprecated("use simulation_setups.create_siwave_setup instead")
+    @deprecated("Use simulation_setups.create_siwave_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_siwave_setup() instead.")
     def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a Siwave SYZ setup from a template.
 
         .. deprecated:: 0.70.0
-                Use :func:`legacy.simulation_setups.create_siwave_setup` instead.
+           Use :func:`legacy.simulation_setups.create_siwave_setup` instead.
 
         """
         return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
-    @deprecated("use simulation_setups.create_siwave_dcir_setup instead")
+    @deprecated("Use simulation_setups.create_siwave_dcir_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_siwave_dcir_setup() instead.")
     def create_siwave_dc_setup(self, name=None, **kwargs):
         """Create a Siwave DC IR setup from a template.
 
-        ..  deprecated:: 0.70.0
-                Use :func:`legacy.simulation_setups.create_siwave_dcir_setup` instead
+        .. deprecated:: 0.70.0
+           Use :func:`legacy.simulation_setups.create_siwave_dcir_setup` instead
 
         """
         return self.simulation_setups.create_siwave_dcir_setup(name=name, **kwargs)
@@ -3551,7 +3570,8 @@ class Edb:
                                                 connected_ports_list.append((port1_connexion, port2_connexion))
             return connected_ports_list
 
-    @deprecated("use excitation_manager.create_port method instead")
+    @deprecated("Use excitation_manager.create_port() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_port() instead.")
     def create_port(
         self,
         terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
@@ -3561,8 +3581,8 @@ class Edb:
     ):
         """Create a port.
 
-        ..deprecated:: 0.70.0
-           :func:`create_port` has been moved to edb.excitation_manager.create_port.
+        .. deprecated:: 0.70.0
+           Use :func:`create_port` has been moved to edb.excitation_manager.create_port.
 
         Parameters
         ----------
@@ -3590,12 +3610,13 @@ class Edb:
             terminal=terminal, ref_terminal=ref_terminal, is_circuit_port=is_circuit_port, name=name
         )
 
-    @deprecated("use excitation_manager.create_voltage_probe method instead")
+    @deprecated("Use excitation_manager.create_voltage_probe() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_voltage_probe() instead.")
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
 
-        ..deprecated:: 0.70.0
-           :func:`create_voltage_probe` has been moved to edb.excitation_manager.create_voltage_probe.
+        .. deprecated:: 0.70.0
+           Use :func:`create_voltage_probe` has been moved to edb.excitation_manager.create_voltage_probe.
 
         Parameters
         ----------
@@ -3616,12 +3637,13 @@ class Edb:
         """
         return self.excitation_manager.create_voltage_probe(terminal=terminal, ref_terminal=ref_terminal)
 
-    @deprecated("use excitation_manager.create_voltage_source method instead")
+    @deprecated("Use excitation_manager.create_voltage_source() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_voltage_source() instead.")
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
 
-        ..deprecated:: 0.70.0
-           :func:`create_voltage_source` has been moved to edb.excitation_manager.create_voltage_source.
+        .. deprecated:: 0.70.0
+           Use :func:`create_voltage_source` has been moved to edb.excitation_manager.create_voltage_source.
 
         Parameters
         ----------
@@ -3642,12 +3664,13 @@ class Edb:
         """
         return self.excitation_manager.create_voltage_source(terminal=terminal, ref_terminal=ref_terminal)
 
-    @deprecated("use excitation_manager.create_current_source method instead")
+    @deprecated("Use excitation_manager.create_current_source() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_current_source() instead.")
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
 
-        ..deprecated:: 0.70.0
-           :func:`create_current_source` has been moved to edb.excitation_manager.create_current_source.
+        .. deprecated:: 0.70.0
+           Use :func:`create_current_source` has been moved to edb.excitation_manager.create_current_source.
 
         Parameters
         ----------
@@ -3668,12 +3691,13 @@ class Edb:
         """
         return self.excitation_manager.create_current_source(terminal=terminal, ref_terminal=ref_terminal)
 
-    @deprecated("use excitation_manager.get_point_terminal method instead")
+    @deprecated("Use excitation_manager.get_point_terminal() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.get_point_terminal() instead.")
     def get_point_terminal(self, name, net_name, location, layer):
         """Place a voltage probe between two points.
 
-        ..deprecated:: 0.70.0
-           :func:`get_point_terminal` has been moved to edb.excitation_manager.get_point_terminal.
+        .. deprecated:: 0.70.0
+           Use :func:`get_point_terminal` has been moved to edb.excitation_manager.get_point_terminal.
 
         Parameters
         ----------
@@ -4059,10 +4083,10 @@ class Edb:
         for poly in polys:
             for void in poly.voids:
                 void_bbox = (
-                    void.polygon_data._edb_object.GetBBox().Item1.X.ToDouble(),
-                    void.polygon_data._edb_object.GetBBox().Item1.Y.ToDouble(),
-                    void.polygon_data._edb_object.GetBBox().Item2.X.ToDouble(),
-                    void.polygon_data._edb_object.GetBBox().Item2.Y.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item1.X.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item1.Y.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item2.X.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item2.Y.ToDouble(),
                 )
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 instances_dict = self.padstacks.instances
@@ -4101,11 +4125,11 @@ class Edb:
         )
         for void_info in void_padstacks:
             port_poly = cloned_edb.modeler.create_polygon(
-                points=void_info[0].polygon_data._edb_object, layer_name="ref", net_name="GND"
+                points=void_info[0].polygon_data.core, layer_name="ref", net_name="GND"
             )
             port_poly.scale(1.1)
             pec_poly = cloned_edb.modeler.create_polygon(
-                points=port_poly.polygon_data._edb_object, layer_name="port_pec", net_name="GND"
+                points=port_poly.polygon_data.core, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 

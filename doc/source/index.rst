@@ -27,7 +27,7 @@ and analyze PCB designs by communicating with the `PyEDB-Core <https://github.co
 .. grid:: 2
 
     .. grid-item-card::  API reference :fa:`book-bookmark`
-        :link: grpc_migration/dotnet_api/index
+        :link: grpc_api/index
         :link-type: doc
 
         This section contains descriptions of the functions and modules included in PyEDB.
@@ -54,6 +54,6 @@ and analyze PCB designs by communicating with the `PyEDB-Core <https://github.co
 
     getting_started/index
     user_guide/index
-    grpc_migration/dotnet_api/index
+    grpc_api/index
     examples/index
     changelog

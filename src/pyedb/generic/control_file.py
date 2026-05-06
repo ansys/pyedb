@@ -64,7 +64,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
     Converting a technology file to control file.
 
     >>> converted_file = convert_technology_file(
-    ...     tech_file="/path/to/tech.t", edbversion="2025.2", control_file="/path/to/output.xml"
+    ...     tech_file="/path/to/tech.t", edbversion="2026.1", control_file="/path/to/output.xml"
     ... )
     >>> if converted_file:
     >>>     print(f"Converted to: {converted_file}")

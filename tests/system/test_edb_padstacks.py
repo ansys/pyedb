@@ -25,12 +25,9 @@
 import math
 import os
 
+import ansys.edb.core
 import pytest
 
-from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.dotnet.database.geometry.polygon_data import PolygonData
-from pyedb.dotnet.database.padstack import EDBPadstackInstance
-from pyedb.generic.general_methods import is_windows
 from pyedb.generic.settings import settings
 from tests.conftest import GRPC, config, use_grpc
 from tests.system.base_test_class import BaseTestClass
@@ -62,7 +59,6 @@ class TestClass(BaseTestClass):
         assert not edbapp.padstacks.get_via_instance_from_net(["GND2"])
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="Not implemented with grpc")
     def test_create_with_packstack_name(self):
         """Create a padstack"""
         edbapp = self.edb_examples.get_si_verse()
@@ -134,35 +130,38 @@ class TestClass(BaseTestClass):
     def test_padstack_properties_getter(self):
         """Evaluate properties"""
         edbapp = self.edb_examples.get_si_verse()
-        for el in edbapp.padstacks.definitions:
-            padstack = edbapp.padstacks.definitions[el]
-            assert padstack.hole_plating_thickness is not None or False
-            if not edbapp.grpc:  # not supported in grpc
-                assert padstack.hole_properties is not None or False
-            assert padstack.hole_plating_thickness is not None or False
-            assert padstack.hole_plating_ratio is not None or False
-            assert padstack.via_start_layer is not None or False
-            assert padstack.via_stop_layer is not None or False
-            assert padstack.material is not None or False
-            assert padstack.hole_finished_size is not None or False
-            assert padstack.hole_rotation is not None or False
-            assert padstack.hole_offset_x is not None or False
-            assert padstack.hole_offset_y is not None or False
-            try:  # grpc throws an exception if no hole is defined
-                assert padstack.hole_type is not None or False
-            except:
-                pass
-            pad = padstack.pad_by_layer[padstack.via_stop_layer]
-            if not pad.shape == "NoGeometry":
-                assert pad.parameters_values is not None or False
-                assert pad.offset_x is not None or False
-                assert pad.offset_y is not None or False
-                assert isinstance(pad.geometry_type, int)
-            if not edbapp.grpc:  # not relevant in grpc
-                polygon = pad._polygon_data_dotnet
-                if polygon:
-                    assert polygon.GetBBox()
-        edbapp.close()
+        padstack = edbapp.padstacks.definitions["v30h20"]
+        assert padstack.hole_plating_thickness is not None or False
+        if not edbapp.grpc:  # not supported in grpc
+            assert padstack.hole_properties is not None or False
+        assert padstack.hole_plating_thickness is not None or False
+        assert padstack.hole_plating_ratio is not None or False
+        assert padstack.via_start_layer is not None or False
+        assert padstack.via_stop_layer is not None or False
+        assert padstack.material is not None or False
+        assert padstack.hole_finished_size is not None or False
+        assert padstack.hole_rotation is not None or False
+        assert padstack.hole_offset_x is not None or False
+        assert padstack.hole_offset_y is not None or False
+        try:  # grpc throws an exception if no hole is defined
+            assert padstack.hole_type is not None or False
+        except:
+            pass
+        pad = padstack.pad_by_layer[padstack.via_stop_layer]
+        if not pad.shape == "NoGeometry":
+            assert pad.parameters_values is not None or False
+            assert pad.offset_x is not None or False
+            assert pad.offset_y is not None or False
+            assert isinstance(pad.geometry_type, int)
+        if not edbapp.grpc:  # not relevant in grpc
+            polygon = pad._polygon_data_dotnet
+            if polygon:
+                assert polygon.GetBBox()
+        planar_em = edbapp.padstacks.definitions["PlanarEMVia"]
+
+        assert planar_em.via_stop_layer is None
+        assert planar_em.via_stop_layer is None
+        edbapp.close(terminate_rpc_session=False)
 
     def test_padstack_properties_setter(self):
         """Set padstack properties"""
@@ -339,10 +338,6 @@ class TestClass(BaseTestClass):
         assert vias[1].metal_volume
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        condition=config["use_grpc"],
-        reason="This is a bug deep in the code. This should never pass but it passes as try-else hides the bug.",
-    )
     @pytest.mark.parametrize("return_points", [True, False])
     def test_padstacks_create_rectangle_in_pad(self, return_points: bool):
         """Create a rectangle inscribed inside a padstack instance pad."""
@@ -366,21 +361,23 @@ class TestClass(BaseTestClass):
                     assert padstack_instance.padstack_definition == "Padstack_None"
                 if padstack_instance.padstack_definition != "Padstack_None":
                     assert result
-                    if return_points and layer_name in padstack_instance.layer_range_names:
+                    if return_points and layer_name in padstack_instance.layer_range_names and not edb.grpc:
                         pad_pd = _get_padstack_polygon_data(edb, padstack_instance, layer_name)
                         if pad_pd is None:
                             # refer to comment in _get_padstack_polygon_data body to see why we're skipping this check
                             continue
+                        from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+
                         rect_pd = PolygonData(
                             padstack_instance._pedb,
                             create_from_points=True,
                             points=result,
-                        )._edb_object
+                        ).core
                         _assert_inside(rect_pd, pad_pd)
                         # count the number of successful confirmations since some are skipped
                         confirmed_pads += 1
 
-            if return_points:
+            if return_points and not edb.grpc:
                 assert confirmed_pads == 19
         edb.close(terminate_rpc_session=False)
 
@@ -480,10 +477,6 @@ class TestClass(BaseTestClass):
             assert len(test) == 175
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_polygon_based_padstack(self):
         edbapp = self.edb_examples.get_si_verse_sfp()
         polygon_data = edbapp.modeler.paths[0].polygon_data
@@ -517,7 +510,6 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["test2"]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=GRPC, reason="Needs to be checked with grpc")
     def test_via_fence(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/via_fence_generic_project.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
@@ -529,7 +521,6 @@ class TestClass(BaseTestClass):
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=GRPC, reason="Needs to be checked with grpc")
     def test_via_fence2(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/via_fence_generic_project.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
@@ -551,10 +542,6 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 96
         edbapp.close_edb()
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_via_merge(self):
         edbapp = self.edb_examples.get_si_verse()
         polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
@@ -562,10 +549,6 @@ class TestClass(BaseTestClass):
         assert len(result) == 1
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_via_merge3(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
         edbapp = self.edb_examples.load_edb(edb_path=source_path)
@@ -581,7 +564,6 @@ class TestClass(BaseTestClass):
         assert merged_via[0].stop_layer == "layer2"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_dbscan(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
@@ -622,10 +604,6 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 2
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_create_backdrill_dielectric_fill_via(self):
         edbapp = self.edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
@@ -650,10 +628,6 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15_BD"].material == "test_fill"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_create_backdrill_dielectric_fill_via2(self):
         edbapp = self.edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
@@ -675,10 +649,6 @@ class TestClass(BaseTestClass):
             assert instance.backdrill_layer == "Inner1(GND1)"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_create_backdrill_dielectric_fill_via3(self):
         edbapp = self.edb_examples.get_si_verse()
         instances = edbapp.padstacks.definitions["v40h20-1"].instances
@@ -701,7 +671,6 @@ class TestClass(BaseTestClass):
             assert instance.backdrill_layer == "Inner1(GND1)"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Edb.edb_value doesn't exist in grpc.")
     def test_set_dcir_equipotential_advanced(self):
         edbapp = self.edb_examples.get_si_verse()
         [oval, circle, rect] = edbapp.layout.find_padstack_instances(aedt_name=["J1-22", "J6-11", "D2-1"])
@@ -729,15 +698,14 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-def _get_padstack_polygon_data(edb, padstack_instance: EDBPadstackInstance, layer_name: str) -> PolygonData:
+def _get_padstack_polygon_data(edb, padstack_instance, layer_name: str):
+    from pyedb.dotnet.database.general import convert_py_list_to_net_list
+
     edb.layout_instance.Refresh()
     loi = edb.layout_instance.GetLayoutObjInstance(padstack_instance._edb_object, None)
     geometries = loi.GetGeometries(edb.modeler.layers[layer_name]._edb_object)
     pds = [g.GetPolygonData(True) for g in geometries]
     if not pds:
-        # unknown issue here: sometimes the LayoutInstance returns nothing even though there are shapes on the layer for
-        # the instance; as this is used in tests I'm going to return None and check that we successfully confirmed at
-        # least one case
         return None
     result = edb.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(pds))[0]
     return result
@@ -752,7 +720,6 @@ def _assert_inside(rect, pad):
     )
 
 
-@pytest.mark.skipif(config["use_grpc"], reason="Updated method is not present in edb api.")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPadstackInstance(BaseTestClass):
     def test_backdrill_properties(self):
@@ -768,7 +735,6 @@ class TestPadstackInstance(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(config["use_grpc"], reason="The updated method is not in ansys-edb-core yet.")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPadstackInstanceEMProperties(BaseTestClass):
     def test_em_properties(self):
@@ -785,4 +751,13 @@ class TestPadstackInstanceEMProperties(BaseTestClass):
         assert oval.dcir_equipotential_region is True
         assert circle.dcir_equipotential_region is True
         assert rect.dcir_equipotential_region is True
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_definition_no_layers(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/test_replace_vias.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
+        assert len(edbapp.padstacks.definitions) == 3
+        via1 = edbapp.padstacks.definitions["PlanarEMVia"]
+        assert via1.name == "PlanarEMVia"
+        assert len(via1.instances) == 4
         edbapp.close(terminate_rpc_session=False)

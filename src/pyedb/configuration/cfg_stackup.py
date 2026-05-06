@@ -64,14 +64,14 @@ class CfgMaterial(MaterialProperties):
 
 class CfgHurayRoughnessModel(BaseModel):
     model: str = "huray"
-    nodule_radius: str | float | int  # e.g., '0.1um'
-    surface_ratio: str | float | int  # e.g., '1'
+    nodule_radius: Optional[str | float | int] = None  # e.g., '0.1um'
+    surface_ratio: Optional[str | float | int] = None  # e.g., '1'
     model_config = {"extra": "forbid"}
 
 
 class CfgGroisseRoughnessModel(BaseModel):
     model: str = "groisse"
-    roughness: str | float | int
+    roughness: Optional[str | float | int] = None
 
     model_config = {"extra": "forbid"}
 

@@ -203,13 +203,16 @@ class PinGroup:
         """
         return CorePinGroup.unique_name(layout.core, base_name)
 
-    def create_terminal(self, name=None) -> PinGroupTerminal:
+    def create_terminal(self, name=None, is_ref: bool = False) -> PinGroupTerminal:
         """Create a terminal.
 
         Parameters
         ----------
         name : str, optional
             Name of the terminal.
+
+        is_ref : bool, optional
+            Whether the terminal is a reference terminal. Default is ``False``.
 
         Returns
         -------
@@ -225,7 +228,7 @@ class PinGroup:
         if not name:
             name = generate_unique_name(self.name)
         term = PinGroupTerminal.create(
-            layout=self._active_layout, name=name, pin_group=self, net=self.net, is_ref=False
+            layout=self._active_layout, name=name, pin_group=self, net=self.net, is_ref=is_ref
         )
         return term
 
@@ -337,3 +340,30 @@ class PinGroup:
 
         """
         return self.core.delete()
+
+    def remove_pins(self, pins: list[str | PadstackInstance]):
+        """Remove pins from pin group.
+
+        Parameters
+        ----------
+        pins : List[str | PadstackInstance]
+            List of pin names or PadstackInstance objects to remove from pin group.
+
+        """
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
+        # Create a mapping of pin names to core pin objects for O(1) lookup
+        pin_map = {pin.name: pin for pin in self.core.pins}
+
+        # Convert input pins to core pin objects
+        core_pins = []
+        for pin in pins:
+            if isinstance(pin, str):
+                if pin in pin_map:
+                    core_pins.append(pin_map[pin])
+            elif isinstance(pin, PadstackInstance):
+                core_pins.append(pin.core)
+
+        # Remove the pins from the core
+        if core_pins:
+            self.core.remove_pins(core_pins)

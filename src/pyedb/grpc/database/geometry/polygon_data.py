@@ -30,6 +30,7 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 if TYPE_CHECKING:
     from ansys.edb.core.geometry.polygon_data import PolygonSenseType as CorePolygonSenseType
 from pyedb.grpc.database.geometry.arc_data import ArcData
+from pyedb.grpc.database.geometry.point_data import PointData
 from pyedb.grpc.database.utility.value import Value
 
 
@@ -38,6 +39,7 @@ class PolygonData:
 
     def __init__(
         self,
+        pedb,
         core=None,
         create_from_points=None,
         create_from_circle=None,
@@ -45,6 +47,7 @@ class PolygonData:
         create_from_bounding_box=None,
         **kwargs,
     ):
+        self._pedb = pedb
         if create_from_points:
             self.core = self.create_from_points(**kwargs)
         elif create_from_circle:
@@ -55,6 +58,18 @@ class PolygonData:
             self.core = self.create_from_bounding_box(**kwargs)
         else:  # pragma: no cover
             self.core = core
+
+    @classmethod
+    def create(cls, pedb, points: list[tuple[float, float]], closed: bool = True) -> PolygonData:
+        """Create a polygon from a list of points."""
+        list_of_point_data = []
+        for pt in points:
+            if isinstance(pt, PointData):
+                list_of_point_data.append(pt.core)
+            else:
+                list_of_point_data.append(PointData.create(pedb, x=pt[0], y=pt[1]).core)
+        core = CorePolygonData(points=list_of_point_data, closed=closed)
+        return cls(pedb, core)
 
     @property
     def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
@@ -198,7 +213,7 @@ class PolygonData:
         """
         return self.core.has_self_intersections(tolerance)
 
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> bool:
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> PolygonData:
         """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
@@ -219,13 +234,16 @@ class PolygonData:
         bool
 
         """
-        new_poly = self.core.expand(offset, tolerance, round_corners, maximum_corner_extension)
+
+        new_poly = self.core.expand(
+            offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
+        )
         if not new_poly[0].points:
             return False
-        self.core = new_poly[0]
-        return True
+        core = new_poly[0]
+        return PolygonData(self._pedb, core)
 
-    def unite(self, polygons):
+    def unite(self, polygons) -> list[PolygonData]:
         """Create union of polygons.
 
         Parameters
@@ -235,16 +253,17 @@ class PolygonData:
 
         Returns
         -------
-        bool
+        list[PolygonData]
+            List of PolygonData object resulting from unit operation.
+
         """
         list_of_polygon_data = []
         for poly in polygons:
             list_of_polygon_data.append(poly.core)
         new_poly = self.core.unite(list_of_polygon_data)
         if not new_poly[0].points:
-            return False
-        self.core = new_poly[0]
-        return new_poly
+            return []
+        return [PolygonData(self._pedb, core_polygon_data) for core_polygon_data in new_poly]
 
     def area(self):
         """Get area of polygon.
@@ -260,13 +279,14 @@ class PolygonData:
 
         Returns
         -------
-        :class: `PolygonIntersectionType <ansys.edb.core.geometry.polygon_data.PolygonIntersectionType>`
-        Returned value can be one of the following:
-            - 0 : No Intersection
-            - 1 : Current Polygon Inside Other
-            - 2: Other polygon Inside Current
-            - 3: Common intersection
-            - 4: undifined intersection
+        int
+            Integer value representing the intersection type. Possible values are:
+
+            - ``0`` : No intersection.
+            - ``1`` : Current polygon is inside the other.
+            - ``2`` : Other polygon is inside the current.
+            - ``3`` : Common intersection.
+            - ``4`` : Undefined intersection.
         """
         if isinstance(polygon_data, PolygonData):
             polygon_data = polygon_data.core
@@ -280,4 +300,4 @@ class PolygonData:
         :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
         """
         new_poly = self.core.without_arcs()
-        return PolygonData(new_poly)
+        return PolygonData(self._pedb, new_poly)

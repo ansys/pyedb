@@ -21,9 +21,11 @@
 # SOFTWARE.
 
 
-from mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
+
 import pytest
 
+pytest.importorskip("pyedb.dotnet.database.padstack", reason="Requires .NET runtime")
 from pyedb.dotnet.database.padstack import EdbPadstacks
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]

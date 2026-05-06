@@ -25,8 +25,8 @@ from typing import cast
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 
-from pyedb.dotnet.database.utilities.hfss_simulation_setup import HFSSPISimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.database.simulation_setup.hfss_pi_simulation_setup import HFSSPISimulationSetup
 from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
 from pyedb.grpc.database.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import RaptorXSimulationSetup

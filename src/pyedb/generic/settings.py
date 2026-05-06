@@ -76,6 +76,7 @@ class Settings(object):
         self.log_file = None
         self._aedt_version = None
         self.__is_grpc = False
+        self.__is_in_memory = False
         self.__get_version_information()
         self.__init_logger()
 
@@ -92,6 +93,21 @@ class Settings(object):
     @is_grpc.setter
     def is_grpc(self, value):
         self.__is_grpc = value
+
+    @property
+    def is_in_memory(self):
+        """Whether Edb is launched using memory or not. sed only with gRPC. When `True` by pass connection socket.
+        Designed to be used when client and RPC server are both running locally. Performances are expected to be better.
+
+        Returns
+        -------
+        bool
+        """
+        return self.__is_in_memory
+
+    @is_in_memory.setter
+    def is_in_memory(self, value):
+        self.__is_in_memory = value
 
     @property
     def edb_environment_variables(self):
@@ -309,13 +325,16 @@ class Settings(object):
         self.INSTALLED_STUDENT_VERSIONS = student_versions
         self.INSTALLED_CLIENT_VERSIONS = client_versions
 
+        if not self.INSTALLED_VERSIONS and not self.INSTALLED_STUDENT_VERSIONS and not self.INSTALLED_CLIENT_VERSIONS:
+            raise RuntimeError("No stable version of AEDT is found.")
+
         if len(self.INSTALLED_VERSIONS):
             for i in sorted([float(i) for i in standard_versions], reverse=True):
                 if i <= self.CURRENT_STABLE_AEDT_VERSION:
                     self.LATEST_VERSION = str(i)
                     break
             if self.LATEST_VERSION is None:
-                raise RuntimeError(f"No stable version of AEDT is found.")
+                warnings.warn("No stable version of AEDT is found.", stacklevel=2)
 
         if len(self.INSTALLED_STUDENT_VERSIONS):
             self.LATEST_STUDENT_VERSION = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))

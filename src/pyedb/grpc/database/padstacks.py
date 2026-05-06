@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 """
-This module contains the `EdbPadstacks` class.
+This module contains the `Padstacks` class.
 """
 
 from collections import defaultdict
@@ -208,10 +208,11 @@ class Padstacks(object):
         self.__definitions = {}
         for padstack_def in self._pedb.db.padstack_defs:
             try:
-                if len(padstack_def.data.layer_names) >= 1:
-                    self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
+                if padstack_def.is_null:
+                    continue
+                self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
             except (Exception, InvalidArgumentException) as e:
-                self._logger.warning(f"Error processing padstack definition {padstack_def.name}: {e}")
+                self._logger.warning(f"Error processing padstack definition: {e}")
         return self.__definitions
 
     @property
@@ -702,7 +703,9 @@ class Padstacks(object):
             "ballDIam": "solder_ball_diameter",
         }
     )
-    def set_solderball(self, padstack_instance, solder_ball_layer, top_placed=True, solder_ball_diameter=100e-6):
+    def set_solderball(
+        self, padstack_instance, solder_ball_layer, top_placed=True, solder_ball_diameter=100e-6, material: str = None
+    ):
         """Set solderball for the given PadstackInstance.
 
         Parameters
@@ -715,6 +718,9 @@ class Padstacks(object):
             Boolean triggering is the solder ball is placed on Top or Bottom of the layer stackup.
         solder_ball_diameter : double, optional,
             Solder ball diameter value.
+        material : str, optional,
+            Material name for the solder ball. If the material does not exist in the central material library,
+            it will be created on the fly with a default conductivity of 1e7 Siemens.
 
         Returns
         -------
@@ -726,15 +732,19 @@ class Padstacks(object):
 
         else:
             psdef = padstack_instance.padstack_def
-        newdefdata = CorePadstackDefData.create(psdef.data)
-        newdefdata.solder_ball_shape = CoreSolderballShape.SOLDERBALL_CYLINDER
+        newdef_data = psdef.data
+        newdef_data.solder_ball_shape = CoreSolderballShape.SOLDERBALL_CYLINDER
         solder_ball_diameter = self._pedb._value_setter(solder_ball_diameter)
-        newdefdata.solder_ball_param = solder_ball_diameter, solder_ball_diameter
+        newdef_data.solder_ball_param = solder_ball_diameter, solder_ball_diameter
         sball_placement = (
             CoreSolderballPlacement.ABOVE_PADSTACK if top_placed else CoreSolderballPlacement.BELOW_PADSTACK
         )
-        newdefdata.solder_ball_placement = sball_placement
-        psdef.data = newdefdata
+        newdef_data.solder_ball_placement = sball_placement
+        if material:
+            if material not in self._pedb.materials:
+                self._pedb.materials.add_conductor_material(name=material, conductivity=1e7)
+            newdef_data.solder_ball_material = material
+        psdef.data = newdef_data
         sball_layer = [lay.core for lay in list(self._layers.values()) if lay.name == solder_ball_layer][0]
         if sball_layer is not None:
             padstack_instance.solder_ball_layer = sball_layer
@@ -771,9 +781,7 @@ class Padstacks(object):
             Terminal name.
 
         """
-        self._pedb.excitation_manager.create_coax_port(
-            self, padstackinstance, use_dot_separator=use_dot_separator, name=name
-        )
+        self._pedb.excitation_manager.create_coax_port(padstackinstance, use_dot_separator=use_dot_separator, name=name)
 
     def get_pin_from_component_and_net(
         self, refdes: Optional[str] = None, netname: Optional[str] = None
@@ -862,13 +870,11 @@ class Padstacks(object):
 
         Returns
         -------
-        tuple
-            (geometry_type, parameters, offset_x, offset_y, rotation) where:
-            - geometry_type : str
-            - parameters : list[float] or list[list[float]]
-            - offset_x : float
-            - offset_y : float
-            - rotation : float
+        tuple[str, list[float] or list[list[float]], float, float, float]
+            Tuple of ``(geometry_type, parameters, offset_x, offset_y, rotation)``
+            where ``geometry_type`` is the pad shape name, ``parameters`` are the
+            shape dimensions, and ``offset_x``, ``offset_y``, ``rotation`` are the
+            pad placement offsets and rotation angle.
 
         Examples
         --------
@@ -992,7 +998,10 @@ class Padstacks(object):
         >>> success = edb.padstacks.check_and_fix_via_plating(minimum_value_to_replace=0.1)
         """
         for padstack_def in list(self.definitions.values()):
-            if padstack_def.hole_plating_ratio <= minimum_value_to_replace:
+            ratio = padstack_def.hole_plating_ratio
+            if ratio is None:
+                continue  # padstack definition has no data (e.g. PlanarEMVia)
+            if ratio <= minimum_value_to_replace:
                 padstack_def.hole_plating_ratio = default_plating_ratio
                 self._logger.info(
                     "Padstack definition with zero plating ratio, defaulting to 20%".format(padstack_def.name)
@@ -1032,10 +1041,23 @@ class Padstacks(object):
         return via_list
 
     def layers_between(self, layers, start_layer=None, stop_layer=None):
-        """
-        Return the sub-list of *layers* that lies between *start_layer*
-        (inclusive) and *stop_layer* (inclusive).  Works no matter which
-        of the two is nearer the top of the stack.
+        """Return the sub-list of layers that lies between ``start_layer`` and ``stop_layer`` (both inclusive).
+
+        Works regardless of which of the two layers is nearer to the top of the stack.
+
+        Parameters
+        ----------
+        layers : list[str]
+            Ordered list of all layer names.
+        start_layer : str, optional
+            Starting layer name. If ``None``, defaults to the first layer.
+        stop_layer : str, optional
+            Stopping layer name. If ``None``, defaults to the last layer.
+
+        Returns
+        -------
+        list[str]
+            Sub-list of layer names between ``start_layer`` and ``stop_layer``, inclusive.
         """
         if not layers:
             return []
@@ -1165,7 +1187,7 @@ class Padstacks(object):
                 offset_y=value0,
                 rotation=value0,
                 type_geom=CorePadGeometryType.PADGEOMTYPE_POLYGON,
-                poly=polygon_hole,
+                poly=polygon_hole.core,
             )
             padstack_data.plating_percentage = 20.0
         else:
@@ -1204,7 +1226,7 @@ class Padstacks(object):
             pad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
         elif pad_shape == "Polygon":
             if isinstance(pad_polygon, list):
-                pad_polygon = PolygonData(edb_object=CorePolygonData(points=pad_polygon))
+                pad_polygon = PolygonData(self._pedb, core=CorePolygonData(points=pad_polygon))
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = [x_size, y_size, corner_radius]
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_BULLET
@@ -1213,7 +1235,7 @@ class Padstacks(object):
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
         elif antipad_shape == "Polygon":
             if isinstance(antipad_polygon, list):
-                antipad_polygon = PolygonData(edb_object=CorePolygonData(points=antipad_polygon))
+                antipad_polygon = PolygonData(self._pedb, core=CorePolygonData(points=antipad_polygon))
         else:
             antipad_array = [antipaddiam] if not isinstance(antipaddiam, list) else antipaddiam
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_CIRCLE
@@ -1221,22 +1243,32 @@ class Padstacks(object):
             layers = layers + ["Default"]
         if antipad_shape == "Polygon" and pad_shape == "Polygon":
             for layer in layers:
-                padstack_data.set_pad_parameters(
-                    layer=layer,
-                    pad_type=CorePadType.REGULAR_PAD,
-                    offset_x=pad_offset_x,
-                    offset_y=pad_offset_y,
-                    rotation=pad_rotation,
-                    poly=pad_polygon.core,
-                )
-                padstack_data.set_pad_parameters(
-                    layer=layer,
-                    pad_type=CorePadType.ANTI_PAD,
-                    offset_x=pad_offset_x,
-                    offset_y=pad_offset_y,
-                    rotation=pad_rotation,
-                    poly=antipad_polygon.core,
-                )
+                if pad_polygon.core is not None:
+                    padstack_data.set_pad_parameters(
+                        layer=layer,
+                        pad_type=CorePadType.REGULAR_PAD,
+                        offset_x=pad_offset_x,
+                        offset_y=pad_offset_y,
+                        rotation=pad_rotation,
+                        poly=pad_polygon.core,
+                    )
+                else:
+                    self._pedb.logger.error(
+                        f"Polygon used for defining pad-stack {padstackname} pad on layer {layer} is not valid"
+                    )
+                if antipad_polygon.core is not None:
+                    padstack_data.set_pad_parameters(
+                        layer=layer,
+                        pad_type=CorePadType.ANTI_PAD,
+                        offset_x=pad_offset_x,
+                        offset_y=pad_offset_y,
+                        rotation=pad_rotation,
+                        poly=antipad_polygon.core,
+                    )
+                else:
+                    self._pedb.logger.error(
+                        f"Polygon used for defining pad-stack {padstackname} anti-pad on layer {layer} is not valid"
+                    )
         else:
             for layer in layers:
                 padstack_data.set_pad_parameters(
@@ -1682,7 +1714,7 @@ class Padstacks(object):
         self,
         points: List[Tuple[float, float]],
         nets: Optional[Union[str, List[str]]] = None,
-        padstack_instances_index: Optional[Dict[int, Tuple[float, float]]] = None,
+        padstack_instances_index: Optional[Union[Dict[int, Tuple[float, float]], "rtree.index.Index"]] = None,
     ) -> List[int]:
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
 
@@ -1703,16 +1735,46 @@ class Padstacks(object):
         """
         if not points:
             raise Exception("No points defining polygon was provided")
-        if not padstack_instances_index:
-            padstack_instances_index = {}
-            for inst in self.instances:
-                padstack_instances_index[inst.id] = inst.position
-        _x = [pt[0] for pt in points]
-        _y = [pt[1] for pt in points]
-        points = [_x, _y]
-        return [
-            ind for ind, pt in padstack_instances_index.items() if GeometryOperators.is_point_in_polygon(pt, points)
-        ]
+
+        polygon_x = [float(pt[0]) for pt in points]
+        polygon_y = [float(pt[1]) for pt in points]
+        polygon = [polygon_x, polygon_y]
+        min_x, max_x = min(polygon_x), max(polygon_x)
+        min_y, max_y = min(polygon_y), max(polygon_y)
+
+        net_filter = [nets] if isinstance(nets, str) else nets
+
+        if padstack_instances_index and hasattr(padstack_instances_index, "intersection"):
+            candidate_ids = self.get_padstack_instances_intersecting_bounding_box(
+                [min_x, min_y, max_x, max_y],
+                nets=nets,
+                padstack_instances_index=padstack_instances_index,
+            )
+            candidate_positions = ((inst_id, self.instances[inst_id].position) for inst_id in candidate_ids)
+        else:
+            if not padstack_instances_index:
+                instances = self.instances.values()
+                if net_filter:
+                    instances = [inst for inst in instances if inst.net_name in net_filter]
+                candidate_positions = ((inst.id, inst.position) for inst in instances)
+            else:
+                candidate_positions = padstack_instances_index.items()
+
+        inside_ids = []
+        for inst_id, position in candidate_positions:
+            try:
+                x = float(position[0])
+                y = float(position[1])
+            except (TypeError, ValueError, IndexError):
+                continue
+
+            if not (math.isfinite(x) and math.isfinite(y)):
+                continue
+            if x < min_x or x > max_x or y < min_y or y > max_y:
+                continue
+            if GeometryOperators.is_point_in_polygon([x, y], polygon):
+                inside_ids.append(inst_id)
+        return inside_ids
 
     def get_padstack_instances_intersecting_bounding_box(
         self,
@@ -1721,18 +1783,21 @@ class Padstacks(object):
         padstack_instances_index: Optional["rtree.index.Index"] = None,
     ) -> List[int]:
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
+
         Parameters
         ----------
-        bounding_box : tuple or list.
-            bounding box, [x1, y1, x2, y2]
+        bounding_box : tuple or list
+            Bounding box as ``[x1, y1, x2, y2]``.
         nets : str or list, optional
-            net name of list of nets name applying filtering on pad-stack instances selection. If ``None`` is provided
-            all instances are included in the index. Default value is ``None``.
-        padstack_instances_index : optional, Rtree object.
-            Can be provided optionally to prevent computing padstack instances Rtree index again.
+            Net name or list of net names to filter padstack instances. If ``None``, all
+            instances are included. The default is ``None``.
+        padstack_instances_index : optional
+            Rtree index object. Can be provided to avoid recomputing the index.
+
         Returns
         -------
-        List of padstack instances ID intersecting the bounding box.
+        list[int]
+            List of padstack instance IDs intersecting the bounding box.
         """
         if not bounding_box:
             raise Exception("No bounding box was provided")
@@ -1772,18 +1837,20 @@ class Padstacks(object):
         minimum_via_number : int, optional
             The minimum number of points that a line must contain. Default is ``6``.
 
-        selected_angles : list[int, float]
-            Specify angle in degrees to detected, for instance [0, 180] is only detecting horizontal and vertical lines.
-            Other values can be assigned like 45 degrees. When `None` is provided all lines are detected. Default value
-            is `None`.
+        selected_angles : list[int or float], optional
+            Angles in degrees to detect. For example, ``[0, 180]`` detects only
+            horizontal and vertical lines. When ``None``, all angles are detected.
+            The default is ``None``.
 
-        padstack_instances_id : List[int]
-            List of pad-stack instances ID's to include. If `None`, the algorithm will scan all pad-stack
-            instances belonging to the specified net. Default value is `None`.
+        padstack_instances_id : list[int], optional
+            List of padstack instance IDs to include. If ``None``, the algorithm
+            scans all padstack instances belonging to the specified net.
+            The default is ``None``.
 
         Returns
         -------
-        List[int], list of created pad-stack instances id.
+        list[str]
+            List of created padstack instance IDs.
 
         """
         _def = list(set([inst.padstack_def for inst in list(self.instances.values()) if inst.net_name == net_name]))
@@ -1792,15 +1859,22 @@ class Padstacks(object):
             return []
         instances_created = []
         _instances_to_delete = []
-        padstack_instances = []
+        padstack_instances_defs = []
         if padstack_instances_id:
-            padstack_instances = [[self.instances[id] for id in padstack_instances_id]]
+            padstack_instances_defs = [None]  # sentinel: use padstack_instances_id directly
         else:
             for pdstk_def in _def:
-                padstack_instances.append(
-                    [inst for inst in self.definitions[pdstk_def.name].instances if inst.net_name == net_name]
-                )
-        for pdstk_series in padstack_instances:
+                padstack_instances_defs.append(pdstk_def)
+        for pdstk_def_item in padstack_instances_defs:
+            # Rebuild the list fresh each iteration to avoid stale/deleted instances
+            if padstack_instances_id:
+                pdstk_series = [self.instances[id] for id in padstack_instances_id]
+            else:
+                pdstk_series = [
+                    inst
+                    for inst in self.definitions[pdstk_def_item.name].instances
+                    if inst.net_name == net_name and not inst.is_null
+                ]
             instances_location = [inst.position for inst in pdstk_series]
             lines, line_indexes = GeometryOperators.find_points_along_lines(
                 points=instances_location,
@@ -1840,6 +1914,7 @@ class Padstacks(object):
                     instances_created.append(new_instance.id)
             for inst in _instances_to_delete:
                 inst.delete()
+            _instances_to_delete = []
         return instances_created
 
     def merge_via(
@@ -1853,18 +1928,19 @@ class Padstacks(object):
 
         Parameters
         ----------
-        contour_boxes : List[List[List[float, float]]]
-            Nested list of polygon with points [x,y].
-        net_filter : optional
-            List[str: net_name] apply a net filter, nets included in the filter are excluded from the via merge.
-        start_layer : optional, str
-            Pad-stack instance start layer, if `None` the top layer is selected.
-        stop_layer : optional, str
-            Pad-stack instance stop layer, if `None` the bottom layer is selected.
+        contour_boxes : list[list[list[float]]]
+            Nested list of polygons, each defined by a list of ``[x, y]`` points.
+        net_filter : str or list[str], optional
+            Net name or list of net names to exclude from the via merge.
+        start_layer : str, optional
+            Padstack instance start layer. If ``None``, the top layer is used.
+        stop_layer : str, optional
+            Padstack instance stop layer. If ``None``, the bottom layer is used.
 
-        Return
-        ------
-        List[str], list of created pad-stack instances ID.
+        Returns
+        -------
+        list[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+            List of created padstack instances.
 
         """
         try:
@@ -2045,31 +2121,28 @@ class Padstacks(object):
     def reduce_via_by_density(
         self, padstacks: List[int], cell_size_x: float = 1e-3, cell_size_y: float = 1e-3, delete: bool = False
     ) -> tuple[List[int], List[List[List[float]]]]:
-        """
-        Reduce the number of vias by density. Keep only one via which is closest to the center of the cell. The cells
+        """Reduce the number of vias by density.
+
+        Keeps only one via closest to the center of each grid cell. The cells
         are automatically populated based on the input vias.
 
         Parameters
         ----------
-        padstacks: List[int]
-            List of padstack ids to be reduced.
-
-        cell_size_x : float
-            Width of each grid cell (default is 1e-3).
-
-        cell_size_y : float
-            Height of each grid cell (default is 1e-3).
-
-        delete: bool
-            If True, delete vias that are not kept (default is False).
+        padstacks : list[int]
+            List of padstack IDs to be reduced.
+        cell_size_x : float, optional
+            Width of each grid cell in meters. The default is ``1e-3``.
+        cell_size_y : float, optional
+            Height of each grid cell in meters. The default is ``1e-3``.
+        delete : bool, optional
+            If ``True``, delete vias that are not kept. The default is ``False``.
 
         Returns
         -------
-        List[int]
-            IDs of vias kept after reduction.
-
-        List[List[float]]
-            coordinates for grid lines (for plotting).
+        tuple[list[int], list[list[list[float]]]]
+            Tuple of ``(kept_ids, grid)`` where ``kept_ids`` is the list of via IDs
+            kept after reduction, and ``grid`` is the list of grid cell coordinate
+            boundaries for plotting.
 
         """
         to_keep = set()

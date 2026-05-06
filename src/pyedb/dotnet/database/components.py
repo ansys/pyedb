@@ -37,7 +37,7 @@ from pyedb.component_libraries.ansys_components import (
     Series,
 )
 from pyedb.dotnet.clr_module import String
-from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent, _clear_dotnet_owner
 from pyedb.dotnet.database.cell.hierarchy.structure_3d import Structure3D
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
@@ -611,6 +611,7 @@ class Components(object):
             if not (isinstance(cmp, self._pedb.core.Cell.Hierarchy.Component)):
                 cmp = self.get_component_by_name(cmp)
             cmp_prop = cmp.GetComponentProperty().Clone()
+            _clear_dotnet_owner(cmp_prop)
             return cmp_prop.GetSolderBallProperty().GetHeight()
         return False
 
@@ -738,7 +739,7 @@ class Components(object):
                 )
         return True
 
-    @deprecated("use excitation_manager.create_port_on_pins method instead")
+    @deprecated("Use excitation_manager.create_port_on_pins method instead.")
     def create_port_on_pins(
         self,
         refdes,
@@ -1416,11 +1417,14 @@ class Components(object):
                     return None
         return componentDefinition
 
-    @deprecated("use create method instead.")
+    @deprecated("Use create method instead.")
     def create_rlc_component(
         self, pins, component_name="", r_value=None, c_value=None, l_value=None, is_parallel=False
     ):  # pragma: no cover
         """Create physical Rlc component.
+
+        .. deprecated:: 0.71.0
+           Use :func:`create` instead.
 
         Parameters
         ----------
@@ -1614,6 +1618,7 @@ class Components(object):
             raise ValueError(f"Component {componentname} not found in the layout.")
         edbComponent = edbComponent._edb_object
         edbRlcComponentProperty = edbComponent.GetComponentProperty().Clone()
+        _clear_dotnet_owner(edbRlcComponentProperty)
 
         componentPins = self.get_pin_from_component(componentname)
         componentNets = self.get_nets_from_pin_list(componentPins)
@@ -1828,6 +1833,7 @@ class Components(object):
         if edb_cmp is not None:
             edb_cmp = edb_cmp._edb_object
             rlc_property = edb_cmp.GetComponentProperty().Clone()
+            _clear_dotnet_owner(rlc_property)
             pin_pair_model = rlc_property.GetModel().Clone()
             pprlc = pin_pair_model.GetPinPairRlc(list(pin_pair_model.PinPairs)[0])
             pprlc.CEnabled = False
@@ -1851,6 +1857,7 @@ class Components(object):
         reference_size_x=0,
         reference_size_y=0,
         reference_height=0,
+        material_name: str = None,
     ):
         """Set cylindrical solder balls on a given component.
 
@@ -1878,6 +1885,9 @@ class Components(object):
             Y size of the reference. Applicable when auto_reference_size is False.
         reference_height : int, str, float, optional
             Height of the reference. Applicable when auto_reference_size is False.
+        material_name : str, optional
+            Material name. If material is not defined in database, a new one is created on the fly with 1e7 Siemens
+            default conductivity.
 
         Returns
         -------
@@ -1920,6 +1930,7 @@ class Components(object):
             sball_shape = self._edb.Definition.SolderballShape.Spheroid
 
         cmp_property = edb_cmp.GetComponentProperty().Clone()
+        _clear_dotnet_owner(cmp_property)
         if cmp_type == self._edb.Definition.ComponentType.IC:
             ic_die_prop = cmp_property.GetDieProperty().Clone()
             ic_die_prop.SetType(self._edb.Definition.DieType.FlipChip)
@@ -1932,8 +1943,12 @@ class Components(object):
         solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
         solder_ball_prop.SetDiameter(self._get_edb_value(sball_diam), self._get_edb_value(sball_mid_diam))
         solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
-
         solder_ball_prop.SetShape(sball_shape)
+        if material_name:
+            if not material_name in self._pedb.materials:
+                self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
+            solder_ball_prop.SetMaterialName(material_name)
+
         cmp_property.SetSolderBallProperty(solder_ball_prop)
 
         port_prop = cmp_property.GetPortProperty().Clone()

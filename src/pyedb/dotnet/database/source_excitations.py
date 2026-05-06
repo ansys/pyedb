@@ -22,7 +22,6 @@
 
 import time
 from typing import Set
-import warnings
 
 from pyedb.dotnet.database.cell.primitive.primitive import Primitive
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
@@ -43,6 +42,7 @@ from pyedb.dotnet.database.edb_data.sources import (
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.decorators import deprecated
 
 
 class SourceExcitation:
@@ -84,14 +84,26 @@ class SourceExcitation:
         if not terminal_name:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, (list, tuple)):
-            point_on_edge = self._pedb._edb.Geometry.PointData(
-                self._pedb.edb_value(point_on_edge[0]), self._pedb.edb_value(point_on_edge[1])
-            )
+            if len(point_on_edge) > 2:
+                point_on_edge = [
+                    self._pedb._edb.Geometry.PointData(self._pedb.edb_value(pt[0]), self._pedb.edb_value(pt[1]))
+                    for pt in point_on_edge
+                ]
+            else:
+                point_on_edge = [
+                    self._pedb._edb.Geometry.PointData(
+                        self._pedb.edb_value(point_on_edge[0]), self._pedb.edb_value(point_on_edge[1])
+                    )
+                ]
         if hasattr(prim_id, "GetId"):
             prim = prim_id
         else:
-            prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id][0].primitive_object
-        pos_edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(prim, point_on_edge)
+            prim = self._pedb.layout.find_object_by_id(prim_id).core
+        pos_edge = []
+        for pt in point_on_edge:
+            edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(prim, pt)
+            pos_edge.append(edge)
+        # pos_edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(prim, point_on_edge)
         pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb._edb.Cell.Terminal.Edge)
         return self._pedb._edb.Cell.Terminal.EdgeTerminal.Create(
             prim.GetLayout(), prim.GetNet(), terminal_name, pos_edge, isRef=is_ref
@@ -701,11 +713,12 @@ class SourceExcitation:
         neg.SetName(port_name + ":T2")
         return port_name, BundleWavePort(self._pedb, _edb_boundle_terminal)
 
+    @deprecated("Use excitation_manager.create_edge_port method instead.")
     def create_hfss_ports_on_padstack(self, pinpos, portname=None):
         """Create an HFSS port on a padstack.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_edge_port` instead.
+           Use :func:`excitation_manager.create_edge_port` instead.
 
         Parameters
         ----------
@@ -720,7 +733,6 @@ class SourceExcitation:
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        warnings.warn("Use :func:`pyedb.excitation_manager.create_edge_port` instead.", DeprecationWarning)
         res, fromLayer_pos, toLayer_pos = pinpos.GetLayerRange()
 
         if not portname:
@@ -964,7 +976,7 @@ class SourceExcitation:
 
         pt = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb, x=x, y=y)
         primitive = self._pedb.layout.primitives_by_aedt_name[primitive_name]
-        edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, pt._edb_object)
+        edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, pt.core)
         edge = convert_py_list_to_net_list(edge, self._pedb.core.Cell.Terminal.Edge)
         _terminal = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
             primitive._edb_object.GetLayout(),
@@ -988,9 +1000,7 @@ class SourceExcitation:
         _name = name if name else f"{generate_unique_name('bundle')}"
 
         terminal = BundleTerminal.create(self._pedb, _name, terminals)
-        bundle_term = terminal.terminals
-        bundle_term[0].name = _name + ":T1"
-        bundle_term[1].mame = _name + ":T2"
+        return terminal
 
     def create_edge_port(
         self,
@@ -1027,7 +1037,7 @@ class SourceExcitation:
         """
         point_on_edge = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
             self._pedb, self._pedb.value(location[0]), self._pedb.value(location[1])
-        )._edb_object
+        ).core
         primitive = self._pedb.layout.primitives_by_aedt_name[primitive_name]
         pos_edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, point_on_edge)
         pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.core.Cell.Terminal.Edge)
@@ -1121,12 +1131,12 @@ class SourceExcitation:
             return False
         terminal_point = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
             self._pedb, terminal_point[0], terminal_point[1]
-        )._edb_object
+        ).core
 
         if reference_point and isinstance(reference_point, list):
             reference_point = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
                 self._pedb, reference_point[0], reference_point[1]
-            )._edb_object
+            ).core
         if not port_name:
             port_name = generate_unique_name("Port_")
         edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(polygon._edb_object, terminal_point)
@@ -1164,6 +1174,159 @@ class SourceExcitation:
             if port_impedance:
                 ref_edge_term.SetImpedance(self._pedb.edb_value(port_impedance))
             edge_term.SetReferenceTerminal(ref_edge_term)
+        return True
+
+    def create_horizontal_wave_port(
+        self,
+        void: int | Primitive,
+        padstack_instances: list = None,
+        pec_launch_width: str = "0.04mm",
+        layer_alignment: str = "Lower",
+    ) -> bool:
+        """
+        Create a horizontal wave port around one or more vias inside a void.
+
+        A horizontal wave port is a higher-fidelity alternative to coaxial lumped
+        ports for vertical interconnect excitation. Unlike a gap or lumped port,
+        which assumes a uniform current distribution, a wave port solves the field
+        distribution at the launch and therefore captures a more realistic
+        characteristic impedance. This usually improves the evaluation of fringing
+        fields and can noticeably affect results for differential pairs and other
+        high-speed channel structures.
+
+        Parameters
+        ----------
+        void : int | Primitive
+            Void primitive, or void primitive ID, used to define the horizontal
+            wave-port reference contour.
+        padstack_instances : list[PadstackInstance], optional
+            Padstack instances to connect to the horizontal wave port. When not
+            provided, padstack instances are automatically detected from the vias
+            intersecting the void polygon.
+        pec_launch_width : str, optional
+            PEC launch width assigned to the HFSS solver option. The default is
+            ``"0.04mm"``.
+        layer_alignment : str, optional
+            HFSS layer alignment for the wave port. Typical values are
+            ``"Lower"`` and ``"Upper"``. The default is ``"Lower"``.
+
+        Returns
+        -------
+        bool | BundleTerminal
+            Bundle terminal representing the created horizontal wave port. If no
+            padstack instance is found inside the target void, ``False`` is
+            returned.
+
+        Notes
+        -----
+        Horizontal wave ports can be used in place of coaxial lumped ports when a
+        more physical launch model is required. Because the wave port computes the
+        electromagnetic field distribution, it produces a more realistic impedance
+        than gap-port formulations that assume uniform current. This also improves
+        fringing-field estimation and can have a significant impact on extracted
+        results for differential links and other high-speed interconnect channels.
+
+        """
+        from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
+
+        port_number = len(self._pedb.ports) + 1
+        terminals = []
+        if isinstance(void, int):
+            void = self._pedb.layout.get_object_by_id(void)
+            if not void:
+                raise Exception(f"No void found for given ID {void}")
+        if not padstack_instances:
+            # finding padstack instances included inside the void
+            instance_ids = self._pedb.padstacks.get_padstack_instances_id_intersecting_polygon(
+                points=void.polygon_data.points_without_arcs
+            )
+            padstack_instances = [self._pedb.padstacks.instances[inst_id] for inst_id in instance_ids]
+            if not padstack_instances:
+                self._pedb.logger.error(
+                    f"No padstack instance find inside void primitive {void}, no horizontal wave port created."
+                )
+                return False
+            self._pedb.logger.info(
+                f"Creating horizontal wave port {void}, {len(padstack_instances)} padstack instances found "
+                "inside the void."
+            )
+            self._pedb.logger.info(f"{len(padstack_instances)} padstack instances found inside the void.")
+
+        # void terminal
+        segments = void.polygon_data.arcs
+        edges = [self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(void.core, seg.mid_point) for seg in segments]
+        layout = self._pedb.layout.core
+        net = void.net.net_object
+        _edges = convert_py_list_to_net_list(edges, self._pedb._edb.Cell.Terminal.Edge)
+        edge_term = self._pedb._edb.Cell.Terminal.EdgeTerminal.Create(layout, net, f"Ref_{void.id}", _edges, False)
+        edge_term = EdgeTerminal(self._pedb, edge_term)
+
+        symbol_def = self._pedb._edb.Definition.PadstackDef.FindByName(self._pedb.active_db, "Symbol")
+        inst_ind = 0
+        for via in padstack_instances:
+            port_net = self._pedb.nets.find_or_create_net(f"Port{port_number}:{via.net.name}")
+            inst_ind += 1
+            symbol = self._pedb.padstacks.place(
+                position=via.position,
+                definition_name=symbol_def.GetName(),
+                net_name=port_net.name,
+                via_name=f"Port{port_number}_psi{inst_ind}",
+                rotation=via.rotation,
+                fromlayer=via.start_layer,
+                tolayer=via.stop_layer,
+            )
+            symbol.is_layout_pin = True
+            symbol.aedt_name = f"Port{port_number}:{via.net.name}"
+
+            symbol.core.SetProductProperty(
+                self._pedb.core.ProductId.Designer, 21, "$begin ''\n\tsid=3\n\tmat='copper'\n\tvs='Mesh'\n$end ''\n"
+            )
+
+            term = PadstackInstanceTerminal.create(
+                edb=self._pedb, padstack_instance=symbol, name=symbol.aedt_name, layer=symbol.start_layer, is_ref=False
+            )
+            terminals.append(term)
+
+        port_names_str = ", ".join(f"'{inst.aedt_name}'" for inst in padstack_instances)
+        edge_term.core.SetProductProperty(
+            self._pedb.core.ProductId.Designer,
+            25,
+            f"$begin ''\n\tType='Pad Port'\n\tArms=2\n\tHFSSLastType=8\n"
+            f"\tHorizWavePort({port_names_str})\n\tHorizWavePrimary=true\n\tIsGapSource=true\n$end ''\n",
+        )
+        for term in terminals:
+            term.core.SetProductProperty(
+                self._pedb.core.ProductId.Designer,
+                25,
+                f"$begin ''\n\tType='Pad Port'\n\tArms=3\n\tHFSSLastType=8\n"
+                f"\tHorizWavePort('{term.padstack_instance.aedt_name}')\n\tIsGapSource=true\n$end ''\n",
+            )
+
+        hfss_solver_str = (
+            f"HFSS('HFSS Type'='Wave(coax)', Orientation='Horizontal', "
+            f"'Layer Alignment'='{layer_alignment}', 'Horizontal Extent Factor'='5', "
+            f"'Vertical Extent Factor'='3', 'Radial Extent Factor'='0', "
+            f"'PEC Launch Width'='{pec_launch_width}', ReferenceName='')"
+        )
+        planar_em_str = "PlanarEM(Type='Pad Port Gap Source', PortSolver=true, 'Ignore Reference'=false)"
+        siwave_str = "SIwave('Reference Net'='')"
+
+        terminals.append(edge_term)
+        for term in terminals:
+            term.core.SetProductSolverOption(self._pedb.core.ProductId.Designer, "HFSS", hfss_solver_str)
+            term.core.SetProductSolverOption(self._pedb.core.ProductId.Designer, "PlanarEM", planar_em_str)
+            term.core.SetProductSolverOption(self._pedb.core.ProductId.Designer, "SIwave", siwave_str)
+
+            pp = term.core.GetPortPostProcessingProp()
+            pp.ExcitationVoltageMag = self._pedb.edb_value(1.0)
+            pp.DoDeembed = True
+            pp.DoRenormalize = True
+            term.core.SetPortPostProcessingProp(pp)
+
+        edb_list = convert_py_list_to_net_list(
+            [term.core for term in terminals], self._pedb._edb.Cell.Terminal.Terminal
+        )
+        self._pedb._edb.Cell.Terminal.BundleTerminal.Create(edb_list)
         return True
 
     def create_wave_port(

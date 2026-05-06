@@ -33,7 +33,7 @@ Side-by-Side Code Comparison
        # This connects to the standalone ansys-edb-core service
        from pyedb import Edb
 
-       edb = Edb(edbpath=edb_path, version="2025.2", grpc=True)
+       edb = Edb(edbpath=edb_path, version="2026.1", grpc=True)
        edb.save()
        edb.close()
        # Connection closed automatically when edb is closed.

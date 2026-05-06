@@ -471,7 +471,7 @@ class Components(object):
         Returns
         -------
         dict[str, :class:`pyedb.grpc.database.hierarchy.structure_3d.Structure3D`]
-        Dictionary of structures 3D components keyed by name.
+            Dictionary of 3D structure components keyed by name.
         """
         structures_3d = [obj.core for obj in self._pedb.active_layout.groups if isinstance(obj.core, CoreStructure3D)]
         self._structures_3d = {structure.name: Structure3D(self._pedb, structure) for structure in structures_3d}
@@ -654,8 +654,11 @@ class Components(object):
 
         Returns
         -------
-        tuple
-            (success, vector, rotation, solder_ball_height)
+        tuple[bool, list[float], float, float]
+            Tuple of ``(success, vector, rotation, solder_ball_height)`` where ``success``
+            is ``True`` when the placement vector was computed successfully, ``vector`` is
+            the ``[x, y]`` translation, ``rotation`` is the rotation angle in radians, and
+            ``solder_ball_height`` is the height in meters.
 
         Examples
         --------
@@ -1151,23 +1154,29 @@ class Components(object):
         """
         deleted_comps = []
         for comp, val in self.instances.items():
-            if hasattr(val, "pins") and val.pins:
-                if getattr(val, "num_pins", getattr(val, "numpins", None)) == 1 and val.component_type in [
-                    "resistor",
-                    "capacitor",
-                    "inductor",
-                ]:
-                    if deactivate_only:
-                        val.is_enabled = False
-                        # model_type may be read-only on some objects; attempt to set and ignore failures
-                        try:
-                            setattr(val, "model_type", "rlc")
-                        except (AttributeError, TypeError) as e:
-                            # expected failures when attribute is not writable; log at debug level
-                            self._logger.debug(f"Could not set model_type on component {comp}: {e}")
-                    else:
-                        val.delete()
-                        deleted_comps.append(comp)
+            try:
+                pins = val.pins if hasattr(val, "pins") else None
+                if pins:
+                    if getattr(val, "num_pins", getattr(val, "numpins", None)) == 1 and val.component_type in [
+                        "resistor",
+                        "capacitor",
+                        "inductor",
+                    ]:
+                        if deactivate_only:
+                            val.is_enabled = False
+                            # model_type may be read-only on some objects; attempt to set and ignore failures
+                            try:
+                                setattr(val, "model_type", "rlc")
+                            except (AttributeError, TypeError) as e:
+                                # expected failures when attribute is not writable; log at debug level
+                                self._logger.debug(f"Could not set model_type on component {comp}: {e}")
+                        else:
+                            val.delete()
+                            deleted_comps.append(comp)
+            except Exception as e:
+                # Handle cases where the Group object is null or other gRPC errors
+                self._logger.debug(f"Could not process component {comp}: {e}")
+                continue
         if not deactivate_only:
             self.refresh_components()
         self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))
@@ -1243,6 +1252,7 @@ class Components(object):
         reference_size_x: float = 0,
         reference_size_y: float = 0,
         reference_height: float = 0,
+        material_name: str = None,
     ) -> bool:
         """Set solder ball properties for a component.
 
@@ -1268,6 +1278,9 @@ class Components(object):
             Reference size Y.
         reference_height : float, optional
             Reference height.
+        material_name : str, optional
+            Material name. If material is not defined in database, a new one is created on the fly with 1e7 Siemens
+            default conductivity.
 
         Returns
         -------
@@ -1296,7 +1309,7 @@ class Components(object):
         if not sball_height:
             sball_height = self._pedb._value_setter(sball_diam)
         else:
-            sball_height = self._pedb._value_setter(sball_diam)
+            sball_height = self._pedb._value_setter(sball_height)
 
         if not sball_mid_diam:
             sball_mid_diam = self._pedb._value_setter(sball_diam)
@@ -1310,7 +1323,10 @@ class Components(object):
         if cmp.core.component_type == CoreComponentType.IC:
             ic_die_prop = cmp_property.die_property
             ic_die_prop.die_type = CoreDieType.FLIPCHIP
-            if not cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
+            # Top layer → chip_down (die faces down toward board), bottom layer → chip_up
+            if cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
+                chip_orientation = "chip_down"
+            else:
                 chip_orientation = "chip_up"
             if chip_orientation.lower() == "chip_up":
                 ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
@@ -1323,8 +1339,15 @@ class Components(object):
         solder_ball_prop.height = self._pedb._value_setter(sball_height)
 
         solder_ball_prop.shape = sball_shape
+        if material_name:
+            if not material_name in self._pedb.materials:
+                self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
+            solder_ball_prop.material_name = material_name
         cmp_property.solder_ball_property = solder_ball_prop
+        cmp.component_property = cmp_property
 
+        # Re-fetch cmp_property after write-back to avoid operating on a stale/null gRPC object
+        cmp_property = cmp.component_property
         port_prop = cmp_property.port_property
         port_prop.reference_height = self._pedb._value_setter(reference_height)
         port_prop.reference_size_auto = auto_reference_size

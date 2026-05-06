@@ -658,14 +658,14 @@ class EdbNets(CommonNets):
                 return True
         return False
 
-    @deprecated("use layout_validation.disjoint_nets method instead.")
+    @deprecated("Use layout_validation.disjoint_nets method instead.")
     def find_and_fix_disjoint_nets(
         self, net_list=None, keep_only_main_net=False, clean_disjoints_less_than=0.0, order_by_area=False
     ):
         """Find and fix disjoint nets from a given netlist.
 
         .. deprecated::
-           Use new property :func:`edb.layout_validation.disjoint_nets` instead.
+           Use :attr:`layout_validation.disjoint_nets` instead.
 
         Parameters
         ----------

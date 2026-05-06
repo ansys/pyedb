@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
-import warnings
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
@@ -64,6 +63,48 @@ class SourceExcitationInternal:
             elif isinstance(net, str) and net != "":
                 nets.add(net)
         return nets
+
+    @staticmethod
+    def _is_negative_net(net_name: str) -> bool:
+        """
+        Identify if a net belongs to a negative terminal based on naming conventions.
+
+        Parameters
+        ----------
+        net_name : str
+            The name of the net to check.
+
+        Returns
+        -------
+        bool
+            True if the net name matches a negative net pattern, False otherwise.
+
+        Notes
+        -----
+        Common negative net suffixes checked:
+        - _n, _neg, _negative (lowercase)
+        - _N, _NEG, _NEGATIVE (uppercase)
+        - :n, :neg, :negative (with colon)
+
+        """
+        if not net_name or not isinstance(net_name, str):
+            return False
+
+        net_lower = net_name.lower()
+        negative_patterns = [
+            "_n",
+            "_neg",
+            "_negative",
+            ":n",
+            ":neg",
+            ":negative",
+        ]
+
+        for pattern in negative_patterns:
+            if net_lower.endswith(pattern):
+                return True
+
+        return False
 
     def _get_unique_terminal_name(self, base_name: str) -> str:
         existing_names = list(self._pedb.terminals.keys())
@@ -218,13 +259,19 @@ class SourceExcitationInternal:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, tuple):
             point_on_edge = CorePointData(point_on_edge)
-        prim = [i for i in self._pedb.layout.primitives if i.edb_uid == prim_id]
-        if not prim:
-            self._pedb.logger.error(f"No primitive found for ID {prim_id}")
+        elif isinstance(point_on_edge, list):
+            point_on_edge = [CorePointData(self._pedb.value(point)) for point in point_on_edge]
+        primitive_lookup_id = prim_id.edb_uid if isinstance(prim_id, Primitive) else prim_id
+        try:
+            prim = self._pedb.layout.find_object_by_id(primitive_lookup_id)
+        except RuntimeError:
+            self._pedb.logger.error(f"No primitive found for ID {primitive_lookup_id}")
             return False
-        prim = prim[0]
-        pos_edge = [CorePrimitiveEdge.create(prim.core, point_on_edge)]
-        return EdgeTerminal.create(layout=prim.layout, name=terminal_name, edge=pos_edge, net=prim.net, is_ref=is_ref)
+        if isinstance(point_on_edge, list):
+            pos_edge = [CorePrimitiveEdge.create(prim.core, pt) for pt in point_on_edge]
+        else:
+            pos_edge = [CorePrimitiveEdge.create(prim.core, point_on_edge)]
+        return EdgeTerminal.create(layout=prim.layout, name=terminal_name, edges=pos_edge, net=prim.net, is_ref=is_ref)
 
 
 class SourceExcitation(SourceExcitationInternal):
@@ -397,6 +444,9 @@ class SourceExcitation(SourceExcitationInternal):
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
+        .. deprecated:: 0.70.0
+           Use :attr: `ports` instead.
+
         Returns
         -------
         port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
@@ -551,8 +601,9 @@ class SourceExcitation(SourceExcitationInternal):
             Name of the created port. The default is None, a random name is generated.
         Returns
         -------
-        list: [:class:`GapPort <pyedb.grpc.database.ports.ports.GapPort`>,
-            :class:`WavePort <pyedb.grpc.database.ports.ports.WavePort>`].
+        :class:`GapPort <pyedb.grpc.database.ports.ports.GapPort>` or
+        :class:`WavePort <pyedb.grpc.database.ports.ports.WavePort>`
+            Created port object.
 
         Examples
         --------
@@ -590,42 +641,44 @@ class SourceExcitation(SourceExcitationInternal):
 
         Parameters
         ----------
-        refdes : Component reference designator
-            str or Component object.
-        pins : pin specifier(s) or instance(s) where the port terminal is to be created. Single pin name or a list of
-        several can be provided. If several pins are provided a pin group will be created. Pin specifiers can be the
-        global EDB object ID or padstack instance name or pin name on component with refdes ``refdes``. Pin instances
-        can be provided as ``EDBPadstackInstance`` objects.
-        For instance for the pin called ``Pin1`` located on component with refdes ``U1``: ``U1-Pin1``, ``Pin1`` with
-        ``refdes=U1``, the pin's global EDB object ID, or the ``EDBPadstackInstance`` corresponding to the pin can be
-        provided.
-            Union[int, str, PadstackInstance], List[Union[int, str, PadstackInstance]]
-        reference_pins : reference pin specifier(s) or instance(s) for the port reference terminal. Allowed values are
-        the same as for the ``pins`` parameter.
-            Union[int, str, PadstackInstance], List[Union[int, str, PadstackInstance]]
-        impedance : Port impedance
-            str, float
+        refdes : str or Component
+            Component reference designator or Component object.
+        pins : int, str, PadstackInstance, or list
+            Pin specifier(s) or instance(s) where the port terminal is to be created.
+            A single pin name or a list of several can be provided. If several pins are
+            provided, a pin group is created. Pin specifiers can be the global EDB object
+            ID, padstack instance name, or pin name on the component with ``refdes``.
+            For example, for pin ``Pin1`` on component ``U1``: ``"U1-Pin1"``, ``"Pin1"``
+            with ``refdes="U1"``, the pin's global EDB object ID, or the corresponding
+            ``PadstackInstance`` object.
+        reference_pins : int, str, PadstackInstance, or list, optional
+            Reference pin specifier(s) or instance(s) for the port reference terminal.
+            Allowed values are the same as for ``pins``.
+        impedance : str or float, optional
+            Port impedance. The default is ``"50ohm"``.
         port_name : str, optional
             Port name. The default is ``None``, in which case a name is automatically assigned.
         pec_boundary : bool, optional
-        Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
-        a perfect short is created between the pin and impedance is ignored. This
-        parameter is only supported on a port created between two pins, such as
-        when there is no pin group.
-        pingroup_on_single_pin : bool
-            If ``True`` force using pingroup definition on single pin to have the port created at the pad center. If
-            ``False`` the port is created at the pad edge. Default value is ``False``.
+            Whether to define the PEC boundary. The default is ``False``. If ``True``,
+            a perfect short is created between the pins and impedance is ignored. Only
+            supported on a port created between two pins (no pin group).
+        pingroup_on_single_pin : bool, optional
+            If ``True``, force pin group definition on a single pin so the port is created
+            at the pad center. If ``False``, the port is created at the pad edge.
+            The default is ``False``.
 
         Returns
         -------
-        EDB terminal created, or False if failed to create.
+        PadstackInstanceTerminal or bool
+            Created terminal object, or ``False`` if creation failed.
 
-        Example:
+        Examples
+        --------
         >>> from pyedb import Edb
         >>> edb = Edb(path_to_edb_file)
         >>> pin = "AJ6"
         >>> ref_pins = ["AM7", "AM4"]
-        Or to take all reference pins
+        >>> # Or take all reference pins on GND net
         >>> ref_pins = [pin for pin in list(edb.components["U2A5"].pins.values()) if pin.net_name == "GND"]
         >>> edb.components.create_port_on_pins(refdes="U2A5", pins=pin, reference_pins=ref_pins)
         >>> edb.save()
@@ -967,7 +1020,7 @@ class SourceExcitation(SourceExcitationInternal):
                 padstack_instance=pins[1],
                 layer=pin_layers[0],
                 net=pins[1].net,
-                is_ref=False,
+                is_ref=True,
             )
             if not neg_pin_term:  # pragma: no cover
                 return False
@@ -1106,7 +1159,10 @@ class SourceExcitation(SourceExcitationInternal):
         """
         if isinstance(padstackinstance, int):
             padstackinstance = self._pedb.padstacks.instances[padstackinstance]
-        cmp_name = padstackinstance.component.name
+        if padstackinstance.component:
+            cmp_name = padstackinstance.component.name
+        else:
+            cmp_name = ""
         if cmp_name == "":
             cmp_name = "no_comp"
         net_name = padstackinstance.net.name
@@ -1194,7 +1250,7 @@ class SourceExcitation(SourceExcitationInternal):
         r: Union[int, float] = 0,
         l: Union[int, float] = 0,
         c: Union[int, float] = 0,
-    ) -> Optional[str]:
+    ) -> Optional[str] | bool:
         """Create a terminal on pins.
 
         Parameters
@@ -1249,7 +1305,7 @@ class SourceExcitation(SourceExcitationInternal):
             padstack_instance=negative_pin,
             name=negative_pin.name,
             layer=neg_term_layer,
-            is_ref=False,
+            is_ref=True,
             net=negative_pin.net,
         )
         if source_type in ["circuit_port", "lumped_port"]:
@@ -1534,15 +1590,15 @@ class SourceExcitation(SourceExcitationInternal):
         r: float = 0.0,
         l: float = 0.0,
         c: float = 0.0,
-    ) -> Optional[str]:
+    ) -> str:
         """Create a pin group terminal.
 
         Parameters
         ----------
-        positive_pins : positive pins used.
-            :class: `PadstackInstance` or List[:class: ´PadstackInstance´]
-        negatives_pins : negative pins used.
-            :class: `PadstackInstance` or List[:class: ´PadstackInstance´]
+        positive_pins : PadstackInstance or list of PadstackInstance
+            Positive pins used.
+        negatives_pins : PadstackInstance or list of PadstackInstance
+            Negative pins used.
         impedance : float, int or str
             Terminal impedance. Default value is `50` Ohms.
         source_type : str
@@ -1583,15 +1639,20 @@ class SourceExcitation(SourceExcitationInternal):
             net=positive_pins[0].net,
             is_ref=False,
         )
-        if not source_type == "dc_terminal":
-            neg_pin_group = self._pedb.components.create_pingroup_from_pins(negatives_pins)
-            neg_pingroup_terminal = PinGroupTerminal.create(
-                layout=self._pedb.active_layout,
-                name=f"{name}_ref",
-                pin_group=neg_pin_group,
-                net=negatives_pins[0].net,
-                is_ref=False,
-            )
+
+        if source_type == "dc_terminal":
+            pos_pingroup_terminal.core.boundary_type = CoreBoundaryType.DC_TERMINAL
+            # returning DC terminal has no reference terminal.
+            return pos_pingroup_terminal.name
+
+        neg_pin_group = self._pedb.components.create_pingroup_from_pins(negatives_pins)
+        neg_pingroup_terminal = PinGroupTerminal.create(
+            layout=self._pedb.active_layout,
+            name=f"{name}_ref",
+            pin_group=neg_pin_group,
+            net=negatives_pins[0].net,
+            is_ref=True,
+        )
         if source_type in ["circuit_port", "lumped_port"]:
             pos_pingroup_terminal.core.boundary_type = CoreBoundaryType.PORT
             pos_pingroup_terminal.impedance = self._pedb._value_setter(impedance)
@@ -1636,10 +1697,6 @@ class SourceExcitation(SourceExcitationInternal):
             Rlc.c = self._pedb._value_setter(c)
             pos_pingroup_terminal.core.rlc_boundary_parameters = Rlc
 
-        elif source_type == "dc_terminal":
-            pos_pingroup_terminal.core.boundary_type = CoreBoundaryType.DC_TERMINAL
-        else:
-            pass
         return pos_pingroup_terminal.name
 
     def _check_gnd(self, component_name: str) -> Optional[str]:
@@ -1906,8 +1963,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        tuple
-            The tuple contains: (port_name, pyedb.dotnet.database.edb_data.sources.ExcitationDifferential).
+        tuple[str, object]
+            Tuple of ``(port_name, differential_port)`` where ``port_name`` is the
+            name of the created port and ``differential_port`` is the port object.
 
         Examples
         --------
@@ -1943,6 +2001,173 @@ class SourceExcitation(SourceExcitationInternal):
         boundle_terminal = BundleTerminal.create(self._pedb, port_name, edb_list)
         return boundle_terminal
 
+    def create_horizontal_wave_port(
+        self,
+        void: int | Primitive,
+        padstack_instances: list[PadstackInstance] = None,
+        pec_launch_width: str = "0.04mm",
+        layer_alignment: str = "Lower",
+    ) -> bool | BundleTerminal:
+        """
+        Create a horizontal wave port around one or more vias inside a void.
+
+        A horizontal wave port is a higher-fidelity alternative to coaxial lumped
+        ports for vertical interconnect excitation. Unlike a gap or lumped port,
+        which assumes a uniform current distribution, a wave port solves the field
+        distribution at the launch and therefore captures a more realistic
+        characteristic impedance. This usually improves the evaluation of fringing
+        fields and can noticeably affect results for differential pairs and other
+        high-speed channel structures.
+
+        Parameters
+        ----------
+        void : int | Primitive
+            Void primitive, or void primitive ID, used to define the horizontal
+            wave-port reference contour.
+        padstack_instances : list[PadstackInstance], optional
+            Padstack instances to connect to the horizontal wave port. When not
+            provided, padstack instances are automatically detected from the vias
+            intersecting the void polygon.
+        pec_launch_width : str, optional
+            PEC launch width assigned to the HFSS solver option. The default is
+            ``"0.04mm"``.
+        layer_alignment : str, optional
+            HFSS layer alignment for the wave port. Typical values are
+            ``"Lower"`` and ``"Upper"``. The default is ``"Lower"``.
+
+        Returns
+        -------
+        bool | BundleTerminal
+            Bundle terminal representing the created horizontal wave port. If no
+            padstack instance is found inside the target void, ``False`` is
+            returned.
+
+        Notes
+        -----
+        Horizontal wave ports can be used in place of coaxial lumped ports when a
+        more physical launch model is required. Because the wave port computes the
+        electromagnetic field distribution, it produces a more realistic impedance
+        than gap-port formulations that assume uniform current. This also improves
+        fringing-field estimation and can have a significant impact on extracted
+        results for differential links and other high-speed interconnect channels.
+
+        """
+        from ansys.edb.core.definition.padstack_def import PadstackDef as CorePadstackDef
+        from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as CoreBundleTerminal
+        from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as CoreEdgeTerminal
+
+        port_number = len(self._pedb.ports) + 1
+        terminals = []
+        if isinstance(void, int):
+            void = self._pedb.layout.get_object_by_id(void)
+            if not void:
+                raise Exception(f"No void found for given ID {void}")
+        if not padstack_instances:
+            # finding padstack instances included inside the void
+            instance_ids = self._pedb.padstacks.get_padstack_instances_id_intersecting_polygon(
+                points=void.polygon_data.without_arcs().points
+            )
+            padstack_instances = [self._pedb.padstacks.instances[inst_id] for inst_id in instance_ids]
+            if not padstack_instances:
+                self._pedb.logger.error(
+                    f"No padstack instance find inside void primitive {void}, no horizontal wave port created."
+                )
+                return False
+            self._pedb.logger.info(
+                f"Creating horizontal wave port {void}, {len(padstack_instances)} padstack instances found "
+                "inside the void."
+            )
+            self._pedb.logger.info(f"{len(padstack_instances)} padstack instances found inside the void.")
+
+        # void terminal
+        segments = void.core.polygon_data.arc_data
+        edges = [CorePrimitiveEdge.create(void.core, seg.midpoint) for seg in segments]
+        edge_term = CoreEdgeTerminal.create(
+            layout=void.core.layout, edges=edges, net=void.core.net, name=f"Ref_{void.id}", is_ref=False
+        )
+        edge_term = EdgeTerminal(self._pedb, edge_term)
+
+        symbol_def = CorePadstackDef.find_by_name(self._pedb.db, "Symbol")
+        for via in padstack_instances:
+            port_net = Net.create(layout=self._pedb.layout, name=f"Port{port_number}:{via.net.name}")
+            symbol = PadstackInstance.create(
+                layout=self._pedb.layout,
+                net=port_net,
+                name=f"Port{port_number}_neg_psi",
+                padstack_definition=symbol_def.name,
+                position_x=via.position[0],
+                position_y=via.position[1],
+                rotation=via.rotation,
+                top_layer=via.start_layer,
+                bottom_layer=via.stop_layer,
+            )
+            symbol.is_layout_pin = True
+            symbol.aedt_name = f"Port{port_number}:{via.net.name}"
+            via_meshing_prop = symbol._padstack_instance_meshing_properties
+            via_meshing_prop.sid = 3
+            via_meshing_prop.material = "copper"
+            via_meshing_prop.meshing_setting = "Mesh"
+            symbol._padstack_instance_meshing_properties = via_meshing_prop
+
+            term = PadstackInstanceTerminal.create(
+                layout=self._pedb.layout,
+                name=symbol.aedt_name,
+                padstack_instance=symbol,
+                layer=symbol.start_layer,
+                net=port_net,
+            )
+            terminals.append(term)
+
+        horizontal_wave_port_property = edge_term._horizontal_wave_port_properties
+        horizontal_wave_port_property.arms = 2
+        horizontal_wave_port_property.port_names = tuple(inst.aedt_name for inst in padstack_instances)
+        horizontal_wave_port_property.horizontal_wave_primary = True
+        horizontal_wave_port_property.is_gap_source = True
+        horizontal_wave_port_property.hfss_last_type = 8
+        horizontal_wave_port_property.port_type = "Pad Port"
+        edge_term._horizontal_wave_port_properties = horizontal_wave_port_property
+
+        for term in terminals:
+            horizontal_wave_port_property = term._horizontal_wave_port_properties
+            horizontal_wave_port_property.port_type = "Pad Port"
+            horizontal_wave_port_property.arms = 2
+            horizontal_wave_port_property.hfss_last_type = 8
+            horizontal_wave_port_property.port_names = term.padstack_instance.aedt_name
+            term._horizontal_wave_port_properties = horizontal_wave_port_property
+
+        terminals.append(edge_term)
+        for term in terminals:
+            # HFSS properties
+            hfss_prop = term._hfss_properties
+            hfss_prop.hfss_type = "Wave(coax)"
+            hfss_prop.orientation = "Horizontal"
+            hfss_prop.layer_alignment = layer_alignment
+            hfss_prop.horizontal_extent_factor = 5
+            hfss_prop.vertical_extent_factor = 3
+            hfss_prop.radial_extent_factor = 0
+            hfss_prop.pec_launch_width = pec_launch_width
+            hfss_prop.reference_name = ""
+            term._hfss_properties = hfss_prop
+            # planar EM properties (required to build valid ports)
+            planar_em_prop = term._planar_em_properties
+            planar_em_prop.ignore_reference = False
+            planar_em_prop.port_solver = True
+            planar_em_prop.port_type = "Pad Port Gap Source"
+            term._planar_em_properties = planar_em_prop
+            # Siwave properties
+            siwave_prop = term._siwave_properties
+            siwave_prop.reference_net = ""
+            term._siwave_properties = siwave_prop
+            # Terminal post-processing
+            pp = term.core.port_post_processing_prop
+            pp.voltage_magnitude = self._pedb.value(1.0)
+            pp.do_deembed = True
+            pp.do_renormalize = True
+            term.core.port_post_processing_prop = pp
+
+        bundle_terminal = CoreBundleTerminal.create(terminals=[term.core for term in terminals])
+        return BundleTerminal(self._pedb, bundle_terminal)
+
     def create_wave_port(
         self,
         prim_id: Union[int, Primitive],
@@ -1976,8 +2201,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        tuple
-            The tuple contains: (Port name, pyedb.dotnet.database.edb_data.sources.Excitation).
+        tuple[str, object]
+            Tuple of ``(port_name, port)`` where ``port_name`` is the name of the
+            created wave port and ``port`` is the port object.
 
         Examples
         --------
@@ -2014,7 +2240,7 @@ class SourceExcitation(SourceExcitationInternal):
         horizontal_extent_factor: Union[int, float] = 5,
         vertical_extent_factor: Union[int, float] = 3,
         pec_launch_width: str = "0.01mm",
-    ) -> str:
+    ) -> str | None:
         """Create a vertical edge port.
 
         Parameters
@@ -2060,7 +2286,6 @@ class SourceExcitation(SourceExcitationInternal):
         if reference_layer:
             reference_layer = self._pedb.stackup.signal_layers[reference_layer]
             pos_edge_term.reference_layer = reference_layer
-
         prop = ", ".join(
             [
                 f"HFSS('HFSS Type'='{hfss_type}'",
@@ -2077,9 +2302,9 @@ class SourceExcitation(SourceExcitationInternal):
             prop,
         )
         if not pos_edge_term.is_null:
-            return pos_edge_term
+            return pos_edge_term.name
         else:
-            return False
+            return None
 
     def create_edge_port_horizontal(
         self,
@@ -2284,9 +2509,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        [[str]]
-            Nested list of str, with net name as first value, X value for point at border, Y value for point at border,
-            and terminal name.
+        list[list[str]]
+            Nested list where each entry is ``[net_name, x, y, terminal_name]``
+            for each port placed at the polygon border.
 
         Examples
         --------
@@ -2317,7 +2542,7 @@ class SourceExcitation(SourceExcitationInternal):
                     user_defined_extent = [_x, _y]
             terminal_info = []
             for net in nets:
-                net_polygons = [prim for prim in self._pedb.modeler.primitives if prim.type in ["polygon", "rectangle"]]
+                net_polygons = [prim for prim in self._pedb.layout.primitives if prim.type in ["polygon", "rectangle"]]
                 for poly in net_polygons:
                     mid_points = [
                         [self._pedb._value_setter(arc.midpoint.x), self._pedb._value_setter(arc.midpoint.y)]
@@ -2394,8 +2619,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        tuple
-            The tuple contains: (port_name, pyedb.egacy.database.edb_data.sources.ExcitationDifferential).
+        tuple[str, object]
+            Tuple of ``(port_name, bundle_port)`` where ``port_name`` is the name
+            of the created bundle wave port and ``bundle_port`` is the port object.
 
         Examples
         --------
@@ -2410,17 +2636,14 @@ class SourceExcitation(SourceExcitationInternal):
             primitives_id = [i.edb_uid for i in primitives_id]
 
         terminals = []
-        _port_name = port_name
         for p_id, loc in list(zip(primitives_id, points_on_edge)):
             _, term = self.create_wave_port(
                 p_id,
                 loc,
-                port_name=_port_name,
                 horizontal_extent_factor=horizontal_extent_factor,
                 vertical_extent_factor=vertical_extent_factor,
                 pec_launch_width=pec_launch_width,
             )
-            _port_name = None
             terminals.append(term)
 
         _edb_bundle_terminal = BundleTerminal.create(self._pedb, port_name, terminals)
@@ -2596,11 +2819,21 @@ class SourceExcitation(SourceExcitationInternal):
             EdgeTerminal as GrpcEdgeTerminal,
         )
 
-        point_on_edge = CorePointData([self._pedb.value(i) for i in location])
-        primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
-        pos_edge = CorePrimitiveEdge.create(primitive.core, point_on_edge)
+        # Ensure location is a nested list of points
+        if location and not isinstance(location[0], (list, tuple)):
+            location = [location]
+        points_on_edge = []
+        for point in location:
+            point_on_edge = CorePointData([self._pedb.value(pt) for pt in point])
+            points_on_edge.append(point_on_edge)
+        primitive = self._pedb.layout.find_primitive(name=primitive_name)
+        if primitive:
+            primitive = primitive[0]
+        else:
+            raise Exception("Primitive not found")
+        edges = [CorePrimitiveEdge.create(primitive.core, point) for point in points_on_edge]
         edge_term = GrpcEdgeTerminal.create(
-            layout=primitive.core.layout, edges=[pos_edge], net=primitive.core.net, name=name, is_ref=False
+            layout=primitive.core.layout, edges=edges, net=primitive.core.net, name=name, is_ref=False
         )
 
         edge_term.impedance = self._pedb._value_setter(impedance)
@@ -2632,32 +2865,25 @@ class SourceExcitation(SourceExcitationInternal):
 
         Parameters
         ----------
-        polygon : The EDB polygon object used to assign the port.
-            Edb.Cell.Primitive.Polygon object.
-
-        reference_polygon : The EDB polygon object used to define the port reference.
-            Edb.Cell.Primitive.Polygon object.
-
-        terminal_point : The coordinate of the point to define the edge terminal of the port. This point must be
-        located on the edge of the polygon where the port has to be placed. For instance taking the middle point
-        of an edge is a good practice but any point of the edge should be valid. Taking a corner might cause unwanted
-        port location.
-            list[float, float] with values provided in meter.
-
-        reference_point : same as terminal_point but used for defining the reference location on the edge.
-            list[float, float] with values provided in meter.
-
-        reference_layer : Name used to define port reference for vertical ports.
-            str the layer name.
-
-        port_name : Name of the port.
-            str.
-
-        port_impedance : port impedance value. Default value is 50 Ohms.
-            float, impedance value.
-
-        force_circuit_port ; used to force circuit port creation instead of lumped. Works for vertical and coplanar
-        ports.
+        polygon : :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
+            EDB polygon object used to assign the port.
+        reference_polygon : :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
+            EDB polygon object used to define the port reference.
+        terminal_point : list[float]
+            Coordinate ``[x, y]`` in meters of the point on the polygon edge where
+            the port is placed. Taking the midpoint of an edge is recommended.
+        reference_point : list[float], optional
+            Same as ``terminal_point`` but for defining the reference location on the
+            reference polygon edge. Values in meters.
+        reference_layer : str, optional
+            Layer name used to define the port reference for vertical ports.
+        port_name : str, optional
+            Name of the port.
+        port_impedance : float, optional
+            Port impedance in ohms. The default is ``50``.
+        force_circuit_port : bool, optional
+            When ``True``, force circuit port creation instead of lumped.
+            Applies to both vertical and coplanar ports.
 
         Examples
         --------
@@ -3198,20 +3424,25 @@ class SourceExcitation(SourceExcitationInternal):
 
         Parameters
         ----------
-        name : str,
+        name : str
             Name of the probe.
         positive_net_name : str
             Name of the positive net.
-        positive_location : list
-            Location of the positive terminal.
-        positive_layer : str,
+        positive_location : list[float]
+            Location ``[x, y]`` of the positive terminal.
+        positive_layer : str
             Layer of the positive terminal.
-        negative_net_name : str,
+        negative_net_name : str
             Name of the negative net.
-        negative_location : list
-            Location of the negative terminal.
+        negative_location : list[float]
+            Location ``[x, y]`` of the negative terminal.
         negative_layer : str
             Layer of the negative terminal.
+
+        Returns
+        -------
+        :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
+            Created voltage probe terminal object.
 
         Examples
         --------
@@ -3275,7 +3506,7 @@ class SourceExcitation(SourceExcitationInternal):
         primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
         point_on_edge = CorePointData([x, y])
         pos_edge = [CorePrimitiveEdge.create(primitive.core, point_on_edge)]
-        terminal = EdgeTerminal.create(layout=primitive.layout, name=name, edge=pos_edge, net=primitive.net)
+        terminal = EdgeTerminal.create(layout=primitive.layout, name=name, edges=pos_edge, net=primitive.net)
 
         if terminal.is_null:
             raise RuntimeError(

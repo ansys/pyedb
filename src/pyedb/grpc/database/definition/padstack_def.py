@@ -299,12 +299,12 @@ class PadstackDef:
         return self.core.id
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         """Check if the padstack definition is null."""
         return self.core.is_null
 
     @classmethod
-    def create(cls, edb, name: str):
+    def create(cls, edb, name: str) -> PadstackDef:
         """Create a new padstack definition."""
         padstack_def = CorePadstackDef.create(edb.db, name)
         return cls(edb, padstack_def)
@@ -325,7 +325,7 @@ class PadstackDef:
         ]
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Padstack definition name."""
         return self.core.name
 
@@ -360,7 +360,7 @@ class PadstackDef:
         return self.core.data.layer_names
 
     @property
-    def start_layer(self):
+    def start_layer(self) -> str | None:
         """Starting layer.
 
         Returns
@@ -368,6 +368,8 @@ class PadstackDef:
         str
             Name of the starting layer.
         """
+        if not self.layers:
+            return None
         return self.layers[0]
 
     @property
@@ -387,7 +389,7 @@ class PadstackDef:
         return self.start_layer
 
     @property
-    def stop_layer(self):
+    def stop_layer(self) -> str | None:
         """Stopping layer.
 
         Returns
@@ -395,6 +397,8 @@ class PadstackDef:
         str
             Name of the stopping layer.
         """
+        if not self.layers:
+            return None
         return self.layers[-1]
 
     @property
@@ -414,7 +418,7 @@ class PadstackDef:
         return self.stop_layer
 
     @property
-    def material(self):
+    def material(self) -> str:
         """Return hole material name.
 
         Returns
@@ -629,12 +633,16 @@ class PadstackDef:
         Returns
         -------
         float
-            Percentage for the hole plating.
+            Percentage for the hole plating, or ``None`` if the padstack definition has no data.
         """
+        if self.core.data.is_null:
+            return None
         return Value(self.core.data.plating_percentage)
 
     @hole_plating_ratio.setter
     def hole_plating_ratio(self, ratio):
+        if self.core.data.is_null:
+            return
         self.core.data.plating_percentage = self._pedb._value_setter(ratio)
 
     @property
@@ -732,6 +740,7 @@ class PadstackDef:
 
         Returns
         -------
+        bool
             ``True`` when successful, ``False`` when failed.
         """
 
@@ -855,7 +864,8 @@ class PadstackDef:
 
         Returns
         -------
-        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+        list[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`] or bool
+            List of new microvias padstack instances, or ``False`` when conversion fails.
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
@@ -972,24 +982,54 @@ class PadstackDef:
         Returns
         -------
         dict
-            params = {
-            'regular_pad': [
-                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0',
-                'rotation': '0', 'diameter': '0.5mm'}
-            ],
-            'anti_pad': [
-                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                'diameter': '1mm'}
-            ],
-            'thermal_pad': [
-                {'layer_name': '1_Top', 'shape': 'round90', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                'inner': '1mm', 'channel_width': '0.2mm', 'isolation_gap': '0.3mm'},
-            ],
-            'hole': [
-                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                 'diameter': '0.1499997mm'},
-            ]
-        }
+            Dictionary with pad type names as keys and lists of layer pad parameter dictionaries as values.
+
+            .. code-block:: python
+
+                {
+                    "regular_pad": [
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "offset_x": "0.1mm",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "diameter": "0.5mm",
+                        }
+                    ],
+                    "anti_pad": [
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "diameter": "1mm",
+                        }
+                    ],
+                    "thermal_pad": [
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "round90",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "inner": "1mm",
+                            "channel_width": "0.2mm",
+                            "isolation_gap": "0.3mm",
+                        }
+                    ],
+                    "hole": [
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "diameter": "0.1499997mm",
+                        }
+                    ],
+                }
         """
 
         pdef_data = self.core.data
@@ -1108,13 +1148,22 @@ class PadstackDef:
         result = pdef_data.get_hole_parameters()
         if len(result) == 0:
             return {}
-        hole_shape, params, offset_x, offset_y, rotation = result
-        hole_shape = str(hole_shape.name)
+        if len(result) == 5:
+            hole_shape, params, offset_x, offset_y, rotation = result
+        elif len(result) == 4:
+            # polygon shape
+            hole_shape, offset_x, offset_y, rotation = result
+            params = None
+        if not isinstance(hole_shape, CorePolygonData):
+            hole_shape = str(hole_shape.name)
 
         hole_params = {}
         hole_params["shape"] = hole_shape
-        for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[hole_shape.lower()]):
-            hole_params[i] = str(params[idx])
+        if not isinstance(hole_shape, CorePolygonData):
+            for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[hole_shape.lower()]):
+                hole_params[i] = str(params[idx])
+        else:
+            hole_params["shape"] = [(pt.x.value, pt.y.value) for pt in hole_shape.without_arcs().points]
         hole_params["offset_x"] = str(offset_x)
         hole_params["offset_y"] = str(offset_y)
         hole_params["rotation"] = str(rotation)

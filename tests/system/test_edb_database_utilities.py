@@ -32,10 +32,6 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestDatabaseUtilities(BaseTestClass):
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="Check issue #709 status in pyedb-core.",
-    )
     def test_value(self):
         edbapp = self.edb_examples.create_empty_edb()
         if conftest.config["use_grpc"]:

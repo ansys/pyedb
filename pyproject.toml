@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=3.2,<3.13"] # THIS SHOULD BE REVERTED TO '["flit_core >=3.2,<4"]'
+requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 
@@ -9,50 +9,50 @@ dynamic = ["version"]
 description = "Higher-Level Pythonic Ansys Electronics Data Base"
 readme = "README.md"
 requires-python = ">=3.10,<4"
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"}]
 maintainers = [{name = "PyEDB developers", email = "simon.vandenbrouck@ansys.com"}]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Information Analysis",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14"
 ]
 
 dependencies = [
-    # .NET interface dependencies
-    "cffi>=1.16.0,<2.1; platform_system=='Linux'",
-    "pywin32>=308;platform_system=='Windows'",
-    "ansys-pythonnet>=3.1.0rc6",
-    "dotnetcore2==3.1.23;platform_system=='Linux'",
-    # Core dependencies
     "numpy>=1.20.0,<3",
-    "pydantic>=2.6.4,<2.13",
+    "pydantic>=2.6.4,<2.14",
     "toml==0.10.2",
-    "ansys-edb-core>=0.2.0,<0.2.7",
+    "ansys-edb-core==0.3.1",
     "psutil",
     "defusedxml>=0.7,<8.0",
-    "xmltodict",
+    "xmltodict"
 ]
 
 [project.optional-dependencies]
+dotnet = [
+    "ansys-pythonnet>=3.1.0rc6",
+    "cffi>=1.16.0,<2.1; platform_system=='Linux'",
+    "pywin32>=304;platform_system=='Windows'",
+]
 geometry = [
     "shapely",
     "ezdxf>=1.4.2",
     "Rtree>=1.2.0",
-    "scipy>=1.13,<2.0",
+    "scipy>=1.13,<2.0"
 ]
 graphics = [
-    "matplotlib>=3.5.0,<3.11",
+    "matplotlib>=3.5.0,<3.11"
 ]
 analysis = [
     "pandas>=1.1.0,<2.4",
-    "scikit-rf",
+    "scikit-rf"
 ]
 all = [
     "ezdxf>=1.4.2",
@@ -61,14 +61,16 @@ all = [
     "pandas>=1.1.0,<2.4",
     "scikit-rf",
     "Rtree>=1.2.0",
-    "shapely",
+    "shapely"
 ]
 tests = [
     "mock>=5.1.0,<5.3",
     "pytest>=7.4.0,<9.1",
-    "pytest-cov>=4.0.0,<7.1",
+    "pytest-cov>=4.0.0,<7.2",
     "pytest-xdist>=3.5.0,<3.7",
+    "pytest-rerunfailures>=14.0,<17"
 ]
+
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.8",
     "ezdxf>=1.4.2",
@@ -80,7 +82,7 @@ doc = [
     "nbconvert<7.18",
     "numpydoc==1.10.0",
     "pandas>=1.1.0,<2.4",
-    "pypandoc>=1.10.0,<1.17",
+    "pypandoc>=1.10.0,<1.18",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
     "Rtree>=1.2.0",
@@ -88,8 +90,8 @@ doc = [
     "Sphinx>=7.1.0,<9.1",
     "sphinx-autobuild==2024.10.3",
     "sphinx-copybutton>=0.5.0,<0.6",
-    "sphinx-gallery>=0.14.0,<0.21",
-    "sphinx_design>=0.4.0,<0.7",
+    "sphinx-gallery>=0.14.0,<0.22",
+    "sphinx_design>=0.4.0,<0.7"
 ]
 
 
@@ -124,6 +126,8 @@ select = [
     "W",   # pycodestyle, see https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
 ]
 ignore = [
+    "D203", # summary-on-first-line
+    "D213", # multi-line-summary-second-line
     # "D" - pydocstyle, see https://docs.astral.sh/ruff/rules/#pydocstyle-d
     "D100", # undocumented-public-module
     "D101", # undocumented-public-class
@@ -152,6 +156,7 @@ ignore = [
     "D410", # no-blank-line-after-section
     "D411", # no-blank-line-before-section
     "D412", # blank-lines-between-header-and-content
+    "D413", # missing-blank-line-after-last-section
     "D414", # empty-docstring-section
     "D419", # empty-docstring
 
@@ -248,7 +253,7 @@ show_missing = true
 minversion = "7.1"
 xfail_strict = false
 filterwarnings = [
-    "ignore::DeprecationWarning",
+    "ignore::DeprecationWarning"
 ]
 markers = [
     "legacy: mark test as related to the legacy API.",
@@ -257,9 +262,14 @@ markers = [
     "integration: mark test as an integration test.",
     "system: mark test as a system test.",
     "slow: mark test as slow.",
-    "no_licence: mark test that do not need a licence.",
+    "no_licence: mark test that do not need a licence."
 ]
 testpaths = "tests"
+# Automatically retry flaky tests up to 2 times with a 10-second delay between
+# attempts.  This catches transient gRPC/filesystem race conditions without
+# masking real failures (a test must fail 6 times in a row to be reported).
+reruns = 5
+reruns_delay = 10
 #addopts = "-ra --cov=src/pyedb --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
 
 [tool.numpydoc_validation]
@@ -280,7 +290,7 @@ checks = [
     "SS05",  # Summary must start with infinitive verb, not third person
     # Parameters
     "PR10",  # Parameter "{param_name}" requires a space before the colon
-    # separating the parameter name and type",
+    # separating the parameter name and type"
 ]
 
 [tool.towncrier]

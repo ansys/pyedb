@@ -55,4 +55,4 @@ class EdbDesignOptions:
 
     @anti_pads_always_on.setter
     def anti_pads_always_on(self, value):
-        self._active_cell.anti_pads_always_on(value)
+        self._active_cell.anti_pads_always_on = value

@@ -101,6 +101,9 @@ class EdbHfss(object):
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
+        .. deprecated:: 0.71.0
+           Use :attr: `ports` property instead.
+
         Returns
         -------
         port dictionary : Dict[str, [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
@@ -157,12 +160,12 @@ class EdbHfss(object):
                 nets[net] = self._pedb.nets[net].get_smallest_trace_width()
         return nets
 
-    @deprecated("use excitation_manager.create_circuit_port_on_pin method instead.")
+    @deprecated("Use excitation_manager.create_circuit_port_on_pin method instead.")
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create Circuit Port on Pin.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_circuit_port_on_pin` instead.
+           Use :func:`pyedb.excitation_manager.create_circuit_port_on_pin` instead.
 
         Parameters
         ----------
@@ -188,12 +191,12 @@ class EdbHfss(object):
         """
         return self._pedb.excitation_manager.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
 
-    @deprecated("use excitation_manager.create_voltage_source_on_pin method instead.")
+    @deprecated("Use excitation_manager.create_voltage_source_on_pin method instead.")
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create a voltage source.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_voltage_source_on_pin` instead.
+           Use :func:`pyedb.excitation_manager.create_voltage_source_on_pin` instead.
 
         Parameters
         ----------
@@ -225,12 +228,12 @@ class EdbHfss(object):
             pos_pin, neg_pin, voltage_value, phase_value, source_name
         )
 
-    @deprecated("use excitation_manager.create_current_source_on_pin method instead.")
+    @deprecated("Use excitation_manager.create_current_source_on_pin method instead.")
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
         """Create a current source.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_current_source_on_pin` instead.
+           Use :func:`pyedb.excitation_manager.create_current_source_on_pin` instead.
 
         Parameters
         ----------
@@ -262,12 +265,12 @@ class EdbHfss(object):
             pos_pin, neg_pin, current_value, phase_value, source_name
         )
 
-    @deprecated("use excitation_manager.create_resistor_on_pin method instead.")
+    @deprecated("Use excitation_manager.create_resistor_on_pin method instead.")
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
         """Create a Resistor boundary between two given pins.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_resistor_on_pin` instead.
+           Use :func:`pyedb.excitation_manager.create_resistor_on_pin` instead.
 
         Parameters
         ----------
@@ -295,7 +298,7 @@ class EdbHfss(object):
         """
         return self._pedb.excitation_manager.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
-    @deprecated("use excitation_manager.create_circuit_port_on_net method instead.")
+    @deprecated("Use excitation_manager.create_circuit_port_on_net method instead.")
     def create_circuit_port_on_net(
         self,
         positive_component_name,
@@ -309,7 +312,7 @@ class EdbHfss(object):
         It groups all pins belonging to the specified net and then applies the port on PinGroups.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_circuit_port_on_net` instead.
+           Use :func:`pyedb.excitation_manager.create_circuit_port_on_net` instead.
 
         Parameters
         ----------
@@ -347,7 +350,7 @@ class EdbHfss(object):
             port_name,
         )
 
-    @deprecated("use excitation_manager.create_voltage_source_on_ne method instead.")
+    @deprecated("Use excitation_manager.create_voltage_source_on_ne method instead.")
     def create_voltage_source_on_net(
         self,
         positive_component_name,
@@ -361,7 +364,7 @@ class EdbHfss(object):
         """Create a voltage source.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_voltage_source_on_net` instead.
+           Use :func:`pyedb.excitation_manager.create_voltage_source_on_net` instead.
 
         Parameters
         ----------
@@ -403,7 +406,7 @@ class EdbHfss(object):
             source_name,
         )
 
-    @deprecated("use excitation_manager.create_current_source_on_net method instead.")
+    @deprecated("Use excitation_manager.create_current_source_on_net method instead.")
     def create_current_source_on_net(
         self,
         positive_component_name,
@@ -417,7 +420,7 @@ class EdbHfss(object):
         """Create a current source.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_current_source_on_net` instead.
+           Use :func:`pyedb.excitation_manager.create_current_source_on_net` instead.
 
         Parameters
         ----------
@@ -459,13 +462,13 @@ class EdbHfss(object):
             source_name,
         )
 
-    @deprecated("use excitation_manager.create_coax_port_on_component method instead.")
+    @deprecated("Use excitation_manager.create_coax_port_on_component method instead.")
     def create_coax_port_on_component(self, ref_des_list, net_list, delete_existing_terminal=False):
         """Create a coaxial port on a component or component list on a net or net list.
            The name of the new coaxial port is automatically assigned.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_coax_port_on_component` instead.
+           Use :func:`pyedb.excitation_manager.create_coax_port_on_component` instead.
 
         Parameters
         ----------
@@ -489,7 +492,7 @@ class EdbHfss(object):
             ref_des_list=ref_des_list, net_list=net_list, delete_existing_terminal=delete_existing_terminal
         )
 
-    @deprecated("use excitation_manager.create_differential_wave_port method instead.")
+    @deprecated("Use excitation_manager.create_differential_wave_port method instead.")
     def create_differential_wave_port(
         self,
         positive_primitive_id,
@@ -504,7 +507,7 @@ class EdbHfss(object):
         """Create a differential wave port.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_differential_wave_port` instead.
+           Use :func:`pyedb.excitation_manager.create_differential_wave_port` instead.
 
         Parameters
         ----------
@@ -549,7 +552,7 @@ class EdbHfss(object):
             pec_launch_width=pec_launch_width,
         )
 
-    @deprecated("use excitation_manager.create_bundle_wave_port method instead.")
+    @deprecated("Use excitation_manager.create_bundle_wave_port method instead.")
     def create_bundle_wave_port(
         self,
         primitives_id,
@@ -562,7 +565,7 @@ class EdbHfss(object):
         """Create a bundle wave port.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_bundle_wave_port` instead.
+           Use :func:`pyedb.excitation_manager.create_bundle_wave_port` instead.
 
         Parameters
         ----------
@@ -599,12 +602,12 @@ class EdbHfss(object):
             pec_launch_width=pec_launch_width,
         )
 
-    @deprecated("use excitation_manager.create_hfss_ports_on_padstack method instead.")
+    @deprecated("Use excitation_manager.create_hfss_ports_on_padstack method instead.")
     def create_hfss_ports_on_padstack(self, pinpos, portname=None):
         """Create an HFSS port on a padstack.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_hfss_ports_on_padstack` instead.
+           Use :func:`pyedb.excitation_manager.create_hfss_ports_on_padstack` instead.
 
         Parameters
         ----------
@@ -621,7 +624,7 @@ class EdbHfss(object):
         """
         return self._pedb.excitation_manager.create_hfss_ports_on_padstack(pinpos=pinpos, portname=portname)
 
-    @deprecated("use excitation_manager.create_edge_port method instead")
+    @deprecated("Use excitation_manager.create_edge_port method instead")
     def create_edge_port(
         self,
         location,
@@ -636,7 +639,7 @@ class EdbHfss(object):
         """Create an edge port on a primitive specific location.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.grpc.core.excitations.create_edge_port` instead.
+           Use :func:`pyedb.grpc.core.excitations.create_edge_port` instead.
 
         Parameters
         ----------
@@ -669,7 +672,7 @@ class EdbHfss(object):
             pec_launch_width=pec_launch_width,
         )
 
-    @deprecated("use excitation_manager.create_edge_port_on_polygon method instead.")
+    @deprecated("Use excitation_manager.create_edge_port_on_polygon method instead.")
     def create_edge_port_on_polygon(
         self,
         polygon=None,
@@ -687,7 +690,7 @@ class EdbHfss(object):
         port instead of lumped,use the boolean force_circuit_port.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_edge_port_on_polygon` instead.
+           Use :func:`pyedb.excitation_manager.create_edge_port_on_polygon` instead.
 
         Parameters
         ----------
@@ -743,7 +746,7 @@ class EdbHfss(object):
             force_circuit_port=force_circuit_port,
         )
 
-    @deprecated("use excitation_manager.create_wave_port method instead.")
+    @deprecated("Use excitation_manager.create_wave_port method instead.")
     def create_wave_port(
         self,
         prim_id,
@@ -757,7 +760,7 @@ class EdbHfss(object):
         """Create a wave port.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_wave_port` instead.
+           Use :func:`pyedb.excitation_manager.create_wave_port` instead.
 
         Parameters
         ----------
@@ -797,7 +800,7 @@ class EdbHfss(object):
             pec_launch_width=pec_launch_width,
         )
 
-    @deprecated("use excitation_manager.create_edge_port_vertical method instead.")
+    @deprecated("Use excitation_manager.create_edge_port_vertical method instead.")
     def create_edge_port_vertical(
         self,
         prim_id,
@@ -813,7 +816,7 @@ class EdbHfss(object):
         """Create a vertical edge port.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_edge_port_vertical` instead.
+           Use :func:`pyedb.excitation_manager.create_edge_port_vertical` instead.
 
         Parameters
         ----------
@@ -857,7 +860,7 @@ class EdbHfss(object):
             pec_launch_width=pec_launch_width,
         )
 
-    @deprecated("use excitation_manager.create_edge_port_horizontal method instead.")
+    @deprecated("Use excitation_manager.create_edge_port_horizontal method instead.")
     def create_edge_port_horizontal(
         self,
         prim_id,
@@ -871,7 +874,7 @@ class EdbHfss(object):
         """Create a horizontal edge port.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_edge_port_horizontal` instead.
+           Use :func:`pyedb.excitation_manager.create_edge_port_horizontal` instead.
 
         Parameters
         ----------
@@ -909,7 +912,7 @@ class EdbHfss(object):
             layer_alignment=layer_alignment,
         )
 
-    @deprecated("use excitation_manager.create_lumped_port_on_net method instead.")
+    @deprecated("Use excitation_manager.create_lumped_port_on_net method instead.")
     def create_lumped_port_on_net(
         self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
     ):
@@ -917,7 +920,7 @@ class EdbHfss(object):
         nets and tries to assign vertical lumped port.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_lumped_port_on_net` instead.
+           Use :func:`pyedb.excitation_manager.create_lumped_port_on_net` instead.
 
         Parameters
         ----------
@@ -952,12 +955,12 @@ class EdbHfss(object):
             at_bounding_box=at_bounding_box,
         )
 
-    @deprecated("use excitation_manager.create_vertical_circuit_port_on_clipped_traces method instead.")
+    @deprecated("Use excitation_manager.create_vertical_circuit_port_on_clipped_traces method instead.")
     def create_vertical_circuit_port_on_clipped_traces(self, nets=None, reference_net=None, user_defined_extent=None):
         """Create an edge port on clipped signal traces.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_vertical_circuit_port_on_clipped_traces` instead.
+           Use :func:`pyedb.excitation_manager.create_vertical_circuit_port_on_clipped_traces` instead.
 
         Parameters
         ----------
@@ -1085,12 +1088,12 @@ class EdbHfss(object):
         terms = [term for term in self._layout.terminals if int(term._edb_object.GetBoundaryType()) == 0]
         return len([i for i in terms if not i.is_reference_terminal])
 
-    @deprecated("use excitation_manager.create_rlc_boundary_on_pins method instead.")
+    @deprecated("Use excitation_manager.create_rlc_boundary_on_pins method instead.")
     def create_rlc_boundary_on_pins(self, positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0):
         """Create hfss rlc boundary on pins.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_rlc_boundary_on_pins` instead.
+           Use :func:`pyedb.excitation_manager.create_rlc_boundary_on_pins` instead.
 
         Parameters
         ----------

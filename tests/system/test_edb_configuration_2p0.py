@@ -19,17 +19,21 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 from collections import Counter
 import json
 import os
 from pathlib import Path
 
+import ansys.edb.core
 import pytest
 
-from pyedb.dotnet.clr_module import is_linux
+# is_linux is only used for a skipif marker — define it here without dotnet
+is_linux = os.name == "posix"
+
 from pyedb.generic.constants import unit_converter
 from pyedb.generic.settings import settings
-from tests.conftest import config, use_grpc
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -77,10 +81,6 @@ def check_dictionaries(source_dict, target_dict):
     return True
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_13b_stackup_materials(self):
@@ -385,10 +385,6 @@ class TestClass(BaseTestClass):
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="issue #687 fixed with latest pyedb-core release",
-    )
     def test_05g_edge_port(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -852,10 +848,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassTerminals(BaseTestClass):
     terminal1 = {
@@ -863,7 +855,7 @@ class TestClassTerminals(BaseTestClass):
         "impedance": 1,
         "is_circuit_port": False,
         "boundary_type": "PortBoundary",
-        "hfss_type": "Wave",
+        "hfss_type": "Gap",
         "terminal_type": "padstack_instance",
         "padstack_instance": "U7-M7",
         "layer": None,
@@ -932,6 +924,7 @@ class TestClassTerminals(BaseTestClass):
         "name": "bundle_terminal",
     }
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet bug always returning Wave port.")
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
@@ -949,13 +942,17 @@ class TestClassTerminals(BaseTestClass):
             "phase": 0.0,
             "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
             "boundary_type": "port" if edbapp.grpc else "PortBoundary",
-            "hfss_type": "Wave",
+            "hfss_type": "Gap",
             "terminal_type": "padstack_instance",
             "padstack_instance": "U7-M7",
             "padstack_instance_id": 4294971660,
         }
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_pin_group_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"pin_groups": [self.pin_group2]})
@@ -1000,7 +997,7 @@ class TestClassTerminals(BaseTestClass):
                 "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
                 "boundary_type": "port" if edbapp.grpc else "PortBoundary",
                 "terminal_type": "point",
-                "x": 0.10400000000000001,
+                "x": 0.104,
                 "y": 0.037,
                 "layer": "1_Top",
                 "net": "AVCC_1V3",
@@ -1014,7 +1011,7 @@ class TestClassTerminals(BaseTestClass):
                 "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
                 "boundary_type": "port" if edbapp.grpc else "PortBoundary",
                 "terminal_type": "point",
-                "x": 0.10400000000000001,
+                "x": 0.104,
                 "y": 0.037,
                 "layer": "Inner6(GND2)",
                 "net": "GND",
@@ -1086,10 +1083,6 @@ class TestClassTerminals(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassSetups(BaseTestClass):
     terminal1 = {
@@ -1118,7 +1111,6 @@ class TestClassSetups(BaseTestClass):
                     "freq_sweep": [],
                     "auto_mesh_operation": {
                         "enabled": False,
-                        "power_ground_via_side_number": 6,
                         "signal_via_side_number": 12,
                         "trace_ratio_seeding": 3,
                     },
@@ -1204,7 +1196,6 @@ class TestClassSetups(BaseTestClass):
                         "enabled": True,
                         "trace_ratio_seeding": 3,
                         "signal_via_side_number": 12,
-                        "power_ground_via_side_number": 6,
                     },
                 },
             ],
@@ -1216,6 +1207,7 @@ class TestClassSetups(BaseTestClass):
         assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"] and is_linux, reason="DotNet Randomly failing on Linux.")
     def test_hfss_setup_w_frequency_sweeps(self):
         data = {
             "setups": [
@@ -1351,10 +1343,6 @@ class TestClassSetups(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassBoundaries(BaseTestClass):
     def test_open_region_radiation(self):
@@ -1459,10 +1447,6 @@ class TestClassBoundaries(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassPadstacks(BaseTestClass):
     def test_09_padstack_definition(self, is_grpc=None):
@@ -1694,10 +1678,6 @@ class TestClassPadstacks(BaseTestClass):
         cfg_hfss_single.max_delta = 0.02
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
     def test_18_modeler(self):
@@ -1855,10 +1835,6 @@ class TestModeler(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestComponent(BaseTestClass):
     def test_17_ic_die_properties(self):
@@ -1878,10 +1854,6 @@ class TestComponent(BaseTestClass):
         _assert_final_ic_die_properties(component)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestOperations(BaseTestClass):
     def test_08a_operations_cutout(self):

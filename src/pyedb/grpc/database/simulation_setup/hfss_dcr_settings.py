@@ -104,8 +104,8 @@ class HFSSDCRSettings:
     def conduction_min_passes(self) -> int:
         """Minimum number of conduction adaptive passes.
 
-        ... deprecated:: 0.77.3
-        Use :attr:`min_passes <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.min_passes>`
+        .. deprecated:: 0.77.3
+           Use :attr:`min_passes <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.min_passes>`
         instead.
         """
         return self.min_passes
@@ -137,7 +137,7 @@ class HFSSDCRSettings:
     def conduction_per_error(self) -> float:
         """Conduction adaptive percent error.
 
-        ... deprecated:: 0.77.3
+        .. deprecated:: 0.77.3
         Use :attr:`percent_error <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.percent_error>`
         instead.
         """
@@ -169,8 +169,8 @@ class HFSSDCRSettings:
     def conduction_per_refine(self) -> float:
         """Conduction adaptive percent refinement per pass.
 
-        ... deprecated:: 0.77.3
-        Use :attr:
+        .. deprecated:: 0.77.3
+           Use :attr:
         `percent_refinement_per_pass
         <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.percent_refinement_per_pass>`
         instead.

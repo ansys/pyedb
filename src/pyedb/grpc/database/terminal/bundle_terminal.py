@@ -86,11 +86,14 @@ class BundleTerminal(Terminal):
         terminals = [term.core for term in terminals]
         grpc_term = CoreBundleTerminal.create(terminals=terminals)
         bundle_terminal = cls(pedb, grpc_term)
-        bundle_terminal.name = name
+        # Rename child terminals before setting the bundle name so that the
+        # desired name is not already taken by one of the children (SetName
+        # enforces uniqueness within a layout).
         index = 1
         for terminal in bundle_terminal.terminals:
             terminal.name = f"{name}:T{index}"
             index += 1
+        bundle_terminal.name = name
         return bundle_terminal
 
     @property

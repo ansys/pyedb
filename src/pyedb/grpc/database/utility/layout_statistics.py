@@ -116,9 +116,9 @@ class LayoutStatistics(object):
 
         Returns
         -------
-        float
-            Occupying ration value.
-            Value representing metal coverage versus total layout surface.
+        dict[str, float]
+            Occupying ratio with layer name as key and ratio value as value.
+            Represents metal coverage versus total layout surface per layer.
 
         """
         return self._occupying_ratio
@@ -151,8 +151,8 @@ class LayoutStatistics(object):
 
         Returns
         -------
-        List[(float, float), (float, float)]
-            Layout bounding box, lower left corner (x, y) upper right corner (x, y).
+        list[float]
+            Layout bounding box as ``[lower_left_x, lower_left_y, upper_right_x, upper_right_y]``.
 
         """
         return self._layout_size
@@ -198,7 +198,7 @@ class LayoutStatistics(object):
         Returns
         -------
         int
-            Total number og nets.
+            Total number of nets.
 
         """
         return self._nb_nets

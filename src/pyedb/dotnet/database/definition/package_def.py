@@ -23,6 +23,7 @@ import warnings
 
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
+from pyedb.misc.decorators import deprecated_property
 
 
 class PackageDef(ObjBase):
@@ -78,7 +79,7 @@ class PackageDef(ObjBase):
             )
         polygon_data = PolygonData(self._pedb, create_from_bounding_box=True, points=bbox)
 
-        edb_object.SetExteriorBoundary(polygon_data._edb_object)
+        edb_object.SetExteriorBoundary(polygon_data.core)
         return edb_object
 
     def delete(self):
@@ -92,7 +93,7 @@ class PackageDef(ObjBase):
 
     @exterior_boundary.setter
     def exterior_boundary(self, value):
-        self._edb_object.SetExteriorBoundary(value._edb_object)
+        self._edb_object.SetExteriorBoundary(value.core)
 
     @property
     def maximum_power(self):
@@ -115,6 +116,7 @@ class PackageDef(ObjBase):
         self._edb_object.SetTherm_Cond(value)
 
     @property
+    @deprecated_property("use thermal_conductivity property instead.", category=None)
     def therm_cond(self):
         """Thermal conductivity of the package.
 
@@ -125,6 +127,7 @@ class PackageDef(ObjBase):
         return self.thermal_conductivity
 
     @therm_cond.setter
+    @deprecated_property("use thermal_conductivity property instead.", category=None)
     def therm_cond(self, value):
         self.thermal_conductivity = value
 

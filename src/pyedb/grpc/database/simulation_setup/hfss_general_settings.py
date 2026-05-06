@@ -654,7 +654,6 @@ class HFSSGeneralSettings:
         return self.save_rad_fields_only
 
     @save_rad_field_only.setter
-    @deprecated_property("use save_rad_fields_only property instead.")
     def save_rad_field_only(self, value: bool):
         self.save_rad_fields_only = value
 

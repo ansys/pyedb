@@ -101,7 +101,6 @@ class HFSSAdvancedMeshingSettings:
         return self.max_num_arc_points
 
     @max_arc_points.setter
-    @deprecated_property("use max_num_arc_points property instead.")
     def max_arc_points(self, value: int):
         self.max_num_arc_points = value
 

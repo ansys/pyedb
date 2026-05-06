@@ -91,6 +91,14 @@ class TestClass(BaseTestClass):
         assert "JTAG_TCK" not in edbapp.nets.nets
         edbapp.close(terminate_rpc_session=False)
 
+    def test_nets_delete_multiple_returns_requested_existing_nets(self):
+        edbapp = self.edb_examples.get_si_verse()
+        deleted = edbapp.nets.delete(["JTAG_TCK", "AVCC_1V3", "NET_DOES_NOT_EXIST"])
+        assert set(["JTAG_TCK", "AVCC_1V3"]).issubset(set(deleted))
+        assert "JTAG_TCK" not in edbapp.nets.nets
+        assert "AVCC_1V3" not in edbapp.nets.nets
+        edbapp.close(terminate_rpc_session=False)
+
     def test_nets_classify_nets(self):
         """Reassign power based on list of nets."""
         # Done
@@ -123,7 +131,7 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="get_connected_object returns empty list, needs investigation.")
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_nets_dc_shorts(self):
         # TODO get_connected_object return empty list.
         edbapp = self.edb_examples.get_si_verse()
@@ -225,7 +233,7 @@ class TestClass(BaseTestClass):
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 3
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_6(self):
         # Done
@@ -234,7 +242,7 @@ class TestClass(BaseTestClass):
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
         )
         assert len(list(edbapp.variables.values())) == 3
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_7(self):
         # Done
@@ -249,4 +257,4 @@ class TestClass(BaseTestClass):
             trace_net_filter=["FCHIP_A1", "FCHIP_A2", "FCHIP_A3"],
         )
         assert len(list(edbapp.variables.keys())) == 3
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

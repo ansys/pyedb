@@ -25,9 +25,16 @@ class PinPair(object):  # pragma: no cover
     def __init__(self, component, edb_pin_pair):
         self._pedb_comp = component
         self._edb_comp = component.edbcomponent
-        self._edb_comp_prop = component.component_property.core
+        # Do NOT call component.component_property.core here — that calls
+        # GetComponentProperty() which can crash in EDB 2026.1 during bulk
+        # iteration after model write operations.  Lazily resolve on demand.
         self._edb_model = component._edb_model
         self._edb_pin_pair = edb_pin_pair
+
+    @property
+    def _edb_comp_prop(self):
+        """Lazy accessor — only materialises when a write-back is needed."""
+        return self._pedb_comp._get_component_property_clone()
 
     def _edb_value(self, value):
         return self._pedb_comp._get_edb_value(value)  # pragma: no cover
@@ -108,9 +115,9 @@ class PinPair(object):  # pragma: no cover
         self._set_comp_prop()  # pragma: no cover
 
     def _set_comp_prop(self):  # pragma: no cover
-        self._edb_model.SetPinPairRlc(self._edb_pin_pair, self._pin_pair_rlc)
-        self._edb_comp_prop.SetModel(self._edb_model)
-        self._edb_comp.SetComponentProperty(self._edb_comp_prop)
+        comp_prop = self._edb_comp_prop  # safe clone via _get_component_property_clone
+        comp_prop.SetModel(self._edb_model)
+        self._edb_comp.SetComponentProperty(comp_prop)
 
     def add_pin_pair(
         self,
@@ -177,6 +184,6 @@ class PinPair(object):  # pragma: no cover
             is_parallel,
         )
         m.SetPinPairRlc(p, rlc)
-        core = self.component.component_property.core.Clone()
+        core = self.component._get_component_property_clone()
         core.SetModel(m)
-        self.component.component_property = core
+        self.component.edbcomponent.SetComponentProperty(core)

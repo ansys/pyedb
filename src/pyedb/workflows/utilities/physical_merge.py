@@ -142,11 +142,13 @@ def __add_primitives(
                 layer_name = None
         if primitive_type in ["polygon", "rectangle"]:
             polygon_data = primitive.polygon_data
-            polygon_data = polygon_data.core.move(vector)
+            if vector[0] and vector[1]:
+                polygon_data = polygon_data.core.move(vector)
             voids = []
             for void in primitive.voids:
                 void_polygon_data = void.polygon_data
-                void_polygon_data = void_polygon_data.core.move(vector)
+                if vector[0] and vector[1]:
+                    void_polygon_data = void_polygon_data.core.move(vector)
                 voids.append(void_polygon_data)
             if layer_name:
                 hosting_edb.modeler.create_polygon(
@@ -166,7 +168,8 @@ def __add_primitives(
             if hasattr(primitive, "width"):
                 width = primitive.width
                 center_line = primitive.core.center_line
-                center_line = center_line.move(vector)
+                if vector[0] and vector[1]:
+                    center_line = center_line.move(vector)
                 hosting_edb.modeler.create_trace(
                     path_list=center_line,
                     layer_name=layer_name,
@@ -208,8 +211,9 @@ def __add_padstack_instances(hosting_edb, merged_edb, prefix, vector, cache_laye
         rotation = hosting_edb.value(padstack_inst.rotation)
         from_layer = cache_layers[f"{prefix}{padstack_inst.start_layer}"]
         to_layer = cache_layers[f"{prefix}{padstack_inst.stop_layer}"]
-        net = padstack_inst.net.core
+        merged_net = padstack_inst.net
         name = f"{prefix}{padstack_inst.name}"
+        net = hosting_edb.nets[merged_net.name].core
         padstack_definition = cache_padstack_def[f"{prefix}{padstack_inst.definition.name}"]
         inst = CorePadstackInstance.create(
             layout=layout,
