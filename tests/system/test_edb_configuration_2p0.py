@@ -2196,7 +2196,7 @@ class TestOperations(BaseTestClass):
         edb_app.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
-    def test_cfg_setup(self):
+    def test_cfg_hfss_setup(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
         signal_nets = [
@@ -2249,6 +2249,25 @@ class TestOperations(BaseTestClass):
         assert setup.adaptive_settings.broadband_adaptive_solution.high_frequency == "10GHz"
         assert setup.adaptive_settings.broadband_adaptive_solution.max_delta == "0.05"
         assert setup.adaptive_settings.broadband_adaptive_solution.max_passes == 30
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_siwave_setup(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        setup = cfg_builder.setups.add_siwave_ac_setup(name="Test_siwave_AC_Setup", use_si_settings=True,
+                                                       si_slider_position=2)
+        setup.add_frequency_sweep(name="Test_Sweep", start="0GHz", stop="35GHz", step_or_count="0.1GHz")
+        assert setup.name == "Test_siwave_AC_Setup"
+        assert setup.si_slider_position == 2
+        assert setup.freq_sweep[0].frequencies[0].start == "0GHz"
+        assert setup.freq_sweep[0].frequencies[0].stop == "35GHz"
+        assert setup.freq_sweep[0].frequencies[0].increment == "0.1GHz"
+        edb_app.configuration.run(cfg_builder)
+        assert "Test_siwave_AC_Setup" in edb_app.setups
+        setup = edb_app.setups.get("Test_siwave_AC_Setup")
+        assert setup.si_slider_position == 2
+        assert setup.frequency_sweeps.get("Test_Sweep").frequency_string == ['LIN 0GHz 35GHz 0.1GHz']
         edb_app.close(terminate_rpc_session=False)
 
 

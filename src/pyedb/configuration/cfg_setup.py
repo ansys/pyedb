@@ -893,23 +893,35 @@ class CfgSetups(CfgBaseModel):
         self.setups.append(hfss_setup)
         return hfss_setup
 
-    def add_siwave_ac_setup(self, config: CfgSIwaveACSetup = None, **kwargs):
+    def add_siwave_ac_setup(
+        self,
+        config: CfgSIwaveACSetup = None,
+        name: str = None,
+        si_slider_position: int = 1,
+        pi_slider_position: int = 1,
+        use_si_settings: bool = True,
+        **kwargs,
+    ):
         """Create and register a SIwave AC setup.
 
         Parameters
         ----------
         config : CfgSIwaveACSetup or str, optional
             Pre-built setup object, a name string, or *None* to construct
-            from *kwargs*.
+            from the remaining parameters.
+        name : str, optional
+            Setup name.  Can also be passed as the first positional argument.
+        si_slider_position : int, optional
+            SI accuracy slider.  ``0`` = Speed, ``1`` = Balanced (default),
+            ``2`` = Accuracy.
+        pi_slider_position : int, optional
+            PI accuracy slider.  Same values as *si_slider_position*.
+        use_si_settings : bool, optional
+            ``True`` (default) activates the SI slider rather than the PI
+            slider.
         **kwargs
-            Keyword arguments forwarded to :class:`CfgSIwaveACSetup`.
-            Common parameters:
-
-            - ``name`` *(str, required)* — setup name.
-            - ``si_slider_position`` *(int)* — SI accuracy: 0=Speed,
-              1=Balanced (default), 2=Accuracy.
-            - ``pi_slider_position`` *(int)* — PI accuracy slider.
-            - ``use_si_settings`` *(bool)* — ``True`` activates SI slider.
+            Additional keyword arguments forwarded to
+            :class:`CfgSIwaveACSetup`.
 
         Returns
         -------
@@ -922,33 +934,45 @@ class CfgSetups(CfgBaseModel):
         >>> siw.add_frequency_sweep("sw1", start="1kHz", stop="1GHz", step_or_count=100)
         """
         if isinstance(config, str):
-            kwargs = dict(kwargs)
-            kwargs["name"] = config
+            name = config
             config = None
-        if config:
+        if config is not None:
             siwave_ac_setup = config
         else:
-            siwave_ac_setup = CfgSIwaveACSetup(**kwargs)
+            siwave_ac_setup = CfgSIwaveACSetup(
+                name=name,
+                si_slider_position=si_slider_position,
+                pi_slider_position=pi_slider_position,
+                use_si_settings=use_si_settings,
+                **kwargs,
+            )
         self.setups.append(siwave_ac_setup)
         return siwave_ac_setup
 
-    def add_siwave_dc_setup(self, config: CfgSIwaveDCSetup = None, **kwargs):
+    def add_siwave_dc_setup(
+        self,
+        config: CfgSIwaveDCSetup = None,
+        name: str = None,
+        dc_slider_position: int = 1,
+        export_dc_thermal_data: bool = False,
+        **kwargs,
+    ):
         """Create and register a SIwave DC setup.
 
         Parameters
         ----------
         config : CfgSIwaveDCSetup or str, optional
             Pre-built setup object, a name string, or *None* to construct
-            from *kwargs*.
+            from the remaining parameters.
+        name : str, optional
+            Setup name.  Can also be passed as the first positional argument.
+        dc_slider_position : int, optional
+            DC accuracy slider.  ``0`` = Speed, ``1`` = Balanced (default),
+            ``2`` = Accuracy.
+        export_dc_thermal_data : bool, optional
+            Export IR-drop thermal data after solving.  Default is ``False``.
         **kwargs
-            Keyword arguments forwarded to :class:`CfgSIwaveDCSetup`.
-            Common parameters:
-
-            - ``name`` *(str, required)* — setup name.
-            - ``dc_slider_position`` *(int)* — DC accuracy: 0=Speed,
-              1=Balanced (default), 2=Accuracy.
-            - ``export_dc_thermal_data`` *(bool)* — export IR-drop thermal
-              data after solving.
+            Additional keyword arguments forwarded to :class:`CfgSIwaveDCSetup`.
 
         Returns
         -------
@@ -960,17 +984,16 @@ class CfgSetups(CfgBaseModel):
         >>> cfg.setups.add_siwave_dc_setup("siw_dc", dc_slider_position=1, export_dc_thermal_data=True)
         """
         if isinstance(config, str):
-            kwargs = dict(kwargs)
-            kwargs["name"] = config
-            if "export_dc_thermal_data" in kwargs and "dc_ir_settings" not in kwargs:
-                kwargs["dc_ir_settings"] = CfgSIwaveDCSetup.CfgDCIRSettings(
-                    export_dc_thermal_data=kwargs.pop("export_dc_thermal_data")
-                )
+            name = config
             config = None
-        if config:
+        if config is not None:
             siwave_dc_setup = config
         else:
-            siwave_dc_setup = CfgSIwaveDCSetup(**kwargs)
+            if "dc_ir_settings" not in kwargs:
+                kwargs["dc_ir_settings"] = CfgSIwaveDCSetup.CfgDCIRSettings(
+                    export_dc_thermal_data=export_dc_thermal_data
+                )
+            siwave_dc_setup = CfgSIwaveDCSetup(name=name, dc_slider_position=dc_slider_position, **kwargs)
         self.setups.append(siwave_dc_setup)
         return siwave_dc_setup
 
