@@ -175,7 +175,7 @@ class EdbExamples:
     def create_empty_edb(self):
         aedb = os.path.join(self.test_folder, f"new_layout_{generate_random_string(6)}.aedb")
         edbapp = Edb(aedb, version=desktop_version, grpc=self.grpc)
-        edbapp.save_edb()
+        edbapp.save()
         return edbapp
 
     def get_multizone_pcb(self, version=None):

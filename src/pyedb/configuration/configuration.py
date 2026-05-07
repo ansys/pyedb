@@ -98,6 +98,7 @@ class Configuration:
 
         Parameters
         ----------
+
         config_file : str, dict
             Full path to configure file in JSON or TOML format. Dictionary is also supported.
         append : bool, optional
@@ -590,7 +591,7 @@ class Configuration:
             self.cfg_data.variables.add_variable(name, str(obj.value), obj.description)
 
     def apply_materials(self):
-        """Apply material settings to the current design"""
+        """Apply material settings to the current design."""
         cfg_stackup = self.cfg_data.stackup
         if len(cfg_stackup.materials):
             materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
@@ -602,7 +603,7 @@ class Configuration:
                 mat = self._pedb.materials.add_material(**attrs)
 
                 for i in attrs.get("thermal_modifiers", []):
-                    mat.set_thermal_modifier(**i.to_dict())
+                    mat.set_thermal_modifier(**i)
 
     def get_materials(self):
         """Retrieve materials from the current design."""
@@ -622,18 +623,18 @@ class Configuration:
                 if i.type == "signal":
                     if i.material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material, **self._pedb.materials.default_conductor_property_values
+                            name=i.material, config=self._pedb.materials.default_conductor_property_values
                         )
 
                     if i.fill_material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                            name=i.material, config=self._pedb.materials.default_dielectric_property_values
                         )
 
                 elif i.type == "dielectric":
                     if i.material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                            name=i.material, config=self._pedb.materials.default_dielectric_property_values
                         )
 
         if len(self._pedb.stackup.signal_layers) == 0:
@@ -651,8 +652,7 @@ class Configuration:
             self._pedb.stackup.add_layer_bottom(**attrs)
 
     def __update_stackup(self):
-        """Apply layer settings to the current design"""
-
+        """Apply layer settings to the current design."""
         # After import stackup, padstacks lose their definitions. They need to be fixed after loading stackup
         # step 1, archive padstack definitions
         temp_pdef_data = {}
@@ -1064,9 +1064,11 @@ class Configuration:
             Whether to export variable.
         terminals : bool
             Whether to export terminals. Alternative to ports and sources.
+
         Returns
         -------
         bool
+
         """
         data = self.get_data_from_db(
             stackup=stackup,

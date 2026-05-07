@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel, Field
 
@@ -61,6 +61,8 @@ class CfgMaterial(MaterialProperties):
     name: Optional[str] = None
     thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
 
+    model_config = {"extra": "forbid"}
+
 
 class CfgHurayRoughnessModel(BaseModel):
     model: str = "huray"
@@ -93,35 +95,109 @@ class EtchingModel(BaseModel):
 
 class CfgLayer(BaseModel):
     name: Optional[str] = None
-    type: Optional[str] = None
+    type: Optional[str] = "signal"
     material: Optional[str] = None
     fill_material: Optional[str] = None
     thickness: Optional[Union[float, str]] = None
     roughness: Optional[CfgRoughnessModel] = None
     etching: Optional[EtchingModel] = None
+    color: tuple | None = None
+
+    model_config = {"extra": "forbid"}
 
 
 class CfgStackup(BaseModel):
     materials: List[CfgMaterial] = Field(default_factory=list)
     layers: List[CfgLayer] = Field(default_factory=list)
 
-    def add_material(self, name, **kwargs):
-        self.materials.append(CfgMaterial(name=name, **kwargs))
+    def add_material(
+        self,
+        name: str | None = None,
+        config: CfgMaterial | dict[str, Any] | None = None,
+        **kwargs,
+    ) -> CfgMaterial:
+        """Add a material to the stackup using Pydantic validation.
 
-    def add_layer_at_bottom(self, name, **kwargs):
-        self.layers.append(CfgLayer(name=name, **kwargs))
+        Parameters
+        ----------
+        name : str, optional
+            Material name. If provided, it overrides the name from ``config``.
+        config : CfgMaterial | dict, optional
+            Material payload as a ``CfgMaterial`` instance or dictionary.
+
+        Returns
+        -------
+        CfgMaterial
+            The validated material object appended to ``materials``.
+
+        """
+        payload = {}
+        if config is not None:
+            if isinstance(config, CfgMaterial):
+                # Convert to dict so kwargs/name can override deterministically.
+                payload = config.model_dump(exclude_none=True)
+            else:
+                payload = dict(config)
+
+        payload.update(kwargs)
+        if name is not None:
+            payload["name"] = name
+
+        material = CfgMaterial.model_validate(payload)
+        self.materials.append(material)
+        return material
+
+    def add_layer_at_bottom(
+        self,
+        name: str | None = None,
+        config: CfgLayer | dict[str, Any] | None = None,
+        **kwargs,
+    ) -> CfgLayer:
+        """Add a layer to the stackup using Pydantic validation.
+
+        Parameters
+        ----------
+        name : str, optional
+            Layer name. If provided, it overrides the name from ``config``.
+        config : CfgLayer | dict, optional
+            Layer payload as a ``CfgLayer`` instance or dictionary.
+        **kwargs
+            Extra layer attributes applied after ``config`` values.
+
+        Returns
+        -------
+        CfgLayer
+            The validated layer object appended to ``layers``.
+
+        """
+        payload = {}
+        if config is not None:
+            if isinstance(config, CfgLayer):
+                payload = config.model_dump(exclude_none=True)
+            else:
+                payload = dict(config)
+
+        if name is not None:
+            payload["name"] = name
+
+        payload.update(kwargs)
+        layer = CfgLayer.model_validate(payload)
+        self.layers.append(layer)
+        return layer
 
     def normalize_thickness(self, unit="m"):
-        if unit == "m":
-            multiplier = 1
-        elif unit == "mm":
+        if unit == "mm":
             multiplier = 1000
+        elif unit == "cm":
+            multiplier = 1e2
         elif unit == "um":
             multiplier = 1e6
         elif unit == "mil":
             multiplier = 1 / 0.0000254
         elif unit == "in":
             multiplier = 1 / 0.0254
+        elif unit == "m":
+            multiplier = 1
         else:
             raise ValueError(f"Unsupported unit: {unit}")
         for layer in self.layers:
@@ -136,3 +212,6 @@ class CfgStackup(BaseModel):
                     layer.thickness = float(layer.thickness.replace("mil", "")) * 0.0000254 * multiplier
                 elif "in" in layer.thickness:
                     layer.thickness = float(layer.thickness.replace("in", "")) * 0.0254 * multiplier
+                elif "m" in layer.thickness:
+                    layer.thickness = float(layer.thickness.replace("m", "")) * 1 * multiplier
+            layer.thickness = f"{layer.thickness}{unit}"

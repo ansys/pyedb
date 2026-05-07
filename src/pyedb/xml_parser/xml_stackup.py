@@ -349,7 +349,8 @@ class XmlStackup(BaseModel):
         >>> cfg_data = CfgStackup(materials=[...], layers=[...])
         >>> stackup.import_from_cfg_stackup(cfg_data)
         """
-        cfg_stackup.normalize_thickness(unit="mm")
+        unit = "mm"
+        cfg_stackup.normalize_thickness(unit=unit)
         self.add_materials()
         for mat in cfg_stackup.materials:
             mat_kwargs = {}
@@ -358,11 +359,17 @@ class XmlStackup(BaseModel):
                     mat_kwargs[key] = value
             self.materials.add_material(name=mat.name, **mat_kwargs)
 
-        self.add_layers(length_unit="mm")
+        self.add_layers(length_unit=unit)
         for layer in cfg_stackup.layers:
             layer_kwargs = {}
             for key, value in layer.model_dump(exclude_none=True).items():
-                layer_kwargs[key] = value
+                if key == "thickness":
+                    layer_kwargs["thickness"] = value.replace(unit, "")
+                elif key == "color" and value is not None:
+                    # Convert tuple to hex color string
+                    layer_kwargs[key] = f"#{value[0]:02x}{value[1]:02x}{value[2]:02x}"
+                else:
+                    layer_kwargs[key] = value
             lay = self.layers.add_layer(**layer_kwargs)
             if lay.type == "signal":
                 lay.type = "conductor"
@@ -393,6 +400,11 @@ class XmlStackup(BaseModel):
         unit = self.layers.length_unit
         for lay in self.layers.layer:
             layer_dict = lay.model_dump(exclude_none=True)
+
+            # Hex color to tuple
+            color_str = layer_dict.get("color")
+            if color_str:
+                layer_dict["color"] = tuple(int(color_str[i : i + 2], 16) for i in (1, 3, 5))
 
             if not str(lay.thickness)[-1].isalpha():
                 layer_dict["thickness"] = f"{layer_dict['thickness']}{unit}"
