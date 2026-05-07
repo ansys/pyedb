@@ -977,8 +977,9 @@ class Configuration:
             set_padstack_definition(pdef, pdef_obj)
 
         if padstacks.instances:
-            # Clear cache once before iterating so we have a fresh view of existing instances
-            self._pedb.padstacks.clear_instances_cache()
+            # Clear cache once before iterating got grpc only.
+            if hasattr(self._pedb.padstacks, "clear_instances_cache"):
+                self._pedb.padstacks.clear_instances_cache()
             insts_by_name = self._pedb.padstacks.instances_by_name
             for inst in padstacks.instances:
                 inst_obj = insts_by_name.get(inst.name)
