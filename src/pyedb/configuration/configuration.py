@@ -653,7 +653,6 @@ class Configuration:
 
     def __update_stackup(self):
         """Apply layer settings to the current design."""
-
         # After import stackup, padstacks lose their definitions. They need to be fixed after loading stackup
         # step 1, archive padstack definitions
         temp_pdef_data = {}
