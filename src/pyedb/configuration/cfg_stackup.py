@@ -113,7 +113,6 @@ class CfgStackup(BaseModel):
     def add_material(
         self, name: str | None = None, config: CfgMaterial | dict[str, Any] | None = None, **kwargs
     ) -> CfgMaterial:
-
         """Add a material to the stackup using Pydantic validation.
 
         Parameters
