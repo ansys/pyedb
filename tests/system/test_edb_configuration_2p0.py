@@ -80,6 +80,43 @@ def check_dictionaries(source_dict, target_dict):
                 return False
     return True
 
+@pytest.mark.usefixtures("close_rpc_session")
+class TestClassStackup(BaseTestClass):
+    def test_create_stackup(self):
+        edbapp = self.edb_examples.create_empty_edb()
+        stackup = edbapp.configuration.cfg_data.stackup
+        stackup.add_material(name="mat1", config={"permittivity": "4.5"})
+        assert edbapp.configuration.cfg_data.stackup.materials[-1].name == "mat1"
+        assert edbapp.configuration.cfg_data.stackup.materials[-1].permittivity == "4.5"
+        stackup.add_material(config={"name":"mat2", "permittivity": "4"})
+        assert edbapp.configuration.cfg_data.stackup.materials[-1].name == "mat2"
+        assert edbapp.configuration.cfg_data.stackup.materials[-1].permittivity == "4"
+        stackup.add_layer_at_bottom(name="layer1", config={"type": "dielectric", "thickness": "0.1mm", "material": "mat1"})
+        assert edbapp.configuration.cfg_data.stackup.layers[-1].name == "layer1"
+        assert edbapp.configuration.cfg_data.stackup.layers[-1].material == "mat1"
+        assert edbapp.configuration.cfg_data.stackup.layers[-1].thickness == "0.1mm"
+        stackup.add_layer_at_bottom(config={"name":"layer2", "material": "mat2", "thickness": "0.2mm"})
+        assert edbapp.configuration.cfg_data.stackup.layers[-1].name == "layer2"
+
+        edbapp.configuration.run()
+        assert edbapp.materials.materials["mat1"].permittivity == 4.5
+        assert edbapp.stackup.layers["layer1"].material == "mat1"
+        assert edbapp.stackup.layers["layer1"].thickness == 0.0001
+        assert edbapp.stackup.layers["layer1"].type == "dielectric"
+        assert edbapp.stackup.layers["layer2"].type == "signal"
+
+        edbapp.configuration.cfg_data.stackup.normalize_thickness(unit="m")
+        assert edbapp.configuration.cfg_data.stackup.layers[0].thickness == "0.0001m"
+        edbapp.configuration.cfg_data.stackup.normalize_thickness(unit="mm")
+        assert edbapp.configuration.cfg_data.stackup.layers[0].thickness == "0.1mm"
+        edbapp.configuration.cfg_data.stackup.normalize_thickness(unit="um")
+        assert edbapp.configuration.cfg_data.stackup.layers[0].thickness == "100.0um"
+        edbapp.configuration.cfg_data.stackup.normalize_thickness(unit="mil")
+        assert edbapp.configuration.cfg_data.stackup.layers[0].thickness == '3.9370078740157473mil'
+        edbapp.configuration.cfg_data.stackup.normalize_thickness(unit="in")
+        assert edbapp.configuration.cfg_data.stackup.layers[0].thickness == '0.003937007874015747in'
+
+        edbapp.close(terminate_rpc_session=False)
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
@@ -90,7 +127,7 @@ class TestClass(BaseTestClass):
                     {
                         "name": "copper",
                         "conductivity": 570000000,
-                        "thermal_modifier": [
+                        "thermal_modifiers": [
                             {
                                 "property_name": "conductivity",
                                 "basic_quadratic_c1": 0,
@@ -108,7 +145,7 @@ class TestClass(BaseTestClass):
                         "name": "Megtron4",
                         "permittivity": 3.77,
                         "dielectric_loss_tangent": 0.005,
-                        "thermal_modifier": [
+                        "thermal_modifiers": [
                             {
                                 "property_name": "dielectric_loss_tangent",
                                 "basic_quadratic_c1": 0,
@@ -133,7 +170,7 @@ class TestClass(BaseTestClass):
         for mat in data["stackup"]["materials"]:
             target_mat = [i for i in data_from_db["stackup"]["materials"] if i["name"] == mat["name"]][0]
             for p, value in mat.items():
-                if p == "thermal_modifier":
+                if p == "thermal_modifiers":
                     continue
                 assert value == target_mat[p]
         edbapp.close(terminate_rpc_session=False)
