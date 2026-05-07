@@ -80,6 +80,7 @@ def check_dictionaries(source_dict, target_dict):
                 return False
     return True
 
+
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassStackup(BaseTestClass):
     def test_create_stackup(self):
@@ -88,14 +89,16 @@ class TestClassStackup(BaseTestClass):
         stackup.add_material(name="mat1", config={"permittivity": "4.5"})
         assert edbapp.configuration.cfg_data.stackup.materials[-1].name == "mat1"
         assert edbapp.configuration.cfg_data.stackup.materials[-1].permittivity == "4.5"
-        stackup.add_material(config={"name":"mat2", "permittivity": "4"})
+        stackup.add_material(config={"name": "mat2", "permittivity": "4"})
         assert edbapp.configuration.cfg_data.stackup.materials[-1].name == "mat2"
         assert edbapp.configuration.cfg_data.stackup.materials[-1].permittivity == "4"
-        stackup.add_layer_at_bottom(name="layer1", config={"type": "dielectric", "thickness": "0.1mm", "material": "mat1"})
+        stackup.add_layer_at_bottom(
+            name="layer1", config={"type": "dielectric", "thickness": "0.1mm", "material": "mat1"}
+        )
         assert edbapp.configuration.cfg_data.stackup.layers[-1].name == "layer1"
         assert edbapp.configuration.cfg_data.stackup.layers[-1].material == "mat1"
         assert edbapp.configuration.cfg_data.stackup.layers[-1].thickness == "0.1mm"
-        stackup.add_layer_at_bottom(config={"name":"layer2", "material": "mat2", "thickness": "0.2mm"})
+        stackup.add_layer_at_bottom(config={"name": "layer2", "material": "mat2", "thickness": "0.2mm"})
         assert edbapp.configuration.cfg_data.stackup.layers[-1].name == "layer2"
 
         edbapp.configuration.run()
@@ -112,11 +115,12 @@ class TestClassStackup(BaseTestClass):
         edbapp.configuration.cfg_data.stackup.normalize_thickness(unit="um")
         assert edbapp.configuration.cfg_data.stackup.layers[0].thickness == "100.0um"
         edbapp.configuration.cfg_data.stackup.normalize_thickness(unit="mil")
-        assert edbapp.configuration.cfg_data.stackup.layers[0].thickness == '3.9370078740157473mil'
+        assert edbapp.configuration.cfg_data.stackup.layers[0].thickness == "3.9370078740157473mil"
         edbapp.configuration.cfg_data.stackup.normalize_thickness(unit="in")
-        assert edbapp.configuration.cfg_data.stackup.layers[0].thickness == '0.003937007874015747in'
+        assert edbapp.configuration.cfg_data.stackup.layers[0].thickness == "0.003937007874015747in"
 
         edbapp.close(terminate_rpc_session=False)
+
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):

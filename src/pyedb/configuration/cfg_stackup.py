@@ -101,19 +101,17 @@ class CfgLayer(BaseModel):
     thickness: Optional[Union[float, str]] = None
     roughness: Optional[CfgRoughnessModel] = None
     etching: Optional[EtchingModel] = None
-    color: tuple| None = None
+    color: tuple | None = None
 
     model_config = {"extra": "forbid"}
+
 
 class CfgStackup(BaseModel):
     materials: List[CfgMaterial] = Field(default_factory=list)
     layers: List[CfgLayer] = Field(default_factory=list)
 
     def add_material(
-            self,
-            name: str | None = None,
-            config: CfgMaterial | dict[str, Any] | None = None,
-            **kwargs
+        self, name: str | None = None, config: CfgMaterial | dict[str, Any] | None = None, **kwargs
     ) -> CfgMaterial:
         """Add a material to the stackup using Pydantic validation.
 
@@ -130,7 +128,7 @@ class CfgStackup(BaseModel):
             The validated material object appended to ``materials``.
 
         """
-        payload= {}
+        payload = {}
         if config is not None:
             if isinstance(config, CfgMaterial):
                 # Convert to dict so kwargs/name can override deterministically.
@@ -147,10 +145,7 @@ class CfgStackup(BaseModel):
         return material
 
     def add_layer_at_bottom(
-            self,
-            name: str | None = None,
-            config: CfgLayer | dict[str, Any] | None = None,
-            **kwargs
+        self, name: str | None = None, config: CfgLayer | dict[str, Any] | None = None, **kwargs
     ) -> CfgLayer:
         """Add a layer to the stackup using Pydantic validation.
 
