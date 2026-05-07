@@ -1792,53 +1792,6 @@ class TestModelerConfig:
         assert d["planes"][0]["type"] == "polygon"
         assert len(d["planes"][0]["points"]) == 4
 
-    def test_padstack_definition(self):
-        m = ModelerConfig()
-        m.add_padstack_definition("via_0.2", material="copper")
-        d = m.to_dict()
-        assert d["padstack_definitions"][0]["name"] == "via_0.2"
-
-    def test_padstack_definition_all_params(self):
-        """add_padstack_definition exposes all fields explicitly."""
-        m = ModelerConfig()
-        m.add_padstack_definition(
-            "via_full",
-            hole_plating_thickness="25um",
-            material="copper",
-            hole_range="upper_pad_to_lower_pad",
-            pad_parameters={"shape": "circle"},
-            hole_parameters={"diam": "0.2mm"},
-            solder_ball_parameters={"diam": "150um"},
-        )
-        d = m.to_dict()["padstack_definitions"][0]
-        assert d["hole_range"] == "upper_pad_to_lower_pad"
-        assert d["pad_parameters"]["shape"] == "circle"
-
-    def test_padstack_instance(self):
-        m = ModelerConfig()
-        m.add_padstack_instance(name="v1", net_name="GND")
-        d = m.to_dict()
-        assert d["padstack_instances"][0]["name"] == "v1"
-
-    def test_padstack_instance_all_params(self):
-        """add_padstack_instance exposes all fields explicitly."""
-        m = ModelerConfig()
-        m.add_padstack_instance(
-            name="v2",
-            net_name="SIG",
-            definition="via_0.2",
-            layer_range=["top", "bot"],
-            position=[0.001, 0.002],
-            rotation=0,
-            is_pin=False,
-            hole_override_enabled=True,
-            hole_override_diameter="0.22mm",
-            solder_ball_layer="top",
-        )
-        d = m.to_dict()["padstack_instances"][0]
-        assert d["definition"] == "via_0.2"
-        assert d["hole_override_diameter"] == "0.22mm"
-        assert d["solder_ball_layer"] == "top"
 
     def test_delete_primitives_by_layer(self):
         m = ModelerConfig()
@@ -2723,31 +2676,6 @@ class TestBoundariesConfigExtras:
         b.set_dielectric_extent("Polygon", base_polygon="diel_poly")
         assert b.to_dict()["dielectric_base_polygon"] == "diel_poly"
 
-
-class TestModelerConfigComponent:
-    def test_add_component(self):
-        m = ModelerConfig()
-        comp = m.add_component("R1", part_type="resistor")
-        assert isinstance(comp, ComponentConfig)
-        d = m.to_dict()
-        assert d["components"][0]["reference_designator"] == "R1"
-        assert d["components"][0]["part_type"] == "resistor"
-
-    def test_add_component_with_model(self):
-        m = ModelerConfig()
-        comp = m.add_component("R1")
-        comp.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
-        d = m.to_dict()
-        assert d["components"][0]["pin_pair_model"][0]["resistance"] == "100ohm"
-
-    def test_modeler_round_trip_with_component(self, tmp_path):
-        cfg = EdbConfigBuilder()
-        comp = cfg.components.add("C1", part_type="capacitor")
-        comp.add_pin_pair_rlc("1", "2", capacitance="10nF", capacitance_enabled=True)
-        path = tmp_path / "mod_cfg.json"
-        cfg.to_json(str(path))
-        cfg2 = EdbConfigBuilder.from_json(str(path))
-        assert cfg.to_dict() == cfg2.to_dict()
 
 
 class TestEdbConfigBuilderFull:

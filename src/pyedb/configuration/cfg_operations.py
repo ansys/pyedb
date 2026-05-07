@@ -106,7 +106,7 @@ class CfgCutout(BaseModel):
 
     def to_dict(self) -> dict:
         """Serialize the cutout operation."""
-        return self.model_dump(exclude_none=True)
+        return self.model_dump(exclude_none=True, by_alias=True)
 
 
 class CfgOperations(BaseModel):

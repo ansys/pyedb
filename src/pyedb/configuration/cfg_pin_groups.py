@@ -109,7 +109,7 @@ class CfgPinGroups:
         self.pin_groups.append(pg)
         return pg
 
-    def add(self, reference_designator, name=None, pins=None, nets=None):
+    def add(self, name, reference_designator, pins=None, nets=None, net=None):
         """Add one or more pin groups to this configuration.
 
         Provide either *pins* (explicit list) **or** *nets* (one or more net
@@ -152,6 +152,8 @@ class CfgPinGroups:
         >>> cfg.pin_groups.add("pg_GND", "U1", pins=["A1", "A2", "B1"])
         >>> cfg.pin_groups.add("", "U1", nets=["VDD", "GND"])
         """
+        if nets is None and net is not None and pins is None:
+            nets = net
         if nets is not None and pins is None:
             net_list = nets if isinstance(nets, list) else [nets]
             # Auto-generate name for single net when not provided
