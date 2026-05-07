@@ -602,7 +602,7 @@ class Configuration:
                 mat = self._pedb.materials.add_material(**attrs)
 
                 for i in attrs.get("thermal_modifiers", []):
-                    mat.set_thermal_modifier(**i.to_dict())
+                    mat.set_thermal_modifier(**i)
 
     def get_materials(self):
         """Retrieve materials from the current design."""
@@ -622,18 +622,18 @@ class Configuration:
                 if i.type == "signal":
                     if i.material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material, **self._pedb.materials.default_conductor_property_values
+                            name=i.material,  config=self._pedb.materials.default_conductor_property_values
                         )
 
                     if i.fill_material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                            name=i.material, config=self._pedb.materials.default_dielectric_property_values
                         )
 
                 elif i.type == "dielectric":
                     if i.material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                            name=i.material,  config=self._pedb.materials.default_dielectric_property_values
                         )
 
         if len(self._pedb.stackup.signal_layers) == 0:
