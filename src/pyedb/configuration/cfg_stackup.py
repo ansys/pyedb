@@ -487,22 +487,68 @@ class CfgStackup(BaseModel):
         self.materials.append(mat)
         return mat
 
-    def add_material(self, name, **kwargs):
+    def add_material(
+        self,
+        name: str,
+        conductivity: Optional[Union[str, float]] = None,
+        permittivity: Optional[Union[str, float]] = None,
+        dielectric_loss_tangent: Optional[Union[str, float]] = None,
+        magnetic_loss_tangent: Optional[Union[str, float]] = None,
+        mass_density: Optional[Union[str, float]] = None,
+        permeability: Optional[Union[str, float]] = None,
+        poisson_ratio: Optional[Union[str, float]] = None,
+        specific_heat: Optional[Union[str, float]] = None,
+        thermal_conductivity: Optional[Union[str, float]] = None,
+        youngs_modulus: Optional[Union[str, float]] = None,
+        thermal_expansion_coefficient: Optional[Union[str, float]] = None,
+        dc_conductivity: Optional[Union[str, float]] = None,
+        dc_permittivity: Optional[Union[str, float]] = None,
+        dielectric_model_frequency: Optional[Union[str, float]] = None,
+        loss_tangent_at_frequency: Optional[Union[str, float]] = None,
+        permittivity_at_frequency: Optional[Union[str, float]] = None,
+        thermal_modifiers=None,
+        **kwargs,
+    ) -> "CfgMaterial":
         """Add a material definition to the stackup.
 
         Parameters
         ----------
         name : str
             Material name, e.g. ``"copper"`` or ``"FR4_epoxy"``.
-        **kwargs
-            Optional material properties forwarded to :class:`CfgMaterial`.
-            Accepted keys: ``conductivity``, ``permittivity``,
-            ``dielectric_loss_tangent``, ``magnetic_loss_tangent``,
-            ``mass_density``, ``permeability``, ``poisson_ratio``,
-            ``specific_heat``, ``thermal_conductivity``, ``youngs_modulus``,
-            ``thermal_expansion_coefficient``, ``dc_conductivity``,
-            ``dc_permittivity``, ``dielectric_model_frequency``,
-            ``loss_tangent_at_frequency``, ``permittivity_at_frequency``.
+        conductivity : str or float, optional
+            Electrical conductivity in S/m.
+        permittivity : str or float, optional
+            Relative permittivity (dielectric constant).
+        dielectric_loss_tangent : str or float, optional
+            Dielectric loss tangent.
+        magnetic_loss_tangent : str or float, optional
+            Magnetic loss tangent.
+        mass_density : str or float, optional
+            Mass density in kg/m³.
+        permeability : str or float, optional
+            Relative permeability.
+        poisson_ratio : str or float, optional
+            Poisson's ratio.
+        specific_heat : str or float, optional
+            Specific heat capacity in J/(kg·K).
+        thermal_conductivity : str or float, optional
+            Thermal conductivity in W/(m·K).
+        youngs_modulus : str or float, optional
+            Young's modulus in Pa.
+        thermal_expansion_coefficient : str or float, optional
+            Coefficient of thermal expansion in 1/K.
+        dc_conductivity : str or float, optional
+            DC conductivity override.
+        dc_permittivity : str or float, optional
+            DC permittivity override.
+        dielectric_model_frequency : str or float, optional
+            Frequency for the dielectric model in Hz.
+        loss_tangent_at_frequency : str or float, optional
+            Loss tangent at the model frequency.
+        permittivity_at_frequency : str or float, optional
+            Permittivity at the model frequency.
+        thermal_modifiers : list, optional
+            List of thermal modifier definitions.
 
         Returns
         -------
@@ -514,7 +560,46 @@ class CfgStackup(BaseModel):
         >>> cfg.stackup.add_material("copper", conductivity=5.8e7)
         >>> cfg.stackup.add_material("fr4", permittivity=4.4, dielectric_loss_tangent=0.02)
         """
-        mat = CfgMaterial(name=name, **kwargs)
+        # Check for duplicates in the local registry first.
+        for _mat in self.materials:
+            if _mat.name == name:
+                raise ValueError(
+                    f"Material '{name}' already exists in the builder. "
+                    f"Use get_material('{name}') to retrieve and modify it instead."
+                )
+        # When a live EDB session is attached, also check the database.
+        if self._pedb is not None:
+            edb_mats = self._pedb.materials.materials
+            if name in edb_mats:
+                raise ValueError(
+                    f"Material '{name}' already exists in the EDB material library. "
+                    f"Use get_material('{name}') to retrieve and modify it instead."
+                )
+
+        props = dict(
+            conductivity=conductivity,
+            permittivity=permittivity,
+            dielectric_loss_tangent=dielectric_loss_tangent,
+            magnetic_loss_tangent=magnetic_loss_tangent,
+            mass_density=mass_density,
+            permeability=permeability,
+            poisson_ratio=poisson_ratio,
+            specific_heat=specific_heat,
+            thermal_conductivity=thermal_conductivity,
+            youngs_modulus=youngs_modulus,
+            thermal_expansion_coefficient=thermal_expansion_coefficient,
+            dc_conductivity=dc_conductivity,
+            dc_permittivity=dc_permittivity,
+            dielectric_model_frequency=dielectric_model_frequency,
+            loss_tangent_at_frequency=loss_tangent_at_frequency,
+            permittivity_at_frequency=permittivity_at_frequency,
+            thermal_modifiers=thermal_modifiers,
+        )
+        # Merge any extra kwargs (e.g. from existing serialization round-trips)
+        props.update(kwargs)
+        # Drop None values so CfgMaterial does not complain about unknown None fields
+        props = {k: v for k, v in props.items() if v is not None}
+        mat = CfgMaterial(name=name, **props)
         self.materials.append(mat)
         return mat
 

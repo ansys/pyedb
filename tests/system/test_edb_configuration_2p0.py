@@ -2341,6 +2341,38 @@ class TestOperations(BaseTestClass):
         assert polygon.layer_name == "1_Top"
         edb_app.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_stackup(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        layers = cfg_builder.stackup.get_layers()
+        assert len(layers) == 26
+        cfg_builder.stackup.add_material(name="Test_material",
+                                         permittivity=3.48,
+                                         dielectric_loss_tangent=0.02)
+        cfg_builder.stackup.add_material(name="Test_metal",
+                                         conductivity=6e7,
+                                         )
+        cfg_builder.stackup.add_dielectric_layer(name="Test_dielectric",
+                                                 material="Test_material",
+                                                 thickness="250um")
+        edb_app.configuration.run(cfg_builder)
+        assert "Test_material" in edb_app.materials.materials
+        assert "Test_metal" in edb_app.materials.materials
+        assert "Test_dielectric" in edb_app.stackup.layers
+
+        diel_mat = edb_app.materials.materials.get("Test_material")
+        assert diel_mat.name == "Test_material"
+        assert diel_mat.permittivity == pytest.approx(3.48)
+        assert diel_mat.dielectric_loss_tangent == pytest.approx(0.02)
+        met_mat = edb_app.materials.materials.get("Test_metal")
+        assert met_mat.name == "Test_metal"
+        assert met_mat.conductivity == pytest.approx(6e7)
+
+        dielectric_layer = edb_app.stackup.layers.get("Test_dielectric")
+        assert dielectric_layer.material == "Test_material"
+        assert dielectric_layer.thickness == 250e-6
+        edb_app.close(terminate_rpc_session=False)
 
 
 

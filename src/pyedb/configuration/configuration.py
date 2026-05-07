@@ -786,21 +786,29 @@ class Configuration:
         if len(input_signal_layers) == 0:
             return
         else:  # Create materials with default properties used in stackup but not defined
-            materials = [m.name for m in self.cfg_data.stackup.materials]
+
+            def _material_known(mat_name):
+                """Return True if mat_name is already in the builder or in EDB."""
+                if any(m.name == mat_name for m in self.cfg_data.stackup.materials):
+                    return True
+                if mat_name in self._pedb.materials.materials:
+                    return True
+                return False
+
             for i in self.cfg_data.stackup.layers:
                 if i.type == "signal":
-                    if i.material not in materials:
+                    if not _material_known(i.material):
                         self.cfg_data.stackup.add_material(
                             name=i.material, **self._pedb.materials.default_conductor_property_values
                         )
 
-                    if i.fill_material not in materials:
+                    if i.fill_material and not _material_known(i.fill_material):
                         self.cfg_data.stackup.add_material(
-                            name=i.material, **self._pedb.materials.default_dielectric_property_values
+                            name=i.fill_material, **self._pedb.materials.default_dielectric_property_values
                         )
 
                 elif i.type == "dielectric":
-                    if i.material not in materials:
+                    if not _material_known(i.material):
                         self.cfg_data.stackup.add_material(
                             name=i.material, **self._pedb.materials.default_dielectric_property_values
                         )

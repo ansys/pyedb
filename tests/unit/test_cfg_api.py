@@ -343,6 +343,152 @@ class TestStackupConfig:
 
 
 # ---------------------------------------------------------------------------
+# TestCfgStackupAddMaterial
+# ---------------------------------------------------------------------------
+
+
+class TestCfgStackupAddMaterial:
+    def test_returns_material_config_instance(self):
+        s = StackupConfig()
+        mat = s.add_material("copper", conductivity=5.8e7)
+        assert isinstance(mat, MaterialConfig)
+
+    def test_material_appended_to_list(self):
+        s = StackupConfig()
+        s.add_material("copper", conductivity=5.8e7)
+        d = s.to_dict()
+        assert "materials" in d
+        assert len(d["materials"]) == 1
+        assert d["materials"][0]["name"] == "copper"
+
+    def test_material_conductivity_stored(self):
+        s = StackupConfig()
+        s.add_material("copper", conductivity=5.8e7)
+        d = s.to_dict()["materials"][0]
+        assert d["conductivity"] == 5.8e7
+
+    def test_material_dielectric_properties(self):
+        s = StackupConfig()
+        s.add_material("fr4", permittivity=4.4, dielectric_loss_tangent=0.02)
+        d = s.to_dict()["materials"][0]
+        assert d["permittivity"] == 4.4
+        assert d["dielectric_loss_tangent"] == 0.02
+
+    def test_material_thermal_properties(self):
+        s = StackupConfig()
+        s.add_material("fr4", thermal_conductivity=0.3, mass_density=1900, specific_heat=1050)
+        d = s.to_dict()["materials"][0]
+        assert d["thermal_conductivity"] == 0.3
+        assert d["mass_density"] == 1900
+        assert d["specific_heat"] == 1050
+
+    def test_material_mechanical_properties(self):
+        s = StackupConfig()
+        s.add_material("copper", youngs_modulus=110e9, poisson_ratio=0.34, thermal_expansion_coefficient=17e-6)
+        d = s.to_dict()["materials"][0]
+        assert d["youngs_modulus"] == 110e9
+        assert d["poisson_ratio"] == 0.34
+        assert d["thermal_expansion_coefficient"] == 17e-6
+
+    def test_material_dc_override_properties(self):
+        s = StackupConfig()
+        s.add_material("mat", dc_conductivity=1e5, dc_permittivity=4.0)
+        d = s.to_dict()["materials"][0]
+        assert d["dc_conductivity"] == 1e5
+        assert d["dc_permittivity"] == 4.0
+
+    def test_material_frequency_dependent_properties(self):
+        s = StackupConfig()
+        s.add_material(
+            "mat",
+            dielectric_model_frequency=1e9,
+            loss_tangent_at_frequency=0.01,
+            permittivity_at_frequency=4.3,
+        )
+        d = s.to_dict()["materials"][0]
+        assert d["dielectric_model_frequency"] == 1e9
+        assert d["loss_tangent_at_frequency"] == 0.01
+        assert d["permittivity_at_frequency"] == 4.3
+
+    def test_multiple_materials_accumulated(self):
+        s = StackupConfig()
+        s.add_material("copper", conductivity=5.8e7)
+        s.add_material("fr4", permittivity=4.4)
+        s.add_material("air", permittivity=1.0)
+        d = s.to_dict()
+        assert len(d["materials"]) == 3
+        names = [m["name"] for m in d["materials"]]
+        assert names == ["copper", "fr4", "air"]
+
+    def test_name_only_no_extra_keys(self):
+        s = StackupConfig()
+        s.add_material("mymat")
+        d = s.to_dict()["materials"][0]
+        assert d == {"name": "mymat"}
+
+    def test_none_values_not_included(self):
+        s = StackupConfig()
+        s.add_material("copper", conductivity=5.8e7, permittivity=None)
+        d = s.to_dict()["materials"][0]
+        assert "permittivity" not in d
+
+    def test_all_properties(self):
+        s = StackupConfig()
+        props = {
+            "conductivity": 1e6,
+            "permittivity": 4.4,
+            "dielectric_loss_tangent": 0.01,
+            "magnetic_loss_tangent": 0.001,
+            "mass_density": 8960,
+            "permeability": 1.0,
+            "poisson_ratio": 0.34,
+            "specific_heat": 385,
+            "thermal_conductivity": 401,
+            "youngs_modulus": 110e9,
+            "thermal_expansion_coefficient": 17e-6,
+            "dc_conductivity": 1e5,
+            "dc_permittivity": 4.0,
+            "dielectric_model_frequency": 1e9,
+            "loss_tangent_at_frequency": 0.01,
+            "permittivity_at_frequency": 4.3,
+        }
+        s.add_material("full_mat", **props)
+        d = s.to_dict()["materials"][0]
+        for key, val in props.items():
+            assert d[key] == val
+
+    def test_duplicate_in_builder_raises(self):
+        s = StackupConfig()
+        s.add_material("copper", conductivity=5.8e7)
+        with pytest.raises(ValueError, match="already exists"):
+            s.add_material("copper", conductivity=4.1e7)
+
+    def test_duplicate_error_message_advises_get_material(self):
+        s = StackupConfig()
+        s.add_material("fr4", permittivity=4.4)
+        with pytest.raises(ValueError, match="get_material"):
+            s.add_material("fr4")
+
+    def test_duplicate_check_in_edb_raises(self):
+        """When a live EDB session is attached, add_material raises if the
+        material already exists in the EDB library."""
+        mock_pedb = MagicMock()
+        mock_pedb.materials.materials = {"copper": MagicMock()}
+        s = StackupConfig()
+        s._set_pedb(mock_pedb)
+        with pytest.raises(ValueError, match="already exists"):
+            s.add_material("copper", conductivity=5.8e7)
+
+    def test_no_duplicate_check_without_pedb(self):
+        """Without a live session only the local registry is checked."""
+        s = StackupConfig()
+        s.add_material("copper", conductivity=5.8e7)
+        # Same name a second time must raise even without _pedb
+        with pytest.raises(ValueError):
+            s.add_material("copper")
+
+
+# ---------------------------------------------------------------------------
 # NetsConfig
 # ---------------------------------------------------------------------------
 
@@ -1119,7 +1265,6 @@ class TestHfssSetupConfig:
         assert h.to_dict()["freq_sweep"][0]["frequencies"][0]["distribution"] == "log_scale"
 
     def test_add_frequency_sweep_inline_single(self):
-        """distribution='single' uses start as the single frequency point."""
         h = HfssSetupConfig("setup1")
         h.add_frequency_sweep("sw", start="5GHz", distribution="single")
         freqs = h.to_dict()["freq_sweep"][0]["frequencies"]
