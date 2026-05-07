@@ -24,6 +24,7 @@
 from typing import Literal, Union
 
 from pydantic import BaseModel, Field
+
 from pyedb.misc.decorators import deprecated
 
 

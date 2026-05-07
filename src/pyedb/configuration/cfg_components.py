@@ -22,11 +22,11 @@
 
 """Build the ``components`` configuration section and its model helpers."""
 
+import re as _re
+
 from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
 from pydantic import BaseModel
-
-import re as _re
 
 from pyedb.configuration.cfg_common import CfgBase
 
@@ -336,9 +336,7 @@ class CfgComponent(CfgBase):
         if orientation and self.pyedb_obj.type.lower() == "ic":
             snake_to_pascal = _get_snake_to_pascal()
             ic_die_prop = cp.GetDieProperty().Clone()
-            ic_die_prop.SetOrientation(
-                getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
-            )
+            ic_die_prop.SetOrientation(getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation)))
             cp.SetDieProperty(ic_die_prop)
         self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
 
