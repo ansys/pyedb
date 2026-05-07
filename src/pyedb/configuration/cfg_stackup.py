@@ -111,10 +111,12 @@ class CfgStackup(BaseModel):
     layers: List[CfgLayer] = Field(default_factory=list)
 
     def add_material(
-        self, name: str | None = None, config: CfgMaterial | dict[str, Any] | None = None, **kwargs
+        self,
+        name: str | None = None,
+        config: CfgMaterial | dict[str, Any] | None = None,
+        **kwargs,
     ) -> CfgMaterial:
-        """
-        Add a material to the stackup using Pydantic validation.
+        """Add a material to the stackup using Pydantic validation.
 
         Parameters
         ----------
@@ -127,6 +129,7 @@ class CfgStackup(BaseModel):
         -------
         CfgMaterial
             The validated material object appended to ``materials``.
+
         """
         payload = {}
         if config is not None:
@@ -145,10 +148,12 @@ class CfgStackup(BaseModel):
         return material
 
     def add_layer_at_bottom(
-        self, name: str | None = None, config: CfgLayer | dict[str, Any] | None = None, **kwargs
+        self,
+        name: str | None = None,
+        config: CfgLayer | dict[str, Any] | None = None,
+        **kwargs,
     ) -> CfgLayer:
-        """
-        Add a layer to the stackup using Pydantic validation.
+        """Add a layer to the stackup using Pydantic validation.
 
         Parameters
         ----------
@@ -163,6 +168,7 @@ class CfgStackup(BaseModel):
         -------
         CfgLayer
             The validated layer object appended to ``layers``.
+
         """
         payload = {}
         if config is not None:
@@ -197,15 +203,29 @@ class CfgStackup(BaseModel):
         for layer in self.layers:
             if isinstance(layer.thickness, str):
                 if "um" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("um", "")) * 1e-6 * multiplier
+                    layer.thickness = (
+                        float(layer.thickness.replace("um", "")) * 1e-6 * multiplier
+                    )
                 elif "mm" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("mm", "")) * 1e-3 * multiplier
+                    layer.thickness = (
+                        float(layer.thickness.replace("mm", "")) * 1e-3 * multiplier
+                    )
                 elif "cm" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("cm", "")) * 1e-2 * multiplier
+                    layer.thickness = (
+                        float(layer.thickness.replace("cm", "")) * 1e-2 * multiplier
+                    )
                 elif "mil" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("mil", "")) * 0.0000254 * multiplier
+                    layer.thickness = (
+                        float(layer.thickness.replace("mil", ""))
+                        * 0.0000254
+                        * multiplier
+                    )
                 elif "in" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("in", "")) * 0.0254 * multiplier
+                    layer.thickness = (
+                        float(layer.thickness.replace("in", "")) * 0.0254 * multiplier
+                    )
                 elif "m" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("m", "")) * 1 * multiplier
+                    layer.thickness = (
+                        float(layer.thickness.replace("m", "")) * 1 * multiplier
+                    )
             layer.thickness = f"{layer.thickness}{unit}"
