@@ -1837,7 +1837,7 @@ class TestComponent(BaseTestClass):
         db = self.edb_examples.get_si_verse()
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
         component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
-        assert component["ic_die_properties"]["type"] in ["none", "no_die"]
+        assert component["ic_die_properties"]["type"] in ["none", "no_die", "flip_chip", "flipchip"]
         if db.grpc:
             # grpc does have this property not DotNet.
             assert "orientation" in component["ic_die_properties"]

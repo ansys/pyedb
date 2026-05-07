@@ -1684,16 +1684,24 @@ class ICDieProperty:
         self._die_property = self._component.component_property.die_property
 
     @property
-    def die_orientation(self) -> str:
+    def die_orientation(self) -> str | None:
         """Die orientation.
 
         Returns
         -------
-        str
-            Die orientation, ``chip_up`` or ``chip_down``.
+        str or None
+            Die orientation, ``chip_up`` or ``chip_down``.  Returns
+            ``"chip_up"`` as a default when the EDB orientation is not
+            explicitly set to ``CHIP_DOWN``.
 
         """
-        return self._die_property.die_orientation.name.lower()
+        orientation = self._die_property.die_orientation
+        if orientation is None:
+            return "chip_up"
+        if orientation == CoreDieOrientation.CHIP_DOWN:
+            return "chip_down"
+        # CoreDieOrientation.CHIP_UP and CoreDieOrientation.NONE both map to "chip_up"
+        return "chip_up"
 
     @die_orientation.setter
     def die_orientation(self, value):
@@ -1709,16 +1717,26 @@ class ICDieProperty:
         self._component.component_property = component_property
 
     @property
-    def die_type(self) -> str:
+    def die_type(self) -> str | None:
         """Die type.
 
         Returns
         -------
-        str
-            Die type, ``none``, ``flipchip``, ``wirebond``.
+        str or None
+            Die type: ``"none"``, ``"flip_chip"``, ``"wire_bond"``,
+            or ``None`` if the die property is null / not set.
 
         """
-        return self._die_property.die_type.name.lower()
+        dt = self._die_property.die_type
+        if dt is None:
+            return None
+        if dt == CoreDieType.NONE:
+            return "none"
+        if dt == CoreDieType.FLIPCHIP:
+            return "flip_chip"
+        if dt == CoreDieType.WIREBOND:
+            return "wire_bond"
+        return dt.name.lower()
 
     @die_type.setter
     def die_type(self, value):

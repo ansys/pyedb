@@ -280,6 +280,8 @@ class CfgComponent(CfgBase):
                 material_name=material,
             )
         else:
+            cp = self.pyedb_obj._get_component_property_clone()
+            solder_ball_prop = cp.GetSolderBallProperty().Clone()
             solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
             solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
             cp.SetSolderBallProperty(solder_ball_prop)
@@ -299,10 +301,13 @@ class CfgComponent(CfgBase):
         cp = self.pyedb_obj
 
         die_type = cp.ic_die_properties.die_type
-        # Default to flip_chip when the component has no die type configured,
-        # since the EDB API requires a valid die type to accept solder balls.
         if die_type in ("no_die", "none", None):
-            die_type = "flip_chip"
+            temp["type"] = "no_die"
+            orientation = cp.ic_die_properties.die_orientation
+            if orientation is not None:
+                temp["orientation"] = orientation
+            self.ic_die_properties = temp
+            return
         temp["type"] = die_type
         if die_type not in ("no_die", "none", None):
             temp["orientation"] = cp.ic_die_properties.die_orientation

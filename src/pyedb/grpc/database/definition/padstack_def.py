@@ -702,7 +702,10 @@ class PadstackDef:
             ``"end_on_lower_pad"``, ``"upper_pad_to_lower_pad"``, and ``"undefined"``.
         """
         try:
-            return self.core.data.hole_range.name.lower()
+            value = self.core.data.hole_range.name.lower()
+            if value == "unknown_range":
+                return None
+            return value
         except:
             return None
 

@@ -21,7 +21,7 @@
 # SOFTWARE.
 """Build padstack definition and instance entries for configuration payloads."""
 
-from typing import Literal, Union
+from typing import Union
 
 from pydantic import BaseModel, Field
 
@@ -197,9 +197,7 @@ class CfgPadstackDefinition(CfgBase):
 
     hole_plating_thickness: str | float | None = None
     material: str | None = Field(None, alias="hole_material")
-    hole_range: Literal[
-        "through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad"
-    ] | None = None
+    hole_range: str | None = None
 
     pad_parameters: dict | None = None
     hole_parameters: dict | None = None
@@ -210,9 +208,7 @@ class CfgPadstackDefinition(CfgBase):
         name: str,
         hole_plating_thickness: str | float | None = None,
         material: str | None = None,
-        hole_range: Literal[
-            "through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad"
-        ] | None = None,
+        hole_range: str | None = None,
         pad_parameters: dict | None = None,
         hole_parameters: dict | None = None,
         solder_ball_parameters: dict | None = None,
@@ -399,6 +395,30 @@ class CfgPadstacks(CfgBase):
         )
         return obj
 
+
+    def add_padstack_definition(self, **kwargs):
+        """Add a padstack definition from raw keyword arguments.
+
+        .. deprecated::
+            Use :meth:`add_definition` instead.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments forwarded to :meth:`add_definition`.
+
+        Returns
+        -------
+        CfgPadstackDefinition
+        """
+        import warnings
+
+        warnings.warn(
+            "add_padstack_definition is deprecated, use add_definition instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.add_definition(**kwargs)
 
     def add_definition(
         self,
@@ -641,6 +661,30 @@ class CfgPadstacks(CfgBase):
         obj = CfgPadstackDefinition(**kwargs)
         self.definitions.append(obj)
         return obj
+
+    def add_padstack_instance(self, **kwargs):
+        """Add a padstack instance from raw keyword arguments.
+
+        .. deprecated::
+            Use :meth:`add_instance` instead.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments forwarded to :meth:`add_instance`.
+
+        Returns
+        -------
+        CfgPadstackInstance
+        """
+        import warnings
+
+        warnings.warn(
+            "add_padstack_instance is deprecated, use add_instance instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.add_instance(**kwargs)
 
     def add_instance(
         self,
