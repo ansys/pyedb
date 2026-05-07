@@ -622,7 +622,7 @@ class Configuration:
                 if i.type == "signal":
                     if i.material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material,  config=self._pedb.materials.default_conductor_property_values
+                            name=i.material, config=self._pedb.materials.default_conductor_property_values
                         )
 
                     if i.fill_material not in materials:
@@ -633,7 +633,7 @@ class Configuration:
                 elif i.type == "dielectric":
                     if i.material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material,  config=self._pedb.materials.default_dielectric_property_values
+                            name=i.material, config=self._pedb.materials.default_dielectric_property_values
                         )
 
         if len(self._pedb.stackup.signal_layers) == 0:
