@@ -113,7 +113,8 @@ class CfgStackup(BaseModel):
     def add_material(
         self, name: str | None = None, config: CfgMaterial | dict[str, Any] | None = None, **kwargs
     ) -> CfgMaterial:
-        """Add a material to the stackup using Pydantic validation.
+        """
+        Add a material to the stackup using Pydantic validation.
 
         Parameters
         ----------
@@ -147,7 +148,6 @@ class CfgStackup(BaseModel):
     def add_layer_at_bottom(
         self, name: str | None = None, config: CfgLayer | dict[str, Any] | None = None, **kwargs
     ) -> CfgLayer:
-
         """
         Add a layer to the stackup using Pydantic validation.
 
