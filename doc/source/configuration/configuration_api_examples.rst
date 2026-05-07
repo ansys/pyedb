@@ -95,18 +95,18 @@ need to call ``to_dict()`` yourself:
 
 .. code-block:: python
 
-   edb.configuration.run(cfg)          # load + apply in one call
-   edb.configuration.run("my.json")    # from a file
-   edb.configuration.run({"nets": {}}) # from a raw dict
+   edb.configuration.run(cfg)  # load + apply in one call
+   edb.configuration.run("my.json")  # from a file
+   edb.configuration.run({"nets": {}})  # from a raw dict
 
 Exporting to a file or dictionary
 -----------------------------------
 
 .. code-block:: python
 
-   cfg.to_json("my_config.json")   # human-readable JSON
-   cfg.to_toml("my_config.toml")   # TOML alternative
-   payload = cfg.to_dict()         # plain Python dict (for inspection or APIs)
+   cfg.to_json("my_config.json")  # human-readable JSON
+   cfg.to_toml("my_config.toml")  # TOML alternative
+   payload = cfg.to_dict()  # plain Python dict (for inspection or APIs)
 
 The exported file can later be applied without any Python script:
 
@@ -142,10 +142,14 @@ linear sweep — all in about fifteen lines.
 
    # Signal nets of interest
    signal_nets = [
-       "PCIe_Gen4_RX0_P", "PCIe_Gen4_RX0_N",
-       "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N",
-       "PCIe_Gen4_RX2_P", "PCIe_Gen4_RX2_N",
-       "PCIe_Gen4_RX3_P", "PCIe_Gen4_RX3_N",
+       "PCIe_Gen4_RX0_P",
+       "PCIe_Gen4_RX0_N",
+       "PCIe_Gen4_RX1_P",
+       "PCIe_Gen4_RX1_N",
+       "PCIe_Gen4_RX2_P",
+       "PCIe_Gen4_RX2_N",
+       "PCIe_Gen4_RX3_P",
+       "PCIe_Gen4_RX3_N",
    ]
 
    cfg = edb.configuration.create_config_builder()
@@ -196,10 +200,14 @@ one differential circuit port per signal net pair.
    edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
 
    signal_nets = [
-       "PCIe_Gen4_RX0_P", "PCIe_Gen4_RX0_N",
-       "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N",
-       "PCIe_Gen4_RX2_P", "PCIe_Gen4_RX2_N",
-       "PCIe_Gen4_RX3_P", "PCIe_Gen4_RX3_N",
+       "PCIe_Gen4_RX0_P",
+       "PCIe_Gen4_RX0_N",
+       "PCIe_Gen4_RX1_P",
+       "PCIe_Gen4_RX1_N",
+       "PCIe_Gen4_RX2_P",
+       "PCIe_Gen4_RX2_N",
+       "PCIe_Gen4_RX3_P",
+       "PCIe_Gen4_RX3_N",
    ]
 
    cfg = edb.configuration.create_config_builder()
@@ -216,7 +224,9 @@ one differential circuit port per signal net pair.
 
    # HFSS setup
    setup = cfg.setups.add_hfss_setup(name="HFSS_PCIe")
-   setup.add_frequency_sweep(name="Sweep_LIN", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+   setup.add_frequency_sweep(
+       name="Sweep_LIN", start="1GHz", stop="10GHz", step_or_count="0.5GHz"
+   )
 
    # Create one pin group per net on U1 — the builder accepts a list for bulk creation
    cfg.pin_groups.add(reference_designator="U1", nets="GND")
@@ -246,10 +256,14 @@ omit ``diameter`` and ``height`` and let PyEDB read them from the footprint.
    edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
 
    signal_nets = [
-       "PCIe_Gen4_RX0_P", "PCIe_Gen4_RX0_N",
-       "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N",
-       "PCIe_Gen4_RX2_P", "PCIe_Gen4_RX2_N",
-       "PCIe_Gen4_RX3_P", "PCIe_Gen4_RX3_N",
+       "PCIe_Gen4_RX0_P",
+       "PCIe_Gen4_RX0_N",
+       "PCIe_Gen4_RX1_P",
+       "PCIe_Gen4_RX1_N",
+       "PCIe_Gen4_RX2_P",
+       "PCIe_Gen4_RX2_N",
+       "PCIe_Gen4_RX3_P",
+       "PCIe_Gen4_RX3_N",
    ]
 
    cfg = edb.configuration.create_config_builder()
@@ -263,7 +277,9 @@ omit ``diameter`` and ``height`` and let PyEDB read them from the footprint.
    )
 
    setup = cfg.setups.add_hfss_setup(name="HFSS_PCIe")
-   setup.add_frequency_sweep(name="Sweep_LIN", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+   setup.add_frequency_sweep(
+       name="Sweep_LIN", start="1GHz", stop="10GHz", step_or_count="0.5GHz"
+   )
 
    # Pass only shape + reference_designator — diameter and height are inferred
    # from the existing padstack geometry of component U1
@@ -292,8 +308,8 @@ net is automatically removed from any other list when it is added to a new one.
 
    # Query a net that currently exists in the EDB layout
    net = cfg.nets.get("PCIe_Gen4_RX0_P")
-   print(net.classification)       # "signal"
-   print(net.is_power_ground)      # False
+   print(net.classification)  # "signal"
+   print(net.is_power_ground)  # False
 
    # Reclassify it as power/ground …
    cfg.nets.add_power_ground_nets(["PCIe_Gen4_RX0_P"])
@@ -301,7 +317,7 @@ net is automatically removed from any other list when it is added to a new one.
 
    # … then move it back to signal — it is removed from power_ground_nets automatically
    cfg.nets.add_signal_nets(["PCIe_Gen4_RX0_P"])
-   print("PCIe_Gen4_RX0_P" in cfg.nets.signal_nets)        # True
+   print("PCIe_Gen4_RX0_P" in cfg.nets.signal_nets)  # True
    print("PCIe_Gen4_RX0_P" in cfg.nets.power_ground_nets)  # False
 
    # Finalise as power/ground and apply — the EDB layout is updated
@@ -374,8 +390,8 @@ for a clean modal excitation.
    edb.configuration.run(cfg)
 
    port = edb.ports["diff_wave_RX3"]
-   print(port.hfss_type)           # "Wave"
-   print(len(port.terminals))      # 2
+   print(port.hfss_type)  # "Wave"
+   print(len(port.terminals))  # 2
    edb.close()
 
 Example 7 — Single-ended wave port
@@ -404,8 +420,8 @@ from the active net object so you never need to know the internal primitive ID.
    edb.configuration.run(cfg)
 
    port = edb.ports["wave_RX3_P"]
-   print(port.hfss_type)      # "Wave"
-   print(port.net_name)       # "PCIe_Gen4_RX3_P"
+   print(port.hfss_type)  # "Wave"
+   print(port.net_name)  # "PCIe_Gen4_RX3_P"
    edb.close()
 
 Example 8 — Full HFSS setup with broadband adaptation and auto mesh
@@ -422,10 +438,14 @@ seeding, and a linear-scale sweep — all from the builder.
    cfg = edb.configuration.create_config_builder()
 
    signal_nets = [
-       "PCIe_Gen4_RX0_P", "PCIe_Gen4_RX0_N",
-       "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N",
-       "PCIe_Gen4_RX2_P", "PCIe_Gen4_RX2_N",
-       "PCIe_Gen4_RX3_P", "PCIe_Gen4_RX3_N",
+       "PCIe_Gen4_RX0_P",
+       "PCIe_Gen4_RX0_N",
+       "PCIe_Gen4_RX1_P",
+       "PCIe_Gen4_RX1_N",
+       "PCIe_Gen4_RX2_P",
+       "PCIe_Gen4_RX2_N",
+       "PCIe_Gen4_RX3_P",
+       "PCIe_Gen4_RX3_N",
    ]
 
    # Solder balls + coax ports are needed so auto-mesh can target the right nets
@@ -437,7 +457,9 @@ seeding, and a linear-scale sweep — all from the builder.
    hfss = cfg.setups.add_hfss_setup(name="HFSS_Full")
 
    # Linear sweep in 0.5 GHz steps from 1 GHz to 10 GHz
-   hfss.add_frequency_sweep(name="Sweep_LIN", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+   hfss.add_frequency_sweep(
+       name="Sweep_LIN", start="1GHz", stop="10GHz", step_or_count="0.5GHz"
+   )
 
    # Automatic mesh seeding — seeds trace widths and via side counts
    hfss.set_auto_mesh_operation(
@@ -492,7 +514,7 @@ Add a SIwave AC setup tuned for SI accuracy and a fine linear sweep from DC to
    edb.configuration.run(cfg)
 
    setup = edb.setups["SIwave_AC"]
-   print(setup.si_slider_position)   # 2
+   print(setup.si_slider_position)  # 2
    edb.close()
 
 Example 10 — SIwave DC setup with thermal export
@@ -518,7 +540,7 @@ data export for downstream thermal analysis.
    edb.configuration.run(cfg)
 
    edb_setup = edb.setups["SIwave_DC"]
-   print(edb_setup.dc_settings.dc_slider_position)         # 2
+   print(edb_setup.dc_settings.dc_slider_position)  # 2
    print(edb_setup.dc_ir_settings.export_dc_thermal_data)  # True
    edb.close()
 
@@ -558,11 +580,11 @@ place one instance at a specific XY coordinate on the board.
 
    # Verify the definition and instance were created
    via_def = edb.padstacks.definitions["my_via"]
-   print(via_def.hole_diameter)    # 200e-6
+   print(via_def.hole_diameter)  # 200e-6
    print(via_def.hole_plating_thickness)  # 10e-6
    instance = via_def.instances[0]
-   print(instance.name)       # "my_via_inst"
-   print(instance.position)   # [0.001, 0.002]
+   print(instance.name)  # "my_via_inst"
+   print(instance.position)  # [0.001, 0.002]
    edb.close()
 
 Example 12 — Geometry creation via the modeler section
@@ -623,12 +645,12 @@ without touching the low-level geometry API.  All primitives are created when
 
    # Verify each primitive was created with the expected attributes
    trace = edb.layout.find_primitive(name="my_trace")[0]
-   print(trace.layer_name)   # "1_Top"
-   print(trace.net_name)     # "SIG"
+   print(trace.layer_name)  # "1_Top"
+   print(trace.net_name)  # "SIG"
 
    circle = edb.layout.find_primitive(name="my_circle")[0]
-   print(circle.center)      # (0.005, 0.005)
-   print(circle.radius)      # ~0.002
+   print(circle.center)  # (0.005, 0.005)
+   print(circle.radius)  # ~0.002
 
    edb.close()
 
@@ -673,15 +695,15 @@ insert a new dielectric layer into the stackup.
 
    # Verify the materials and layer were registered in the design
    diel = edb.materials.materials["my_dielectric"]
-   print(diel.permittivity)              # ~3.48
-   print(diel.dielectric_loss_tangent)   # ~0.02
+   print(diel.permittivity)  # ~3.48
+   print(diel.dielectric_loss_tangent)  # ~0.02
 
    metal = edb.materials.materials["my_metal"]
    print(metal.conductivity)  # ~6e7
 
    layer = edb.stackup.layers["my_diel_layer"]
-   print(layer.material)    # "my_dielectric"
-   print(layer.thickness)   # 250e-6
+   print(layer.material)  # "my_dielectric"
+   print(layer.thickness)  # 250e-6
    edb.close()
 
 Exporting the builder as JSON for review and reuse
