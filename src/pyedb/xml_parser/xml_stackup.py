@@ -365,6 +365,9 @@ class XmlStackup(BaseModel):
             for key, value in layer.model_dump(exclude_none=True).items():
                 if key == "thickness":
                     layer_kwargs["thickness"] = value.replace(unit, "")
+                elif key == "color" and value is not None:
+                    # Convert tuple to hex color string
+                    layer_kwargs[key] = f"#{value[0]:02x}{value[1]:02x}{value[2]:02x}"
                 else:
                     layer_kwargs[key] = value
             lay = self.layers.add_layer(**layer_kwargs)
@@ -397,6 +400,10 @@ class XmlStackup(BaseModel):
         unit = self.layers.length_unit
         for lay in self.layers.layer:
             layer_dict = lay.model_dump(exclude_none=True)
+
+            # Hex color to tuple
+            color_str = layer_dict["color"]
+            layer_dict["color"] = tuple(int(color_str[i:i+2], 16) for i in (1, 3, 5))
 
             if not str(lay.thickness)[-1].isalpha():
                 layer_dict["thickness"] = f"{layer_dict['thickness']}{unit}"
