@@ -241,6 +241,22 @@ This section defines materials and the layer sequence.
 * ``permittivity_at_frequency``
 * ``thermal_modifiers``
 
+  Each entry in ``thermal_modifiers`` is an object with these fields:
+
+  * ``property_name`` — material property this modifier applies to (required)
+  * ``basic_quadratic_c1`` — first quadratic coefficient (default ``0``)
+  * ``basic_quadratic_c2`` — second quadratic coefficient (default ``0``)
+  * ``basic_quadratic_temperature_reference`` — reference temperature in °C
+    (default ``22``)
+  * ``advanced_quadratic_lower_limit`` — lower temperature limit in °C
+    (default ``-273.15``)
+  * ``advanced_quadratic_upper_limit`` — upper temperature limit in °C
+    (default ``1000``)
+  * ``advanced_quadratic_auto_calculate`` — auto-calculate quadratic constants
+    (default ``true``)
+  * ``advanced_quadratic_lower_constant`` — lower constant (default ``1``)
+  * ``advanced_quadratic_upper_constant`` — upper constant (default ``1``)
+
 ``stackup.layers[]`` objects support these keys:
 
 * ``name``
@@ -465,8 +481,27 @@ Common terminal keys are:
 * ``amplitude``
 * ``phase``
 * ``terminal_to_ground``
+
+  Accepted values: ``"no_ground"`` / ``"kNoGround"`` (default),
+  ``"negative"`` / ``"kNegative"``, ``"positive"`` / ``"kPositive"``,
+  ``"kNegativeNode"``, ``"kPositiveNode"``.
+
 * ``boundary_type``
+
+  Accepted values (human-friendly aliases recommended):
+
+  * ``"port"`` / ``"PortBoundary"``
+  * ``"pec"`` / ``"PecBoundary"``
+  * ``"rlc"`` / ``"RlcBoundary"``
+  * ``"current_source"`` / ``"kCurrentSource"``
+  * ``"voltage_source"`` / ``"kVoltageSource"``
+  * ``"voltage_probe"`` / ``"kVoltageProbe"``
+  * ``"dc_terminal"`` / ``"kDcTerminal"``
+  * ``"kNexximGround"``, ``"kNexximPort"``, ``"InvalidBoundary"``
+
 * ``hfss_type``
+
+  Accepted values: ``"Wave"``, ``"Gap"``, or ``null``.
 
 Type-specific keys:
 

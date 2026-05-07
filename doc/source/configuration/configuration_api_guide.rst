@@ -99,7 +99,9 @@ exist in the design.
    * - ``cfg.stackup.get_material("copper")``
      - :class:`MaterialConfig` pre-loaded with current material properties.
    * - ``cfg.nets.get("GND")``
-     - ``dict`` with ``name``, ``is_power_ground``, ``classification``.
+     - :class:`CfgNet` bound to the live EDB session. Attributes: ``name``,
+       ``is_power_ground`` (bool), ``classification`` (``"signal"`` or
+       ``"power_ground"``). Returns ``False`` if the net does not exist.
    * - ``cfg.padstacks.get_definition("via_0.2")``
      - :class:`PadstackDefinitionConfig` pre-loaded with current definition.
    * - ``cfg.padstacks.get_instance("via_A1")``
@@ -650,19 +652,19 @@ sweeps later without keeping an explicit reference).
        ``"multi_frequencies"``.
    * - ``set_single_frequency_adaptive(freq, max_passes, max_delta)``
      - ``"5GHz"``, ``20``, ``0.02``
-      - Refine at one adaptive frequency. Returns *self* for chaining.
-    * - ``set_broadband_adaptive(low_freq, high_freq, max_passes, max_delta)``
-      - ``"1GHz"``, ``"10GHz"``, ``20``, ``0.02``
-      - Refine across a low/high frequency pair. Returns *self* for chaining.
-    * - ``add_multi_frequency_adaptive(freq, max_passes, max_delta)``
-      - ``None``, ``20``, ``0.02``
-      - Append one adaptive point (call multiple times). Returns *self*.
-    * - ``set_auto_mesh_operation(enabled, trace_ratio_seeding, signal_via_side_number)``
-      - ``True``, ``3.0``, ``12``
-      - Configure automatic mesh seeding. Returns *self* for chaining.
-    * - ``add_length_mesh_operation(name, nets_layers_list, max_length, max_elements, restrict_length, refine_inside)``
-      - ``None``, ``None``, ``"1mm"``, ``1000``, ``True``, ``False``
-      - Append a length-based mesh operation. Returns *self* for chaining.
+     - Refine at one adaptive frequency. Returns *self* for chaining.
+   * - ``set_broadband_adaptive(low_freq, high_freq, max_passes, max_delta)``
+     - ``"1GHz"``, ``"10GHz"``, ``20``, ``0.02``
+     - Refine across a low/high frequency pair. Returns *self* for chaining.
+   * - ``add_multi_frequency_adaptive(freq, max_passes, max_delta)``
+     - ``None``, ``20``, ``0.02``
+     - Append one adaptive point (call multiple times). Returns *self*.
+   * - ``set_auto_mesh_operation(enabled, trace_ratio_seeding, signal_via_side_number)``
+     - ``True``, ``3.0``, ``12``
+     - Configure automatic mesh seeding. Returns *self* for chaining.
+   * - ``add_length_mesh_operation(name, nets_layers_list, max_length, max_elements, restrict_length, refine_inside)``
+     - ``None``, ``None``, ``"1mm"``, ``1000``, ``True``, ``False``
+     - Append a length-based mesh operation. Returns *self* for chaining.
    * - ``add_frequency_sweep(name, sweep_type, start, stop, step_or_count, distribution, …)``
      - ``None``, ``"interpolation"``, ``None``, ``None``, ``None``, ``"linear_count"``
      - Add a sweep; returns :class:`FrequencySweepConfig`.
@@ -743,8 +745,8 @@ frequency range can be fully described in the call itself—no subsequent
      - ``"interpolation"`` or ``"discrete"``.
    * - ``start``
      - ``None``
-      - Start frequency of an inline range, for example ``"1GHz"``. When supplied
-        *stop* and *step_or_count* are also required.
+     - Start frequency of an inline range, for example ``"1GHz"``. When supplied
+       *stop* and *step_or_count* are also required.
    * - ``stop``
      - ``None``
      - Stop frequency of the inline range.
@@ -754,7 +756,7 @@ frequency range can be fully described in the call itself—no subsequent
        (``"linear_scale"``, ``"log_scale"``).
    * - ``distribution``
      - ``"linear_count"``
-      - Frequency distribution for the inline range. Accepted values and
+     - Frequency distribution for the inline range. Accepted values and
        aliases:
 
        * ``"linear_count"`` / ``"linearcount"`` / ``"linear count"``
@@ -762,6 +764,11 @@ frequency range can be fully described in the call itself—no subsequent
        * ``"linear_scale"`` / ``"linearscale"`` / ``"linear scale"``
        * ``"log_scale"`` / ``"logscale"`` / ``"log scale"``
        * ``"single"``
+
+       .. note::
+
+          When ``step_or_count`` is a frequency string (e.g. ``"10MHz"``), the
+          distribution is automatically inferred as ``"linear_scale"``.
    * - ``use_q3d_for_dc``
      - ``False``
      - Use Q3D solver for DC point (HFSS only).
@@ -788,19 +795,19 @@ frequency range can be fully described in the call itself—no subsequent
      - HFSS solver-region sweep name.
    * - ``add_linear_count_frequencies(start, stop, count)``
      - –
-      - Linear distribution with explicit point count. Returns *self*.
-    * - ``add_log_count_frequencies(start, stop, count)``
-      - –
-      - Logarithmic distribution with explicit point count. Returns *self*.
-    * - ``add_linear_scale_frequencies(start, stop, step)``
-      - –
-      - Linear distribution with explicit step size. Returns *self*.
-    * - ``add_log_scale_frequencies(start, stop, step)``
-      - –
-      - Logarithmic distribution with explicit step. Returns *self*.
-    * - ``add_single_frequency(freq)``
-      - –
-      - Single discrete frequency point. Returns *self*.
+     - Linear distribution with explicit point count. Returns *self*.
+   * - ``add_log_count_frequencies(start, stop, count)``
+     - –
+     - Logarithmic distribution with explicit point count. Returns *self*.
+   * - ``add_linear_scale_frequencies(start, stop, step)``
+     - –
+     - Linear distribution with explicit step size. Returns *self*.
+   * - ``add_log_scale_frequencies(start, stop, step)``
+     - –
+     - Logarithmic distribution with explicit step. Returns *self*.
+   * - ``add_single_frequency(freq)``
+     - –
+     - Single discrete frequency point. Returns *self*.
 
 Nets
 ----
@@ -822,8 +829,9 @@ appropriate list (``signal_nets`` or ``power_nets``) automatically.
    * - ``add_reference_nets(nets)``
      - Store reference (ground) net names (not serialized; forwarded to cutout).
    * - ``get(net_name)``
-     - Return ``{"name", "is_power_ground", "classification"}`` from EDB and
-       auto-register the net. Requires a session-aware builder.
+     - Return a :class:`CfgNet` object with attributes ``name``,
+       ``is_power_ground``, and ``classification``. Returns ``False`` if the
+       net is not found. Requires a session-aware builder.
    * - ``signal_nets`` *(property)*
      - Read-only list of configured signal net names.
    * - ``power_ground_nets`` *(property)*
@@ -863,7 +871,7 @@ to define *new* entries.
      - Description
    * - ``conductivity``
      - –
-      - Electrical conductivity in S/m (for example ``5.8e7`` for copper).
+     - Electrical conductivity in S/m (for example ``5.8e7`` for copper).
    * - ``permittivity``
      - –
      - Relative permittivity.
@@ -910,7 +918,16 @@ to define *new* entries.
      - –
      - Permittivity at *dielectric_model_frequency*.
 
-**Layers:** ``cfg.stackup.add_signal_layer(name, …)`` / ``add_dielectric_layer(name, …)`` / ``get_layer(name)``
+.. note::
+
+   A material can also carry a ``thermal_modifiers`` list where each entry is a
+   :class:`CfgMaterialPropertyThermalModifier` with the following fields:
+   ``property_name``, ``basic_quadratic_c1``, ``basic_quadratic_c2``,
+   ``basic_quadratic_temperature_reference``,
+   ``advanced_quadratic_lower_limit``, ``advanced_quadratic_upper_limit``,
+   ``advanced_quadratic_auto_calculate``, ``advanced_quadratic_lower_constant``,
+   ``advanced_quadratic_upper_constant``.  These are set via the JSON/TOML
+   file format; no dedicated builder helper is provided yet. / ``add_dielectric_layer(name, …)`` / ``get_layer(name)``
 
 .. list-table::
    :header-rows: 1
@@ -956,7 +973,7 @@ to register *new* ones.
      - Description
    * - ``hole_plating_thickness``
      - –
-      - Plating thickness, for example ``"25um"``.
+     - Plating thickness, for example ``"25um"``.
    * - ``material``
      - –
      - Hole conductor material name.
@@ -1118,6 +1135,32 @@ only when fine-grained control over individual terminal objects is required.
    * - ``add_bundle_terminal(name, terminals)``
      - :class:`BundleTerminal`
 
+**Accepted** ``boundary_type`` **values**
+
+The following human-friendly aliases are recommended:
+
+* ``"port"`` — generic port boundary (maps to ``"PortBoundary"``)
+* ``"pec"`` — perfect electric conductor (maps to ``"PecBoundary"``)
+* ``"rlc"`` — RLC boundary (maps to ``"RlcBoundary"``)
+* ``"current_source"`` — current source (maps to ``"kCurrentSource"``)
+* ``"voltage_source"`` — voltage source (maps to ``"kVoltageSource"``)
+* ``"voltage_probe"`` — voltage probe (maps to ``"kVoltageProbe"``)
+* ``"dc_terminal"`` — DC terminal (maps to ``"kDcTerminal"``)
+
+The full set of accepted values also includes the raw AEDT literals
+``"PortBoundary"``, ``"PecBoundary"``, ``"RlcBoundary"``,
+``"kCurrentSource"``, ``"kVoltageSource"``, ``"kNexximGround"``,
+``"kNexximPort"``, ``"kDcTerminal"``, ``"kVoltageProbe"``,
+``"InvalidBoundary"``.
+
+**Accepted** ``terminal_to_ground`` **values**
+
+* ``"no_ground"`` / ``"kNoGround"`` — no ground connection (default)
+* ``"negative"`` / ``"kNegative"``— negative terminal to ground
+* ``"positive"`` / ``"kPositive"`` — positive terminal to ground
+
+The full set also includes ``"kNegativeNode"`` and ``"kPositiveNode"``.
+
 Ports
 -----
 
@@ -1130,7 +1173,7 @@ Ports
    * - ``add_circuit_port(name, positive_terminal, negative_terminal, reference_designator, impedance, distributed)``
      - Lumped circuit port.
    * - ``add_coax_port(name, positive_terminal, reference_designator, impedance, padstack, net, pin)``
-      - Coaxial (via) port. Accepts a raw *positive_terminal* dict **or** one
+     - Coaxial (via) port. Accepts a raw *positive_terminal* dict **or** one
        of the convenience shortcuts *padstack*, *net*, *pin* (see below).
    * - ``add_wave_port(name, primitive_name, point_on_edge, horizontal_extent_factor, vertical_extent_factor, pec_launch_width)``
      - Wave port on a trace edge.
@@ -1216,7 +1259,9 @@ Boundaries
    * - ``set_air_box_extents(horizontal_size, horizontal_is_multiple, positive_vertical_size, …)``
      - Set air-box padding on all sides.
    * - ``set_extent(extent_type, base_polygon, truncate_air_box_at_ground)``
-     - Set the layout extent shape.
+     - Set the layout extent shape. ``truncate_air_box_at_ground`` is an
+       air-box option and belongs to ``set_air_box_extents``; it is accepted
+       here as a convenience passthrough.
    * - ``set_dielectric_extent(extent_type, expansion_size, is_multiple, base_polygon, honor_user_dielectric)``
      - Configure the dielectric envelope.
 
@@ -1283,6 +1328,9 @@ Variables
 ---------
 
 ``cfg.variables.add(name, value, description="")``
+
+``add_variable(name, value, description="")`` is an alias for ``add()`` and
+can be used interchangeably.
 
 Prefix *name* with ``$`` for project-scope variables; no prefix for design-scope.
 
