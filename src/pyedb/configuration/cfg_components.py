@@ -26,7 +26,46 @@ from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrie
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
 from pydantic import BaseModel
 
+import re as _re
+
 from pyedb.configuration.cfg_common import CfgBase
+
+
+def _smallest_pin_pad_size(comp) -> float | None:
+    """Return the smallest pin pad dimension (metres) for *comp*, or ``None``.
+
+    Only pins that expose a valid ``bounding_box`` attribute returning a
+    non-degenerate ``((x1, y1), (x2, y2))`` tuple are considered.  Pins
+    that do not have the attribute or that return a zero-area box are
+    skipped silently so a single bad pin never blocks the whole component.
+    """
+    min_size: float | None = None
+    for pin in comp.pins.values():
+        bbox = getattr(pin, "bounding_box", None)
+        if not bbox or len(bbox) < 2:
+            continue
+        p0, p1 = bbox[0], bbox[1]
+        if not p0 or not p1 or len(p0) < 2 or len(p1) < 2:
+            continue
+        w = abs(p1[0] - p0[0])
+        h = abs(p1[1] - p0[1])
+        size: float = min(w, h)
+        if size > 0 and (min_size is None or size < min_size):
+            min_size = size
+    return min_size
+
+
+def _height_from_diameter(diameter: str) -> str:
+    """Return ``2/3 * diameter`` as a unit string, e.g. ``"100um"``.
+
+    Raises ``ValueError`` if *diameter* cannot be parsed.
+    """
+    m = _re.match(r"([0-9.eE+\-]+)\s*([a-zA-Z]*)", diameter)
+    if m is None:
+        raise ValueError(f"Cannot parse diameter value: {diameter!r}")
+    num = float(m.group(1))
+    unit = m.group(2) or "um"
+    return f"{num * 2 / 3:.6g}{unit}"
 
 
 def _get_snake_to_pascal():
@@ -588,39 +627,14 @@ class CfgComponent(CfgBase):
         if diameter is None:
             diameter = "150um"  # safe default
             if self._pedb is not None and refdes is not None:
-                try:
-                    comp = self._pedb.components.instances.get(refdes)
-                    if comp is not None:
-                        min_size = None
-                        placement_layer = comp.placement_layer
-                        for pin in comp.pins.values():
-                            try:
-                                bbox = pin.bounding_box
-                                # bbox = ((x1,y1),(x2,y2))
-                                w = abs(bbox[1][0] - bbox[0][0])
-                                h = abs(bbox[1][1] - bbox[0][1])
-                                size = min(w, h)
-                                if size > 0 and (min_size is None or size < min_size):
-                                    min_size = size
-                            except Exception:
-                                continue
-                        if min_size is not None and min_size > 0:
-                            # Convert metres to a string like "150um"
-                            diameter = f"{min_size * 1e6:.6g}um"
-                except Exception:
-                    pass  # keep the safe default
+                comp = self._pedb.components.instances.get(refdes)
+                if comp is not None:
+                    min_size = _smallest_pin_pad_size(comp)
+                    if min_size is not None and min_size > 0:
+                        diameter = f"{min_size * 1e6:.6g}um"
 
         if height is None:
-            # Parse diameter value (strip unit suffix) to compute 2/3 * diameter
-            try:
-                import re as _re
-
-                m = _re.match(r"([0-9.eE+\-]+)\s*([a-zA-Z]*)", diameter)
-                num = float(m.group(1))
-                unit = m.group(2) or "um"
-                height = f"{num * 2 / 3:.6g}{unit}"
-            except Exception:
-                height = "100um"
+            height = _height_from_diameter(diameter)
 
         data = {
             "shape": shape,
