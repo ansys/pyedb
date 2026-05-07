@@ -2348,15 +2348,12 @@ class TestOperations(BaseTestClass):
         cfg_builder = edb_app.configuration.create_config_builder()
         layers = cfg_builder.stackup.get_layers()
         assert len(layers) == 26
-        cfg_builder.stackup.add_material(name="Test_material",
-                                         permittivity=3.48,
-                                         dielectric_loss_tangent=0.02)
-        cfg_builder.stackup.add_material(name="Test_metal",
-                                         conductivity=6e7,
-                                         )
-        cfg_builder.stackup.add_dielectric_layer(name="Test_dielectric",
-                                                 material="Test_material",
-                                                 thickness="250um")
+        cfg_builder.stackup.add_material(name="Test_material", permittivity=3.48, dielectric_loss_tangent=0.02)
+        cfg_builder.stackup.add_material(
+            name="Test_metal",
+            conductivity=6e7,
+        )
+        cfg_builder.stackup.add_dielectric_layer(name="Test_dielectric", material="Test_material", thickness="250um")
         edb_app.configuration.run(cfg_builder)
         assert "Test_material" in edb_app.materials.materials
         assert "Test_metal" in edb_app.materials.materials
@@ -2374,6 +2371,3 @@ class TestOperations(BaseTestClass):
         assert dielectric_layer.material == "Test_material"
         assert dielectric_layer.thickness == 250e-6
         edb_app.close(terminate_rpc_session=False)
-
-
-

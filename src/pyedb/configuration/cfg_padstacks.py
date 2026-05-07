@@ -396,7 +396,6 @@ class CfgPadstacks(CfgBase):
         )
         return obj
 
-
     def add_padstack_definition(self, **kwargs):
         """Add a padstack definition from raw keyword arguments.
 
