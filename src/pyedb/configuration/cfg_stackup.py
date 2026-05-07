@@ -147,7 +147,6 @@ class CfgStackup(BaseModel):
     def add_layer_at_bottom(
         self, name: str | None = None, config: CfgLayer | dict[str, Any] | None = None, **kwargs
     ) -> CfgLayer:
-
         """
         Add a layer to the stackup using Pydantic validation.
 
