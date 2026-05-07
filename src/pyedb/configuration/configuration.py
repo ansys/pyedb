@@ -591,7 +591,7 @@ class Configuration:
             self.cfg_data.variables.add_variable(name, str(obj.value), obj.description)
 
     def apply_materials(self):
-        """Apply material settings to the current design. """
+        """Apply material settings to the current design."""
         cfg_stackup = self.cfg_data.stackup
         if len(cfg_stackup.materials):
             materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
@@ -652,7 +652,7 @@ class Configuration:
             self._pedb.stackup.add_layer_bottom(**attrs)
 
     def __update_stackup(self):
-        """Apply layer settings to the current design. """
+        """Apply layer settings to the current design."""
 
         # After import stackup, padstacks lose their definitions. They need to be fixed after loading stackup
         # step 1, archive padstack definitions
