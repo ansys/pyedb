@@ -326,21 +326,20 @@ class CfgComponent(CfgBase):
             return
         if not shape:
             return
-        cp = self.pyedb_obj._get_component_property_clone()
-        solder_ball_prop = cp.GetSolderBallProperty().Clone()
-        solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
-        solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
-        cp.SetSolderBallProperty(solder_ball_prop)
-        # Apply orientation to IC die property if provided
-        orientation = self.solder_ball_properties.get("orientation")
-        if orientation and self.pyedb_obj.type.lower() == "ic":
-            snake_to_pascal = _get_snake_to_pascal()
-            ic_die_prop = cp.GetDieProperty().Clone()
-            ic_die_prop.SetOrientation(
-                getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
-            )
-            cp.SetDieProperty(ic_die_prop)
-        self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
+        diameter = self.solder_ball_properties.get("diameter")
+        mid_diameter = self.solder_ball_properties.get("mid_diameter", diameter)
+        height = self.solder_ball_properties.get("height")
+        material = self.solder_ball_properties.get("material", "solder")
+        orientation = self.solder_ball_properties.get("orientation", "chip_down")
+        self._pedb.components.set_solder_ball(
+            component=self.pyedb_obj.name,
+            sball_diam=self._pedb.edb_value(diameter).ToDouble() if diameter else None,
+            sball_height=self._pedb.edb_value(height).ToDouble() if height else None,
+            shape=shape.capitalize(),
+            sball_mid_diam=self._pedb.edb_value(mid_diameter).ToDouble() if mid_diameter else None,
+            chip_orientation=orientation,
+            material_name=material,
+        )
 
     def _retrieve_ic_die_properties_from_edb(self):
         temp = dict()
