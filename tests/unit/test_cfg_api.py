@@ -1792,7 +1792,6 @@ class TestModelerConfig:
         assert d["planes"][0]["type"] == "polygon"
         assert len(d["planes"][0]["points"]) == 4
 
-
     def test_delete_primitives_by_layer(self):
         m = ModelerConfig()
         m.delete_primitives_by_layer(["old_layer1", "old_layer2"])
@@ -2675,7 +2674,6 @@ class TestBoundariesConfigExtras:
         b = BoundariesConfig()
         b.set_dielectric_extent("Polygon", base_polygon="diel_poly")
         assert b.to_dict()["dielectric_base_polygon"] == "diel_poly"
-
 
 
 class TestEdbConfigBuilderFull:
