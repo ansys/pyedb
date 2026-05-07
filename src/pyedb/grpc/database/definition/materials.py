@@ -23,10 +23,10 @@
 from __future__ import absolute_import  # noreorder
 
 import difflib
+from enum import Enum
 import logging
 import os
 import re
-from enum import Enum
 from typing import TYPE_CHECKING, Optional, Union
 
 if TYPE_CHECKING:
@@ -41,16 +41,16 @@ from ansys.edb.core.definition.material_def import (
     MaterialDef as CoreMaterialDef,
     MaterialProperty as CoreMaterialProperty,
 )
+from ansys.edb.core.definition.material_property_thermal_modifier import (
+    MaterialPropertyThermalModifier as CoreMaterialPropertyThermalModifier,
+)
 from ansys.edb.core.definition.multipole_debye_model import (
     MultipoleDebyeModel as CoreMultipoleDebyeModel,
 )
-from ansys.edb.core.definition.material_property_thermal_modifier import (
-    MaterialPropertyThermalModifier as CoreMaterialPropertyThermalModifier)
 from ansys.edb.core.utility.material_property_thermal_modifier_params import (
+    AdvancedQuadraticParams as CoreAdvancedQuadraticParams,
     BasicQuadraticParams as CoreBasicQuadraticParams,
-    AdvancedQuadraticParams as CoreAdvancedQuadraticParams
 )
-
 from pydantic import BaseModel, confloat
 
 from pyedb import Edb
@@ -107,15 +107,15 @@ def get_line_float_value(line):
 class MateiralPropertyId(str, Enum):
     permittivity = "PERMITTIVITY"
     permeability = "PERMEABILITY"
-    conductivity= "CONDUCTIVITY"
-    dielectric_loss_tangent= "DIELECTRIC_LOSS_TANGENT"
-    magnetic_loss_tangent= "MAGNETIC_LOSS_TANGENT"
-    thermal_conductivity= "THERMAL_CONDUCTIVITY"
-    mass_density= "MASS_DENSITY"
-    specific_heat= "SPECIFIC_HEAT"
-    youngs_modulus= "YOUNGS_MODULUS"
-    poisson_ratio= "POISSONS_RATIO"
-    thermal_expansion_coefficient= "THERMAL_EXPANSION_COEFFICIENT"
+    conductivity = "CONDUCTIVITY"
+    dielectric_loss_tangent = "DIELECTRIC_LOSS_TANGENT"
+    magnetic_loss_tangent = "MAGNETIC_LOSS_TANGENT"
+    thermal_conductivity = "THERMAL_CONDUCTIVITY"
+    mass_density = "MASS_DENSITY"
+    specific_heat = "SPECIFIC_HEAT"
+    youngs_modulus = "YOUNGS_MODULUS"
+    poisson_ratio = "POISSONS_RATIO"
+    thermal_expansion_coefficient = "THERMAL_EXPANSION_COEFFICIENT"
 
 
 class MaterialProperties(BaseModel):
@@ -199,7 +199,7 @@ class Material:
 
     @property
     def dielectric_material_model(
-            self,
+        self,
     ) -> CoreDebyeModel | CoreMultipoleDebyeModel | CoreDjordjecvicSarkarModel | float:
         """Material dielectric model.
 
@@ -652,16 +652,16 @@ class Material:
         return res
 
     def set_thermal_modifier(
-            self,
-            property_name: str,
-            basic_quadratic_temperature_reference: float = 21,
-            basic_quadratic_c1: float = 0.1,
-            basic_quadratic_c2: float = 0.1,
-            advanced_quadratic_lower_limit: float = -270,
-            advanced_quadratic_upper_limit: float = 1001,
-            advanced_quadratic_auto_calculate: bool = False,
-            advanced_quadratic_lower_constant: float = 1.1,
-            advanced_quadratic_upper_constant: float = 1.1,
+        self,
+        property_name: str,
+        basic_quadratic_temperature_reference: float = 21,
+        basic_quadratic_c1: float = 0.1,
+        basic_quadratic_c2: float = 0.1,
+        advanced_quadratic_lower_limit: float = -270,
+        advanced_quadratic_upper_limit: float = 1001,
+        advanced_quadratic_auto_calculate: bool = False,
+        advanced_quadratic_lower_constant: float = 1.1,
+        advanced_quadratic_upper_constant: float = 1.1,
     ):
         """Sets the material property thermal modifier of a given material property.
 
@@ -864,14 +864,14 @@ class Materials(object):
         return material
 
     def add_djordjevicsarkar_dielectric(
-            self,
-            name,
-            permittivity_at_frequency,
-            loss_tangent_at_frequency,
-            dielectric_model_frequency,
-            dc_conductivity=None,
-            dc_permittivity=None,
-            **kwargs,
+        self,
+        name,
+        permittivity_at_frequency,
+        loss_tangent_at_frequency,
+        dielectric_model_frequency,
+        dc_conductivity=None,
+        dc_permittivity=None,
+        **kwargs,
     ) -> Material:
         """Add a dielectric using the Djordjevic-Sarkar model.
 
@@ -928,15 +928,15 @@ class Materials(object):
             raise ValueError("Use realistic values to define DS model.")
 
     def add_debye_material(
-            self,
-            name,
-            permittivity_low,
-            permittivity_high,
-            loss_tangent_low,
-            loss_tangent_high,
-            lower_freqency,
-            higher_frequency,
-            **kwargs,
+        self,
+        name,
+        permittivity_low,
+        permittivity_high,
+        loss_tangent_low,
+        loss_tangent_high,
+        lower_freqency,
+        higher_frequency,
+        **kwargs,
     ) -> Material:
         """Add a dielectric with the Debye model.
 
@@ -991,12 +991,12 @@ class Materials(object):
             raise ValueError("Use realistic values to define Debye model.")
 
     def add_multipole_debye_material(
-            self,
-            name,
-            frequencies,
-            permittivities,
-            loss_tangents,
-            **kwargs,
+        self,
+        name,
+        frequencies,
+        permittivities,
+        loss_tangents,
+        **kwargs,
     ) -> Material:
         """Add a dielectric with the Multipole Debye model.
 
@@ -1292,9 +1292,9 @@ class Materials(object):
                                 material_description["conductivity"] = value
                         # Extra case to avoid confusion ("conductivity" is included in "thermal_conductivity")
                         if (
-                                "loss_tangent" in line
-                                and "dielectric_loss_tangent" not in line
-                                and "magnetic_loss_tangent" not in line
+                            "loss_tangent" in line
+                            and "dielectric_loss_tangent" not in line
+                            and "magnetic_loss_tangent" not in line
                         ):
                             warnings.warn(
                                 "This key is deprecated in versions >0.7.0 and will soon be removed. "
