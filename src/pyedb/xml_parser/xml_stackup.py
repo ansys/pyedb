@@ -402,8 +402,9 @@ class XmlStackup(BaseModel):
             layer_dict = lay.model_dump(exclude_none=True)
 
             # Hex color to tuple
-            color_str = layer_dict["color"]
-            layer_dict["color"] = tuple(int(color_str[i : i + 2], 16) for i in (1, 3, 5))
+            color_str = layer_dict.get("color")
+            if color_str:
+                layer_dict["color"] = tuple(int(color_str[i : i + 2], 16) for i in (1, 3, 5))
 
             if not str(lay.thickness)[-1].isalpha():
                 layer_dict["thickness"] = f"{layer_dict['thickness']}{unit}"
