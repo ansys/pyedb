@@ -317,9 +317,12 @@ class CfgComponent(CfgBase):
                 sbp.set_diameter(self._pedb.value(diameter), self._pedb.value(mid_diameter))
             else:
                 raise ValueError("Solderball shape must be either cylinder or spheroid")
+            sbp.shape = shape_lower
             sbp.height = self._pedb.value(height)
             if material is not None:
                 sbp.material_name = material
+            cp.solder_ball_property = sbp
+            self.pyedb_obj.component_property = cp
             return
         if not shape:
             return

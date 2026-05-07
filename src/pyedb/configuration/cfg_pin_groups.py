@@ -109,7 +109,7 @@ class CfgPinGroups:
         self.pin_groups.append(pg)
         return pg
 
-    def add(self, name, reference_designator, pins=None, nets=None, net=None):
+    def add(self, name=None, reference_designator=None, pins=None, nets=None, net=None):
         """Add one or more pin groups to this configuration.
 
         Provide either *pins* (explicit list) **or** *nets* (one or more net
