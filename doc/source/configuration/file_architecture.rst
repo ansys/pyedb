@@ -27,7 +27,7 @@ Two ways to configure a design
      - When to use
      - How to apply
    * - **File-based** (this page)
-     - Reproducible, version-controlled, human-readable artifacts.
+     - Reproducible, human-readable artifacts kept in version control.
      - ``edb.configuration.run("my_config.json")``
    * - **Programmatic API** (:doc:`configuration_api_guide`)
      - Scripted workflows, templates, conditional logic.
@@ -243,19 +243,19 @@ This section defines materials and the layer sequence.
 
   Each entry in ``thermal_modifiers`` is an object with these fields:
 
-  * ``property_name`` — material property this modifier applies to (required)
-  * ``basic_quadratic_c1`` — first quadratic coefficient (default ``0``)
-  * ``basic_quadratic_c2`` — second quadratic coefficient (default ``0``)
-  * ``basic_quadratic_temperature_reference`` — reference temperature in °C
+  * ``property_name``: material property this modifier applies to (required)
+  * ``basic_quadratic_c1``: first quadratic coefficient (default ``0``)
+  * ``basic_quadratic_c2``: second quadratic coefficient (default ``0``)
+  * ``basic_quadratic_temperature_reference``: reference temperature in °C
     (default ``22``)
-  * ``advanced_quadratic_lower_limit`` — lower temperature limit in °C
+  * ``advanced_quadratic_lower_limit``: lower temperature limit in °C
     (default ``-273.15``)
-  * ``advanced_quadratic_upper_limit`` — upper temperature limit in °C
+  * ``advanced_quadratic_upper_limit``: upper temperature limit in °C
     (default ``1000``)
-  * ``advanced_quadratic_auto_calculate`` — auto-calculate quadratic constants
+  * ``advanced_quadratic_auto_calculate``: auto-calculate quadratic constants
     (default ``true``)
-  * ``advanced_quadratic_lower_constant`` — lower constant (default ``1``)
-  * ``advanced_quadratic_upper_constant`` — upper constant (default ``1``)
+  * ``advanced_quadratic_lower_constant``: lower constant (default ``1``)
+  * ``advanced_quadratic_upper_constant``: upper constant (default ``1``)
 
 ``stackup.layers[]`` objects support these keys:
 

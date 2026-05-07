@@ -1,22 +1,22 @@
-EdbConfigBuilder — practical examples
+EdbConfigBuilder: practical examples
 ======================================
 
 What is ``EdbConfigBuilder``?
 ------------------------------
 
 Think of ``EdbConfigBuilder`` as a **live blueprint** of your PCB design setup.
-Instead of hand-crafting a JSON file, you describe what you want — nets,
-components, ports, setups, geometry — through a clean Python object-oriented
+Instead of manually crafting a JSON file, you describe what you want—nets,
+components, ports, setups, and geometry—through a clean Python object-oriented
 API.  When you are happy with the blueprint, you hand it to PyEDB and it
 applies every change to the open layout in a single atomic operation.
 
 The key insight is that the builder **separates intent from execution**:
 
-* You populate the builder incrementally — in any order, across multiple helper
+* You populate the builder incrementally—in any order, across multiple helper
   functions, or from data read from external sources.
 * Nothing touches the EDB layout until you call ``edb.configuration.run(cfg)``.
 * The same builder can also be serialized to a portable JSON or TOML file for
-  version control, review, or re-use in another project.
+  version control, review, or reuse in another project.
 
 This separates three concerns that are often tangled together in scripted
 workflows: *definition*, *validation*, and *application*.
@@ -50,12 +50,12 @@ When you already have an open EDB layout the preferred way is:
 
    from pyedb import Edb
 
-   edb = Edb("my_design.aedb", edbversion="2026.1")
+   edb = Edb("my_design.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
 ``create_config_builder()`` returns an ``EdbConfigBuilder`` that is *bound* to
-the live session.  Bound builders can read existing objects from the database —
-useful for ``cfg.components.get("U1")``, ``cfg.stackup.get_layer("1_Top")``,
+the live session. Bound builders can read existing objects from the database.
+This is useful for ``cfg.components.get("U1")``, ``cfg.stackup.get_layer("1_Top")``,
 ``cfg.nets.get("GND")``, etc.
 
 **Standalone (no session required)**
@@ -72,7 +72,7 @@ you want to author a configuration before opening any design.
 Loading from an existing file or dictionary
 -------------------------------------------
 
-You can initialise a builder from a previously saved configuration so that you
+You can initialize a builder from a previously saved configuration so that you
 only override the values that need to change:
 
 .. code-block:: python
@@ -90,7 +90,7 @@ only override the values that need to change:
 Applying a configuration to the layout
 ---------------------------------------
 
-Passing a builder directly to ``run()`` serialises it internally — you never
+Passing a builder directly to ``run()`` serializes it internally, so you never
 need to call ``to_dict()`` yourself:
 
 .. code-block:: python
@@ -125,20 +125,20 @@ full stackup and modeler operations.
 
    All examples assume ``edb`` is an open :class:`Edb` session.
    ``get_si_verse()`` is a helper that opens the *ANSYS-HSD_V1* reference
-   design — replace it with ``Edb("your_design.aedb", ...)``.
+   design. Replace it with ``Edb("your_design.aedb", ...)``.
 
-Example 1 — Coax ports with explicit solder-ball geometry
+Example 1: Coax ports with explicit solder-ball geometry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Perform a PCIe Gen4 channel cut-out, assign cylindrical solder balls on the
 BGA component, place one coax port per signal net, and add an HFSS setup with a
-linear sweep — all in about fifteen lines.
+linear sweep, all in about fifteen lines.
 
 .. code-block:: python
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
 
    # Signal nets of interest
    signal_nets = [
@@ -187,7 +187,7 @@ linear sweep — all in about fifteen lines.
    edb.configuration.run(cfg)
    edb.close()
 
-Example 2 — Circuit ports via pin groups
+Example 2: Circuit ports via pin groups
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use pin groups to bundle the GND pins on U1 into a single reference and create
@@ -197,7 +197,7 @@ one differential circuit port per signal net pair.
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
 
    signal_nets = [
        "PCIe_Gen4_RX0_P",
@@ -243,7 +243,7 @@ one differential circuit port per signal net pair.
    edb.configuration.run(cfg)
    edb.close()
 
-Example 3 — Auto-discover solder-ball dimensions from existing component data
+Example 3: Auto-discover solder-ball dimensions from existing component data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When solder-ball dimensions are already encoded in the component definition,
@@ -253,7 +253,7 @@ omit ``diameter`` and ``height`` and let PyEDB read them from the footprint.
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
 
    signal_nets = [
        "PCIe_Gen4_RX0_P",
@@ -291,11 +291,11 @@ omit ``diameter`` and ``height`` and let PyEDB read them from the footprint.
    edb.configuration.run(cfg)
    edb.close()
 
-Example 4 — Net classification and live querying
+Example 4: Net classification and live querying
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The builder exposes a ``nets.get()`` method that queries the live EDB session so
-you can inspect a net's current classification before deciding how to categorise
+you can inspect a net's current classification before deciding how to categorize
 it.  ``add_signal_nets`` / ``add_power_ground_nets`` are mutually exclusive: a
 net is automatically removed from any other list when it is added to a new one.
 
@@ -303,7 +303,7 @@ net is automatically removed from any other list when it is added to a new one.
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    # Query a net that currently exists in the EDB layout
@@ -328,7 +328,7 @@ net is automatically removed from any other list when it is added to a new one.
    print(edb.nets.nets["PCIe_Gen4_RX0_P"].is_power_ground)  # True
    edb.close()
 
-Example 5 — Gap port on an existing polygon
+Example 5: Gap port on an existing polygon
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Attach a gap port to the midpoint of the first arc of an existing polygon.
@@ -338,7 +338,7 @@ The primitive and its edge point are read directly from the live EDB layout.
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    # Pick the first polygon in the layout and one of its edge midpoints
@@ -357,18 +357,18 @@ The primitive and its edge point are read directly from the live EDB layout.
    print("my_gap_port" in edb.ports)  # True
    edb.close()
 
-Example 6 — Differential wave port
+Example 6: Differential wave port
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Define a differential wave port on two existing trace primitives.  The positive
-and negative terminals are placed at the start and end of each trace centre line
+Define a differential wave port on two existing trace primitives. The positive
+and negative terminals are placed at the start and end of each trace center line
 for a clean modal excitation.
 
 .. code-block:: python
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    # Retrieve the two complementary traces from the live layout
@@ -394,17 +394,17 @@ for a clean modal excitation.
    print(len(port.terminals))  # 2
    edb.close()
 
-Example 7 — Single-ended wave port
+Example 7: Single-ended wave port
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Place a wave port on the start of a single trace.  The primitive is looked up
+Place a wave port on the start of a single trace. The primitive is looked up
 from the active net object so you never need to know the internal primitive ID.
 
 .. code-block:: python
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    # Get the first primitive on the RX3_P net and use its first centre-line point
@@ -424,17 +424,17 @@ from the active net object so you never need to know the internal primitive ID.
    print(port.net_name)  # "PCIe_Gen4_RX3_P"
    edb.close()
 
-Example 8 — Full HFSS setup with broadband adaptation and auto mesh
+Example 8: Full HFSS setup with broadband adaptation and auto mesh
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Configure an HFSS setup with broadband adaptive meshing, automatic mesh
-seeding, and a linear-scale sweep — all from the builder.
+seeding, and a linear-scale sweep, all from the builder.
 
 .. code-block:: python
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    signal_nets = [
@@ -483,7 +483,7 @@ seeding, and a linear-scale sweep — all from the builder.
    # "LIN 1GHz 10GHz 0.5GHz"
    edb.close()
 
-Example 9 — SIwave AC setup
+Example 9: SIwave AC setup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Add a SIwave AC setup tuned for SI accuracy and a fine linear sweep from DC to
@@ -493,7 +493,7 @@ Add a SIwave AC setup tuned for SI accuracy and a fine linear sweep from DC to
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    # si_slider_position: 0 = Speed, 1 = Balanced, 2 = Accuracy
@@ -517,7 +517,7 @@ Add a SIwave AC setup tuned for SI accuracy and a fine linear sweep from DC to
    print(setup.si_slider_position)  # 2
    edb.close()
 
-Example 10 — SIwave DC setup with thermal export
+Example 10: SIwave DC setup with thermal export
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Create a SIwave DC IR-drop setup at maximum accuracy and enable thermal loss
@@ -527,7 +527,7 @@ data export for downstream thermal analysis.
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    # dc_slider_position: 0 = Speed, 1 = Balanced, 2 = Accuracy
@@ -544,7 +544,7 @@ data export for downstream thermal analysis.
    print(edb_setup.dc_ir_settings.export_dc_thermal_data)  # True
    edb.close()
 
-Example 11 — Define a new padstack and place an instance
+Example 11: Define a new padstack and place an instance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Define a custom via padstack (including hole, pad, and anti-pad sizes) and
@@ -554,7 +554,7 @@ place one instance at a specific XY coordinate on the board.
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    # Define the via padstack — through all layers
@@ -587,7 +587,7 @@ place one instance at a specific XY coordinate on the board.
    print(instance.position)  # [0.001, 0.002]
    edb.close()
 
-Example 12 — Geometry creation via the modeler section
+Example 12: Geometry creation via the modeler section
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Create traces, circles, rectangles, and polygons entirely through the builder
@@ -598,7 +598,7 @@ without touching the low-level geometry API.  All primitives are created when
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    # ── Trace ────────────────────────────────────────────────────────────────
@@ -654,7 +654,7 @@ without touching the low-level geometry API.  All primitives are created when
 
    edb.close()
 
-Example 13 — Stackup materials and layers
+Example 13: Stackup materials and layers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Add custom dielectric and conductor materials to the material library and
@@ -664,7 +664,7 @@ insert a new dielectric layer into the stackup.
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    # Inspect how many layers the design already has
@@ -709,16 +709,16 @@ insert a new dielectric layer into the stackup.
 Exporting the builder as JSON for review and reuse
 ---------------------------------------------------
 
-Any of the builder objects from the examples above can be serialised to a
-self-contained JSON file.  This is useful for code review, archiving a known-
-good configuration, or sharing a setup with another team member who will apply
+Any of the builder objects from the examples above can be serialized to a
+self-contained JSON file. This is useful for code review, archiving a known-
+good configuration, or sharing a setup with another team member who can apply
 it without running the Python script themselves.
 
 .. code-block:: python
 
    from pyedb import Edb
 
-   edb = Edb("ANSYS-HSD_V1.aedb", edbversion="2026.1")
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
    cfg.nets.add_signal_nets(["CLK", "DATA"])
@@ -740,10 +740,10 @@ it without running the Python script themselves.
 See also
 --------
 
-* :doc:`file_architecture` — complete field-by-field reference for the JSON/TOML
+* :doc:`file_architecture`: complete field-by-field reference for the JSON/TOML
   file format produced by ``to_json()`` / ``to_toml()``.
-* :doc:`configuration_api_guide` — full API reference including all section
+* :doc:`configuration_api_guide`: full API reference including all section
   builders, parameter tables, and session-aware ``get()`` helpers.
-* :doc:`../autoapi/pyedb/configuration/index` — AutoAPI class reference for
+* :doc:`../autoapi/pyedb/configuration/index`: AutoAPI class reference for
   every configuration module.
 

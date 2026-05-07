@@ -1,8 +1,8 @@
 Configuration API guide and complete example
 ============================================
 
-The :mod:`pyedb.configuration` package provides a Python-first way to
-build the same configuration payload described in :doc:`file_architecture`.
+The :mod:`pyedb.configuration` package provides a Python interface for
+building the same configuration payload described in :doc:`file_architecture`.
 Instead of manually authoring JSON, you populate an
 ``EdbConfigBuilder`` and then pass it directly
 to ``Configuration.run`` with no
@@ -25,25 +25,31 @@ The programmatic API is useful when you want to:
 * validate values in Python before writing the file,
 * generate only the sections you need,
 * pass a builder directly to ``run()`` without touching the file system, and
-* round-trip between dictionary, JSON, and TOML forms.
+* move between dictionary, JSON, and TOML forms.
 
 Configuration API workflow
 --------------------------
 
-.. code-block:: text
+.. graphviz::
 
-   ┌──────────────────────────────┐     ┌──────────────────────────┐     ┌───────────────────────────────────┐     ┌─────────────────────┐
-   │ edb.configuration            │     │ EdbConfigBuilder         │     │ edb.configuration.run(cfg)        │     │ Configured EDB      │
-   │ .create_config_builder()     │────▶│ (section builders)       │────▶│  — or —                           │────▶│ design              │
-   └──────────────────────────────┘     └──────────────────────────┘     │ load(cfg, apply_file=True)        │     └─────────────────────┘
-                                                    │                    └───────────────────────────────────┘
-                                                    │ (optional persist)
-                                                    ▼
-                                        ┌──────────────────────────┐
-                                        │ cfg.to_json()            │
-                                        │ cfg.to_toml()            │
-                                        │ cfg.to_dict()            │
-                                        └──────────────────────────┘
+   digraph configuration_api_workflow {
+       rankdir=LR;
+       node [shape=box, style="rounded,filled", fillcolor="#F7F7F7", color="#4F81BD"];
+       edge [color="#4F81BD"];
+
+       create [label="edb.configuration\n.create_config_builder()"];
+       build  [label="EdbConfigBuilder\n(section builders)"];
+       decide [label="apply now\nor export first?", shape=diamond, fillcolor="#FFF2CC", color="#D6B656"];
+       export [label="cfg.to_json()\ncfg.to_toml()\ncfg.to_dict()"];
+       run    [label="edb.configuration.run(cfg)\nor Configuration.load(...)\n+ run()"];
+       design [label="Configured EDB\ndesign"];
+
+       create -> build -> decide;
+       decide -> run    [label="apply"];
+       decide -> export [label="export"];
+       export -> run    [style=dashed, label="later"];
+       run -> design;
+   }
 
 Two entry points
 ----------------
@@ -73,7 +79,7 @@ There are two equivalent ways to start a programmatic configuration:
    # Apply to an open session later:
    edb.configuration.run(cfg)
 
-   # Or persist to a file for review / source control:
+   # Or persist to a file for review or version control:
    cfg.to_json("my_config.json")
 
 Session-aware ``get()`` methods
@@ -100,7 +106,7 @@ exist in the design.
      - :class:`MaterialConfig` pre-loaded with current material properties.
    * - ``cfg.nets.get("GND")``
      - :class:`CfgNet` bound to the live EDB session. Attributes: ``name``,
-       ``is_power_ground`` (bool), ``classification`` (``"signal"`` or
+       ``is_power_ground`` (Boolean), ``classification`` (``"signal"`` or
        ``"power_ground"``). Returns ``False`` if the net does not exist.
    * - ``cfg.padstacks.get_definition("via_0.2")``
      - :class:`PadstackDefinitionConfig` pre-loaded with current definition.
@@ -767,7 +773,7 @@ frequency range can be fully described in the call itself—no subsequent
 
        .. note::
 
-          When ``step_or_count`` is a frequency string (e.g. ``"10MHz"``), the
+           When ``step_or_count`` is a frequency string (for example, ``"10MHz"``), the
           distribution is automatically inferred as ``"linear_scale"``.
    * - ``use_q3d_for_dc``
      - ``False``
@@ -1139,13 +1145,13 @@ only when fine-grained control over individual terminal objects is required.
 
 The following human-friendly aliases are recommended:
 
-* ``"port"`` — generic port boundary (maps to ``"PortBoundary"``)
-* ``"pec"`` — perfect electric conductor (maps to ``"PecBoundary"``)
-* ``"rlc"`` — RLC boundary (maps to ``"RlcBoundary"``)
-* ``"current_source"`` — current source (maps to ``"kCurrentSource"``)
-* ``"voltage_source"`` — voltage source (maps to ``"kVoltageSource"``)
-* ``"voltage_probe"`` — voltage probe (maps to ``"kVoltageProbe"``)
-* ``"dc_terminal"`` — DC terminal (maps to ``"kDcTerminal"``)
+* ``"port"``: generic port boundary (maps to ``"PortBoundary"``)
+* ``"pec"``: perfect electric conductor (maps to ``"PecBoundary"``)
+* ``"rlc"``: RLC boundary (maps to ``"RlcBoundary"``)
+* ``"current_source"``: current source (maps to ``"kCurrentSource"``)
+* ``"voltage_source"``: voltage source (maps to ``"kVoltageSource"``)
+* ``"voltage_probe"``: voltage probe (maps to ``"kVoltageProbe"``)
+* ``"dc_terminal"``: DC terminal (maps to ``"kDcTerminal"``)
 
 The full set of accepted values also includes the raw AEDT literals
 ``"PortBoundary"``, ``"PecBoundary"``, ``"RlcBoundary"``,
@@ -1155,9 +1161,9 @@ The full set of accepted values also includes the raw AEDT literals
 
 **Accepted** ``terminal_to_ground`` **values**
 
-* ``"no_ground"`` / ``"kNoGround"`` — no ground connection (default)
-* ``"negative"`` / ``"kNegative"``— negative terminal to ground
-* ``"positive"`` / ``"kPositive"`` — positive terminal to ground
+* ``"no_ground"`` / ``"kNoGround"``: no ground connection (default)
+* ``"negative"`` / ``"kNegative"``: negative terminal to ground
+* ``"positive"`` / ``"kPositive"``: positive terminal to ground
 
 The full set also includes ``"kNegativeNode"`` and ``"kPositiveNode"``.
 
@@ -1261,7 +1267,7 @@ Boundaries
    * - ``set_extent(extent_type, base_polygon, truncate_air_box_at_ground)``
      - Set the layout extent shape. ``truncate_air_box_at_ground`` is an
        air-box option and belongs to ``set_air_box_extents``; it is accepted
-       here as a convenience passthrough.
+       here as a convenient pass-through.
    * - ``set_dielectric_extent(extent_type, expansion_size, is_multiple, base_polygon, honor_user_dielectric)``
      - Configure the dielectric envelope.
 
@@ -1371,14 +1377,14 @@ Practical recommendations
   active EDB session. It avoids the extra import and keeps calling conventions
   consistent.
 * **Call** ``edb.configuration.run(cfg)`` to load and apply in a single
-  statement. Pass ``None`` (the default) to re-apply previously loaded data.
+  statement. Pass ``None`` (the default) to apply previously loaded data again.
 * **Prefer** ``TerminalInfo`` factory methods
   over hand-written terminal dictionaries.
 * **Build only the sections you need**: empty sections are omitted by
   ``EdbConfigBuilder.to_dict()`` so the
   serialized payload stays minimal.
-* **Persist to JSON / TOML** when you want a reviewed, version-controlled
-  artifact that can be applied without a Python script.
+* **Persist to JSON / TOML** when you want a reviewed artifact kept in version
+  control and applied without a Python script.
 * **Store reusable snippets** as plain Python functions that accept and return
   an ``EdbConfigBuilder``. Composing
   builders is straightforward.
