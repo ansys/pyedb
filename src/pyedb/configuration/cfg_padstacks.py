@@ -24,6 +24,7 @@
 from typing import Literal, Union
 
 from pydantic import BaseModel, Field
+from pyedb.misc.decorators import deprecated
 
 
 class CfgBase(BaseModel):
@@ -396,6 +397,7 @@ class CfgPadstacks(CfgBase):
         )
         return obj
 
+    @deprecated("add_padstack_definition is deprecated, use add_definition instead.")
     def add_padstack_definition(self, **kwargs):
         """Add a padstack definition from raw keyword arguments.
 
@@ -694,6 +696,7 @@ class CfgPadstacks(CfgBase):
         self.definitions.append(obj)
         return obj
 
+    @deprecated("add_padstack_instance is deprecated, use add_instance instead.")
     def add_padstack_instance(self, **kwargs):
         """Add a padstack instance from raw keyword arguments.
 
