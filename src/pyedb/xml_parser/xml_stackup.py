@@ -349,7 +349,8 @@ class XmlStackup(BaseModel):
         >>> cfg_data = CfgStackup(materials=[...], layers=[...])
         >>> stackup.import_from_cfg_stackup(cfg_data)
         """
-        cfg_stackup.normalize_thickness(unit="mm")
+        unit = "mm"
+        cfg_stackup.normalize_thickness(unit=unit)
         self.add_materials()
         for mat in cfg_stackup.materials:
             mat_kwargs = {}
@@ -358,11 +359,14 @@ class XmlStackup(BaseModel):
                     mat_kwargs[key] = value
             self.materials.add_material(name=mat.name, **mat_kwargs)
 
-        self.add_layers(length_unit="mm")
+        self.add_layers(length_unit=unit)
         for layer in cfg_stackup.layers:
             layer_kwargs = {}
             for key, value in layer.model_dump(exclude_none=True).items():
-                layer_kwargs[key] = value
+                if key == "thickness":
+                    layer_kwargs["thickness"] = value.replace(unit, "")
+                else:
+                    layer_kwargs[key] = value
             lay = self.layers.add_layer(**layer_kwargs)
             if lay.type == "signal":
                 lay.type = "conductor"

@@ -136,3 +136,4 @@ class CfgStackup(BaseModel):
                     layer.thickness = float(layer.thickness.replace("mil", "")) * 0.0000254 * multiplier
                 elif "in" in layer.thickness:
                     layer.thickness = float(layer.thickness.replace("in", "")) * 0.0254 * multiplier
+            layer.thickness = f"{layer.thickness}{unit}"
