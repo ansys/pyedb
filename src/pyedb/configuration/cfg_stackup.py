@@ -128,6 +128,7 @@ class CfgStackup(BaseModel):
         -------
         CfgMaterial
             The validated material object appended to ``materials``.
+
         """
         payload= {}
         if config is not None:
@@ -166,6 +167,7 @@ class CfgStackup(BaseModel):
         -------
         CfgLayer
             The validated layer object appended to ``layers``.
+
         """
         payload = {}
         if config is not None:
