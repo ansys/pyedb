@@ -303,9 +303,9 @@ class CfgComponent(CfgBase):
         die_type = cp.ic_die_properties.die_type
         if die_type in ("no_die", "none", None):
             temp["type"] = "no_die"
-            orientation = cp.ic_die_properties.die_orientation
-            if orientation is not None:
-                temp["orientation"] = orientation
+            if self._pedb and self._pedb.grpc:
+                orientation = cp.ic_die_properties.die_orientation
+                temp["orientation"] = orientation if orientation is not None else "chip_up"
             self.ic_die_properties = temp
             return
         temp["type"] = die_type
