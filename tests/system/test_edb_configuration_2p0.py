@@ -33,7 +33,7 @@ is_linux = os.name == "posix"
 
 from pyedb.generic.constants import unit_converter
 from pyedb.generic.settings import settings
-from tests.conftest import config, use_grpc
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -81,10 +81,6 @@ def check_dictionaries(source_dict, target_dict):
     return True
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_13b_stackup_materials(self):
@@ -852,10 +848,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassTerminals(BaseTestClass):
     terminal1 = {
@@ -1087,10 +1079,6 @@ class TestClassTerminals(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassSetups(BaseTestClass):
     terminal1 = {
@@ -1215,6 +1203,7 @@ class TestClassSetups(BaseTestClass):
         assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"] and is_linux, reason="DotNet Randomly failing on Linux.")
     def test_hfss_setup_w_frequency_sweeps(self):
         data = {
             "setups": [
@@ -1350,10 +1339,6 @@ class TestClassSetups(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassBoundaries(BaseTestClass):
     def test_open_region_radiation(self):
@@ -1458,16 +1443,8 @@ class TestClassBoundaries(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassPadstacks(BaseTestClass):
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_09_padstack_definition(self, is_grpc=None):
         solder_ball_parameters = {
             "shape": "spheroid",
@@ -1697,10 +1674,6 @@ class TestClassPadstacks(BaseTestClass):
         cfg_hfss_single.max_delta = 0.02
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
     def test_18_modeler(self):
@@ -1858,10 +1831,6 @@ class TestModeler(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestComponent(BaseTestClass):
     def test_17_ic_die_properties(self):
@@ -1881,10 +1850,6 @@ class TestComponent(BaseTestClass):
         _assert_final_ic_die_properties(component)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestOperations(BaseTestClass):
     def test_08a_operations_cutout(self):
