@@ -203,29 +203,15 @@ class CfgStackup(BaseModel):
         for layer in self.layers:
             if isinstance(layer.thickness, str):
                 if "um" in layer.thickness:
-                    layer.thickness = (
-                        float(layer.thickness.replace("um", "")) * 1e-6 * multiplier
-                    )
+                    layer.thickness = float(layer.thickness.replace("um", "")) * 1e-6 * multiplier
                 elif "mm" in layer.thickness:
-                    layer.thickness = (
-                        float(layer.thickness.replace("mm", "")) * 1e-3 * multiplier
-                    )
+                    layer.thickness = float(layer.thickness.replace("mm", "")) * 1e-3 * multiplier
                 elif "cm" in layer.thickness:
-                    layer.thickness = (
-                        float(layer.thickness.replace("cm", "")) * 1e-2 * multiplier
-                    )
+                    layer.thickness = float(layer.thickness.replace("cm", "")) * 1e-2 * multiplier
                 elif "mil" in layer.thickness:
-                    layer.thickness = (
-                        float(layer.thickness.replace("mil", ""))
-                        * 0.0000254
-                        * multiplier
-                    )
+                    layer.thickness = float(layer.thickness.replace("mil", "")) * 0.0000254 * multiplier
                 elif "in" in layer.thickness:
-                    layer.thickness = (
-                        float(layer.thickness.replace("in", "")) * 0.0254 * multiplier
-                    )
+                    layer.thickness = float(layer.thickness.replace("in", "")) * 0.0254 * multiplier
                 elif "m" in layer.thickness:
-                    layer.thickness = (
-                        float(layer.thickness.replace("m", "")) * 1 * multiplier
-                    )
+                    layer.thickness = float(layer.thickness.replace("m", "")) * 1 * multiplier
             layer.thickness = f"{layer.thickness}{unit}"
