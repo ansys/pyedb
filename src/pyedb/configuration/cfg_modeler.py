@@ -100,7 +100,16 @@ class CfgModeler:
         for trace_data in data.get("traces", []):
             self.add_trace(**trace_data)
 
-        _rect_keys = {"layer", "name", "net_name", "lower_left_point", "upper_right_point", "corner_radius", "rotation", "voids"}
+        _rect_keys = {
+            "layer",
+            "name",
+            "net_name",
+            "lower_left_point",
+            "upper_right_point",
+            "corner_radius",
+            "rotation",
+            "voids",
+        }
         _circle_keys = {"layer", "name", "net_name", "corner_radius", "rotation", "voids", "radius", "position"}
         _polygon_keys = {"layer", "name", "net_name", "corner_radius", "rotation", "voids", "points"}
         for plane_data in data.get("planes", []):
@@ -367,7 +376,6 @@ class CfgModeler:
         )
         self.planes.append(plane_obj)
         return plane_obj
-
 
     def delete_primitives_by_layer(self, layer_names: List[str]):
         """Schedule all primitives on the given layers for deletion."""

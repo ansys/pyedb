@@ -104,8 +104,6 @@ class Circle(Primitive):
         parameters = self.get_parameters()
         self.set_parameters(value[0], value[1], parameters[-1])
 
-
-
     def get_parameters(self) -> tuple[float, float, float]:
         """Returns parameters.
 

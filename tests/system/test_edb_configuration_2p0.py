@@ -2066,11 +2066,11 @@ class TestOperations(BaseTestClass):
         assert "PCIe_Gen4_RX0_P" in cfg_builder.nets.power_ground_nets
         cfg_builder.nets.add_signal_nets(["PCIe_Gen4_RX0_P"])
         assert "PCIe_Gen4_RX0_P" in cfg_builder.nets.signal_nets
-        assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.power_ground_nets # net must be removed
-        assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.reference_nets # net must be removed
+        assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.power_ground_nets  # net must be removed
+        assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.reference_nets  # net must be removed
         cfg_builder.nets.add_power_ground_nets(["PCIe_Gen4_RX0_P"])
         edb_app.configuration.run(cfg_builder)
-        assert edb_app.nets.nets.get("PCIe_Gen4_RX0_P").is_power_ground # net physically changed as pwr in EDB
+        assert edb_app.nets.nets.get("PCIe_Gen4_RX0_P").is_power_ground  # net physically changed as pwr in EDB
         edb_app.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
@@ -2079,11 +2079,12 @@ class TestOperations(BaseTestClass):
         cfg_builder = edb_app.configuration.create_config_builder()
         polygon = edb_app.layout.polygons[0]
 
-        cfg_edg_port = cfg_builder.ports.add_gap_port(name="test_cfg_gap_port",
-                                       primitive=polygon,
-                                       point_on_edge=polygon.arcs[0].midpoint,
-                                       pec_launch_width="0.02mm"
-                                       )
+        cfg_edg_port = cfg_builder.ports.add_gap_port(
+            name="test_cfg_gap_port",
+            primitive=polygon,
+            point_on_edge=polygon.arcs[0].midpoint,
+            pec_launch_width="0.02mm",
+        )
         assert cfg_edg_port.horizontal_extent_factor == 5
         assert cfg_edg_port.name == "test_cfg_gap_port"
         assert cfg_edg_port.pec_launch_width == "0.02mm"
@@ -2100,15 +2101,16 @@ class TestOperations(BaseTestClass):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
         path_p = edb_app.nets.nets.get("PCIe_Gen4_RX3_P").primitives[0]
-        path_n  = edb_app.nets.nets.get("PCIe_Gen4_RX3_N").primitives[0]
+        path_n = edb_app.nets.nets.get("PCIe_Gen4_RX3_N").primitives[0]
         point_on_edge_p = path_p.center_line[0]
         point_on_edge_n = path_p.center_line[-1]
-        cfg_wave_port = cfg_builder.ports.add_diff_wave_port(name="test_cfg_wave_port",
-                                                            positive_primitive=path_p,
-                                                            positive_terminal_point=point_on_edge_p,
-                                                            negative_primitive=path_n,
-                                                            negative_terminal_point=point_on_edge_n
-                                                            )
+        cfg_wave_port = cfg_builder.ports.add_diff_wave_port(
+            name="test_cfg_wave_port",
+            positive_primitive=path_p,
+            positive_terminal_point=point_on_edge_p,
+            negative_primitive=path_n,
+            negative_terminal_point=point_on_edge_n,
+        )
         assert cfg_wave_port.horizontal_extent_factor == 5
         assert cfg_wave_port.name == "test_cfg_wave_port"
         assert cfg_wave_port.type == "diff_wave_port"
@@ -2143,9 +2145,9 @@ class TestOperations(BaseTestClass):
         cfg_builder = edb_app.configuration.create_config_builder()
         path = edb_app.nets.nets.get("PCIe_Gen4_RX3_P").primitives[0]
         point_on_edge = path.center_line[0]
-        cfg_wave_port = cfg_builder.ports.add_wave_port(name="test_wave_port",
-                                                        primitive=path,
-                                                        point_on_edge=point_on_edge)
+        cfg_wave_port = cfg_builder.ports.add_wave_port(
+            name="test_wave_port", primitive=path, point_on_edge=point_on_edge
+        )
         assert cfg_wave_port.horizontal_extent_factor == 5
         assert cfg_wave_port.name == "test_wave_port"
         assert cfg_wave_port.type == "wave_port"
@@ -2181,13 +2183,8 @@ class TestOperations(BaseTestClass):
         # hfss setup
         cfg_setup = cfg_builder.setups.add_hfss_setup(name="Test_HFSS")
         cfg_setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
-        cfg_setup.set_auto_mesh_operation(enabled=True,
-                                          trace_ratio_seeding=3.0,
-                                          signal_via_side_number=12)
-        cfg_setup.set_broadband_adaptive(low_freq="5GHz",
-                                         high_freq="10GHz",
-                                         max_delta=0.05,
-                                         max_passes=30)
+        cfg_setup.set_auto_mesh_operation(enabled=True, trace_ratio_seeding=3.0, signal_via_side_number=12)
+        cfg_setup.set_broadband_adaptive(low_freq="5GHz", high_freq="10GHz", max_delta=0.05, max_passes=30)
         assert cfg_setup.name == "Test_HFSS"
         cfg_sweep = cfg_setup.freq_sweep[0]
         assert cfg_sweep.name == "Test_Sweep"
@@ -2220,8 +2217,9 @@ class TestOperations(BaseTestClass):
     def test_cfg_siwave_ac_setup(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
-        setup = cfg_builder.setups.add_siwave_ac_setup(name="Test_siwave_AC_Setup", use_si_settings=True,
-                                                       si_slider_position=2)
+        setup = cfg_builder.setups.add_siwave_ac_setup(
+            name="Test_siwave_AC_Setup", use_si_settings=True, si_slider_position=2
+        )
         setup.add_frequency_sweep(name="Test_Sweep", start="0GHz", stop="35GHz", step_or_count="0.1GHz")
         assert setup.name == "Test_siwave_AC_Setup"
         assert setup.si_slider_position == 2
@@ -2232,7 +2230,7 @@ class TestOperations(BaseTestClass):
         assert "Test_siwave_AC_Setup" in edb_app.setups
         setup = edb_app.setups.get("Test_siwave_AC_Setup")
         assert setup.si_slider_position == 2
-        assert setup.frequency_sweeps.get("Test_Sweep").frequency_string == ['LIN 0GHz 35GHz 0.1GHz']
+        assert setup.frequency_sweeps.get("Test_Sweep").frequency_string == ["LIN 0GHz 35GHz 0.1GHz"]
         edb_app.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
@@ -2258,20 +2256,20 @@ class TestOperations(BaseTestClass):
     def test_cfg_padstack_create_definition_and_place_instance(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
-        cfg_builder.padstacks.add_definition(name="Test_padstacks",
-                                             hole_plating_thickness="10um",
-                                             material="copper",
-                                             hole_range="through",
-                                             hole_diameter="200um",
-                                             pad_diameter="300um",
-                                             anti_pad_diameter="400um"
-                                             )
+        cfg_builder.padstacks.add_definition(
+            name="Test_padstacks",
+            hole_plating_thickness="10um",
+            material="copper",
+            hole_range="through",
+            hole_diameter="200um",
+            pad_diameter="300um",
+            anti_pad_diameter="400um",
+        )
         cfg_def = cfg_builder.padstacks.definitions[0]
         assert cfg_def.name == "Test_padstacks"
-        cfg_padstack_instance = cfg_builder.padstacks.add_instance(name="Test_padstacks_inst",
-                                           net_name="Test_net",
-                                           definition="Test_padstacks",
-                                           position=[1e-3, 2e-3])
+        cfg_padstack_instance = cfg_builder.padstacks.add_instance(
+            name="Test_padstacks_inst", net_name="Test_net", definition="Test_padstacks", position=[1e-3, 2e-3]
+        )
         assert cfg_padstack_instance.position == [0.001, 0.002]
         assert cfg_padstack_instance.name == "Test_padstacks_inst"
         assert cfg_padstack_instance.net_name == "Test_net"
@@ -2295,28 +2293,31 @@ class TestOperations(BaseTestClass):
     def test_cfg_padstack_create_definition_and_place_instance(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
-        cfg_builder.modeler.add_trace(name="Test_trace",
-                                      layer="1_Top",
-                                      width="100um",
-                                      net_name="Test_net",
-                                      start_cap_style="flat",
-                                      end_cap_style="flat",
-                                      path=[[0,0], [0, 1e-3], [1e-3, 1e-3]])
-        cfg_builder.modeler.add_circular_plane(layer="1_Top",
-                                               name="Test_circular_plane",
-                                               net_name="Test_net_circle",
-                                               radius="2mm",
-                                               position=[5e-3, 5e-3])
+        cfg_builder.modeler.add_trace(
+            name="Test_trace",
+            layer="1_Top",
+            width="100um",
+            net_name="Test_net",
+            start_cap_style="flat",
+            end_cap_style="flat",
+            path=[[0, 0], [0, 1e-3], [1e-3, 1e-3]],
+        )
+        cfg_builder.modeler.add_circular_plane(
+            layer="1_Top", name="Test_circular_plane", net_name="Test_net_circle", radius="2mm", position=[5e-3, 5e-3]
+        )
 
-        cfg_builder.modeler.add_rectangular_plane(layer="1_Top",
-                                                  name="Test_rectangular_plane",
-                                                  lower_left_point=[0,0],
-                                                  upper_right_point=[0,5e-3],
-                                                  )
-        cfg_builder.modeler.add_polygon_plane(layer="1_Top",
-                                              name="Test_polygon_plane",
-                                              net_name="Test_net_polygon",
-                                              points=[[0,0], [0, 2e-3], [2e-3, 2e-3], [0,0]])
+        cfg_builder.modeler.add_rectangular_plane(
+            layer="1_Top",
+            name="Test_rectangular_plane",
+            lower_left_point=[0, 0],
+            upper_right_point=[0, 5e-3],
+        )
+        cfg_builder.modeler.add_polygon_plane(
+            layer="1_Top",
+            name="Test_polygon_plane",
+            net_name="Test_net_polygon",
+            points=[[0, 0], [0, 2e-3], [2e-3, 2e-3], [0, 0]],
+        )
         edb_app.configuration.run(cfg_builder)
         trace = edb_app.layout.find_primitive(name="Test_trace")[0]
         assert trace

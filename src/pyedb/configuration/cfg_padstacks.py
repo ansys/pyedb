@@ -21,7 +21,7 @@
 # SOFTWARE.
 """Build padstack definition and instance entries for configuration payloads."""
 
-from typing import Union
+from typing import Literal, Union
 
 from pydantic import BaseModel, Field
 
@@ -197,7 +197,7 @@ class CfgPadstackDefinition(CfgBase):
 
     hole_plating_thickness: str | float | None = None
     material: str | None = Field(None, alias="hole_material")
-    hole_range: str | None = None
+    hole_range: Literal["through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad"] | None = None
 
     pad_parameters: dict | None = None
     hole_parameters: dict | None = None
@@ -208,7 +208,8 @@ class CfgPadstackDefinition(CfgBase):
         name: str,
         hole_plating_thickness: str | float | None = None,
         material: str | None = None,
-        hole_range: str | None = None,
+        hole_range: Literal["through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad"]
+        | None = None,
         pad_parameters: dict | None = None,
         hole_parameters: dict | None = None,
         solder_ball_parameters: dict | None = None,
@@ -513,10 +514,15 @@ class CfgPadstacks(CfgBase):
 
                 {
                     "regular_pad": [
-                        {"layer_name": "1_Top", "shape": "circle",
-                         "diameter": "0.5mm", "offset_x": "0",
-                         "offset_y": "0", "rotation": "0"},
-                        ...
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "diameter": "0.5mm",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                        },
+                        ...,
                     ],
                     "anti_pad": [...],
                     "thermal_pad": [...],
@@ -527,8 +533,7 @@ class CfgPadstacks(CfgBase):
             Full raw hole-parameter dictionary.  Overrides *hole_diameter* /
             *hole_shape* convenience args.  Structure::
 
-                {"shape": "circle", "diameter": "0.2mm",
-                 "offset_x": "0", "offset_y": "0", "rotation": "0"}
+                {"shape": "circle", "diameter": "0.2mm", "offset_x": "0", "offset_y": "0", "rotation": "0"}
 
         solder_ball_parameters : dict, optional
             Raw solder-ball parameter dictionary.
@@ -568,18 +573,34 @@ class CfgPadstacks(CfgBase):
         ...     "via_custom",
         ...     pad_parameters={
         ...         "regular_pad": [
-        ...             {"layer_name": "1_Top", "shape": "rectangle",
-        ...              "x_size": "0.5mm", "y_size": "0.3mm",
-        ...              "offset_x": "0", "offset_y": "0", "rotation": "0"},
+        ...             {
+        ...                 "layer_name": "1_Top",
+        ...                 "shape": "rectangle",
+        ...                 "x_size": "0.5mm",
+        ...                 "y_size": "0.3mm",
+        ...                 "offset_x": "0",
+        ...                 "offset_y": "0",
+        ...                 "rotation": "0",
+        ...             },
         ...         ],
         ...         "anti_pad": [
-        ...             {"layer_name": "1_Top", "shape": "circle",
-        ...              "diameter": "0.8mm",
-        ...              "offset_x": "0", "offset_y": "0", "rotation": "0"},
+        ...             {
+        ...                 "layer_name": "1_Top",
+        ...                 "shape": "circle",
+        ...                 "diameter": "0.8mm",
+        ...                 "offset_x": "0",
+        ...                 "offset_y": "0",
+        ...                 "rotation": "0",
+        ...             },
         ...         ],
         ...     },
-        ...     hole_parameters={"shape": "circle", "diameter": "0.2mm",
-        ...                      "offset_x": "0", "offset_y": "0", "rotation": "0"},
+        ...     hole_parameters={
+        ...         "shape": "circle",
+        ...         "diameter": "0.2mm",
+        ...         "offset_x": "0",
+        ...         "offset_y": "0",
+        ...         "rotation": "0",
+        ...     },
         ... )
         """
         # ------------------------------------------------------------------ #
@@ -628,8 +649,14 @@ class CfgPadstacks(CfgBase):
 
             regular_pads = [
                 _make_pad_entry(
-                    layer, pad_shape, pad_diameter, pad_x_size, pad_y_size,
-                    pad_offset_x, pad_offset_y, pad_rotation,
+                    layer,
+                    pad_shape,
+                    pad_diameter,
+                    pad_x_size,
+                    pad_y_size,
+                    pad_offset_x,
+                    pad_offset_y,
+                    pad_rotation,
                 )
                 for layer in layers
             ]
@@ -637,8 +664,14 @@ class CfgPadstacks(CfgBase):
             if anti_pad_diameter is not None or anti_pad_x_size is not None:
                 anti_pads = [
                     _make_pad_entry(
-                        layer, anti_pad_shape, anti_pad_diameter,
-                        anti_pad_x_size, anti_pad_y_size, "0", "0", "0",
+                        layer,
+                        anti_pad_shape,
+                        anti_pad_diameter,
+                        anti_pad_x_size,
+                        anti_pad_y_size,
+                        "0",
+                        "0",
+                        "0",
                     )
                     for layer in layers
                 ]
@@ -758,7 +791,6 @@ class CfgPadstacks(CfgBase):
         )
         self.instances.append(obj)
         return obj
-
 
     def to_dict(self) -> dict:
         """Serialize all configured padstack definitions and instances."""
