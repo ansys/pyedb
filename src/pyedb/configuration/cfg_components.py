@@ -779,8 +779,8 @@ class CfgComponents:
 
         if self._pedb is None:
             raise KeyError(
-                f"No EDB session is attached to this builder. "
-                f"Use edb.configuration.create_config_builder() to get a session-aware builder."
+                "No EDB session is attached to this builder. "
+                "Use edb.configuration.create_config_builder() to get a session-aware builder."
             )
         instances = self._pedb.components.instances
         if reference_designator not in instances:
