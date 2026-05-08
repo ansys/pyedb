@@ -348,7 +348,7 @@ class TestClass(BaseTestClass):
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Causing memory violation")
+    @pytest.mark.skipif(not config["use_grpc"], reason="Causing memory violation")
     def test_material_thermal_modifier(self):
         edbapp = self.edb_examples.create_empty_edb()
         THERMAL_MODIFIER = {
@@ -363,8 +363,7 @@ class TestClass(BaseTestClass):
         }
         material = edbapp.materials.add_material("new_material")
         material.conductivity = 5.7e8
-        if not edbapp.grpc:  # This test is not valid for gRPC mode
-            assert material.set_thermal_modifier("conductivity", **THERMAL_MODIFIER)
+        assert material.set_thermal_modifier("conductivity", **THERMAL_MODIFIER)
         edbapp.close(terminate_rpc_session=False)
 
 

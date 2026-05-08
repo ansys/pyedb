@@ -23,6 +23,7 @@
 from __future__ import absolute_import  # noreorder
 
 import difflib
+from enum import Enum
 import logging
 import os
 import re
@@ -40,8 +41,15 @@ from ansys.edb.core.definition.material_def import (
     MaterialDef as CoreMaterialDef,
     MaterialProperty as CoreMaterialProperty,
 )
+from ansys.edb.core.definition.material_property_thermal_modifier import (
+    MaterialPropertyThermalModifier as CoreMaterialPropertyThermalModifier,
+)
 from ansys.edb.core.definition.multipole_debye_model import (
     MultipoleDebyeModel as CoreMultipoleDebyeModel,
+)
+from ansys.edb.core.utility.material_property_thermal_modifier_params import (
+    AdvancedQuadraticParams as CoreAdvancedQuadraticParams,
+    BasicQuadraticParams as CoreBasicQuadraticParams,
 )
 from pydantic import BaseModel, confloat
 
@@ -94,6 +102,20 @@ def get_line_float_value(line):
         return float(re.split(",|=", line)[-1].strip("'\n)"))
     except ValueError:
         return None
+
+
+class MateiralPropertyId(str, Enum):
+    permittivity = "PERMITTIVITY"
+    permeability = "PERMEABILITY"
+    conductivity = "CONDUCTIVITY"
+    dielectric_loss_tangent = "DIELECTRIC_LOSS_TANGENT"
+    magnetic_loss_tangent = "MAGNETIC_LOSS_TANGENT"
+    thermal_conductivity = "THERMAL_CONDUCTIVITY"
+    mass_density = "MASS_DENSITY"
+    specific_heat = "SPECIFIC_HEAT"
+    youngs_modulus = "YOUNGS_MODULUS"
+    poisson_ratio = "POISSONS_RATIO"
+    thermal_expansion_coefficient = "THERMAL_EXPANSION_COEFFICIENT"
 
 
 class MaterialProperties(BaseModel):
@@ -628,6 +650,64 @@ class Material:
                 value = getattr(self, property)
                 setattr(res, property, value)
         return res
+
+    def set_thermal_modifier(
+        self,
+        property_name: str,
+        basic_quadratic_temperature_reference: float = 21,
+        basic_quadratic_c1: float = 0.1,
+        basic_quadratic_c2: float = 0.1,
+        advanced_quadratic_lower_limit: float = -270,
+        advanced_quadratic_upper_limit: float = 1001,
+        advanced_quadratic_auto_calculate: bool = False,
+        advanced_quadratic_lower_constant: float = 1.1,
+        advanced_quadratic_upper_constant: float = 1.1,
+    ):
+        """Sets the material property thermal modifier of a given material property.
+
+        Parameters
+        ----------
+        property_name : str
+            Name of the property to modify.
+        basic_quadratic_temperature_reference : float, optional
+            The TempRef value in the quadratic model.
+        basic_quadratic_c1 : float, optional
+            The C1 value in the quadratic model.
+        basic_quadratic_c2 : float, optional
+            The C2 value in the quadratic model.
+        advanced_quadratic_lower_limit : float, optional
+            The lower temperature limit where the quadratic model is valid.
+        advanced_quadratic_upper_limit : float, optional
+            The upper temperature limit where the quadratic model is valid.
+        advanced_quadratic_auto_calculate : bool, optional
+             The flag indicating whether or the LowerConstantThermalModifierVal and UpperConstantThermalModifierVal
+             values should be auto calculated.
+        advanced_quadratic_lower_constant : float, optional
+            The constant thermal modifier value for temperatures lower than LowerConstantThermalModifierVal.
+        advanced_quadratic_upper_constant : float, optional
+            The constant thermal modifier value for temperatures greater than UpperConstantThermalModifierVal.
+
+        Returns
+        -------
+
+        """
+        basic = CoreBasicQuadraticParams(
+            basic_quadratic_temperature_reference,
+            basic_quadratic_c1,
+            basic_quadratic_c2,
+        )
+        advanced = CoreAdvancedQuadraticParams(
+            advanced_quadratic_lower_limit,
+            advanced_quadratic_upper_limit,
+            advanced_quadratic_auto_calculate,
+            advanced_quadratic_lower_constant,
+            advanced_quadratic_upper_constant,
+        )
+
+        thermal_modifier = CoreMaterialPropertyThermalModifier.create(basic, advanced)
+        temp = MateiralPropertyId[property_name]
+        self.core.set_thermal_modifier(CoreMaterialProperty[temp], thermal_modifier)
+        return True
 
 
 class Materials(object):

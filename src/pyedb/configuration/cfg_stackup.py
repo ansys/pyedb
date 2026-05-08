@@ -25,7 +25,7 @@ This module wraps stackup-related configuration models with fluent helpers for
 materials, layers, roughness, and etching definitions.
 """
 
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel, Field
 
@@ -489,7 +489,8 @@ class CfgStackup(BaseModel):
 
     def add_material(
         self,
-        name: str,
+        name: str | None = None,
+        config: CfgMaterial | dict[str, Any] | None = None,
         conductivity: Optional[Union[str, float]] = None,
         permittivity: Optional[Union[str, float]] = None,
         dielectric_loss_tangent: Optional[Union[str, float]] = None,
@@ -560,6 +561,35 @@ class CfgStackup(BaseModel):
         >>> cfg.stackup.add_material("copper", conductivity=5.8e7)
         >>> cfg.stackup.add_material("fr4", permittivity=4.4, dielectric_loss_tangent=0.02)
         """
+        # Support config parameter (dict or CfgMaterial) from main branch API
+        if config is not None:
+            if isinstance(config, CfgMaterial):
+                payload = config.model_dump(exclude_none=True)
+            else:
+                payload = dict(config)
+            payload.update(kwargs)
+            if name is not None:
+                payload["name"] = name
+            kwargs = payload
+            name = kwargs.pop("name", name)
+            conductivity = kwargs.pop("conductivity", conductivity)
+            permittivity = kwargs.pop("permittivity", permittivity)
+            dielectric_loss_tangent = kwargs.pop("dielectric_loss_tangent", dielectric_loss_tangent)
+            magnetic_loss_tangent = kwargs.pop("magnetic_loss_tangent", magnetic_loss_tangent)
+            mass_density = kwargs.pop("mass_density", mass_density)
+            permeability = kwargs.pop("permeability", permeability)
+            poisson_ratio = kwargs.pop("poisson_ratio", poisson_ratio)
+            specific_heat = kwargs.pop("specific_heat", specific_heat)
+            thermal_conductivity = kwargs.pop("thermal_conductivity", thermal_conductivity)
+            youngs_modulus = kwargs.pop("youngs_modulus", youngs_modulus)
+            thermal_expansion_coefficient = kwargs.pop("thermal_expansion_coefficient", thermal_expansion_coefficient)
+            dc_conductivity = kwargs.pop("dc_conductivity", dc_conductivity)
+            dc_permittivity = kwargs.pop("dc_permittivity", dc_permittivity)
+            dielectric_model_frequency = kwargs.pop("dielectric_model_frequency", dielectric_model_frequency)
+            loss_tangent_at_frequency = kwargs.pop("loss_tangent_at_frequency", loss_tangent_at_frequency)
+            permittivity_at_frequency = kwargs.pop("permittivity_at_frequency", permittivity_at_frequency)
+            thermal_modifiers = kwargs.pop("thermal_modifiers", thermal_modifiers)
+
         # Check for duplicates in the local registry first.
         for _mat in self.materials:
             if _mat.name == name:
@@ -640,13 +670,15 @@ class CfgStackup(BaseModel):
             **kwargs,
         )
 
-    def add_layer_at_bottom(self, name, **kwargs):
+    def add_layer_at_bottom(self, name=None, config: CfgLayer | dict[str, Any] | None = None, **kwargs):
         """Append a layer to the bottom of the stackup.
 
         Parameters
         ----------
-        name : str
-            Layer name.
+        name : str, optional
+            Layer name. If provided, it overrides the name from ``config``.
+        config : CfgLayer | dict, optional
+            Layer payload as a ``CfgLayer`` instance or dictionary.
         **kwargs
             Optional layer properties forwarded to :class:`CfgLayer`
             (``layer_type`` or ``type``, ``material``, ``fill_material``,
@@ -657,6 +689,16 @@ class CfgStackup(BaseModel):
         CfgLayer
             The newly created layer object.
         """
+        if config is not None:
+            if isinstance(config, CfgLayer):
+                payload = config.model_dump(exclude_none=True)
+            else:
+                payload = dict(config)
+            payload.update(kwargs)
+            if name is not None:
+                payload["name"] = name
+            kwargs = payload
+            name = kwargs.pop("name", name)
         # Normalise legacy 'type' kwarg to 'layer_type'
         if "type" in kwargs and "layer_type" not in kwargs:
             kwargs["layer_type"] = kwargs.pop("type")
