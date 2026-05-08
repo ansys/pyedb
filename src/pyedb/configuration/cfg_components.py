@@ -28,8 +28,6 @@ from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrie
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
 from pydantic import BaseModel
 
-import re as _re
-
 from pyedb.configuration.cfg_common import CfgBase
 
 
