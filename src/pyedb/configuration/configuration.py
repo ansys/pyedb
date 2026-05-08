@@ -782,6 +782,10 @@ class Configuration:
         None
         """
         layers = self.cfg_data.stackup.layers
+        # Default layers without an explicit type to "signal"
+        for layer in layers:
+            if layer.layer_type is None:
+                layer.layer_type = "signal"
         input_signal_layers = [i for i in layers if (i.type or "").lower() == "signal"]
         if len(input_signal_layers) == 0:
             return

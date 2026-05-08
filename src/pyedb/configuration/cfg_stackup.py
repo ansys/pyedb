@@ -161,7 +161,7 @@ class CfgLayer(BaseModel):
     """Represent one signal or dielectric layer entry."""
 
     name: Optional[str] = None
-    layer_type: Optional[str] = Field("signal", alias="type")
+    layer_type: Optional[str] = Field(None, alias="type")
     material: Optional[str] = None
     fill_material: Optional[str] = None
     thickness: Optional[Union[float, str]] = None
@@ -187,7 +187,7 @@ class CfgLayer(BaseModel):
         **kwargs,
     ):
         # Accept ``type`` as a back-compat alias passed via **kwargs.
-        resolved_type = layer_type or kwargs.pop("type", None) or "signal"
+        resolved_type = layer_type or kwargs.pop("type", None)
         super().__init__(
             name=name,
             layer_type=resolved_type,
