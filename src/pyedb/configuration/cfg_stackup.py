@@ -161,7 +161,7 @@ class CfgLayer(BaseModel):
     """Represent one signal or dielectric layer entry."""
 
     name: Optional[str] = None
-    layer_type: Optional[str] = Field(None, alias="type")
+    layer_type: Optional[str] = Field("signal", alias="type")
     material: Optional[str] = None
     fill_material: Optional[str] = None
     thickness: Optional[Union[float, str]] = None
@@ -187,7 +187,7 @@ class CfgLayer(BaseModel):
         **kwargs,
     ):
         # Accept ``type`` as a back-compat alias passed via **kwargs.
-        resolved_type = layer_type or kwargs.pop("type", None)
+        resolved_type = layer_type or kwargs.pop("type", None) or "signal"
         super().__init__(
             name=name,
             layer_type=resolved_type,
@@ -733,16 +733,18 @@ class CfgStackup(BaseModel):
         return {k: v for k, v in d.items() if v != []}
 
     def normalize_thickness(self, unit="m"):
-        if unit == "m":
-            multiplier = 1
-        elif unit == "mm":
+        if unit == "mm":
             multiplier = 1000
+        elif unit == "cm":
+            multiplier = 1e2
         elif unit == "um":
             multiplier = 1e6
         elif unit == "mil":
             multiplier = 1 / 0.0000254
         elif unit == "in":
             multiplier = 1 / 0.0254
+        elif unit == "m":
+            multiplier = 1
         else:
             raise ValueError(f"Unsupported unit: {unit}")
         for layer in self.layers:
@@ -757,3 +759,6 @@ class CfgStackup(BaseModel):
                     layer.thickness = float(layer.thickness.replace("mil", "")) * 0.0000254 * multiplier
                 elif "in" in layer.thickness:
                     layer.thickness = float(layer.thickness.replace("in", "")) * 0.0254 * multiplier
+                elif "m" in layer.thickness:
+                    layer.thickness = float(layer.thickness.replace("m", "")) * 1 * multiplier
+            layer.thickness = f"{layer.thickness}{unit}"
