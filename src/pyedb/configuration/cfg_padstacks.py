@@ -87,7 +87,7 @@ class CfgPadstackInstance(CfgBase):
     name: str | None = None
     eid: int | None = Field(None, alias="id")
 
-    backdrill_parameters: CfgBackdrillParameters | None = CfgBackdrillParameters()
+    backdrill_parameters: CfgBackdrillParameters | None = Field(default_factory=CfgBackdrillParameters)
     is_pin: bool = Field(default=False)
 
     net_name: str | None = None
@@ -247,8 +247,8 @@ class CfgPadstackDefinition(CfgBase):
 class CfgPadstacks(CfgBase):
     """Collect padstack definitions and instances for serialization."""
 
-    definitions: list[CfgPadstackDefinition] | None = []
-    instances: list[CfgPadstackInstance] | None = []
+    definitions: list[CfgPadstackDefinition] = Field(default_factory=list)
+    instances: list[CfgPadstackInstance] = Field(default_factory=list)
 
     # Not serialized – holds a live EDB reference when built from a session.
     _pedb: object = None
@@ -414,13 +414,6 @@ class CfgPadstacks(CfgBase):
         -------
         CfgPadstackDefinition
         """
-        import warnings
-
-        warnings.warn(
-            "add_padstack_definition is deprecated, use add_definition instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.add_definition(**kwargs)
 
     def add_definition(
@@ -713,13 +706,6 @@ class CfgPadstacks(CfgBase):
         -------
         CfgPadstackInstance
         """
-        import warnings
-
-        warnings.warn(
-            "add_padstack_instance is deprecated, use add_instance instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.add_instance(**kwargs)
 
     def add_instance(

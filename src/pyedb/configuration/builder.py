@@ -53,17 +53,6 @@ from pyedb.configuration.cfg_stackup import CfgStackup
 from pyedb.configuration.cfg_terminals import CfgTerminals
 
 
-class _DictProxy:
-    """Wrap a raw dictionary with a ``to_dict`` method."""
-
-    def __init__(self, data: dict):
-        self._data = data
-
-    def to_dict(self) -> dict:
-        """Return the wrapped dictionary unchanged."""
-        return self._data
-
-
 class EdbConfigBuilder:
     """Top-level programmatic builder for a pyedb configuration.
 
@@ -181,6 +170,27 @@ class EdbConfigBuilder:
         sections = ", ".join(d.keys()) if d else "<empty>"
         return f"EdbConfigBuilder(sections=[{sections}])"
 
+    def _serialized_sections(self):
+        """Yield serialized section payloads in export order."""
+        yield "general", self.general.to_dict()
+        yield "stackup", self.stackup.to_dict()
+        yield "nets", self.nets.to_dict()
+        yield "components", self.components.to_list()
+        yield "padstacks", self.padstacks.to_dict()
+        yield "pin_groups", self.pin_groups.to_list()
+        yield "terminals", self.terminals.to_list()
+        yield "ports", self.ports.to_list()
+        yield "sources", self.sources.to_list()
+        yield "probes", self.probes.to_list()
+        yield "setups", self.setups.to_list()
+        yield "boundaries", self.boundaries.to_dict()
+        yield "operations", self.operations.to_dict()
+        yield "s_parameters", self.s_parameters.to_list()
+        yield "spice_models", self.spice_models.to_list()
+        yield "package_definitions", self.package_definitions.to_list()
+        yield "variables", self.variables.to_list()
+        yield "modeler", self.modeler.to_dict()
+
     def to_dict(self) -> dict:
         """Serialize the full configuration to a plain Python dictionary.
 
@@ -200,31 +210,7 @@ class EdbConfigBuilder:
         >>> cfg.to_dict()
         {'nets': {'signal_nets': ['SIG']}}
         """
-        data: dict = {}
-
-        for key, value in (
-            ("general", self.general.to_dict()),
-            ("stackup", self.stackup.to_dict()),
-            ("nets", self.nets.to_dict()),
-            ("components", self.components.to_list()),
-            ("padstacks", self.padstacks.to_dict()),
-            ("pin_groups", self.pin_groups.to_list()),
-            ("terminals", self.terminals.to_list()),
-            ("ports", self.ports.to_list()),
-            ("sources", self.sources.to_list()),
-            ("probes", self.probes.to_list()),
-            ("setups", self.setups.to_list()),
-            ("boundaries", self.boundaries.to_dict()),
-            ("operations", self.operations.to_dict()),
-            ("s_parameters", self.s_parameters.to_list()),
-            ("spice_models", self.spice_models.to_list()),
-            ("package_definitions", self.package_definitions.to_list()),
-            ("variables", self.variables.to_list()),
-            ("modeler", self.modeler.to_dict()),
-        ):
-            if value not in ({}, [], None):
-                data[key] = value
-        return data
+        return {key: value for key, value in self._serialized_sections() if value not in ({}, [], None)}
 
     def to_json(self, file_path: Union[str, Path], indent: int = 4) -> Path:
         """Write the configuration to a JSON file.
@@ -313,7 +299,7 @@ class EdbConfigBuilder:
         )
         builder.components = CfgComponents(components_data=data.get("components", []))
         builder.padstacks = CfgPadstacks.create(**data.get("padstacks", {}))
-        builder.pin_groups = CfgPinGroups(pingroup_data=data.get("pin_groups", []))
+        builder.pin_groups = CfgPinGroups(pin_group_data=data.get("pin_groups", []))
         builder.terminals = CfgTerminals.create(data.get("terminals", []))
         builder.ports = CfgPorts(ports_data=data.get("ports", []))
         builder.sources = CfgSources(sources_data=data.get("sources", []))

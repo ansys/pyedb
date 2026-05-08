@@ -26,7 +26,7 @@ from typing import List, Literal, Optional, Union
 
 from pydantic import Field
 
-from pyedb.configuration.cfg_common import CfgBaseModel
+from pyedb.configuration.cfg_common import CfgBaseModel, serialize_list
 
 
 class CfgTerminal(CfgBaseModel):
@@ -282,24 +282,7 @@ class CfgTerminals(CfgBaseModel):
 
     @classmethod
     def create(cls, terminals: List[dict]):
-        """Reconstruct a :class:`CfgTerminals` instance from raw dictionaries.
-
-        Parameters
-        ----------
-        terminals : list of dict
-            Terminal payload dictionaries, each containing a ``terminal_type``
-            key and the corresponding field values.
-
-        Returns
-        -------
-        CfgTerminals
-            Populated terminal collection.
-
-        Raises
-        ------
-        ValueError
-            If an unknown ``terminal_type`` value is encountered.
-        """
+        """Reconstruct a :class:`CfgTerminals` instance from raw dictionaries."""
         manager = cls(terminals=[])
         for i in terminals:
             i = dict(i)
@@ -614,11 +597,5 @@ class CfgTerminals(CfgBaseModel):
         return terminal
 
     def to_list(self):
-        """Serialize all configured terminals.
-
-        Returns
-        -------
-        list of dict
-            Each element is the serialized dictionary for one terminal.
-        """
-        return [t.to_dict() if hasattr(t, "to_dict") else t for t in self.terminals]
+        """Serialize all configured terminals."""
+        return serialize_list(self.terminals)

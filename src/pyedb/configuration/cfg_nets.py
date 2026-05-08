@@ -19,12 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Build the ``nets`` configuration section.
+"""Build the ``nets`` configuration section."""
 
-This module provides a fluent API for classifying nets into signal,
-power-ground, and reference groups before serializing them into the structure
-expected by the configuration runtime.
-"""
+from pyedb.configuration.cfg_common import compact_dict
 
 
 class CfgNets:
@@ -82,7 +79,7 @@ class CfgNets:
         """
         self.power_nets = list(value or [])
 
-    def set_parameter_to_edb(self):
+    def set_parameters_to_edb(self):
         """Write signal / power-ground net classifications into the open EDB design."""
         if self._pedb is None:
             return
@@ -93,8 +90,8 @@ class CfgNets:
             if power_net in self._pedb.nets:
                 self._pedb.nets.nets[power_net].is_power_ground = True
 
-    def get_parameter_from_edb(self):
-        """Get net information."""
+    def get_parameters_from_edb(self):
+        """Read net classifications from EDB."""
         if self._pedb is None:
             return self.to_dict()
         self.signal_nets = []
@@ -105,6 +102,9 @@ class CfgNets:
             self.power_nets.append(net)
         data = {"signal_nets": self.signal_nets, "power_ground_nets": self.power_nets}
         return data
+
+    set_parameter_to_edb = set_parameters_to_edb
+    get_parameter_from_edb = get_parameters_from_edb
 
     def __init__(self, pedb=None, signal_nets=None, power_nets=None, reference_nets=None):
         """Initialize the nets configuration."""
@@ -213,17 +213,18 @@ class CfgNets:
 
     def to_dict(self) -> dict:
         """Serialize the configured net classification lists."""
-        data = {}
-        if self.signal_nets:
-            data["signal_nets"] = list(self.signal_nets)
-        if self.power_nets:
-            data["power_ground_nets"] = list(self.power_nets)
-        return data
+        return compact_dict(
+            {
+                "signal_nets": list(self.signal_nets),
+                "power_ground_nets": list(self.power_nets),
+            },
+            empty_values=(None, [], {}),
+        )
 
     def apply(self):
         """Apply net configuration on the layout."""
-        self.set_parameter_to_edb()
+        self.set_parameters_to_edb()
 
     def get_data_from_db(self):
-        """Get net information."""
-        return self.get_parameter_from_edb()
+        """Read net classifications from EDB."""
+        return self.get_parameters_from_edb()

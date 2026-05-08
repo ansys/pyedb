@@ -22,16 +22,18 @@
 
 """Build named pin-group configuration entries."""
 
-from pyedb.configuration.cfg_common import CfgBase
+from pyedb.configuration.cfg_common import CfgBase, compact_dict, serialize_list
 
 
 class CfgPinGroups:
     """Manage configuration pin group class."""
 
-    def set_pingroup_to_edb(self):
+    def set_pin_groups_to_edb(self):
         """Write all configured pin groups into the open EDB design."""
         for pg in self.pin_groups:
             pg.create()
+
+    set_pingroup_to_edb = set_pin_groups_to_edb
 
     def get_data_from_edb(self):
         """Read existing pin groups from the open EDB design.
@@ -59,9 +61,10 @@ class CfgPinGroups:
             self.pin_groups.append(cfg_pg)
         return self.export_properties()
 
-    def __init__(self, pedb=None, pingroup_data=None):
+    def __init__(self, pedb=None, pin_group_data=None, pingroup_data=None):
         self._pedb = pedb
-        self.pin_groups = [CfgPinGroup(self._pedb, **pg) for pg in (pingroup_data or [])]
+        pin_group_data = pin_group_data if pin_group_data is not None else pingroup_data
+        self.pin_groups = [CfgPinGroup(self._pedb, **pg) for pg in (pin_group_data or [])]
 
     def get(self, name: str) -> "CfgPinGroup":
         """Return the :class:`CfgPinGroup` for an existing pin group.
@@ -228,28 +231,15 @@ class CfgPinGroups:
 
     def apply(self):
         """Write all configured pin groups into the open EDB design."""
-        self.set_pingroup_to_edb()
+        self.set_pin_groups_to_edb()
 
     def get_data_from_db(self):
-        """Read pin groups from the EDB design (alias for :meth:`get_data_from_edb`).
-
-        Returns
-        -------
-        list of dict
-        """
+        """Read pin groups from the EDB design."""
         return self.get_data_from_edb()
 
     def export_properties(self):
-        """Serialize all pin groups to a list of plain dictionaries.
-
-        Returns
-        -------
-        list of dict
-        """
-        pin_groups = []
-        for pg in self.pin_groups:
-            pin_groups.append(pg.export_properties())
-        return pin_groups
+        """Serialize all pin groups to plain dictionaries."""
+        return serialize_list(self.pin_groups, method_names=("export_properties", "to_dict"))
 
     def to_list(self):
         """Serialize all configured pin groups."""
@@ -301,20 +291,12 @@ class CfgPinGroup(CfgBase):
         return self.export_properties()
 
     def export_properties(self):
-        """Serialize this pin group to a plain dictionary.
-
-        Returns
-        -------
-        dict
-            Dictionary with ``name``, ``reference_designator``, and either
-            ``pins`` or ``net``.
-        """
-        data = {
-            "name": self.name,
-            "reference_designator": self.reference_designator,
-        }
-        if self.pins:
-            data["pins"] = self.pins
-        if self.net:
-            data["net"] = self.net
-        return data
+        """Serialize this pin group to a plain dictionary."""
+        return compact_dict(
+            {
+                "name": self.name,
+                "reference_designator": self.reference_designator,
+                "pins": self.pins,
+                "net": self.net,
+            }
+        )

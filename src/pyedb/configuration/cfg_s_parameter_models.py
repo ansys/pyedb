@@ -24,6 +24,8 @@
 
 from pathlib import Path
 
+from pyedb.configuration.cfg_common import serialize_list
+
 
 class CfgSParameterModel:
     """Represent one Touchstone model assignment for a component definition."""
@@ -72,7 +74,7 @@ class CfgSParameters:
 
     def apply(self):
         """Write all S-parameter model assignments into the open EDB design."""
-        for s_param in self.s_parameters_models:
+        for s_param in self.models:
             fpath = s_param.file_path
             if not Path(fpath).anchor:
                 fpath = str(Path(self.path_libraries) / fpath)
@@ -98,19 +100,7 @@ class CfgSParameters:
                 comp.use_s_parameter_model(s_param.name, reference_net=ref_net)
 
     def get_data_from_db(self, cfg_components):
-        """Read S-parameter model assignments from the open EDB design.
-
-        Parameters
-        ----------
-        cfg_components : list of dict
-            Serialized component entries (from ``CfgComponents.to_list()``)
-            used to correlate assignment details.
-
-        Returns
-        -------
-        list of dict
-            Serialized S-parameter model assignment payloads.
-        """
+        """Read S-parameter model assignments from EDB."""
         if self._pedb is None:
             return self.to_list()
         db_comp_def = self._pedb.definitions.component
@@ -133,7 +123,7 @@ class CfgSParameters:
                         else:
                             continue
 
-                    self.s_parameters_models.append(
+                    self.models.append(
                         CfgSParameterModel(
                             name=model_name,
                             component_definition=name,
@@ -150,7 +140,8 @@ class CfgSParameters:
     def __init__(self, pedb=None, data=None, path_lib=None):
         self._pedb = pedb
         self.path_libraries = path_lib
-        self.s_parameters_models = [CfgSParameterModel(**i) for i in (data or [])]
+        self.models = [CfgSParameterModel(**i) for i in (data or [])]
+        self.s_parameters_models = self.models
 
     def add(
         self,
@@ -211,9 +202,9 @@ class CfgSParameters:
             reference_net_per_component=reference_net_per_component or {},
             pin_order=pin_order,
         )
-        self.s_parameters_models.append(model)
+        self.models.append(model)
         return model
 
     def to_list(self):
         """Serialize all configured S-parameter model assignments."""
-        return [i.to_dict() for i in self.s_parameters_models]
+        return serialize_list(self.models)

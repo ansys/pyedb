@@ -23,7 +23,7 @@
 
 import numpy as np
 
-from pyedb.configuration.cfg_common import CfgBase
+from pyedb.configuration.cfg_common import CfgBase, compact_dict, serialize_list
 from pyedb.generic.constants import TerminalTypeMapper
 from pyedb.generic.settings import settings
 
@@ -467,24 +467,11 @@ class CfgSources:
         return self.export_properties()
 
     def export_properties(self):
-        """Serialize all sources to a list of plain dictionaries.
-
-        Returns
-        -------
-        list of dict
-        """
-        sources = []
-        for src in self.sources:
-            sources.append(src.export_properties())
-        return sources
+        """Serialize all sources to plain dictionaries."""
+        return serialize_list(self.sources, method_names=("export_properties", "to_dict"))
 
     def to_list(self):
-        """Return serialized sources (alias for :meth:`export_properties`).
-
-        Returns
-        -------
-        list of dict
-        """
+        """Return serialized sources."""
         return self.export_properties()
 
 
@@ -1113,24 +1100,11 @@ class CfgPorts:
         return self.export_properties()
 
     def export_properties(self):
-        """Serialize all ports to a list of plain dictionaries.
-
-        Returns
-        -------
-        list of dict
-        """
-        ports = []
-        for p in self.ports:
-            ports.append(p.export_properties())
-        return ports
+        """Serialize all ports to plain dictionaries."""
+        return serialize_list(self.ports, method_names=("export_properties", "to_dict"))
 
     def to_list(self):
-        """Return serialized ports (alias for :meth:`export_properties`).
-
-        Returns
-        -------
-        list of dict
-        """
+        """Return serialized ports."""
         return self.export_properties()
 
 
@@ -1184,13 +1158,8 @@ class CfgProbes:
             probe.set_parameters_to_edb()
 
     def to_list(self):
-        """Serialize all probes to a list of plain dictionaries.
-
-        Returns
-        -------
-        list of dict
-        """
-        return [probe.export_properties() for probe in self.probes]
+        """Serialize all probes."""
+        return serialize_list(self.probes, method_names=("export_properties", "to_dict"))
 
 
 class CfgCircuitElement(CfgBase):
@@ -1224,6 +1193,25 @@ class CfgCircuitElement(CfgBase):
             self.negative_terminal_info = CfgTerminalInfo(self._pedb, **neg)
             if not self.negative_terminal_info.reference_designator:
                 self.negative_terminal_info.reference_designator = self.positive_terminal_info.reference_designator
+
+    def _export_base_properties(self, **extra) -> dict:
+        """Serialize fields shared by ports, sources, and probes."""
+        data = {
+            "name": self.name,
+            "type": self.type,
+            "positive_terminal": self.positive_terminal_info.export_properties(),
+        }
+        data.update(
+            compact_dict(
+                {
+                    "impedance": self.impedance,
+                    "reference_designator": self.reference_designator,
+                    "distributed": self.distributed if self.distributed else None,
+                }
+            )
+        )
+        data.update(compact_dict(extra))
+        return data
 
     def create_terminals(self):
         """Create step 1. Collect positive and negative terminals."""
@@ -1536,28 +1524,10 @@ class CfgPort(CfgCircuitElement):
         return circuit_elements
 
     def export_properties(self):
-        """Serialize this port to a plain dictionary.
-
-        Returns
-        -------
-        dict
-            Dictionary with ``name``, ``type``, ``positive_terminal``, and
-            optional ``impedance``, ``reference_designator``, ``distributed``,
-            and ``negative_terminal`` keys.
-        """
-        data = {
-            "name": self.name,
-            "type": self.type,
-            "positive_terminal": self.positive_terminal_info.export_properties(),
-        }
-        if self.impedance is not None:
-            data["impedance"] = self.impedance
-        if self.reference_designator:
-            data["reference_designator"] = self.reference_designator
-        if self.distributed:
-            data["distributed"] = self.distributed
+        """Serialize this port to a plain dictionary."""
+        data = self._export_base_properties()
         if self.negative_terminal_info:
-            data.update({"negative_terminal": self.negative_terminal_info.export_properties()})
+            data["negative_terminal"] = self.negative_terminal_info.export_properties()
         return data
 
 
@@ -1671,28 +1641,9 @@ class CfgSource(CfgCircuitElement):
         return circuit_elements
 
     def export_properties(self):
-        """Serialize this source to a plain dictionary.
-
-        Returns
-        -------
-        dict
-            Dictionary with ``name``, ``type``, ``magnitude``,
-            ``positive_terminal``, ``negative_terminal``, and optional
-            ``reference_designator``, ``impedance``, and ``distributed`` keys.
-        """
-        data = {
-            "name": self.name,
-            "type": self.type,
-            "magnitude": self.magnitude,
-            "positive_terminal": self.positive_terminal_info.export_properties(),
-            "negative_terminal": self.negative_terminal_info.export_properties(),
-        }
-        if self.reference_designator:
-            data["reference_designator"] = self.reference_designator
-        if self.impedance is not None:
-            data["impedance"] = self.impedance
-        if self.distributed:
-            data["distributed"] = self.distributed
+        """Serialize this source to a plain dictionary."""
+        data = self._export_base_properties(magnitude=self.magnitude)
+        data["negative_terminal"] = self.negative_terminal_info.export_properties()
         return data
 
 
@@ -1747,22 +1698,9 @@ class CfgProbe(CfgCircuitElement):
         return self.export_properties()
 
     def export_properties(self):
-        """Serialize this probe to a plain dictionary.
-
-        Returns
-        -------
-        dict
-            Dictionary with ``name``, ``type``, ``positive_terminal``,
-            ``negative_terminal``, and optional ``reference_designator`` keys.
-        """
-        data = {
-            "name": self.name,
-            "type": self.type,
-            "positive_terminal": self.positive_terminal_info.export_properties(),
-            "negative_terminal": self.negative_terminal_info.export_properties(),
-        }
-        if self.reference_designator:
-            data["reference_designator"] = self.reference_designator
+        """Serialize this probe to a plain dictionary."""
+        data = self._export_base_properties()
+        data["negative_terminal"] = self.negative_terminal_info.export_properties()
         return data
 
 

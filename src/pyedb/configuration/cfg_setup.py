@@ -25,9 +25,13 @@ from typing import List, Literal, Optional, Union
 
 from pydantic import AliasChoices, Field
 
-from pyedb.configuration.cfg_common import CfgBaseModel
+from pyedb.configuration.cfg_common import CfgBaseModel, serialize_list
 
-_DISTRIBUTION_ALIASES = {
+FrequencyDistribution = Literal[
+    "linear_scale", "log_scale", "single", "linear_count", "log_count", "linear scale", "log scale", "linear count"
+]
+
+_DISTRIBUTION_ALIASES: dict[str, FrequencyDistribution] = {
     "linear_count": "linear_count",
     "linearcount": "linear_count",
     "linear count": "linear_count",
@@ -44,7 +48,7 @@ _DISTRIBUTION_ALIASES = {
 }
 
 
-def _infer_distribution(step_or_count, distribution: str) -> str:
+def _infer_distribution(step_or_count, distribution: FrequencyDistribution) -> FrequencyDistribution:
     """Infer the correct distribution from *step_or_count* when the caller
     has not explicitly overridden the default.
 
@@ -72,7 +76,7 @@ def _infer_distribution(step_or_count, distribution: str) -> str:
     return "linear_scale"
 
 
-def _add_inline_range(sweep, start, stop, step_or_count, distribution: str):
+def _add_inline_range(sweep, start, stop, step_or_count, distribution: FrequencyDistribution):
     distribution = _infer_distribution(step_or_count, distribution)
     dist = _DISTRIBUTION_ALIASES.get(str(distribution).lower().replace("-", "_"), distribution)
     if dist == "single":
@@ -86,10 +90,8 @@ class CfgFrequencies(CfgBaseModel):
 
     start: float | str = Field(..., description="Start frequency in Hz")
     stop: float | str = Field(..., description="Stop frequency in Hz")
-    increment: int | str = Field(..., validation_alias=AliasChoices("increment", "points", "samples", "step"))
-    distribution: Literal[
-        "linear_scale", "log_scale", "single", "linear_count", "log_count", "linear scale", "log scale", "linear count"
-    ] = Field(
+    increment: int | float | str = Field(..., validation_alias=AliasChoices("increment", "points", "samples", "step"))
+    distribution: FrequencyDistribution = Field(
         ..., description="Frequency distribution type, e.g., linear_step, log_step, single, linear_count, log_count"
     )
 
@@ -106,7 +108,9 @@ class CfgSetupAC(CfgSetupDC):
     class CfgFrequencySweep(CfgBaseModel):
         name: str
         type: Literal["discrete", "interpolation", "interpolating"]
-        frequencies: list[CfgFrequencies | str] = Field(list(), description="List of frequency definitions or strings")
+        frequencies: list[CfgFrequencies | str] = Field(
+            default_factory=list, description="List of frequency definitions or strings"
+        )
 
         use_q3d_for_dc: bool = Field(False, description="Use Q3D for DC analysis. Only applicable for HFSS setup.")
         compute_dc_point: bool = Field(False, description="AC/DC Merge checkbox in GUI.")
@@ -276,7 +280,7 @@ class CfgSetupAC(CfgSetupDC):
             """
             return self.model_dump(exclude_none=True)
 
-    freq_sweep: list[CfgFrequencySweep] | None = list()
+    freq_sweep: list[CfgFrequencySweep] | None = Field(default_factory=list)
 
     def add_frequency_sweep(self, sweep: CfgFrequencySweep):
         """Append a pre-built frequency sweep to this setup.
@@ -501,8 +505,8 @@ class CfgHFSSSetup(CfgSetupAC):
     # adapt_frequencies: list[CfgAdaptFrequency] = Field(default_factory=list, description="List of frequencies for
     # single/multi_frequencies adaptation.")
 
-    auto_mesh_operation: CfgAutoMeshOperation | None = CfgAutoMeshOperation()
-    mesh_operations: list[CfgLengthMeshOperation] | None = list()
+    auto_mesh_operation: CfgAutoMeshOperation | None = Field(default_factory=CfgAutoMeshOperation)
+    mesh_operations: list[CfgLengthMeshOperation] | None = Field(default_factory=list)
 
     def __init__(self, name: str, adapt_type: Literal["broadband", "single", "multi_frequencies"] = "single", **kwargs):
         super().__init__(name=name, adapt_type=adapt_type, **kwargs)
@@ -812,25 +816,7 @@ class CfgSetups(CfgBaseModel):
 
     @classmethod
     def create(cls, setups: List[dict]):
-        """Reconstruct a :class:`CfgSetups` instance from a list of setup dictionaries.
-
-        Parameters
-        ----------
-        setups : list of dict
-            Raw setup payload dictionaries.  Each dictionary must contain a
-            ``"type"`` key (``"hfss"``, ``"siwave_ac"``, ``"siwave_syz"``, or
-            ``"siwave_dc"``).
-
-        Returns
-        -------
-        CfgSetups
-            Populated setups collection.
-
-        Raises
-        ------
-        ValueError
-            If an unknown ``"type"`` value is encountered.
-        """
+        """Reconstruct a :class:`CfgSetups` instance from setup dictionaries."""
         manager = cls()
         for stp in setups:
             setup_type = stp.get("type", "hfss").lower()
@@ -1034,18 +1020,5 @@ class CfgSetups(CfgBaseModel):
         raise KeyError(f"Setup '{name}' not found. Available setups: {[s.name for s in self.setups]}")
 
     def to_list(self):
-        """Serialize all configured setups to a list of dictionaries.
-
-        Returns
-        -------
-        list of dict
-            Each element is the ``to_dict()`` payload of the corresponding
-            setup object.
-        """
-        result = []
-        for setup in self.setups:
-            if hasattr(setup, "to_dict"):
-                result.append(setup.to_dict())
-            else:
-                result.append(setup.model_dump(exclude_none=True))
-        return result
+        """Serialize all configured setups."""
+        return serialize_list(self.setups)

@@ -24,6 +24,8 @@
 
 from pathlib import Path
 
+from pyedb.configuration.cfg_common import serialize_list
+
 
 class CfgSpiceModel:
     """Represent one SPICE subcircuit model assignment."""
@@ -83,7 +85,11 @@ class CfgSpiceModel:
         components = self._spice_dict.get("components", [])
         if isinstance(components, str):
             components = [components]
-        self.components = list(components or [])
+        elif components is None:
+            components = []
+        elif not isinstance(components, (list, tuple, set)):
+            components = [components]
+        self.components = list(components)
         self.terminal_pairs = self._spice_dict.get("terminal_pairs", None)
 
     def to_dict(self) -> dict:
@@ -154,4 +160,4 @@ class CfgSpiceModels:
 
     def to_list(self):
         """Serialize all configured SPICE model assignments."""
-        return [model.to_dict() for model in self.models]
+        return serialize_list(self.models)

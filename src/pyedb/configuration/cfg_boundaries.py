@@ -19,35 +19,19 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Build the ``boundaries`` configuration section.
+"""Build the ``boundaries`` configuration section."""
 
-This module provides a fluent layer over :class:`CfgBoundaries` for defining
-HFSS open-region settings, air-box padding, and dielectric extent controls.
-"""
-
-from typing import Union
-
-from pydantic import BaseModel
-
-
-class CfgBase(BaseModel):
-    """Base Pydantic model for boundary-section payloads."""
-
-    model_config = {
-        "populate_by_name": True,
-        "extra": "forbid",
-    }
-
-
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from pydantic import Field
 
+from pyedb.configuration.cfg_common import CfgBaseModel
 
-class CfgBoundaries(CfgBase):
-    """Represent the ``boundaries`` section for open-region and extent settings."""
 
-    class PaddingData(CfgBase):
+class CfgBoundaries(CfgBaseModel):
+    """Represent open-region and extent settings."""
+
+    class PaddingData(CfgBaseModel):
         size: Union[float, str]
         is_multiple: bool
 
@@ -155,12 +139,7 @@ class CfgBoundaries(CfgBase):
 
     @classmethod
     def create(cls, **kwargs) -> "CfgBoundaries":
-        """Create a :class:`CfgBoundaries` instance from keyword arguments.
-
-        Returns
-        -------
-        CfgBoundaries
-        """
+        """Create a :class:`CfgBoundaries` instance."""
         return cls(**kwargs)
 
     def set_radiation_boundary(self, use_open_region: bool = True):

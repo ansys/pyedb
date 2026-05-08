@@ -20,11 +20,46 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Shared base classes and variable models for configuration builders."""
+"""Shared helpers, base classes, and variable models for configuration builders."""
 
-from typing import List, Optional, Union
+from typing import Any, Iterable, List, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+_EMPTY_SERIALIZATION_VALUES = (None, [], {})
+
+
+def compact_dict(data=None, /, *, empty_values=_EMPTY_SERIALIZATION_VALUES, **kwargs) -> dict:
+    """Return a copy of *data* with empty values removed.
+
+    Parameters
+    ----------
+    data : dict, optional
+        Base mapping to filter.
+    empty_values : tuple, optional
+        Values to omit. Defaults to ``(None, [], {})``.
+    **kwargs
+        Extra key-value pairs merged into *data* before filtering.
+    """
+    raw = dict(data or {})
+    raw.update(kwargs)
+    return {key: value for key, value in raw.items() if value not in empty_values}
+
+
+def serialize_item(item: Any, method_names: tuple[str, ...] = ("to_dict", "export_properties")) -> Any:
+    """Serialize one configuration item using its first available export method."""
+    for method_name in method_names:
+        method = getattr(item, method_name, None)
+        if callable(method):
+            return method()
+    if hasattr(item, "model_dump"):
+        return item.model_dump(exclude_none=True)
+    return item
+
+
+def serialize_list(items: Iterable[Any], method_names: tuple[str, ...] = ("to_dict", "export_properties")) -> list:
+    """Serialize an iterable of configuration items to plain Python objects."""
+    return [serialize_item(item, method_names=method_names) for item in items]
 
 
 class CfgBase:
@@ -47,13 +82,14 @@ class CfgBase:
             Attribute name → value pairs, with ``None``, empty lists, and
             empty dicts omitted, and private (``_``-prefixed) names excluded.
         """
-        attrs = {i: j for i, j in self.__dict__.items() if i not in self.protected_attributes}
+        excluded = set(self.protected_attributes)
         if exclude is not None:
-            exclude = exclude if isinstance(exclude, list) else [exclude]
-            attrs = {i: j for i, j in attrs.items() if i not in exclude}
-        attrs = {i: j for i, j in attrs.items() if not i.startswith("_")}
-        attrs = {i: j for i, j in attrs.items() if j not in [None, [], {}]}
-        return attrs
+            excluded.update(exclude if isinstance(exclude, list) else [exclude])
+        return {
+            name: value
+            for name, value in self.__dict__.items()
+            if name not in excluded and not name.startswith("_") and value not in (None, [], {})
+        }
 
     def set_attributes(self, pedb_object):
         """Set all non-protected attributes from this instance onto *pedb_object*.
@@ -87,7 +123,7 @@ class CfgVar(BaseModel):
 class CfgVariables(BaseModel):
     """Collect variable definitions for the ``variables`` section."""
 
-    variables: List[CfgVar] = []
+    variables: List[CfgVar] = Field(default_factory=list)
 
     def add_variable(self, name, value, description=""):
         """Append a raw :class:`CfgVar` entry.

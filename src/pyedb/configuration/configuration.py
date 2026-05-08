@@ -193,7 +193,7 @@ class Configuration:
         else:
             config_file = str(config_file)
             if os.path.isfile(config_file):
-                with open(config_file, "r") as f:
+                with open(config_file, "r", encoding="utf-8") as f:
                     if config_file.endswith(".json"):
                         data = json.load(f)
                     elif config_file.endswith(".toml"):
@@ -392,7 +392,6 @@ class Configuration:
                 # Apply frequency sweeps
                 for sw in setup.freq_sweep:
                     f_set = []
-                    freq_string = []
                     for f in sw.frequencies:
                         if isinstance(f, str):
                             freq_strng = f.split(" ")
@@ -405,8 +404,6 @@ class Configuration:
                         sw.name, frequency_set=f_set, discrete=False if sw.type == "interpolation" else True
                     )
 
-                    if len(freq_string) > 0 and not settings.is_grpc:
-                        sweep.frequency_string = freq_string
                     sweep.use_q3d_for_dc = sw.use_q3d_for_dc
                     sweep.compute_dc_point = sw.compute_dc_point
                     sweep.enforce_causality = sw.enforce_causality
@@ -1093,7 +1090,6 @@ class Configuration:
         """
         terminals_dict = {}
         bungle_terminals = []
-        edge_terminals = {}
         for cfg_terminal in self.cfg_data.terminals.terminals:
             if cfg_terminal.terminal_type == "padstack_instance":
                 terminal = self._pedb.excitation_manager.create_padstack_instance_terminal(
@@ -1128,7 +1124,6 @@ class Configuration:
                 terminal.pec_launch_width = cfg_terminal.pec_launch_width
                 terminal.do_renormalize = True
                 terminal.hfss_type = cfg_terminal.hfss_type
-                edge_terminals[cfg_terminal.name] = terminal
             elif cfg_terminal.terminal_type == "bundle":
                 bungle_terminals.append(cfg_terminal)
                 continue
@@ -1388,15 +1383,7 @@ class Configuration:
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
         file_path = file_path.with_suffix(".json") if file_path.suffix == "" else file_path
 
-        for comp in data["components"]:
-            for key, value in comp.items():
-                try:
-                    json.dumps(value)
-                    print(f"Key '{key}' is serializable.")
-                except TypeError as e:
-                    print(f"Key '{key}' failed: {e}")
-
-        with open(file_path, "w") as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             if file_path.suffix == ".json":
                 json.dump(data, f, ensure_ascii=False, indent=4)
             else:

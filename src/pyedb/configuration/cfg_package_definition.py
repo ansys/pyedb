@@ -22,7 +22,7 @@
 
 """Build thermal package-definition configuration entries."""
 
-from pyedb.configuration.cfg_common import CfgBase
+from pyedb.configuration.cfg_common import CfgBase, compact_dict, serialize_list
 from pyedb.generic.settings import settings
 
 
@@ -134,18 +134,19 @@ class CfgPackage(CfgBase):
             "name": self.name,
             "component_definition": self.component_definition,
         }
-        for key in (
-            "apply_to_all",
-            "maximum_power",
-            "thermal_conductivity",
-            "theta_jb",
-            "theta_jc",
-            "height",
-            "extent_bounding_box",
-        ):
-            value = getattr(self, key)
-            if value not in [None, [], {}]:
-                data[key] = value
+        data.update(
+            compact_dict(
+                {
+                    "apply_to_all": self.apply_to_all,
+                    "maximum_power": self.maximum_power,
+                    "thermal_conductivity": self.thermal_conductivity,
+                    "theta_jb": self.theta_jb,
+                    "theta_jc": self.theta_jc,
+                    "height": self.height,
+                    "extent_bounding_box": self.extent_bounding_box,
+                }
+            )
+        )
         if self.components:
             data["components"] = self.components
         if self.heatsink is not None:
@@ -173,14 +174,8 @@ class CfgHeatSink(CfgBase):
 class CfgPackageDefinitions:
     """Manage thermal package definitions for the ``package_definitions`` section."""
 
-    def get_parameter_from_edb(self):
-        """Read thermal package definitions from the open EDB design.
-
-        Returns
-        -------
-        list of dict
-            Serialized package definition payloads.
-        """
+    def get_parameters_from_edb(self):
+        """Read thermal package definitions from EDB."""
         package_definitions = []
         for pkg_name, pkg_obj in self._pedb.definitions.package.items():
             pkg = {}
@@ -200,7 +195,7 @@ class CfgPackageDefinitions:
 
         return package_definitions
 
-    def set_parameter_to_edb(self):
+    def set_parameters_to_edb(self):
         """Write all configured package definitions into the open EDB design."""
         if settings.is_grpc:
             from pyedb.grpc.database.definition.package_def import PackageDef
@@ -237,6 +232,9 @@ class CfgPackageDefinitions:
                 )
             for _, i in comp_list.items():
                 i.package_def = pkg.name
+
+    get_parameter_from_edb = get_parameters_from_edb
+    set_parameter_to_edb = set_parameters_to_edb
 
     def __init__(self, pedb=None, data=None):
         self._pedb = pedb
@@ -317,22 +315,12 @@ class CfgPackageDefinitions:
 
     def apply(self):
         """Write all configured package definitions into the open EDB design."""
-        self.set_parameter_to_edb()
+        self.set_parameters_to_edb()
 
     def get_data_from_db(self):
-        """Read package definitions from EDB (alias for :meth:`get_parameter_from_edb`).
-
-        Returns
-        -------
-        list of dict
-        """
-        return self.get_parameter_from_edb()
+        """Read package definitions from EDB."""
+        return self.get_parameters_from_edb()
 
     def to_list(self):
-        """Serialize all configured package definitions.
-
-        Returns
-        -------
-        list of dict
-        """
-        return [p.to_dict() for p in self.packages]
+        """Serialize all configured package definitions."""
+        return serialize_list(self.packages)

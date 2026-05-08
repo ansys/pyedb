@@ -40,28 +40,30 @@ from pyedb.configuration.cfg_stackup import CfgStackup
 from pyedb.configuration.cfg_terminals import CfgTerminals
 
 
-class CfgData(object):
+class CfgData:
     """Manages configure data."""
 
     def __init__(self, pedb, **kwargs):
-        self.setups = []
-
         self._pedb = pedb
-        self.general = CfgGeneral(self._pedb, kwargs.get("general", {}))
+        general = kwargs.get("general", {})
+        boundaries = kwargs.get("boundaries", {})
+        nets = kwargs.get("nets", {})
 
-        self.boundaries = CfgBoundaries.create(**kwargs.get("boundaries", {}))
+        self.general = CfgGeneral(self._pedb, general)
+
+        self.boundaries = CfgBoundaries.create(**boundaries)
 
         self.nets = CfgNets(
             self._pedb,
-            kwargs.get("nets", {}).get("signal_nets", []),
-            kwargs.get("nets", {}).get("power_ground_nets", []),
+            nets.get("signal_nets", []),
+            nets.get("power_ground_nets", []),
         )
 
         self.components = CfgComponents(self._pedb, components_data=kwargs.get("components", []))
 
         self.padstacks = CfgPadstacks.create(**kwargs.get("padstacks", {}))
 
-        self.pin_groups = CfgPinGroups(self._pedb, pingroup_data=kwargs.get("pin_groups", []))
+        self.pin_groups = CfgPinGroups(self._pedb, pin_group_data=kwargs.get("pin_groups", []))
 
         self.terminals = CfgTerminals.create(terminals=kwargs.get("terminals", []))
 
