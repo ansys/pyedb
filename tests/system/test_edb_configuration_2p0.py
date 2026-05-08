@@ -2331,7 +2331,7 @@ class TestOperations(BaseTestClass):
         edb_app.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
-    def test_cfg_padstack_create_definition_and_place_instance(self):
+    def test_cfg_modeler_create_primitives(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
         cfg_builder.modeler.add_trace(
