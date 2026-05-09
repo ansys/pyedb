@@ -40,10 +40,8 @@ class CfgGeneral:
         """Read general design-option settings from EDB."""
         if self.pedb is None:
             return self.to_dict()
-        anti_pads_always_on = self.pedb.design_options.anti_pads_always_on
-        suppress_pads = self.pedb.design_options.suppress_pads
-        data = {"anti_pads_always_on": anti_pads_always_on, "suppress_pads": suppress_pads}
-        return data
+        opts = self.pedb.design_options
+        return {"anti_pads_always_on": opts.anti_pads_always_on, "suppress_pads": opts.suppress_pads}
 
     def __init__(self, pedb=None, data=None):
         """Initialize the general configuration."""
@@ -51,8 +49,8 @@ class CfgGeneral:
         self.pedb = pedb
         self.spice_model_library = data.get("spice_model_library", "")
         self.s_parameter_library = data.get("s_parameter_library", "")
-        self.anti_pads_always_on = data.get("anti_pads_always_on", None)
-        self.suppress_pads = data.get("suppress_pads", None)
+        self.anti_pads_always_on = data.get("anti_pads_always_on")
+        self.suppress_pads = data.get("suppress_pads")
 
     def to_dict(self) -> dict:
         """Serialize configured general settings."""

@@ -47,9 +47,7 @@ def _smallest_pin_pad_size(comp) -> float | None:
         p0, p1 = bbox[0], bbox[1]
         if not p0 or not p1 or len(p0) < 2 or len(p1) < 2:
             continue
-        w = abs(p1[0] - p0[0])
-        h = abs(p1[1] - p0[1])
-        size: float = min(w, h)
+        size: float = min(abs(p1[0] - p0[0]), abs(p1[1] - p0[1]))
         if size > 0 and (min_size is None or size < min_size):
             min_size = size
     return min_size
@@ -70,7 +68,6 @@ def _height_from_diameter(diameter: str) -> str:
 
 def _get_snake_to_pascal():
     """Lazy import of snake_to_pascal to avoid loading .NET when using gRPC."""
-    # Import from dotnet module - only called in non-gRPC mode
     from pyedb.dotnet.database.general import snake_to_pascal
 
     return snake_to_pascal
@@ -96,6 +93,8 @@ _die_orientation_mapping = {
     "chip_down": CoreDieOrientation.CHIP_DOWN,
 }
 
+_NO_DIE_TYPES = ("no_die", "none", None)
+
 
 class CfgPinPairModel(BaseModel):
     """Represent one pin-pair RLC model entry."""
@@ -110,31 +109,8 @@ class CfgPinPairModel(BaseModel):
     inductance_enabled: bool = False
     capacitance_enabled: bool = False
 
-    def __init__(
-        self,
-        first_pin: str,
-        second_pin: str,
-        resistance: str | float | None = None,
-        inductance: str | float | None = None,
-        capacitance: str | float | None = None,
-        is_parallel: bool = False,
-        resistance_enabled: bool = False,
-        inductance_enabled: bool = False,
-        capacitance_enabled: bool = False,
-        **kwargs,
-    ):
-        super().__init__(
-            first_pin=first_pin,
-            second_pin=second_pin,
-            resistance=resistance,
-            inductance=inductance,
-            capacitance=capacitance,
-            is_parallel=is_parallel,
-            resistance_enabled=resistance_enabled,
-            inductance_enabled=inductance_enabled,
-            capacitance_enabled=capacitance_enabled,
-            **kwargs,
-        )
+    def __init__(self, first_pin: str, second_pin: str, **kwargs):
+        super().__init__(first_pin=first_pin, second_pin=second_pin, **kwargs)
 
     def to_dict(self) -> dict:
         return self.model_dump()
@@ -145,130 +121,118 @@ class CfgComponent(CfgBase):
 
     def retrieve_model_properties_from_edb(self):
         c_p = self.pyedb_obj
-
         model_type = c_p.model_type
 
         if "NetlistModel" in model_type:
             self.netlist_model["netlist"] = c_p.netlist_model
         elif "PinPairModel" in model_type or "RLC" in model_type:
-            temp = {}
-
             pin_pairs = c_p.pin_pairs[::]
             if not pin_pairs:
                 return
             pp0 = pin_pairs[0]
-            temp["first_pin"] = pp0.first_pin
-            temp["second_pin"] = pp0.second_pin
-
-            # Read all RLC values directly from the already-fetched pin_pair
-            # to avoid repeated GetComponentProperty() calls (EDB 2026.1 heap
-            # corruption risk when iterating many components after model writes).
+            temp = {"first_pin": pp0.first_pin, "second_pin": pp0.second_pin}
+            # Read RLC directly from the cached pin_pair to avoid repeated
+            # GetComponentProperty() calls (EDB 2026.1 heap-corruption risk).
             try:
                 rlc = pp0._pin_pair_rlc
-                temp["is_parallel"] = rlc.IsParallel
-                temp["resistance"] = str(rlc.R.ToDouble())
-                temp["resistance_enabled"] = rlc.REnabled
-                temp["inductance"] = str(rlc.L.ToDouble())
-                temp["inductance_enabled"] = rlc.LEnabled
-                temp["capacitance"] = str(rlc.C.ToDouble())
-                temp["capacitance_enabled"] = rlc.CEnabled
+                temp.update(
+                    is_parallel=rlc.IsParallel,
+                    resistance=str(rlc.R.ToDouble()),
+                    resistance_enabled=rlc.REnabled,
+                    inductance=str(rlc.L.ToDouble()),
+                    inductance_enabled=rlc.LEnabled,
+                    capacitance=str(rlc.C.ToDouble()),
+                    capacitance_enabled=rlc.CEnabled,
+                )
             except Exception:
-                temp["is_parallel"] = False
-                temp["resistance"] = str(c_p.res_value)
-                temp["resistance_enabled"] = (c_p.rlc_enable or [False, False, False])[0]
-                temp["inductance"] = str(c_p.ind_value)
-                temp["inductance_enabled"] = (c_p.rlc_enable or [False, False, False])[1]
-                temp["capacitance"] = str(c_p.cap_value)
-                temp["capacitance_enabled"] = (c_p.rlc_enable or [False, False, False])[2]
+                rlc_enable = c_p.rlc_enable or [False, False, False]
+                temp.update(
+                    is_parallel=False,
+                    resistance=str(c_p.res_value),
+                    resistance_enabled=rlc_enable[0],
+                    inductance=str(c_p.ind_value),
+                    inductance_enabled=rlc_enable[1],
+                    capacitance=str(c_p.cap_value),
+                    capacitance_enabled=rlc_enable[2],
+                )
             self.pin_pair_model.append(temp)
         elif "SParameterModel" in model_type:
-            self.s_parameter_model["reference_net"] = c_p.model.reference_net
-            self.s_parameter_model["model_name"] = c_p.model.component_model_name
+            self.s_parameter_model.update(
+                reference_net=c_p.model.reference_net,
+                model_name=c_p.model.component_model_name,
+            )
         elif "SPICEModel" in model_type:
-            self.spice_model["model_name"] = c_p.model.model_name
-            self.spice_model["model_path"] = c_p.model.spice_file_path
-            self.spice_model["sub_circuit"] = c_p.model.sub_circuit
-            self.spice_model["terminal_pairs"] = c_p.model.pin_pairs
+            self.spice_model.update(
+                model_name=c_p.model.model_name,
+                model_path=c_p.model.spice_file_path,
+                sub_circuit=c_p.model.sub_circuit,
+                terminal_pairs=c_p.model.pin_pairs,
+            )
 
     def _set_ic_die_properties_to_edb(self):
         if not self.ic_die_properties:
             return
-        if hasattr(self.pyedb_obj.component_property, "core"):
-            cp = self.pyedb_obj.component_property.core
-        else:
-            # grpc is returning pyedb-core object directly as it is internal.
-            cp = self.pyedb_obj.component_property
-        if self._pedb.grpc:
-            ic_die_prop = cp.die_property
-        else:
-            ic_die_prop = cp.GetDieProperty().Clone()
-        die_type = self.ic_die_properties.get("type")
-        if die_type:
-            die_type = die_type.lower()
-        if self._pedb.grpc:
+        comp_prop = self.pyedb_obj.component_property
+        cp = comp_prop.core if hasattr(comp_prop, "core") else comp_prop
+        grpc = self._pedb.grpc
+        ic_die_prop = cp.die_property if grpc else cp.GetDieProperty().Clone()
+        die_type = (self.ic_die_properties.get("type") or "").lower() or None
+        if grpc:
             ic_die_prop.die_type = _die_type_mapping[die_type]
         else:
-            snake_to_pascal = _get_snake_to_pascal()
-            ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
-        if die_type not in ("no_die", "none", None):
+            s2p = _get_snake_to_pascal()
+            ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, s2p(die_type)))
+        if die_type not in _NO_DIE_TYPES:
             orientation = self.ic_die_properties.get("orientation")
             if orientation:
-                if self._pedb.grpc:
+                if grpc:
                     ic_die_prop.die_orientation = _die_orientation_mapping[orientation]
                 else:
-                    snake_to_pascal = _get_snake_to_pascal()
-                    ic_die_prop.SetOrientation(
-                        getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
-                    )
+                    ic_die_prop.SetOrientation(getattr(self._pedb._edb.Definition.DieOrientation, s2p(orientation)))
             if die_type == "wire_bond":
                 height = self.ic_die_properties.get("height")
                 if height:
-                    if self._pedb.grpc:
+                    if grpc:
                         ic_die_prop.height = self._pedb.value(height)
                     else:
                         ic_die_prop.SetHeight(self._pedb.edb_value(height))
-        if self._pedb.grpc:
+        if grpc:
             self.pyedb_obj.core.component_property.die_property = ic_die_prop
         else:
             self.pyedb_obj.ic_die_properties = ic_die_prop
 
     def _set_port_properties_to_edb(self):
-        if self._pedb.grpc:
+        grpc = self._pedb.grpc
+        if grpc:
             cp = self.pyedb_obj.component_property
             port_prop = cp.port_property
         else:
-            # Use a mutable clone so SetPortProperty does not raise
-            # ReadOnlyModificationAttemptException on the live object.
+            # Use a mutable clone to avoid ReadOnlyModificationAttemptException.
             cp = self.pyedb_obj._get_component_property_clone()
             port_prop = cp.GetPortProperty().Clone()
         height = self.port_properties.get("reference_height")
         if height:
-            if self._pedb.grpc:
+            if grpc:
                 port_prop.reference_height = self._pedb.value(height)
             else:
                 port_prop.SetReferenceHeight(self._pedb.edb_value(height))
         reference_size_auto = self.port_properties.get("reference_size_auto")
         if reference_size_auto is not None:
-            if self._pedb.grpc:
+            if grpc:
                 port_prop.reference_size_auto = reference_size_auto
             else:
                 port_prop.SetReferenceSizeAuto(reference_size_auto)
-        reference_size_x = self.port_properties.get("reference_size_x", 0)
-        reference_size_y = self.port_properties.get("reference_size_y", 0)
-        if self._pedb.grpc:
-            port_prop.set_reference_size(self._pedb.value(reference_size_x), self._pedb.value(reference_size_y))
+        ref_x = self.port_properties.get("reference_size_x", 0)
+        ref_y = self.port_properties.get("reference_size_y", 0)
+        if grpc:
+            port_prop.set_reference_size(self._pedb.value(ref_x), self._pedb.value(ref_y))
             cp.port_properties = port_prop
         else:
-            port_prop.SetReferenceSize(self._pedb.edb_value(reference_size_x), self._pedb.edb_value(reference_size_y))
+            port_prop.SetReferenceSize(self._pedb.edb_value(ref_x), self._pedb.edb_value(ref_y))
             cp.SetPortProperty(port_prop)
             self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
 
     def _set_model_properties_to_edb(self):
-        if hasattr(self.pyedb_obj.component_property, "core"):
-            c_p = self.pyedb_obj.component_property.core
-        else:
-            # grpc is returning pyedb-core object directly as it is internal.
-            c_p = self.pyedb_obj.component_property
         if self.netlist_model:
             self.pyedb_obj.assign_netlist_model(self.netlist_model["netlist"])
         elif self.pin_pair_model:
@@ -300,14 +264,16 @@ class CfgComponent(CfgBase):
             )
 
     def _set_solder_ball_properties_to_edb(self):
-        shape = self.solder_ball_properties.get("shape")
+        sbp_data = self.solder_ball_properties
+        shape = sbp_data.get("shape")
+        diameter = sbp_data.get("diameter")
+        height = sbp_data.get("height")
+        mid_diameter = sbp_data.get("mid_diameter", diameter)
+        material = sbp_data.get("material")
+
         if self._pedb.grpc:
             if not shape:
                 raise ValueError("Solderball shape must be either cylinder or spheroid")
-            diameter = self.solder_ball_properties.get("diameter")
-            mid_diameter = self.solder_ball_properties.get("mid_diameter", diameter)
-            height = self.solder_ball_properties.get("height")
-            material = self.solder_ball_properties.get("material")
             cp = self.pyedb_obj.component_property
             sbp = cp.solder_ball_property
             shape_lower = shape.lower()
@@ -323,104 +289,89 @@ class CfgComponent(CfgBase):
                 sbp.material_name = material
             cp.solder_ball_property = sbp
             self.pyedb_obj.component_property = cp
-            return
-        if not shape:
-            return
-        diameter = self.solder_ball_properties.get("diameter")
-        mid_diameter = self.solder_ball_properties.get("mid_diameter", diameter)
-        height = self.solder_ball_properties.get("height")
-        material = self.solder_ball_properties.get("material", "solder")
-        orientation = self.solder_ball_properties.get("orientation", "chip_down")
-        self._pedb.components.set_solder_ball(
-            component=self.pyedb_obj.name,
-            sball_diam=self._pedb.edb_value(diameter).ToDouble() if diameter else None,
-            sball_height=self._pedb.edb_value(height).ToDouble() if height else None,
-            shape=shape.capitalize(),
-            sball_mid_diam=self._pedb.edb_value(mid_diameter).ToDouble() if mid_diameter else None,
-            chip_orientation=orientation,
-            material_name=material,
-        )
+        else:
+            if not shape:
+                return
+            self._pedb.components.set_solder_ball(
+                component=self.pyedb_obj.name,
+                sball_diam=self._pedb.edb_value(diameter).ToDouble() if diameter else None,
+                sball_height=self._pedb.edb_value(height).ToDouble() if height else None,
+                shape=shape.capitalize(),
+                sball_mid_diam=self._pedb.edb_value(mid_diameter).ToDouble() if mid_diameter else None,
+                chip_orientation=sbp_data.get("orientation", "chip_down"),
+                material_name=material or "solder",
+            )
 
     def _retrieve_ic_die_properties_from_edb(self):
-        temp = dict()
-        cp = self.pyedb_obj
-
-        die_type = cp.ic_die_properties.die_type
-        if die_type in ("no_die", "none", None):
-            temp["type"] = "no_die"
+        die_props = self.pyedb_obj.ic_die_properties
+        die_type = die_props.die_type
+        temp = {"type": "no_die" if die_type in _NO_DIE_TYPES else die_type}
+        if die_type in _NO_DIE_TYPES:
             if self._pedb and self._pedb.grpc:
-                orientation = cp.ic_die_properties.die_orientation
+                orientation = die_props.die_orientation
                 temp["orientation"] = orientation if orientation is not None else "chip_up"
-            self.ic_die_properties = temp
-            self._ic_die_explicitly_set = True
-            return
-        temp["type"] = die_type
-        if die_type not in ("no_die", "none", None):
-            temp["orientation"] = cp.ic_die_properties.die_orientation
+        else:
+            temp["orientation"] = die_props.die_orientation
             if die_type == "wire_bond":
-                temp["height"] = str(cp.ic_die_properties.height)
+                temp["height"] = str(die_props.height)
         self.ic_die_properties = temp
         self._ic_die_explicitly_set = True
 
     def _retrieve_solder_ball_properties_from_edb(self):
-        temp = dict()
         cp = self.pyedb_obj
-        uses_solder_ball = cp.uses_solderball
-
-        temp["uses_solder_ball"] = uses_solder_ball
-        temp["shape"] = cp.solder_ball_shape
-        temp["diameter"] = str(cp.solder_ball_diameter[0])
-        temp["mid_diameter"] = str(cp.solder_ball_diameter[1])
-        temp["height"] = str(cp.solder_ball_height)
-        temp["material"] = cp.solder_ball_material
-        self.solder_ball_properties = temp
+        diam = cp.solder_ball_diameter
+        self.solder_ball_properties = {
+            "uses_solder_ball": cp.uses_solderball,
+            "shape": cp.solder_ball_shape,
+            "diameter": str(diam[0]),
+            "mid_diameter": str(diam[1]),
+            "height": str(cp.solder_ball_height),
+            "material": cp.solder_ball_material,
+        }
 
     def _retrieve_port_properties_from_edb(self):
-        temp = dict()
-        cp = self.pyedb_obj.component_property
-        c_type = self.type.lower()
-        if c_type not in ["ic", "io", "other"]:
+        if self.type.lower() not in ("ic", "io", "other"):
             return
-        else:
-            # port_prop = cp.GetPortProperty().Clone()
-            # reference_height = port_prop.GetReferenceHeightValue().ToString()
-            # reference_size_auto = port_prop.GetReferenceSizeAuto()
-            # _, reference_size_x, reference_size_y = port_prop.GetReferenceSize()
-            temp["reference_height"] = str(cp.port_property.reference_height)
-            temp["reference_size_auto"] = cp.port_property.reference_size_auto
-            temp["reference_size_x"] = str(cp.port_property.get_reference_size()[0])
-            temp["reference_size_y"] = str(cp.port_property.get_reference_size()[1])
-            self.port_properties = temp
+        pp = self.pyedb_obj.component_property.port_property
+        self.port_properties = {
+            "reference_height": str(pp.reference_height),
+            "reference_size_auto": pp.reference_size_auto,
+            "reference_size_x": str(pp.get_reference_size()[0]),
+            "reference_size_y": str(pp.get_reference_size()[1]),
+        }
 
     def set_parameters_to_edb(self):
-        if self.pyedb_obj is None:
+        obj = self.pyedb_obj
+        if obj is None:
             return self.to_dict()
         if self.type:
-            self.pyedb_obj.type = self.type
+            obj.type = self.type
         if self.enabled is not None:
-            self.pyedb_obj.enabled = self.enabled
-
+            obj.enabled = self.enabled
         self._set_model_properties_to_edb()
-        if self.pyedb_obj.type.lower() == "ic":
+        comp_type = obj.type.lower()
+        if comp_type == "ic":
             self._set_ic_die_properties_to_edb()
             self._set_port_properties_to_edb()
             self._set_solder_ball_properties_to_edb()
-        elif self.pyedb_obj.type.lower() in ["io", "other"]:
+        elif comp_type in ("io", "other"):
             self._set_solder_ball_properties_to_edb()
             self._set_port_properties_to_edb()
 
     def retrieve_parameters_from_edb(self):
-        if self.pyedb_obj is None:
+        obj = self.pyedb_obj
+        if obj is None:
             return self.to_dict()
-        self.type = self.pyedb_obj.type
-        self.definition = self.pyedb_obj.part_name
-        self.reference_designator = self.pyedb_obj.name
+        self.type = obj.type
+        self.definition = obj.part_name
+        self.reference_designator = obj.name
         self.retrieve_model_properties_from_edb()
-        if self.pyedb_obj.type.lower() == "ic":
+        comp_type = obj.type.lower()
+        if comp_type == "ic":
             self._retrieve_ic_die_properties_from_edb()
             self._retrieve_port_properties_from_edb()
             self._retrieve_solder_ball_properties_from_edb()
-        elif self.pyedb_obj.type.lower() in ["io", "other"]:
+        elif comp_type in ("io", "other"):
             self._retrieve_solder_ball_properties_from_edb()
             self._retrieve_port_properties_from_edb()
 
@@ -436,19 +387,18 @@ class CfgComponent(CfgBase):
         self._pedb = _pedb
         self.pyedb_obj = pedb_object
 
-        self.enabled = kwargs.get("enabled", None)
-        self.reference_designator = kwargs.get("reference_designator", None)
-        self.definition = kwargs.get("definition", None)
+        self.enabled = kwargs.get("enabled")
+        self.reference_designator = kwargs.get("reference_designator")
+        self.definition = kwargs.get("definition")
         self.type = kwargs["part_type"].lower() if kwargs.get("part_type") else None
-        self.placement_layer = kwargs.get("placement_layer", None)
+        self.placement_layer = kwargs.get("placement_layer")
         self.pins = kwargs.get("pins", [])
 
         self.port_properties = kwargs.get("port_properties", {})
         self.solder_ball_properties = kwargs.get("solder_ball_properties", {})
-        self.ic_die_properties = kwargs.get("ic_die_properties", None)
-        self._ic_die_explicitly_set = self.ic_die_properties is not None
-        if self.ic_die_properties is None:
-            self.ic_die_properties = {"type": "no_die"}
+        ic_die = kwargs.get("ic_die_properties")
+        self._ic_die_explicitly_set = ic_die is not None
+        self.ic_die_properties = ic_die if ic_die is not None else {"type": "no_die"}
         self.pin_pair_model = kwargs.get("pin_pair_model", [])
         self.spice_model = kwargs.get("spice_model", {})
         self.s_parameter_model = kwargs.get("s_parameter_model", {})
@@ -497,8 +447,8 @@ class CfgComponent(CfgBase):
         """
         self.pin_pair_model.append(
             CfgPinPairModel(
-                first_pin=first_pin,
-                second_pin=second_pin,
+                first_pin,
+                second_pin,
                 resistance=resistance,
                 inductance=inductance,
                 capacitance=capacitance,
@@ -525,11 +475,7 @@ class CfgComponent(CfgBase):
         --------
         >>> u1.set_s_parameter_model("cap_100nF", "/snp/cap.s2p", "GND")
         """
-        self.s_parameter_model = {
-            "model_name": model_name,
-            "model_path": model_path,
-            "reference_net": reference_net,
-        }
+        self.s_parameter_model = {"model_name": model_name, "model_path": model_path, "reference_net": reference_net}
 
     def set_spice_model(self, model_name: str, model_path: str, sub_circuit: str = "", terminal_pairs=None):
         """Assign a SPICE subcircuit model to this component.
@@ -635,7 +581,6 @@ class CfgComponent(CfgBase):
         >>> u1.set_solder_ball_properties()  # auto-sizes from pin pads
         """
         refdes = reference_designator or self.reference_designator
-
         if diameter is None:
             diameter = "150um"  # safe default
             if self._pedb is not None and refdes is not None:
@@ -644,17 +589,9 @@ class CfgComponent(CfgBase):
                     min_size = _smallest_pin_pad_size(comp)
                     if min_size is not None and min_size > 0:
                         diameter = f"{min_size * 1e6:.6g}um"
-
         if height is None:
             height = _height_from_diameter(diameter)
-
-        data = {
-            "shape": shape,
-            "diameter": diameter,
-            "height": height,
-            "material": material,
-            "orientation": orientation,
-        }
+        data = {"shape": shape, "diameter": diameter, "height": height, "material": material, "orientation": orientation}
         if shape == "spheroid":
             data["mid_diameter"] = mid_diameter or diameter
         self.solder_ball_properties = data
@@ -692,12 +629,19 @@ class CfgComponent(CfgBase):
             "reference_size_y": reference_size_y,
         }
 
+    def _is_default_ic_die(self, key, val) -> bool:
+        """Return True if *val* is the auto-populated default ic_die payload."""
+        return (
+            key == "ic_die_properties"
+            and val == {"type": "no_die"}
+            and not getattr(self, "_ic_die_explicitly_set", False)
+        )
+
     def to_dict(self) -> dict:
         """Serialize the component configuration."""
         data: dict = {"reference_designator": self.reference_designator}
-        part_type = self.type
-        if part_type is not None:
-            data["part_type"] = part_type
+        if self.type is not None:
+            data["part_type"] = self.type
         for key in ("enabled", "definition", "placement_layer"):
             val = getattr(self, key)
             if val is not None:
@@ -706,21 +650,10 @@ class CfgComponent(CfgBase):
             data["pins"] = self.pins
         if self.pin_pair_model:
             data["pin_pair_model"] = self.pin_pair_model
-        for key in (
-            "s_parameter_model",
-            "spice_model",
-            "netlist_model",
-            "ic_die_properties",
-            "solder_ball_properties",
-            "port_properties",
-        ):
+        for key in ("s_parameter_model", "spice_model", "netlist_model",
+                    "ic_die_properties", "solder_ball_properties", "port_properties"):
             val = getattr(self, key)
-            _default_ic_die = (
-                key == "ic_die_properties"
-                and val == {"type": "no_die"}
-                and not getattr(self, "_ic_die_explicitly_set", False)
-            )
-            if val not in [None, {}, []] and not _default_ic_die:
+            if val not in (None, {}, []) and not self._is_default_ic_die(key, val):
                 data[key] = val
         return data
 
@@ -730,12 +663,17 @@ class CfgComponents:
 
     def __init__(self, pedb=None, components_data=None):
         self._pedb = pedb
-        self.components = []
-
         if components_data:
-            for comp in components_data:
-                obj = self._pedb.components.instances[comp["reference_designator"]] if self._pedb else None
-                self.components.append(CfgComponent(self._pedb, obj, **comp))
+            self.components = [
+                CfgComponent(
+                    self._pedb,
+                    self._pedb.components.instances[c["reference_designator"]] if self._pedb else None,
+                    **c,
+                )
+                for c in components_data
+            ]
+        else:
+            self.components = []
 
     def get(self, reference_designator: str) -> "CfgComponent":
         """Return a :class:`CfgComponent` for an *existing* EDB component.
@@ -773,10 +711,9 @@ class CfgComponents:
         >>> edb.configuration.run(cfg)
         """
         # Return cached entry if already present
-        for c in self.components:
-            if c.reference_designator == reference_designator:
-                return c
-
+        cached = next((c for c in self.components if c.reference_designator == reference_designator), None)
+        if cached:
+            return cached
         if self._pedb is None:
             raise KeyError(
                 "No EDB session is attached to this builder. "
@@ -846,13 +783,16 @@ class CfgComponents:
         for comp in self.components:
             comp.set_parameters_to_edb()
 
+    def get_data_from_db(self):
+        """Read all component settings from the open EDB design."""
+        return self.retrieve_parameters_from_edb()
+
     def retrieve_parameters_from_edb(self):
         self.clean()
         if self._pedb is None:
             return self.to_list()
-        comps_in_db = self._pedb.components
-        for _, comp in comps_in_db.instances.items():
-            cfg_comp = CfgComponent(self._pedb, comp)
+        for obj in self._pedb.components.instances.values():
+            cfg_comp = CfgComponent(self._pedb, obj)
             cfg_comp.retrieve_parameters_from_edb()
             self.components.append(cfg_comp)
 

@@ -71,49 +71,8 @@ class CfgMaterial(MaterialProperties):
     name: Optional[str] = None
     thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
 
-    def __init__(
-        self,
-        name: str | None = None,
-        conductivity: Optional[Union[str, float]] = None,
-        permittivity: Optional[Union[str, float]] = None,
-        dielectric_loss_tangent: Optional[Union[str, float]] = None,
-        magnetic_loss_tangent: Optional[Union[str, float]] = None,
-        mass_density: Optional[Union[str, float]] = None,
-        permeability: Optional[Union[str, float]] = None,
-        poisson_ratio: Optional[Union[str, float]] = None,
-        specific_heat: Optional[Union[str, float]] = None,
-        thermal_conductivity: Optional[Union[str, float]] = None,
-        youngs_modulus: Optional[Union[str, float]] = None,
-        thermal_expansion_coefficient: Optional[Union[str, float]] = None,
-        dc_conductivity: Optional[Union[str, float]] = None,
-        dc_permittivity: Optional[Union[str, float]] = None,
-        dielectric_model_frequency: Optional[Union[str, float]] = None,
-        loss_tangent_at_frequency: Optional[Union[str, float]] = None,
-        permittivity_at_frequency: Optional[Union[str, float]] = None,
-        thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None,
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            conductivity=conductivity,
-            permittivity=permittivity,
-            dielectric_loss_tangent=dielectric_loss_tangent,
-            magnetic_loss_tangent=magnetic_loss_tangent,
-            mass_density=mass_density,
-            permeability=permeability,
-            poisson_ratio=poisson_ratio,
-            specific_heat=specific_heat,
-            thermal_conductivity=thermal_conductivity,
-            youngs_modulus=youngs_modulus,
-            thermal_expansion_coefficient=thermal_expansion_coefficient,
-            dc_conductivity=dc_conductivity,
-            dc_permittivity=dc_permittivity,
-            dielectric_model_frequency=dielectric_model_frequency,
-            loss_tangent_at_frequency=loss_tangent_at_frequency,
-            permittivity_at_frequency=permittivity_at_frequency,
-            thermal_modifiers=thermal_modifiers,
-            **kwargs,
-        )
+    def __init__(self, name: str | None = None, **kwargs):
+        super().__init__(name=name, **kwargs)
 
     def to_dict(self) -> dict:
         """Serialize the material, excluding ``None`` values."""
@@ -363,9 +322,9 @@ class CfgStackup(BaseModel):
         >>> top.set_huray_roughness("0.1um", "2.9")
         >>> edb.configuration.run(cfg)
         """
-        for layer in self.layers:
-            if layer.name == name:
-                return layer
+        cached = next((layer for layer in self.layers if layer.name == name), None)
+        if cached:
+            return cached
         if self._pedb is None:
             raise KeyError(
                 f"Layer '{name}' not found in the builder. "
@@ -407,7 +366,7 @@ class CfgStackup(BaseModel):
                 "Use edb.configuration.create_config_builder() to get a session-aware builder."
             )
         for name in self._pedb.stackup.all_layers:
-            self.get_layer(name)  # populates self.layers cache via get_layer
+            self.get_layer(name)
         return list(self.layers)
 
     def get_signal_layers(self) -> list:
@@ -471,9 +430,9 @@ class CfgStackup(BaseModel):
         >>> cu.conductivity = 5.6e7
         >>> edb.configuration.run(cfg)
         """
-        for mat in self.materials:
-            if mat.name == name:
-                return mat
+        cached = next((mat for mat in self.materials if mat.name == name), None)
+        if cached:
+            return cached
         if self._pedb is None:
             raise KeyError(
                 f"Material '{name}' not found in the builder. "
@@ -563,32 +522,12 @@ class CfgStackup(BaseModel):
         """
         # Support config parameter (dict or CfgMaterial) from main branch API
         if config is not None:
-            if isinstance(config, CfgMaterial):
-                payload = config.model_dump(exclude_none=True)
-            else:
-                payload = dict(config)
+            payload = config.model_dump(exclude_none=True) if isinstance(config, CfgMaterial) else dict(config)
             payload.update(kwargs)
             if name is not None:
                 payload["name"] = name
+            name = payload.pop("name", name)
             kwargs = payload
-            name = kwargs.pop("name", name)
-            conductivity = kwargs.pop("conductivity", conductivity)
-            permittivity = kwargs.pop("permittivity", permittivity)
-            dielectric_loss_tangent = kwargs.pop("dielectric_loss_tangent", dielectric_loss_tangent)
-            magnetic_loss_tangent = kwargs.pop("magnetic_loss_tangent", magnetic_loss_tangent)
-            mass_density = kwargs.pop("mass_density", mass_density)
-            permeability = kwargs.pop("permeability", permeability)
-            poisson_ratio = kwargs.pop("poisson_ratio", poisson_ratio)
-            specific_heat = kwargs.pop("specific_heat", specific_heat)
-            thermal_conductivity = kwargs.pop("thermal_conductivity", thermal_conductivity)
-            youngs_modulus = kwargs.pop("youngs_modulus", youngs_modulus)
-            thermal_expansion_coefficient = kwargs.pop("thermal_expansion_coefficient", thermal_expansion_coefficient)
-            dc_conductivity = kwargs.pop("dc_conductivity", dc_conductivity)
-            dc_permittivity = kwargs.pop("dc_permittivity", dc_permittivity)
-            dielectric_model_frequency = kwargs.pop("dielectric_model_frequency", dielectric_model_frequency)
-            loss_tangent_at_frequency = kwargs.pop("loss_tangent_at_frequency", loss_tangent_at_frequency)
-            permittivity_at_frequency = kwargs.pop("permittivity_at_frequency", permittivity_at_frequency)
-            thermal_modifiers = kwargs.pop("thermal_modifiers", thermal_modifiers)
 
         # Check for duplicates in the local registry first.
         for _mat in self.materials:
@@ -606,29 +545,31 @@ class CfgStackup(BaseModel):
                     f"Use get_material('{name}') to retrieve and modify it instead."
                 )
 
-        props = dict(
-            conductivity=conductivity,
-            permittivity=permittivity,
-            dielectric_loss_tangent=dielectric_loss_tangent,
-            magnetic_loss_tangent=magnetic_loss_tangent,
-            mass_density=mass_density,
-            permeability=permeability,
-            poisson_ratio=poisson_ratio,
-            specific_heat=specific_heat,
-            thermal_conductivity=thermal_conductivity,
-            youngs_modulus=youngs_modulus,
-            thermal_expansion_coefficient=thermal_expansion_coefficient,
-            dc_conductivity=dc_conductivity,
-            dc_permittivity=dc_permittivity,
-            dielectric_model_frequency=dielectric_model_frequency,
-            loss_tangent_at_frequency=loss_tangent_at_frequency,
-            permittivity_at_frequency=permittivity_at_frequency,
-            thermal_modifiers=thermal_modifiers,
-        )
-        # Merge any extra kwargs (e.g. from existing serialization round-trips)
-        props.update(kwargs)
+        # When config is None, collect the individual named args into kwargs
+        if config is None:
+            named = dict(
+                conductivity=conductivity,
+                permittivity=permittivity,
+                dielectric_loss_tangent=dielectric_loss_tangent,
+                magnetic_loss_tangent=magnetic_loss_tangent,
+                mass_density=mass_density,
+                permeability=permeability,
+                poisson_ratio=poisson_ratio,
+                specific_heat=specific_heat,
+                thermal_conductivity=thermal_conductivity,
+                youngs_modulus=youngs_modulus,
+                thermal_expansion_coefficient=thermal_expansion_coefficient,
+                dc_conductivity=dc_conductivity,
+                dc_permittivity=dc_permittivity,
+                dielectric_model_frequency=dielectric_model_frequency,
+                loss_tangent_at_frequency=loss_tangent_at_frequency,
+                permittivity_at_frequency=permittivity_at_frequency,
+                thermal_modifiers=thermal_modifiers,
+            )
+            named.update(kwargs)
+            kwargs = named
         # Drop None values so CfgMaterial does not complain about unknown None fields
-        props = {k: v for k, v in props.items() if v is not None}
+        props = {k: v for k, v in kwargs.items() if v is not None}
         mat = CfgMaterial(name=name, **props)
         self.materials.append(mat)
         return mat
@@ -690,15 +631,12 @@ class CfgStackup(BaseModel):
             The newly created layer object.
         """
         if config is not None:
-            if isinstance(config, CfgLayer):
-                payload = config.model_dump(exclude_none=True)
-            else:
-                payload = dict(config)
+            payload = config.model_dump(exclude_none=True) if isinstance(config, CfgLayer) else dict(config)
             payload.update(kwargs)
             if name is not None:
                 payload["name"] = name
+            name = payload.pop("name", name)
             kwargs = payload
-            name = kwargs.pop("name", name)
         # Normalise legacy 'type' kwarg to 'layer_type'
         if "type" in kwargs and "layer_type" not in kwargs:
             kwargs["layer_type"] = kwargs.pop("type")
@@ -733,32 +671,15 @@ class CfgStackup(BaseModel):
         return {k: v for k, v in d.items() if v != []}
 
     def normalize_thickness(self, unit="m"):
-        if unit == "mm":
-            multiplier = 1000
-        elif unit == "cm":
-            multiplier = 1e2
-        elif unit == "um":
-            multiplier = 1e6
-        elif unit == "mil":
-            multiplier = 1 / 0.0000254
-        elif unit == "in":
-            multiplier = 1 / 0.0254
-        elif unit == "m":
-            multiplier = 1
-        else:
+        _unit_to_m = {"mm": 1e-3, "cm": 1e-2, "um": 1e-6, "mil": 25.4e-6, "in": 0.0254, "m": 1}
+        _m_to_unit = {"mm": 1e3, "cm": 1e2, "um": 1e6, "mil": 1 / 25.4e-6, "in": 1 / 0.0254, "m": 1}
+        if unit not in _m_to_unit:
             raise ValueError(f"Unsupported unit: {unit}")
+        multiplier = _m_to_unit[unit]
         for layer in self.layers:
             if isinstance(layer.thickness, str):
-                if "um" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("um", "")) * 1e-6 * multiplier
-                elif "mm" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("mm", "")) * 1e-3 * multiplier
-                elif "cm" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("cm", "")) * 1e-2 * multiplier
-                elif "mil" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("mil", "")) * 0.0000254 * multiplier
-                elif "in" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("in", "")) * 0.0254 * multiplier
-                elif "m" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("m", "")) * 1 * multiplier
+                for suffix, factor in _unit_to_m.items():
+                    if layer.thickness.endswith(suffix):
+                        layer.thickness = float(layer.thickness[: -len(suffix)]) * factor * multiplier
+                        break
             layer.thickness = f"{layer.thickness}{unit}"

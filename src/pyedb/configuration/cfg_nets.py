@@ -83,25 +83,21 @@ class CfgNets:
         """Write signal / power-ground net classifications into the open EDB design."""
         if self._pedb is None:
             return
-        for signal_net in self.signal_nets:
-            if signal_net in self._pedb.nets:
-                self._pedb.nets.nets[signal_net].is_power_ground = False
-        for power_net in self.power_nets:
-            if power_net in self._pedb.nets:
-                self._pedb.nets.nets[power_net].is_power_ground = True
+        nets = self._pedb.nets.nets
+        for net in self.signal_nets:
+            if net in self._pedb.nets:
+                nets[net].is_power_ground = False
+        for net in self.power_nets:
+            if net in self._pedb.nets:
+                nets[net].is_power_ground = True
 
     def get_parameters_from_edb(self):
         """Read net classifications from EDB."""
         if self._pedb is None:
             return self.to_dict()
-        self.signal_nets = []
-        self.power_nets = []
-        for net in self._pedb.nets.signal:
-            self.signal_nets.append(net)
-        for net in self._pedb.nets.power:
-            self.power_nets.append(net)
-        data = {"signal_nets": self.signal_nets, "power_ground_nets": self.power_nets}
-        return data
+        self.signal_nets = list(self._pedb.nets.signal)
+        self.power_nets = list(self._pedb.nets.power)
+        return {"signal_nets": self.signal_nets, "power_ground_nets": self.power_nets}
 
     set_parameter_to_edb = set_parameters_to_edb
     get_parameter_from_edb = get_parameters_from_edb
@@ -151,14 +147,19 @@ class CfgNets:
 
     @staticmethod
     def _to_name_list(nets):
-        """Normalise *nets* to a flat list of net name strings.
-
-        Accepts a single ``str``, a single :class:`CfgNet`, or a list of
-        either (or a mix of both).
-        """
+        """Normalise *nets* to a flat list of net name strings."""
         if isinstance(nets, (str, CfgNets.CfgNet)):
             nets = [nets]
         return [n.name if isinstance(n, CfgNets.CfgNet) else n for n in nets]
+
+    def _add_to_list(self, target: list, others: list[list], nets):
+        """Add *nets* to *target*, removing them from each list in *others*."""
+        for name in self._to_name_list(nets):
+            for other in others:
+                if name in other:
+                    other.remove(name)
+            if name not in target:
+                target.append(name)
 
     def add_signal_nets(self, nets):
         """Append signal net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
@@ -171,11 +172,7 @@ class CfgNets:
         nets : str, CfgNet, or list of str/CfgNet
             Net name(s) to classify as signal.
         """
-        for name in self._to_name_list(nets):
-            self.power_nets = [n for n in self.power_nets if n != name]
-            self.reference_nets = [n for n in self.reference_nets if n != name]
-            if name not in self.signal_nets:
-                self.signal_nets.append(name)
+        self._add_to_list(self.signal_nets, [self.power_nets, self.reference_nets], nets)
 
     def add_power_ground_nets(self, nets):
         """Append power/ground net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
@@ -188,11 +185,7 @@ class CfgNets:
         nets : str, CfgNet, or list of str/CfgNet
             Net name(s) to classify as power/ground.
         """
-        for name in self._to_name_list(nets):
-            self.signal_nets = [n for n in self.signal_nets if n != name]
-            self.reference_nets = [n for n in self.reference_nets if n != name]
-            if name not in self.power_nets:
-                self.power_nets.append(name)
+        self._add_to_list(self.power_nets, [self.signal_nets, self.reference_nets], nets)
 
     def add_reference_nets(self, nets):
         """Append reference net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
@@ -205,21 +198,11 @@ class CfgNets:
         nets : str, CfgNet, or list of str/CfgNet
             Net name(s) to use as reference nets.
         """
-        for name in self._to_name_list(nets):
-            self.signal_nets = [n for n in self.signal_nets if n != name]
-            self.power_nets = [n for n in self.power_nets if n != name]
-            if name not in self.reference_nets:
-                self.reference_nets.append(name)
+        self._add_to_list(self.reference_nets, [self.signal_nets, self.power_nets], nets)
 
     def to_dict(self) -> dict:
         """Serialize the configured net classification lists."""
-        return compact_dict(
-            {
-                "signal_nets": list(self.signal_nets),
-                "power_ground_nets": list(self.power_nets),
-            },
-            empty_values=(None, [], {}),
-        )
+        return compact_dict({"signal_nets": list(self.signal_nets), "power_ground_nets": list(self.power_nets)})
 
     def apply(self):
         """Apply net configuration on the layout."""
