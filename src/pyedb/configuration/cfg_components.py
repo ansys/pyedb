@@ -591,7 +591,13 @@ class CfgComponent(CfgBase):
                         diameter = f"{min_size * 1e6:.6g}um"
         if height is None:
             height = _height_from_diameter(diameter)
-        data = {"shape": shape, "diameter": diameter, "height": height, "material": material, "orientation": orientation}
+        data = {
+            "shape": shape,
+            "diameter": diameter,
+            "height": height,
+            "material": material,
+            "orientation": orientation,
+        }
         if shape == "spheroid":
             data["mid_diameter"] = mid_diameter or diameter
         self.solder_ball_properties = data
@@ -650,8 +656,14 @@ class CfgComponent(CfgBase):
             data["pins"] = self.pins
         if self.pin_pair_model:
             data["pin_pair_model"] = self.pin_pair_model
-        for key in ("s_parameter_model", "spice_model", "netlist_model",
-                    "ic_die_properties", "solder_ball_properties", "port_properties"):
+        for key in (
+            "s_parameter_model",
+            "spice_model",
+            "netlist_model",
+            "ic_die_properties",
+            "solder_ball_properties",
+            "port_properties",
+        ):
             val = getattr(self, key)
             if val not in (None, {}, []) and not self._is_default_ic_die(key, val):
                 data[key] = val
