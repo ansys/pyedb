@@ -55,19 +55,24 @@ class CfgSpiceModel:
             spice_dict = None
 
         # Merge dict-based input (from JSON loading) with explicit keyword args.
+        # Explicit kwargs only override dict values when they differ from their defaults.
         merged = dict(spice_dict or {})
-        explicit = {
-            "name": name,
-            "component_definition": component_definition,
-            "file_path": file_path,
-            "sub_circuit_name": sub_circuit_name,
-            "apply_to_all": apply_to_all,
-            "components": components,
-            "terminal_pairs": terminal_pairs,
-        }
-        for k, v in explicit.items():
-            if v not in (None, "") or k == "apply_to_all":
-                merged[k] = v
+        if name:
+            merged["name"] = name
+        if component_definition:
+            merged["component_definition"] = component_definition
+        if file_path:
+            merged["file_path"] = file_path
+        if sub_circuit_name:
+            merged["sub_circuit_name"] = sub_circuit_name
+        if not apply_to_all:  # only override if caller explicitly passed False
+            merged["apply_to_all"] = apply_to_all
+        elif "apply_to_all" not in merged:
+            merged["apply_to_all"] = apply_to_all
+        if components is not None:
+            merged["components"] = components
+        if terminal_pairs is not None:
+            merged["terminal_pairs"] = terminal_pairs
         merged.update(kwargs)
 
         self._pedb = getattr(pdata, "_pedb", None)
