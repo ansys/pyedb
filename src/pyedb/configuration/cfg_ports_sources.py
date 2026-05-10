@@ -221,7 +221,11 @@ class CfgTerminalInfo(CfgBase):
         self.reference_designator = kwargs.get("reference_designator")
 
         self.contact_type = kwargs.get("contact_type", "default")  # options are full, center, quad, inline
-        self.contact_radius = self._pedb.value(kwargs.get("contact_radius", "0.1mm")) if self._pedb else kwargs.get("contact_radius", "0.1mm")
+        self.contact_radius = (
+            self._pedb.value(kwargs.get("contact_radius", "0.1mm"))
+            if self._pedb
+            else kwargs.get("contact_radius", "0.1mm")
+        )
         self.num_of_contact = kwargs.get("num_of_contact", 4)
         self.contact_expansion = kwargs.get("contact_expansion", 1)
 
@@ -454,16 +458,18 @@ class CfgSources:
             elif neg_term.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
                 neg_term_info = {"point": neg_term.name, "coordinates": neg_term.location}
 
-            self.sources.append(CfgSource(
-                self._pedb,
-                name=src.name,
-                type=src_type,
-                impedance=src.impedance,
-                magnitude=src.magnitude,
-                reference_designator=refdes,
-                positive_terminal=pos_term_info,
-                negative_terminal=neg_term_info,
-            ))
+            self.sources.append(
+                CfgSource(
+                    self._pedb,
+                    name=src.name,
+                    type=src_type,
+                    impedance=src.impedance,
+                    magnitude=src.magnitude,
+                    reference_designator=refdes,
+                    positive_terminal=pos_term_info,
+                    negative_terminal=neg_term_info,
+                )
+            )
         return self.export_properties()
 
     def export_properties(self):
@@ -616,7 +622,9 @@ class CfgPorts:
                         f"No available (terminal-free) pins found for negative net '{negative_net}' "
                         f"near pin '{pos_pin.component_pin}' on component '{reference_designator}'."
                     )
-                negative_terminal = CfgTerminalInfo.pin(ref_pins[0].component_pin, reference_designator=reference_designator)
+                negative_terminal = CfgTerminalInfo.pin(
+                    ref_pins[0].component_pin, reference_designator=reference_designator
+                )
 
         port = CfgPort(
             self._pedb,
@@ -773,10 +781,20 @@ class CfgPorts:
         self.ports.append(port)
         return port
 
-    def _add_edge_port(self, port_type, name, primitive, point_on_edge, horizontal_extent_factor=5,
-                       vertical_extent_factor=3, pec_launch_width="0.01mm"):
-        primitive_name = primitive if isinstance(primitive, str) else (
-            getattr(primitive, "aedt_name", None) or getattr(primitive, "name", None)
+    def _add_edge_port(
+        self,
+        port_type,
+        name,
+        primitive,
+        point_on_edge,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+    ):
+        primitive_name = (
+            primitive
+            if isinstance(primitive, str)
+            else (getattr(primitive, "aedt_name", None) or getattr(primitive, "name", None))
         )
         port = CfgEdgePort(
             self._pedb,
@@ -830,8 +848,15 @@ class CfgPorts:
         --------
         >>> cfg.ports.add_wave_port("wport1", "trace1", [0.001, 0.002], horizontal_extent_factor=6)
         """
-        return self._add_edge_port("wave_port", name, primitive, point_on_edge,
-                                   horizontal_extent_factor, vertical_extent_factor, pec_launch_width)
+        return self._add_edge_port(
+            "wave_port",
+            name,
+            primitive,
+            point_on_edge,
+            horizontal_extent_factor,
+            vertical_extent_factor,
+            pec_launch_width,
+        )
 
     def add_gap_port(
         self,
@@ -865,8 +890,15 @@ class CfgPorts:
         CfgEdgePort
             The newly created edge-port object.
         """
-        return self._add_edge_port("gap_port", name, primitive, point_on_edge,
-                                   horizontal_extent_factor, vertical_extent_factor, pec_launch_width)
+        return self._add_edge_port(
+            "gap_port",
+            name,
+            primitive,
+            point_on_edge,
+            horizontal_extent_factor,
+            vertical_extent_factor,
+            pec_launch_width,
+        )
 
     def add_diff_wave_port(
         self,
@@ -945,6 +977,7 @@ class CfgPorts:
         ...     negative_terminal_point=[0.001, 0.0002],
         ... )
         """
+
         # Build terminal dicts from flat arguments when dict form not supplied
         def _resolve_prim_name(prim):
             return prim if isinstance(prim, str) else (getattr(prim, "aedt_name", None) or getattr(prim, "name", None))
@@ -955,7 +988,10 @@ class CfgPorts:
                     "Provide either 'positive_terminal' dict or both "
                     "'positive_primitive' and 'positive_terminal_point'."
                 )
-            positive_terminal = {"primitive_name": _resolve_prim_name(positive_primitive), "point_on_edge": positive_terminal_point}
+            positive_terminal = {
+                "primitive_name": _resolve_prim_name(positive_primitive),
+                "point_on_edge": positive_terminal_point,
+            }
 
         if negative_terminal is None:
             if negative_primitive is None or negative_terminal_point is None:
@@ -963,7 +999,10 @@ class CfgPorts:
                     "Provide either 'negative_terminal' dict or both "
                     "'negative_primitive' and 'negative_terminal_point'."
                 )
-            negative_terminal = {"primitive_name": _resolve_prim_name(negative_primitive), "point_on_edge": negative_terminal_point}
+            negative_terminal = {
+                "primitive_name": _resolve_prim_name(negative_primitive),
+                "point_on_edge": negative_terminal_point,
+            }
 
         port = CfgDiffWavePort(
             self._pedb,
@@ -994,11 +1033,7 @@ class CfgPorts:
         if self._pedb is None:
             return self.export_properties()
         self.ports = []
-        ports = {
-            name: t
-            for name, t in self._pedb.terminals.items()
-            if not t.is_reference_terminal and t.is_port
-        }
+        ports = {name: t for name, t in self._pedb.terminals.items() if not t.is_reference_terminal and t.is_port}
 
         for p in ports.values():
             if not p.reference_terminal:
@@ -1026,21 +1061,35 @@ class CfgPorts:
                 neg_term = self._pedb.terminals[p.reference_terminal.name]
                 if neg_term.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                     neg_term_info = {"pin_group": self.get_pin_group(neg_term).name}
-                elif neg_term.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
+                elif neg_term.terminal_type == TerminalTypeMapper.get(
+                    "PadstackInstanceTerminal", as_grpc=settings.is_grpc
+                ):
                     neg_term_info = {"padstack": neg_term.padstack_instance.aedt_name}
                 elif neg_term.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
-                    neg_term_info = {"coordinates": {"layer": neg_term.layer.name, "point": neg_term.location, "net": neg_term.net.name}}
+                    neg_term_info = {
+                        "coordinates": {
+                            "layer": neg_term.layer.name,
+                            "point": neg_term.location,
+                            "net": neg_term.net.name,
+                        }
+                    }
                 cfg_port = CfgPort(
                     self._pedb,
-                    name=p.name, type=port_type, impedance=p.impedance,
+                    name=p.name,
+                    type=port_type,
+                    impedance=p.impedance,
                     reference_designator=refdes,
-                    positive_terminal=pos_term_info, negative_terminal=neg_term_info,
+                    positive_terminal=pos_term_info,
+                    negative_terminal=neg_term_info,
                 )
             elif port_type == "coax":
                 cfg_port = CfgPort(
                     self._pedb,
-                    name=p.name, type=port_type, impedance=p.impedance,
-                    reference_designator=refdes, positive_terminal=pos_term_info,
+                    name=p.name,
+                    type=port_type,
+                    impedance=p.impedance,
+                    reference_designator=refdes,
+                    positive_terminal=pos_term_info,
                 )
             else:
                 cfg_port = self._get_edge_port_from_edb(p, port_type)
@@ -1282,7 +1331,9 @@ class CfgCircuitElement(CfgBase):
                     neg_obj = {terminal_name: self._pedb.components.instances[nti.reference_designator].pins[neg_value]}
                 else:
                     raise ValueError(f"Wrong negative terminal type {neg_type}.")
-                self.neg_terminal = [j.create_terminal(i) if not j.terminal else j.terminal for i, j in neg_obj.items()][0]
+                self.neg_terminal = [
+                    j.create_terminal(i) if not j.terminal else j.terminal for i, j in neg_obj.items()
+                ][0]
 
     def _get_pins(self, terminal_type, terminal_value, reference_designator):
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
