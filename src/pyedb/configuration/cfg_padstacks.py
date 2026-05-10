@@ -23,21 +23,15 @@
 
 from typing import Literal, Union
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from pyedb.configuration.cfg_common import CfgBaseModel as CfgBase
 from pyedb.misc.decorators import deprecated
 
 
-class CfgBase(BaseModel):
-    """Base Pydantic model for padstack-section payloads."""
-
-    model_config = {
-        "populate_by_name": True,
-        "extra": "forbid",
-    }
 
 
-class CfgBackdrillParameters(BaseModel):
+class CfgBackdrillParameters(CfgBase):
     """Store optional backdrill definitions for a padstack instance."""
 
     class DrillParametersByLayer(CfgBase):

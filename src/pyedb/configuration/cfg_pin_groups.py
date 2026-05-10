@@ -242,8 +242,13 @@ class CfgPinGroups:
         return serialize_list(self.pin_groups, method_names=("export_properties", "to_dict"))
 
     def to_list(self):
-        """Serialize all configured pin groups."""
+        """Serialize all configured pin groups.
+
+        .. deprecated::
+            Use :meth:`export_properties` instead.
+        """
         return self.export_properties()
+
 
 
 class CfgPinGroup(CfgBase):
@@ -272,14 +277,6 @@ class CfgPinGroup(CfgBase):
             raise RuntimeError(f"No net and pins defined for defining pin group {self.name}")
 
     def __init__(self, pedb=None, name=None, reference_designator=None, pins=None, net=None, **kwargs):
-        if name is None and kwargs.get("name") is not None:
-            name = kwargs.get("name")
-        if reference_designator is None and kwargs.get("reference_designator") is not None:
-            reference_designator = kwargs.get("reference_designator")
-        if pins is None and "pins" in kwargs:
-            pins = kwargs.get("pins")
-        if net is None and "net" in kwargs:
-            net = kwargs.get("net")
         self._pedb = pedb
         self.name = name
         self.reference_designator = reference_designator

@@ -42,7 +42,6 @@ class CfgSParameterModel:
         pin_order=None,
         **kwargs,
     ):
-        self.name = kwargs.get("name", "")
         self.name = name or kwargs.get("name", "")
         self.component_definition = component_definition or kwargs.get("component_definition", "")
         self.file_path = file_path or kwargs.get("file_path", "")
@@ -108,32 +107,29 @@ class CfgSParameters:
             nport_models = compdef_obj.component_models
             if not nport_models:
                 continue
-            else:
-                pin_order = compdef_obj.get_properties()["pin_order"]
-                temp_comps = [i for i in cfg_components if i["definition"] == name]
-                for model_name, model_obj in nport_models.items():
-                    temp_comp_list = []
-                    reference_net_per_component = {}
-                    for i in temp_comps:
-                        s_param_model = i.get("s_parameter_model")
-                        if s_param_model:
-                            if s_param_model["model_name"] == model_name:
-                                temp_comp_list.append(i["reference_designator"])
-                                reference_net_per_component[i["reference_designator"]] = s_param_model["reference_net"]
-                        else:
-                            continue
+            pin_order = compdef_obj.get_properties()["pin_order"]
+            temp_comps = [i for i in cfg_components if i["definition"] == name]
+            for model_name, model_obj in nport_models.items():
+                temp_comp_list = []
+                reference_net_per_component = {}
+                for i in temp_comps:
+                    s_param_model = i.get("s_parameter_model")
+                    if s_param_model:
+                        if s_param_model["model_name"] == model_name:
+                            temp_comp_list.append(i["reference_designator"])
+                            reference_net_per_component[i["reference_designator"]] = s_param_model["reference_net"]
 
-                    self.models.append(
-                        CfgSParameterModel(
-                            name=model_name,
-                            component_definition=name,
-                            file_path=model_obj.reference_file,
-                            apply_to_all=False,
-                            components=temp_comp_list,
-                            reference_net_per_component=reference_net_per_component,
-                            pin_order=pin_order,
-                        )
+                self.models.append(
+                    CfgSParameterModel(
+                        name=model_name,
+                        component_definition=name,
+                        file_path=model_obj.reference_file,
+                        apply_to_all=False,
+                        components=temp_comp_list,
+                        reference_net_per_component=reference_net_per_component,
+                        pin_order=pin_order,
                     )
+                )
 
         return self.to_list()
 

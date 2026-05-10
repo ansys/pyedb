@@ -22,6 +22,8 @@
 
 """Aggregate configuration section objects into one runtime data container."""
 
+import warnings
+
 from pyedb.configuration.cfg_boundaries import CfgBoundaries
 from pyedb.configuration.cfg_common import CfgVariables
 from pyedb.configuration.cfg_components import CfgComponents
@@ -41,9 +43,53 @@ from pyedb.configuration.cfg_terminals import CfgTerminals
 
 
 class CfgData:
-    """Manages configure data."""
+    """Runtime container that aggregates all configuration section objects.
+
+    Parameters
+    ----------
+    pedb : Edb
+        Live EDB session.
+    **kwargs
+        Configuration section data.  Recognised keys: ``general``,
+        ``boundaries``, ``nets``, ``components``, ``padstacks``,
+        ``pin_groups``, ``terminals``, ``ports``, ``sources``, ``setups``,
+        ``stackup``, ``s_parameters``, ``spice_models``,
+        ``package_definitions``, ``operations``, ``modeler``, ``variables``,
+        ``probes``.  Unknown keys trigger a ``UserWarning``.
+    """
+
+    _KNOWN_SECTIONS = frozenset(
+        {
+            "general",
+            "boundaries",
+            "nets",
+            "components",
+            "padstacks",
+            "pin_groups",
+            "terminals",
+            "ports",
+            "sources",
+            "setups",
+            "stackup",
+            "s_parameters",
+            "spice_models",
+            "package_definitions",
+            "operations",
+            "modeler",
+            "variables",
+            "probes",
+        }
+    )
 
     def __init__(self, pedb, **kwargs):
+        unknown = set(kwargs) - self._KNOWN_SECTIONS
+        if unknown:
+            warnings.warn(
+                f"Unknown configuration section(s) will be ignored: {sorted(unknown)}",
+                UserWarning,
+                stacklevel=2,
+            )
+
         self._pedb = pedb
         general = kwargs.get("general", {})
         boundaries = kwargs.get("boundaries", {})

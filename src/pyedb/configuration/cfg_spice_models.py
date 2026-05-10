@@ -44,53 +44,48 @@ class CfgSpiceModel:
         terminal_pairs=None,
         **kwargs,
     ):
-        if not hasattr(pdata, "_pedb") and isinstance(pdata, str):
-            spice_dict = {
-                "name": pdata,
-                "component_definition": path_lib,
-                "file_path": spice_dict if isinstance(spice_dict, str) else file_path,
-                "sub_circuit_name": sub_circuit_name,
-                "apply_to_all": apply_to_all,
-                "components": list(components or []),
-                "terminal_pairs": terminal_pairs,
-            }
+        # Legacy positional-arg call: CfgSpiceModel(name_str, comp_def_str, file_path_str, ...)
+        # Detect by checking whether pdata is a plain string (not an EDB session).
+        if isinstance(pdata, str) and not hasattr(pdata, "_pedb"):
+            name = pdata
+            component_definition = path_lib or component_definition
+            file_path = spice_dict if isinstance(spice_dict, str) else file_path
             pdata = None
             path_lib = None
-        else:
-            spice_dict = dict(spice_dict or {})
-        spice_dict.update(
-            {
-                k: v
-                for k, v in {
-                    "name": name,
-                    "component_definition": component_definition,
-                    "file_path": file_path,
-                    "sub_circuit_name": sub_circuit_name,
-                    "apply_to_all": apply_to_all,
-                    "components": components,
-                    "terminal_pairs": terminal_pairs,
-                }.items()
-                if v not in [None, ""] or k == "apply_to_all"
-            }
-        )
-        spice_dict.update(kwargs)
+            spice_dict = None
+
+        # Merge dict-based input (from JSON loading) with explicit keyword args.
+        merged = dict(spice_dict or {})
+        explicit = {
+            "name": name,
+            "component_definition": component_definition,
+            "file_path": file_path,
+            "sub_circuit_name": sub_circuit_name,
+            "apply_to_all": apply_to_all,
+            "components": components,
+            "terminal_pairs": terminal_pairs,
+        }
+        for k, v in explicit.items():
+            if v not in (None, "") or k == "apply_to_all":
+                merged[k] = v
+        merged.update(kwargs)
+
         self._pedb = getattr(pdata, "_pedb", None)
         self.path_libraries = path_lib
-        self._spice_dict = spice_dict
-        self.name = self._spice_dict.get("name", "")
-        self.component_definition = self._spice_dict.get("component_definition", "")
-        self.file_path = str(self._spice_dict.get("file_path", "") or "")
-        self.sub_circuit_name = self._spice_dict.get("sub_circuit_name", "")
-        self.apply_to_all = self._spice_dict.get("apply_to_all", True)
-        components = self._spice_dict.get("components", [])
-        if isinstance(components, str):
-            components = [components]
-        elif components is None:
-            components = []
-        elif not isinstance(components, (list, tuple, set)):
-            components = [components]
-        self.components = list(components)
-        self.terminal_pairs = self._spice_dict.get("terminal_pairs", None)
+        self.name = merged.get("name", "")
+        self.component_definition = merged.get("component_definition", "")
+        self.file_path = str(merged.get("file_path", "") or "")
+        self.sub_circuit_name = merged.get("sub_circuit_name", "")
+        self.apply_to_all = merged.get("apply_to_all", True)
+        raw_components = merged.get("components", [])
+        if isinstance(raw_components, str):
+            raw_components = [raw_components]
+        elif raw_components is None:
+            raw_components = []
+        elif not isinstance(raw_components, (list, tuple, set)):
+            raw_components = [raw_components]
+        self.components = list(raw_components)
+        self.terminal_pairs = merged.get("terminal_pairs", None)
 
     def to_dict(self) -> dict:
         """Serialize the SPICE model assignment."""
