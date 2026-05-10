@@ -2638,12 +2638,11 @@ class TestPackageDefinitionsConfig:
 import toml as _toml_module
 
 from pyedb.configuration.cfg_nets import CfgNets
-from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
-from pyedb.configuration.cfg_stackup import CfgLayer, CfgMaterial, CfgStackup
+from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel, CfgSParameters
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
-
+from pyedb.configuration.cfg_stackup import CfgLayer, CfgMaterial, CfgStackup
 
 # ---------------------------------------------------------------------------
 # builder.py – to_toml / from_toml (lines 264-270, 364-368)
@@ -2694,6 +2693,7 @@ class TestBuilderTomlRoundTrip:
         path = tmp_path / "config.toml"
         result = cfg.to_toml(str(path))
         from pathlib import Path
+
         assert isinstance(result, Path)
 
 
@@ -2725,6 +2725,7 @@ class TestBuilderWithPedb:
 class TestCfgBoundariesExtra:
     def test_set_extent(self):
         from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
         b = CfgBoundaries.create()
         b.set_extent(extent_type="ConvexHull", truncate_air_box_at_ground=True)
         assert b.extent_type == "ConvexHull"
@@ -2732,12 +2733,14 @@ class TestCfgBoundariesExtra:
 
     def test_set_extent_with_base_polygon(self):
         from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
         b = CfgBoundaries.create()
         b.set_extent(base_polygon="poly1")
         assert b.base_polygon == "poly1"
 
     def test_set_dielectric_extent(self):
         from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
         b = CfgBoundaries.create()
         b.set_dielectric_extent(extent_type="BoundingBox", expansion_size=0.01, is_multiple=False)
         assert b.dielectric_extent_type == "BoundingBox"
@@ -2745,6 +2748,7 @@ class TestCfgBoundariesExtra:
 
     def test_set_dielectric_extent_with_base_polygon(self):
         from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
         b = CfgBoundaries.create()
         b.set_dielectric_extent(base_polygon="dpoly", honor_user_dielectric=True)
         assert b.dielectric_base_polygon == "dpoly"
@@ -2752,6 +2756,7 @@ class TestCfgBoundariesExtra:
 
     def test_set_dielectric_extent_honor_false_not_set(self):
         from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
         b = CfgBoundaries.create()
         b.set_dielectric_extent()
         # honor_user_dielectric defaults False – should remain unset
@@ -2923,7 +2928,7 @@ class TestCfgPinGroupsMissingBranches:
         return pedb
 
     def test_set_pin_groups_to_edb(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups, CfgPinGroup
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup, CfgPinGroups
 
         pg = CfgPinGroup(None, name="pg1", reference_designator="U1", pins=["A1", "A2"])
         pgs = CfgPinGroups(None)
@@ -2933,7 +2938,7 @@ class TestCfgPinGroupsMissingBranches:
         assert result is not None
 
     def test_set_pin_groups_calls_create(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups, CfgPinGroup
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup, CfgPinGroups
 
         pedb = MagicMock()
         pedb.siwave.create_pin_group.return_value = True
@@ -2960,7 +2965,7 @@ class TestCfgPinGroupsMissingBranches:
         assert result == []
 
     def test_get_existing_pin_group(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups, CfgPinGroup
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup, CfgPinGroups
 
         pgs = CfgPinGroups(None)
         pg = CfgPinGroup(None, name="pg1", reference_designator="U1", pins=["A1"])
@@ -2977,8 +2982,9 @@ class TestCfgPinGroupsMissingBranches:
         assert result.name == "pg_VDD"
 
     def test_get_pin_group_not_found_raises(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
         import pytest
+
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 
         pedb = self._make_pedb()
         pgs = CfgPinGroups(pedb)
@@ -3025,8 +3031,9 @@ class TestCfgPinGroupsMissingBranches:
         assert result is None
 
     def test_add_single_net_no_pins_raises(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
         import pytest
+
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 
         pedb = MagicMock()
         comp = MagicMock()
@@ -3038,8 +3045,9 @@ class TestCfgPinGroupsMissingBranches:
             pgs.add(name="pg1", reference_designator="U1", nets="VDD")
 
     def test_add_component_not_found_raises(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
         import pytest
+
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 
         pedb = MagicMock()
         pedb.components.instances = {}
@@ -3063,8 +3071,9 @@ class TestCfgPinGroupsMissingBranches:
         pedb.siwave.create_pin_group.assert_called_once()
 
     def test_create_no_pins_no_net_raises(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroup
         import pytest
+
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup
 
         pedb = MagicMock()
         pg = CfgPinGroup(pedb, name="pg1", reference_designator="U1")
@@ -3094,8 +3103,10 @@ class TestCfgPackageDefinitionsSetToEdb:
         return pedb, comp_def
 
     def test_set_parameters_apply_to_all(self):
-        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
         from unittest.mock import patch
+
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
         pedb, comp_def = self._make_pedb()
         pkg_defs = CfgPackageDefinitions(pedb)
         pkg_defs.add(
@@ -3104,8 +3115,10 @@ class TestCfgPackageDefinitionsSetToEdb:
             apply_to_all=True,
             maximum_power="5W",
         )
-        with patch("pyedb.configuration.cfg_package_definition.settings") as mock_settings, \
-             patch("pyedb.grpc.database.definition.package_def.PackageDef") as MockPkgDef:
+        with (
+            patch("pyedb.configuration.cfg_package_definition.settings") as mock_settings,
+            patch("pyedb.grpc.database.definition.package_def.PackageDef") as MockPkgDef,
+        ):
             mock_settings.is_grpc = True
             mock_pkg_def_instance = MagicMock()
             MockPkgDef.return_value = mock_pkg_def_instance
@@ -3117,6 +3130,7 @@ class TestCfgPackageDefinitionsSetToEdb:
 
     def test_apply_calls_set_parameters(self):
         from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
         pedb = MagicMock()
         pkg_defs = CfgPackageDefinitions(pedb)
         pkg_defs.set_parameters_to_edb = MagicMock()
@@ -3163,8 +3177,9 @@ class TestCfgPadstacksMissingBranches:
         assert result.name == "VIA_DEF"
 
     def test_get_definition_not_found_no_pedb_raises(self):
-        from pyedb.configuration.cfg_padstacks import CfgPadstacks
         import pytest
+
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
 
         ps = CfgPadstacks()
         with pytest.raises(KeyError):
@@ -3197,8 +3212,9 @@ class TestCfgPadstacksMissingBranches:
         assert result.name == "via_A1"
 
     def test_get_instance_not_found_no_pedb_raises(self):
-        from pyedb.configuration.cfg_padstacks import CfgPadstacks
         import pytest
+
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
 
         ps = CfgPadstacks()
         with pytest.raises(KeyError):
@@ -3236,9 +3252,9 @@ class TestCfgPadstacksMissingBranches:
         from pyedb.configuration.cfg_padstacks import CfgPadstacks
 
         ps = CfgPadstacks()
-        defn = ps.add_definition(name="VIA_RECT", pad_shape="rectangle",
-                                 pad_x_size="0.5mm", pad_y_size="0.3mm",
-                                 pad_layers=["top"])
+        defn = ps.add_definition(
+            name="VIA_RECT", pad_shape="rectangle", pad_x_size="0.5mm", pad_y_size="0.3mm", pad_layers=["top"]
+        )
         assert defn.pad_parameters is not None
 
     def test_add_definition_registers_in_list(self):
@@ -3299,6 +3315,7 @@ class TestCfgPackageDefinitionGetFromEdb:
 
     def test_get_parameters_from_edb(self):
         from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
         pedb, pkg = self._make_pedb()
         pkg_defs = CfgPackageDefinitions(pedb)
         result = pkg_defs.get_parameters_from_edb()
@@ -3306,6 +3323,7 @@ class TestCfgPackageDefinitionGetFromEdb:
 
     def test_apply_delegates_to_set_parameters(self):
         from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
         pedb = MagicMock()
         pedb.definitions.package = {}
         pkg_defs = CfgPackageDefinitions(pedb)
@@ -3337,6 +3355,7 @@ class TestCfgSParametersWithPedb:
 
     def test_apply_with_pedb_apply_to_all(self):
         from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         sp = CfgSParameters(pedb=pedb)
         sp.add("cap_m", "CAP_100nF", "/abs/cap.s2p")
@@ -3344,8 +3363,10 @@ class TestCfgSParametersWithPedb:
         comp_def.add_n_port_model.assert_called_once_with("/abs/cap.s2p", "cap_m")
 
     def test_apply_with_relative_path_uses_lib(self):
-        from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
         from pathlib import Path
+
+        from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         sp = CfgSParameters(pedb=pedb, path_lib="/lib")
         sp.add("cap_m", "CAP_100nF", "cap.s2p", reference_net="GND")
@@ -3355,6 +3376,7 @@ class TestCfgSParametersWithPedb:
 
     def test_apply_with_pin_order(self):
         from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         sp = CfgSParameters(pedb=pedb)
         sp.add("cap_m", "CAP_100nF", "/abs/cap.s2p", pin_order=["1", "2"])
@@ -3363,29 +3385,36 @@ class TestCfgSParametersWithPedb:
 
     def test_apply_with_reference_net_per_component(self):
         from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         sp = CfgSParameters(pedb=pedb)
-        sp.add("cap_m", "CAP_100nF", "/abs/cap.s2p",
-               reference_net="GND", reference_net_per_component={"C1": "AGND"})
+        sp.add("cap_m", "CAP_100nF", "/abs/cap.s2p", reference_net="GND", reference_net_per_component={"C1": "AGND"})
         sp.apply()
         for comp in comp_def.components.values():
             comp.use_s_parameter_model.assert_called()
 
     def test_get_data_from_db_with_models(self):
         from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         model_obj = MagicMock()
         model_obj.reference_file = "/path/cap.s2p"
         comp_def.component_models = {"cap_model": model_obj}
         comp_def.get_properties.return_value = {"pin_order": None}
         sp = CfgSParameters(pedb=pedb)
-        components = [{"definition": "CAP_100nF", "reference_designator": "C1",
-                       "s_parameter_model": {"model_name": "cap_model", "reference_net": "GND"}}]
+        components = [
+            {
+                "definition": "CAP_100nF",
+                "reference_designator": "C1",
+                "s_parameter_model": {"model_name": "cap_model", "reference_net": "GND"},
+            }
+        ]
         result = sp.get_data_from_db(cfg_components=components)
         assert len(result) > 0
 
     def test_get_data_from_db_no_models(self):
         from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         comp_def.component_models = {}
         sp = CfgSParameters(pedb=pedb)
@@ -3410,61 +3439,75 @@ class TestCfgSpiceModelApplyWithPedb2:
 
     def test_apply_apply_to_all(self):
         from pyedb.configuration.cfg_spice_models import CfgSpiceModel
+
         pedb, comp_def, comp1, comp2 = self._make_pedb()
         pdata = MagicMock()
         pdata._pedb = pedb
-        m = CfgSpiceModel(pdata, "/lib",
-                          spice_dict={"name": "ic_spice",
-                                      "component_definition": "IC_DEF",
-                                      "file_path": "/abs/ic.sp",
-                                      "apply_to_all": True,
-                                      "components": []})
+        m = CfgSpiceModel(
+            pdata,
+            "/lib",
+            spice_dict={
+                "name": "ic_spice",
+                "component_definition": "IC_DEF",
+                "file_path": "/abs/ic.sp",
+                "apply_to_all": True,
+                "components": [],
+            },
+        )
         m.apply()
         comp1.assign_spice_model.assert_called_once()
         comp2.assign_spice_model.assert_called_once()
 
     def test_apply_apply_to_subset(self):
         from pyedb.configuration.cfg_spice_models import CfgSpiceModel
+
         pedb, comp_def, comp1, comp2 = self._make_pedb()
         pdata = MagicMock()
         pdata._pedb = pedb
-        m = CfgSpiceModel(pdata, "/lib",
-                          spice_dict={"name": "ic_spice",
-                                      "component_definition": "IC_DEF",
-                                      "file_path": "/abs/ic.sp",
-                                      "apply_to_all": False,
-                                      "components": ["U1"]})
+        m = CfgSpiceModel(
+            pdata,
+            "/lib",
+            spice_dict={
+                "name": "ic_spice",
+                "component_definition": "IC_DEF",
+                "file_path": "/abs/ic.sp",
+                "apply_to_all": False,
+                "components": ["U1"],
+            },
+        )
         m.apply()
         comp1.assign_spice_model.assert_called_once()
         comp2.assign_spice_model.assert_not_called()
 
     def test_apply_relative_path(self):
         from pathlib import Path
+
         from pyedb.configuration.cfg_spice_models import CfgSpiceModel
+
         pedb, comp_def, comp1, comp2 = self._make_pedb()
         pdata = MagicMock()
         pdata._pedb = pedb
-        m = CfgSpiceModel(pdata, "/lib",
-                          spice_dict={"name": "ic",
-                                      "component_definition": "IC_DEF",
-                                      "file_path": "ic.sp",
-                                      "apply_to_all": True})
+        m = CfgSpiceModel(
+            pdata,
+            "/lib",
+            spice_dict={"name": "ic", "component_definition": "IC_DEF", "file_path": "ic.sp", "apply_to_all": True},
+        )
         m.apply()
         expected_path = str(Path("/lib") / "ic.sp")
-        comp1.assign_spice_model.assert_called_once_with(
-            expected_path, "ic", "", None
-        )
+        comp1.assign_spice_model.assert_called_once_with(expected_path, "ic", "", None)
 
     def test_components_none_becomes_empty_list(self):
         from pyedb.configuration.cfg_spice_models import CfgSpiceModel
-        m = CfgSpiceModel(spice_dict={"name": "x", "component_definition": "D",
-                                      "file_path": "f.sp", "components": None})
+
+        m = CfgSpiceModel(
+            spice_dict={"name": "x", "component_definition": "D", "file_path": "f.sp", "components": None}
+        )
         assert m.components == []
 
     def test_components_non_iterable_is_wrapped(self):
         from pyedb.configuration.cfg_spice_models import CfgSpiceModel
-        m = CfgSpiceModel(spice_dict={"name": "x", "component_definition": "D",
-                                      "file_path": "f.sp", "components": 7})
+
+        m = CfgSpiceModel(spice_dict={"name": "x", "component_definition": "D", "file_path": "f.sp", "components": 7})
         assert m.components == [7]
 
 
@@ -3476,6 +3519,7 @@ class TestCfgSpiceModelApplyWithPedb2:
 class TestCfgStackupGetters:
     def test_get_signal_layers(self):
         from pyedb.configuration.cfg_stackup import CfgStackup
+
         pedb = MagicMock()
         pedb.stackup.signal_layers = {"top": MagicMock(), "bot": MagicMock()}
         st = CfgStackup()
@@ -3488,6 +3532,7 @@ class TestCfgStackupGetters:
 
     def test_get_layer_by_name(self):
         from pyedb.configuration.cfg_stackup import CfgStackup
+
         st = CfgStackup()
         st.add_signal_layer("top")
         layer = st.get_layer("top")
@@ -3496,6 +3541,7 @@ class TestCfgStackupGetters:
 
     def test_get_layer_missing_returns_none(self):
         from pyedb.configuration.cfg_stackup import CfgStackup
+
         st = CfgStackup()
         # get_layer without pedb raises KeyError - just test with existing layer
         st.add_signal_layer("top")
@@ -3508,14 +3554,17 @@ class TestCfgStackupGetters:
 
     def test_get_material_by_name(self):
         from pyedb.configuration.cfg_stackup import CfgStackup
+
         st = CfgStackup()
         st.add_material("copper", conductivity=5.8e7)
         mat = st.get_material("copper")
         assert mat is not None
 
     def test_get_material_missing_returns_none(self):
-        from pyedb.configuration.cfg_stackup import CfgStackup
         import pytest
+
+        from pyedb.configuration.cfg_stackup import CfgStackup
+
         pedb = MagicMock()
         pedb.materials.materials = {}
         st = CfgStackup()
@@ -3549,6 +3598,7 @@ class TestCfgDataInitExtra:
 
     def test_init_with_minimal_kwargs(self):
         from pyedb.configuration.cfg_data import CfgData
+
         pedb = self._make_pedb()
         data = CfgData(pedb)
         assert data._pedb is pedb
@@ -3557,12 +3607,14 @@ class TestCfgDataInitExtra:
 
     def test_init_with_general_section(self):
         from pyedb.configuration.cfg_data import CfgData
+
         pedb = self._make_pedb()
         data = CfgData(pedb, general={"spice_model_library": "/lib"})
         assert data.general.spice_model_library == "/lib"
 
     def test_init_with_nets_section(self):
         from pyedb.configuration.cfg_data import CfgData
+
         pedb = self._make_pedb()
         data = CfgData(pedb, nets={"signal_nets": ["NET1"], "power_ground_nets": ["GND"]})
         assert "NET1" in data.nets.signal_nets
@@ -3570,6 +3622,7 @@ class TestCfgDataInitExtra:
 
     def test_init_all_sections(self):
         from pyedb.configuration.cfg_data import CfgData
+
         pedb = self._make_pedb()
         data = CfgData(
             pedb,
@@ -3594,8 +3647,10 @@ class TestCfgDataInitExtra:
         assert data.probes is not None
 
     def test_init_unknown_section_warns(self):
-        from pyedb.configuration.cfg_data import CfgData
         import warnings
+
+        from pyedb.configuration.cfg_data import CfgData
+
         pedb = self._make_pedb()
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
@@ -3611,6 +3666,7 @@ class TestCfgDataInitExtra:
 class TestCfgGeneralEdbBranches:
     def test_set_parameters_applies_anti_pads(self):
         from pyedb.configuration.cfg_general import CfgGeneral
+
         pedb = MagicMock()
         g = CfgGeneral(pedb, {"anti_pads_always_on": True, "suppress_pads": False})
         g.set_parameters_to_edb()
@@ -3619,6 +3675,7 @@ class TestCfgGeneralEdbBranches:
 
     def test_set_parameters_skips_none(self):
         from pyedb.configuration.cfg_general import CfgGeneral
+
         pedb = MagicMock()
         g = CfgGeneral(pedb, {})
         initial = pedb.design_options.anti_pads_always_on
@@ -3627,6 +3684,7 @@ class TestCfgGeneralEdbBranches:
 
     def test_get_parameters_with_pedb(self):
         from pyedb.configuration.cfg_general import CfgGeneral
+
         pedb = MagicMock()
         pedb.design_options.anti_pads_always_on = True
         pedb.design_options.suppress_pads = False
@@ -3636,6 +3694,7 @@ class TestCfgGeneralEdbBranches:
 
     def test_apply_calls_set_parameters(self):
         from pyedb.configuration.cfg_general import CfgGeneral
+
         pedb = MagicMock()
         g = CfgGeneral(pedb, {"anti_pads_always_on": True})
         g.apply()
@@ -3643,6 +3702,7 @@ class TestCfgGeneralEdbBranches:
 
     def test_get_data_from_db(self):
         from pyedb.configuration.cfg_general import CfgGeneral
+
         pedb = MagicMock()
         pedb.design_options.anti_pads_always_on = False
         pedb.design_options.suppress_pads = True
@@ -3658,7 +3718,7 @@ class TestCfgGeneralEdbBranches:
 
 class TestCfgCommonExtraBranches:
     def test_serialize_item_uses_model_dump(self):
-        from pyedb.configuration.cfg_common import serialize_item, CfgBaseModel
+        from pyedb.configuration.cfg_common import CfgBaseModel, serialize_item
 
         class M(CfgBaseModel):
             x: int = 5
@@ -3669,6 +3729,7 @@ class TestCfgCommonExtraBranches:
 
     def test_serialize_item_returns_raw_when_no_method(self):
         from pyedb.configuration.cfg_common import serialize_item
+
         result = serialize_item(99)
         assert result == 99
 
@@ -3686,8 +3747,9 @@ class TestCfgCommonExtraBranches:
         assert "b" in result
 
     def test_set_attributes_raises_on_bad_attr(self):
-        from pyedb.configuration.cfg_common import CfgBase
         import pytest
+
+        from pyedb.configuration.cfg_common import CfgBase
 
         class Obj(CfgBase):
             pass
@@ -3734,6 +3796,7 @@ class TestCfgNetsRemainingBranches:
 
     def test_add_power_ground_nets_with_cfgnet(self):
         from pyedb.configuration.cfg_nets import CfgNets
+
         pedb = self._make_pedb()
         nets = CfgNets(pedb)
         net = CfgNets.CfgNet(pedb, "GND")
@@ -3742,6 +3805,7 @@ class TestCfgNetsRemainingBranches:
 
     def test_add_signal_nets_removes_from_power(self):
         from pyedb.configuration.cfg_nets import CfgNets
+
         nets = CfgNets(None, power_nets=["GND"])
         nets.add_signal_nets(["GND"])
         assert "GND" not in nets.power_nets
@@ -3749,20 +3813,24 @@ class TestCfgNetsRemainingBranches:
 
     def test_add_reference_nets_removes_from_signal(self):
         from pyedb.configuration.cfg_nets import CfgNets
+
         nets = CfgNets(None, signal_nets=["GND"])
         nets.add_reference_nets(["GND"])
         assert "GND" not in nets.signal_nets
         assert "GND" in nets.reference_nets
 
     def test_get_with_no_pedb_raises(self):
-        from pyedb.configuration.cfg_nets import CfgNets
         import pytest
+
+        from pyedb.configuration.cfg_nets import CfgNets
+
         nets = CfgNets(None)
         with pytest.raises(KeyError):
             nets.get("NET1")
 
     def test_apply_calls_set_parameters(self):
         from pyedb.configuration.cfg_nets import CfgNets
+
         nets = CfgNets(None)
         nets.set_parameters_to_edb = MagicMock()
         nets.apply()
@@ -3770,6 +3838,7 @@ class TestCfgNetsRemainingBranches:
 
     def test_get_data_from_db_calls_get_params(self):
         from pyedb.configuration.cfg_nets import CfgNets
+
         nets = CfgNets(None)
         nets.get_parameters_from_edb = MagicMock()
         nets.get_data_from_db()
@@ -3900,7 +3969,7 @@ class TestCfgStackupEdbBranches:
             stackup.get_material("copper")
 
     def test_add_material_with_cfgmaterial_config(self):
-        from pyedb.configuration.cfg_stackup import CfgStackup, CfgMaterial
+        from pyedb.configuration.cfg_stackup import CfgMaterial, CfgStackup
 
         stackup = CfgStackup()
         cfg_mat = CfgMaterial(name="fr4", permittivity=4.4)
@@ -3916,7 +3985,7 @@ class TestCfgStackupEdbBranches:
         assert mat.name == "fr4"
 
     def test_add_material_config_name_override(self):
-        from pyedb.configuration.cfg_stackup import CfgStackup, CfgMaterial
+        from pyedb.configuration.cfg_stackup import CfgMaterial, CfgStackup
 
         stackup = CfgStackup()
         cfg_mat = CfgMaterial(name="old_name", permittivity=4.4)
@@ -3924,7 +3993,7 @@ class TestCfgStackupEdbBranches:
         assert mat.name == "new_name"
 
     def test_add_layer_at_bottom_with_cfglayer_config(self):
-        from pyedb.configuration.cfg_stackup import CfgStackup, CfgLayer
+        from pyedb.configuration.cfg_stackup import CfgLayer, CfgStackup
 
         stackup = CfgStackup()
         cfg_layer = CfgLayer(name="top", layer_type="signal", thickness="35um")
@@ -3940,7 +4009,7 @@ class TestCfgStackupEdbBranches:
         assert layer.name == "top"
 
     def test_add_layer_at_bottom_config_name_override(self):
-        from pyedb.configuration.cfg_stackup import CfgStackup, CfgLayer
+        from pyedb.configuration.cfg_stackup import CfgLayer, CfgStackup
 
         stackup = CfgStackup()
         cfg_layer = CfgLayer(name="old", layer_type="signal")
@@ -4474,7 +4543,12 @@ class TestCfgComponentSetParametersToEdb:
         c.ic_die_properties = {"type": "flip_chip", "orientation": "chip_down"}
         c._ic_die_explicitly_set = True
         c.solder_ball_properties = {"shape": "cylinder", "diameter": "150um", "height": "100um"}
-        c.port_properties = {"reference_height": "0", "reference_size_auto": True, "reference_size_x": "0", "reference_size_y": "0"}
+        c.port_properties = {
+            "reference_height": "0",
+            "reference_size_auto": True,
+            "reference_size_x": "0",
+            "reference_size_y": "0",
+        }
         c.set_parameters_to_edb()
 
     def test_io_type_calls_solder_and_port(self):
@@ -4487,7 +4561,12 @@ class TestCfgComponentSetParametersToEdb:
         obj.type = "io"
         c = CfgComponent(pedb, pedb_object=obj, reference_designator="U1", part_type="io")
         c.solder_ball_properties = {"shape": "cylinder", "diameter": "150um", "height": "100um"}
-        c.port_properties = {"reference_height": "0", "reference_size_auto": True, "reference_size_x": "0", "reference_size_y": "0"}
+        c.port_properties = {
+            "reference_height": "0",
+            "reference_size_auto": True,
+            "reference_size_x": "0",
+            "reference_size_y": "0",
+        }
         c.set_parameters_to_edb()
 
 
@@ -4566,7 +4645,12 @@ class TestCfgComponentSetSolderBallToEdb:
         pedb.grpc = True
         obj = MagicMock()
         c = CfgComponent(pedb, pedb_object=obj, reference_designator="U1", part_type="ic")
-        c.solder_ball_properties = {"shape": "spheroid", "diameter": "150um", "height": "100um", "mid_diameter": "120um"}
+        c.solder_ball_properties = {
+            "shape": "spheroid",
+            "diameter": "150um",
+            "height": "100um",
+            "mid_diameter": "120um",
+        }
         c._set_solder_ball_properties_to_edb()
 
     def test_grpc_no_shape_raises(self):
@@ -4625,7 +4709,12 @@ class TestCfgComponentSetSolderBallToEdb:
         obj = MagicMock()
         obj.name = "U1"
         c = CfgComponent(pedb, pedb_object=obj, reference_designator="U1", part_type="ic")
-        c.solder_ball_properties = {"shape": "cylinder", "diameter": "150um", "height": "100um", "orientation": "chip_down"}
+        c.solder_ball_properties = {
+            "shape": "cylinder",
+            "diameter": "150um",
+            "height": "100um",
+            "orientation": "chip_down",
+        }
         c._set_solder_ball_properties_to_edb()
         pedb.components.set_solder_ball.assert_called_once()
 
@@ -5144,7 +5233,14 @@ class TestCfgSourcesCollection:
     def test_init_with_data(self):
         from pyedb.configuration.cfg_ports_sources import CfgSources
 
-        data = [{"name": "s1", "type": "current", "positive_terminal": {"pin_group": "pg1"}, "negative_terminal": {"pin_group": "pg2"}}]
+        data = [
+            {
+                "name": "s1",
+                "type": "current",
+                "positive_terminal": {"pin_group": "pg1"},
+                "negative_terminal": {"pin_group": "pg2"},
+            }
+        ]
         s = CfgSources(sources_data=data)
         assert len(s.sources) == 1
 
@@ -5198,7 +5294,9 @@ class TestCfgPortsCollection:
     def test_init_with_circuit(self):
         from pyedb.configuration.cfg_ports_sources import CfgPorts
 
-        data = [{"name": "p1", "type": "circuit", "positive_terminal": {"pin": "A1"}, "negative_terminal": {"pin": "B1"}}]
+        data = [
+            {"name": "p1", "type": "circuit", "positive_terminal": {"pin": "A1"}, "negative_terminal": {"pin": "B1"}}
+        ]
         p = CfgPorts(ports_data=data)
         assert len(p.ports) == 1
 
@@ -5226,11 +5324,14 @@ class TestCfgPortsCollection:
     def test_init_with_diff_wave_port(self):
         from pyedb.configuration.cfg_ports_sources import CfgPorts
 
-        data = [{
-            "name": "dp1", "type": "diff_wave_port",
-            "positive_terminal": {"primitive_name": "t1", "point_on_edge": [0.001, 0]},
-            "negative_terminal": {"primitive_name": "t2", "point_on_edge": [0.001, 0.001]},
-        }]
+        data = [
+            {
+                "name": "dp1",
+                "type": "diff_wave_port",
+                "positive_terminal": {"primitive_name": "t1", "point_on_edge": [0.001, 0]},
+                "negative_terminal": {"primitive_name": "t2", "point_on_edge": [0.001, 0.001]},
+            }
+        ]
         p = CfgPorts(ports_data=data)
         assert len(p.ports) == 1
 
@@ -5382,8 +5483,10 @@ class TestCfgPortsCollection:
         p = CfgPorts()
         port = p.add_diff_wave_port(
             "diff1",
-            positive_primitive="t1", positive_terminal_point=[0.001, 0],
-            negative_primitive="t2", negative_terminal_point=[0.001, 0.001],
+            positive_primitive="t1",
+            positive_terminal_point=[0.001, 0],
+            negative_primitive="t2",
+            negative_terminal_point=[0.001, 0.001],
         )
         assert port.type == "diff_wave_port"
 
@@ -5397,8 +5500,10 @@ class TestCfgPortsCollection:
         p = CfgPorts()
         port = p.add_diff_wave_port(
             "diff1",
-            positive_primitive=prim_p, positive_terminal_point=[0.001, 0],
-            negative_primitive=prim_n, negative_terminal_point=[0.001, 0.001],
+            positive_primitive=prim_p,
+            positive_terminal_point=[0.001, 0],
+            negative_primitive=prim_n,
+            negative_terminal_point=[0.001, 0.001],
         )
         assert port.positive_port.primitive_name == "trace_p"
         assert port.negative_port.primitive_name == "trace_n"
@@ -5526,7 +5631,9 @@ class TestCfgSourceUnit:
     def test_init_kwargs(self):
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
-        src = CfgSource(name="s1", type="current", positive_terminal={"pin_group": "pg1"}, negative_terminal={"pin_group": "pg2"})
+        src = CfgSource(
+            name="s1", type="current", positive_terminal={"pin_group": "pg1"}, negative_terminal={"pin_group": "pg2"}
+        )
         assert src.magnitude == 0.001
 
     def test_init_string_pedb(self):
@@ -5538,14 +5645,18 @@ class TestCfgSourceUnit:
     def test_to_dict(self):
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
-        src = CfgSource(name="s1", type="voltage", positive_terminal={"pin": "A1"}, negative_terminal={"pin": "B1"}, magnitude=1.8)
+        src = CfgSource(
+            name="s1", type="voltage", positive_terminal={"pin": "A1"}, negative_terminal={"pin": "B1"}, magnitude=1.8
+        )
         d = src.to_dict()
         assert d["magnitude"] == 1.8
 
     def test_set_parameters_no_pedb(self):
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
-        src = CfgSource(name="s1", type="current", positive_terminal={"pin_group": "pg1"}, negative_terminal={"pin_group": "pg2"})
+        src = CfgSource(
+            name="s1", type="current", positive_terminal={"pin_group": "pg1"}, negative_terminal={"pin_group": "pg2"}
+        )
         result = src.set_parameters_to_edb()
         assert isinstance(result, dict)
 
@@ -5625,7 +5736,8 @@ class TestCfgDiffWavePortUnit:
 
         return CfgDiffWavePort(
             pedb,
-            name="diff1", type="diff_wave_port",
+            name="diff1",
+            type="diff_wave_port",
             positive_terminal={"primitive_name": "t1", "point_on_edge": [0.001, 0]},
             negative_terminal={"primitive_name": "t2", "point_on_edge": [0.001, 0.001]},
         )
@@ -5670,7 +5782,9 @@ class TestCfgCircuitElementNegTerminals:
         from pyedb.configuration.cfg_ports_sources import CfgPort
 
         port = CfgPort(
-            name="p1", type="circuit", positive_terminal={"pin": "A1"},
+            name="p1",
+            type="circuit",
+            positive_terminal={"pin": "A1"},
             negative_terminal={"coordinates": {"layer": "top", "point": [0.001, 0.002], "net": "GND"}},
         )
         assert port.negative_terminal_info.type == "coordinates"
@@ -5679,7 +5793,9 @@ class TestCfgCircuitElementNegTerminals:
         from pyedb.configuration.cfg_ports_sources import CfgPort
 
         port = CfgPort(
-            name="p1", type="circuit", positive_terminal={"pin": "A1"},
+            name="p1",
+            type="circuit",
+            positive_terminal={"pin": "A1"},
             negative_terminal={"nearest_pin": {"reference_net": "GND", "search_radius": "5mm"}},
         )
         assert port.negative_terminal_info.type == "nearest_pin"
@@ -5694,8 +5810,11 @@ class TestCfgCircuitElementNegTerminals:
         from pyedb.configuration.cfg_ports_sources import CfgPort
 
         port = CfgPort(
-            name="p1", type="circuit", positive_terminal={"pin": "A1"},
-            negative_terminal={"pin": "B1"}, reference_designator="U1",
+            name="p1",
+            type="circuit",
+            positive_terminal={"pin": "A1"},
+            negative_terminal={"pin": "B1"},
+            reference_designator="U1",
         )
         assert port.positive_terminal_info.reference_designator == "U1"
         assert port.negative_terminal_info.reference_designator == "U1"
@@ -5704,7 +5823,8 @@ class TestCfgCircuitElementNegTerminals:
         from pyedb.configuration.cfg_ports_sources import CfgPort
 
         port = CfgPort(
-            name="p1", type="circuit",
+            name="p1",
+            type="circuit",
             positive_terminal={"coordinates": {"layer": "top", "point": [0.001, 0.002], "net": "SIG"}},
             negative_terminal={"pin": "B1"},
         )
@@ -5825,8 +5945,12 @@ class TestCfgCircuitElementExportBase:
         from pyedb.configuration.cfg_ports_sources import CfgPort
 
         port = CfgPort(
-            name="p1", type="circuit", positive_terminal={"pin": "A1"},
-            negative_terminal={"pin": "B1"}, distributed=True, impedance=50,
+            name="p1",
+            type="circuit",
+            positive_terminal={"pin": "A1"},
+            negative_terminal={"pin": "B1"},
+            distributed=True,
+            impedance=50,
             reference_designator="U1",
         )
         d = port.export_properties()
@@ -5838,8 +5962,12 @@ class TestCfgCircuitElementExportBase:
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         src = CfgSource(
-            name="s1", type="current", positive_terminal={"pin_group": "pg1"},
-            negative_terminal={"pin_group": "pg2"}, magnitude=0.5, impedance=5e7,
+            name="s1",
+            type="current",
+            positive_terminal={"pin_group": "pg1"},
+            negative_terminal={"pin_group": "pg2"},
+            magnitude=0.5,
+            impedance=5e7,
         )
         d = src.export_properties()
         assert d["magnitude"] == 0.5
@@ -5851,6 +5979,7 @@ class TestCfgSourcesGetDataFromDb:
 
     def test_get_data_pin_group_terminals(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSources
 
         pedb = MagicMock()
@@ -5889,6 +6018,7 @@ class TestCfgSourcesGetDataFromDb:
 
     def test_get_data_padstack_terminals(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSources
 
         pedb = MagicMock()
@@ -5926,6 +6056,7 @@ class TestCfgSourcesGetDataFromDb:
 
     def test_get_data_point_terminals(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSources
 
         pedb = MagicMock()
@@ -5962,6 +6093,7 @@ class TestCfgPortsGetDataFromDb:
 
     def test_get_data_coax_port(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgPorts
 
         pedb = MagicMock()
@@ -5993,6 +6125,7 @@ class TestCfgPortsGetDataFromDb:
 
     def test_get_data_circuit_port_pin_group(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgPorts
 
         pedb = MagicMock()
@@ -6040,7 +6173,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.siwave.pin_groups["pg2"].create_terminal.return_value = MagicMock()
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"pin_group": "pg2"},
         )
@@ -6059,7 +6194,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.padstacks.instances = {"inst1": pds}
 
         port = CfgPort(
-            pedb, name="coax1", type="coax",
+            pedb,
+            name="coax1",
+            type="coax",
             positive_terminal={"padstack": "via1"},
         )
         result = port.set_parameters_to_edb()
@@ -6076,7 +6213,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.padstacks.instances.values.return_value = [pds_other]
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"padstack": "nonexistent"},
             negative_terminal={"pin_group": "pg1"},
         )
@@ -6097,7 +6236,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.components.instances["U1"].pins = {"A1": pin}
 
         port = CfgPort(
-            pedb, name="coax1", type="coax",
+            pedb,
+            name="coax1",
+            type="coax",
             positive_terminal={"pin": "A1", "reference_designator": "U1"},
         )
         result = port.set_parameters_to_edb()
@@ -6115,7 +6256,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.components.get_pins.return_value = {"p1": pin1, "p2": pin2}
 
         port = CfgPort(
-            pedb, name="coax1", type="coax",
+            pedb,
+            name="coax1",
+            type="coax",
             positive_terminal={"net": "VDD", "reference_designator": "U1"},
         )
         result = port.set_parameters_to_edb()
@@ -6131,7 +6274,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.excitation_manager.get_point_terminal.return_value = MagicMock()
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"coordinates": {"layer": "top", "point": [0.001, 0.002], "net": "SIG"}},
             negative_terminal={"pin": "B1", "reference_designator": "U1"},
         )
@@ -6153,7 +6298,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.excitation_manager.get_point_terminal.return_value = MagicMock()
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"coordinates": {"layer": "top", "point": [0.001, 0.002], "net": "NEW_NET"}},
             negative_terminal={"pin_group": "pg1"},
         )
@@ -6178,7 +6325,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.padstacks.instances = {"i1": pos_pds, "i2": neg_pds}
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"padstack": "via1"},
             negative_terminal={"padstack": "via2"},
         )
@@ -6200,7 +6349,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.components.instances["U1"].pins = {"B1": pin}
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"pin": "B1", "reference_designator": "U1"},
         )
@@ -6219,7 +6370,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.excitation_manager.get_point_terminal.return_value = MagicMock()
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"coordinates": {"layer": "bot", "point": [0, 0], "net": "GND"}},
         )
@@ -6248,7 +6401,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.siwave.create_pin_group.return_value = ("pg_p1_U1_ref", neg_pg)
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"net": "GND", "reference_designator": "U1"},
         )
@@ -6264,7 +6419,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         class FakeElement(CfgCircuitElement):
             pass
 
-        elem = FakeElement(pedb, name="bad", type="circuit", positive_terminal={"pin": "A1"}, negative_terminal={"pin": "B1"})
+        elem = FakeElement(
+            pedb, name="bad", type="circuit", positive_terminal={"pin": "A1"}, negative_terminal={"pin": "B1"}
+        )
         # Override type to something invalid
         elem.positive_terminal_info.type = "invalid_type"
         with pytest.raises(ValueError, match="Wrong positive terminal"):
@@ -6280,7 +6437,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.siwave.pin_groups = {"pg1": pg}
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"pin": "B1"},
         )
@@ -6307,7 +6466,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.siwave.pin_groups["pg2"] = neg_pg
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"pin_group": "pg2"},
             distributed=True,
@@ -6333,7 +6494,9 @@ class TestCfgPortSetParametersToEdbWithPedb:
         pedb.siwave.pin_groups = {"pg_GND": neg_pg}
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"net": "VDD", "reference_designator": "U1"},
             negative_terminal={"pin_group": "pg_GND"},
         )
@@ -6347,6 +6510,7 @@ class TestCfgSourceSetParametersToEdbWithPedb:
 
     def test_current_source_pin_group(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -6366,7 +6530,9 @@ class TestCfgSourceSetParametersToEdbWithPedb:
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mock_ttm:
             mock_ttm.get.return_value = "NEVER_MATCH"
             src = CfgSource(
-                pedb, name="isrc1", type="current",
+                pedb,
+                name="isrc1",
+                type="current",
                 positive_terminal={"pin_group": "pg1"},
                 negative_terminal={"pin_group": "pg2"},
                 magnitude=0.5,
@@ -6376,6 +6542,7 @@ class TestCfgSourceSetParametersToEdbWithPedb:
 
     def test_voltage_source(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -6395,10 +6562,13 @@ class TestCfgSourceSetParametersToEdbWithPedb:
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mock_ttm:
             mock_ttm.get.return_value = "NEVER_MATCH"
             src = CfgSource(
-                pedb, name="vsrc1", type="voltage",
+                pedb,
+                name="vsrc1",
+                type="voltage",
                 positive_terminal={"pin_group": "pg1"},
                 negative_terminal={"pin_group": "pg2"},
-                magnitude=1.8, impedance=1e-6,
+                magnitude=1.8,
+                impedance=1e-6,
             )
             result = src.set_parameters_to_edb()
         assert isinstance(result, list)
@@ -6419,7 +6589,8 @@ class TestCfgProbeSetParametersToEdbWithPedb:
         pedb.siwave.pin_groups = {"pg1": pg_pos, "pg2": pg_neg}
 
         probe = CfgProbe(
-            pedb, name="probe1",
+            pedb,
+            name="probe1",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"pin_group": "pg2"},
         )
@@ -6432,6 +6603,7 @@ class TestCfgPortGetDataFromDbAdvanced:
 
     def test_get_data_circuit_port_padstack_terminals(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgPorts
 
         pedb = MagicMock()
@@ -6467,6 +6639,7 @@ class TestCfgPortGetDataFromDbAdvanced:
 
     def test_get_data_circuit_port_point_terminals(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgPorts
 
         pedb = MagicMock()
@@ -6505,6 +6678,7 @@ class TestCfgPortGetDataFromDbAdvanced:
 
     def test_get_data_edge_port(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgPorts
 
         pedb = MagicMock()
@@ -6541,6 +6715,7 @@ class TestCfgPortGetDataFromDbAdvanced:
 
     def test_get_data_gap_port(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgPorts
 
         pedb = MagicMock()
@@ -6587,7 +6762,9 @@ class TestCfgCreateTerminalsAdvanced:
         pedb.siwave.pin_groups["pg2"].create_terminal.return_value = MagicMock()
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"pin_group": "pg2"},
         )
@@ -6605,7 +6782,9 @@ class TestCfgCreateTerminalsAdvanced:
         pedb.components.get_pins.return_value = {"p1": pin}
 
         port = CfgPort(
-            pedb, name="coax1", type="coax",
+            pedb,
+            name="coax1",
+            type="coax",
             positive_terminal={"net": "VDD", "reference_designator": "U1"},
         )
         result = port.set_parameters_to_edb()
@@ -6632,7 +6811,9 @@ class TestCfgCreateTerminalsAdvanced:
         pedb.siwave.pin_groups = {"pg_GND": neg_pg}
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"net": "VDD", "reference_designator": "U1"},
             negative_terminal={"pin_group": "pg_GND"},
             distributed=True,
@@ -6662,7 +6843,9 @@ class TestCfgCreateTerminalsAdvanced:
         pedb.padstacks.get_reference_pins.return_value = [ref_pin]
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"nearest_pin": {"reference_net": "GND", "search_radius": "5mm"}},
         )
@@ -6672,6 +6855,7 @@ class TestCfgCreateTerminalsAdvanced:
     def test_source_with_neg_dict_terminal(self):
         """Source with dict negative terminal (nearest_pin resolution)."""
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -6701,7 +6885,9 @@ class TestCfgCreateTerminalsAdvanced:
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mt:
             mt.get.return_value = "NEVER_MATCH"
             src = CfgSource(
-                pedb, name="s1", type="current",
+                pedb,
+                name="s1",
+                type="current",
                 positive_terminal={"pin": "A1", "reference_designator": "U1"},
                 negative_terminal={"nearest_pin": {"reference_net": "GND", "search_radius": "5mm"}},
                 magnitude=0.5,
@@ -6723,7 +6909,9 @@ class TestCfgGetPins:
         pedb.layout.find_padstack_instances.return_value = [inst]
 
         port = CfgPort(
-            pedb, name="p1", type="coax",
+            pedb,
+            name="p1",
+            type="coax",
             positive_terminal={"padstack": "via1"},
         )
         result = port.set_parameters_to_edb()
@@ -6744,7 +6932,9 @@ class TestCfgGetPins:
         pedb.siwave.pin_groups = {"pg1": pg_pins, "pg2": neg_pg}
 
         port = CfgPort(
-            pedb, name="p1", type="coax",
+            pedb,
+            name="p1",
+            type="coax",
             positive_terminal={"pin_group": "pg1"},
         )
         result = port.set_parameters_to_edb()
@@ -6761,7 +6951,9 @@ class TestCfgGetPins:
         pedb.components.instances["U1"].pins = {"A1": pin}
 
         port = CfgPort(
-            pedb, name="coax1", type="coax",
+            pedb,
+            name="coax1",
+            type="coax",
             positive_terminal={"pin": "A1", "reference_designator": "U1"},
         )
         result = port.set_parameters_to_edb()
@@ -6773,6 +6965,7 @@ class TestCfgSourceSetParametersEdbContactTypes:
 
     def test_source_default_contact_type(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -6796,7 +6989,9 @@ class TestCfgSourceSetParametersEdbContactTypes:
             with patch("pyedb.configuration.cfg_ports_sources.settings") as ms:
                 ms.is_grpc = True
                 src = CfgSource(
-                    pedb, name="s1", type="current",
+                    pedb,
+                    name="s1",
+                    type="current",
                     positive_terminal={"pin_group": "pg1"},
                     negative_terminal={"pin_group": "pg2"},
                     magnitude=0.5,
@@ -6807,6 +7002,7 @@ class TestCfgSourceSetParametersEdbContactTypes:
 
     def test_source_padstack_full_contact(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -6839,7 +7035,9 @@ class TestCfgSourceSetParametersEdbContactTypes:
             with patch("pyedb.configuration.cfg_ports_sources.settings") as ms:
                 ms.is_grpc = True
                 src = CfgSource(
-                    pedb, name="s1", type="current",
+                    pedb,
+                    name="s1",
+                    type="current",
                     positive_terminal={"pin": "A1", "reference_designator": "U1"},
                     negative_terminal={"pin": "B1", "reference_designator": "U1"},
                     magnitude=0.5,
@@ -6852,6 +7050,7 @@ class TestCfgSourceSetParametersEdbContactTypes:
 
     def test_source_padstack_center_contact(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -6883,7 +7082,9 @@ class TestCfgSourceSetParametersEdbContactTypes:
             with patch("pyedb.configuration.cfg_ports_sources.settings") as ms:
                 ms.is_grpc = True
                 src = CfgSource(
-                    pedb, name="s1", type="current",
+                    pedb,
+                    name="s1",
+                    type="current",
                     positive_terminal={"pin": "A1", "reference_designator": "U1"},
                     negative_terminal={"pin_group": "pg2"},
                     magnitude=0.5,
@@ -6896,6 +7097,7 @@ class TestCfgSourceSetParametersEdbContactTypes:
 
     def test_source_point_terminal_creates_circle(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -6927,7 +7129,9 @@ class TestCfgSourceSetParametersEdbContactTypes:
             with patch("pyedb.configuration.cfg_ports_sources.settings") as ms:
                 ms.is_grpc = True
                 src = CfgSource(
-                    pedb, name="s1", type="current",
+                    pedb,
+                    name="s1",
+                    type="current",
                     positive_terminal={"coordinates": {"layer": "top", "point": [0.001, 0.002], "net": "SIG"}},
                     negative_terminal={"pin_group": "pg2"},
                     magnitude=0.5,
@@ -6937,6 +7141,7 @@ class TestCfgSourceSetParametersEdbContactTypes:
 
     def test_source_multiple_elements_distributed(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -6961,15 +7166,19 @@ class TestCfgSourceSetParametersEdbContactTypes:
         pedb.terminals = MagicMock()
         pedb.terminals.__contains__ = MagicMock(return_value=True)
         call_count = [0]
+
         def getitem(self_mock, key):
             call_count[0] += 1
             return elem1 if call_count[0] == 1 else elem2
+
         pedb.terminals.__getitem__ = getitem
 
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mt:
             mt.get.return_value = "NEVER_MATCH"
             src = CfgSource(
-                pedb, name="s1", type="current",
+                pedb,
+                name="s1",
+                type="current",
                 positive_terminal={"pin_group": "pg1"},
                 negative_terminal={"pin_group": "pg2"},
                 magnitude=1.0,
@@ -6985,6 +7194,7 @@ class TestCfgPortGetDataFromDbMorePaths:
     def test_get_data_no_ref_terminal_pin_group(self):
         """Port with no reference_terminal and pin_group terminal_type -> circuit."""
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgPorts
 
         pedb = MagicMock()
@@ -7021,6 +7231,7 @@ class TestCfgPortGetDataFromDbMorePaths:
     def test_get_data_source_point_terminals(self):
         """Source get_data_from_db with point terminals (lines 449-450, 458-459)."""
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSources
 
         pedb = MagicMock()
@@ -7069,7 +7280,9 @@ class TestCfgPortGetDataFromDbMorePaths:
         pedb.excitation_manager.get_point_terminal.return_value = MagicMock()
 
         port = CfgPort(
-            pedb, name="p1", type="circuit",
+            pedb,
+            name="p1",
+            type="circuit",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"coordinates": {"layer": "bot", "point": [0, 0], "net": "NEW_NET"}},
         )
@@ -7095,7 +7308,8 @@ class TestCfgPortGetDataFromDbMorePaths:
         pedb.padstacks.get_reference_pins.return_value = [ref_pin]
 
         probe = CfgProbe(
-            pedb, name="probe1",
+            pedb,
+            name="probe1",
             positive_terminal={"pin_group": "pg1"},
             negative_terminal={"nearest_pin": {"reference_net": "GND", "search_radius": "5mm"}},
         )
@@ -7105,6 +7319,7 @@ class TestCfgPortGetDataFromDbMorePaths:
     def test_source_elem_num_gt_1_magnitude_division(self):
         """Source with _elem_num > 1 sets name=name and divides magnitude (line 1541-1542,1544)."""
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -7136,7 +7351,9 @@ class TestCfgPortGetDataFromDbMorePaths:
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mt:
             mt.get.return_value = "NEVER_MATCH"
             src = CfgSource(
-                pedb, name="s1", type="current",
+                pedb,
+                name="s1",
+                type="current",
                 positive_terminal={"net": "VDD", "reference_designator": "U1"},
                 negative_terminal={"pin_group": "pg2"},
                 magnitude=1.0,
@@ -7179,6 +7396,7 @@ class TestCfgPortsGetDataDbPinGroupNoRef2:
 
     def test_unknown_terminal_type_raises(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgPorts
 
         pedb = MagicMock()
@@ -7194,8 +7412,11 @@ class TestCfgPortsGetDataDbPinGroupNoRef2:
             ms.is_grpc = True
             with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mt:
                 mt.get.side_effect = lambda n, as_grpc: {
-                    "PadstackInstanceTerminal": "padstack_inst", "PinGroupTerminal": "pin_group",
-                    "PointTerminal": "point", "EdgeTerminal": "edge"}.get(n, n)
+                    "PadstackInstanceTerminal": "padstack_inst",
+                    "PinGroupTerminal": "pin_group",
+                    "PointTerminal": "point",
+                    "EdgeTerminal": "edge",
+                }.get(n, n)
                 p = CfgPorts(pedb=pedb)
                 with pytest.raises(ValueError, match="Unknown terminal type"):
                     p.get_data_from_db()
@@ -7235,15 +7456,20 @@ class TestCreateVirtualPinsOnPin2:
 
     def _port(self, pedb, pin, contact_type):
         from pyedb.configuration.cfg_ports_sources import CfgPort
+
         pin.create_terminal.return_value = MagicMock()
         pedb.components.instances = {"U1": MagicMock()}
         pedb.components.instances["U1"].pins = {"A1": pin}
         pg = MagicMock()
         pg.create_terminal.return_value = MagicMock()
         pedb.siwave.pin_groups = {"pg2": pg}
-        port = CfgPort(pedb, name="p1", type="circuit",
-                        positive_terminal={"pin": "A1", "reference_designator": "U1"},
-                        negative_terminal={"pin_group": "pg2"})
+        port = CfgPort(
+            pedb,
+            name="p1",
+            type="circuit",
+            positive_terminal={"pin": "A1", "reference_designator": "U1"},
+            negative_terminal={"pin_group": "pg2"},
+        )
         port.positive_terminal_info.contact_type = contact_type
         port.positive_terminal_info.contact_radius = 10e-6
         port.positive_terminal_info.num_of_contact = 4
@@ -7284,9 +7510,12 @@ class TestCreateVirtualPinsOnPin2:
 
     def test_quad_with_rotation(self):
         import math
+
         pedb = MagicMock()
         rot = math.pi / 2
-        pedb.value.side_effect = lambda x: MagicMock(value=rot if x == rot else (float(x) if isinstance(x, (int, float)) else 0))
+        pedb.value.side_effect = lambda x: MagicMock(
+            value=rot if x == rot else (float(x) if isinstance(x, (int, float)) else 0)
+        )
         pedb.padstacks.place.return_value = MagicMock()
         pin = self._pin()
         pin.component.rotation = rot
@@ -7302,6 +7531,7 @@ class TestPinGroupQuadContact2:
 
     def test_pin_group_quad(self):
         from pyedb.configuration.cfg_ports_sources import CfgPort
+
         pedb = MagicMock()
         pedb.value.side_effect = lambda x: MagicMock(value=float(x) if isinstance(x, (int, float)) else 0)
         pedb.padstacks.place.return_value = MagicMock()
@@ -7321,9 +7551,13 @@ class TestPinGroupQuadContact2:
         neg_pg = MagicMock()
         neg_pg.create_terminal.return_value = MagicMock()
         pedb.siwave.pin_groups = {"pg1": pg_pins, "pg2": neg_pg}
-        port = CfgPort(pedb, name="p1", type="circuit",
-                        positive_terminal={"pin_group": "pg1"},
-                        negative_terminal={"pin_group": "pg2"})
+        port = CfgPort(
+            pedb,
+            name="p1",
+            type="circuit",
+            positive_terminal={"pin_group": "pg1"},
+            negative_terminal={"pin_group": "pg2"},
+        )
         port.positive_terminal_info.contact_type = "quad"
         port.positive_terminal_info.contact_radius = 10e-6
         port.positive_terminal_info.num_of_contact = 4
@@ -7339,6 +7573,7 @@ class TestNetInlineContact2:
 
     def test_net_inline(self):
         from pyedb.configuration.cfg_ports_sources import CfgPort
+
         pedb = MagicMock()
         pedb.value.side_effect = lambda x: MagicMock(value=float(x) if isinstance(x, (int, float)) else 0)
         pedb.padstacks.place.return_value = MagicMock()
@@ -7357,9 +7592,13 @@ class TestNetInlineContact2:
         neg_pg = MagicMock()
         neg_pg.create_terminal.return_value = MagicMock()
         pedb.siwave.pin_groups = {"pg2": neg_pg}
-        port = CfgPort(pedb, name="p1", type="circuit",
-                        positive_terminal={"net": "VDD", "reference_designator": "U1"},
-                        negative_terminal={"pin_group": "pg2"})
+        port = CfgPort(
+            pedb,
+            name="p1",
+            type="circuit",
+            positive_terminal={"net": "VDD", "reference_designator": "U1"},
+            negative_terminal={"pin_group": "pg2"},
+        )
         port.positive_terminal_info.contact_type = "inline"
         port.positive_terminal_info.contact_radius = 10e-6
         port.positive_terminal_info.num_of_contact = 4
@@ -7375,14 +7614,14 @@ class TestGetPinsUnknownType2:
 
     def test_returns_empty(self):
         from pyedb.configuration.cfg_ports_sources import CfgCircuitElement
+
         pedb = MagicMock()
         pedb.value.return_value = 0.0001
 
         class _Elem(CfgCircuitElement):
             pass
 
-        e = _Elem(pedb, name="t", type="circuit",
-                  positive_terminal={"pin": "A1"}, negative_terminal={"pin": "B1"})
+        e = _Elem(pedb, name="t", type="circuit", positive_terminal={"pin": "A1"}, negative_terminal={"pin": "B1"})
         assert e._get_pins("unknown_type", "val", "U1") == {}
 
 
@@ -7392,7 +7631,8 @@ class TestSourceTerminalsRefresh2:
     pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
 
     def test_refresh(self):
-        from unittest.mock import patch, PropertyMock
+        from unittest.mock import PropertyMock, patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -7412,16 +7652,23 @@ class TestSourceTerminalsRefresh2:
         t2.__contains__ = MagicMock(return_value=True)
         t2.__getitem__ = MagicMock(return_value=elem)
         calls = [0]
+
         def gt():
             calls[0] += 1
             return t1 if calls[0] <= 1 else t2
+
         type(pedb).terminals = PropertyMock(side_effect=gt)
 
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mt:
             mt.get.return_value = "NEVER_MATCH"
-            src = CfgSource(pedb, name="s1", type="current",
-                            positive_terminal={"pin_group": "pg1"},
-                            negative_terminal={"pin_group": "pg2"}, magnitude=0.5)
+            src = CfgSource(
+                pedb,
+                name="s1",
+                type="current",
+                positive_terminal={"pin_group": "pg1"},
+                negative_terminal={"pin_group": "pg2"},
+                magnitude=0.5,
+            )
             result = src.set_parameters_to_edb()
         assert isinstance(result, list)
 
@@ -7433,6 +7680,7 @@ class TestSourceRefTermBranch2:
 
     def test_ref_term(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
 
         pedb = MagicMock()
@@ -7452,9 +7700,14 @@ class TestSourceRefTermBranch2:
 
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mt:
             mt.get.return_value = "NEVER_MATCH"
-            src = CfgSource(pedb, name="s1", type="current",
-                            positive_terminal={"pin_group": "pg1"},
-                            negative_terminal={"pin_group": "pg2"}, magnitude=0.5)
+            src = CfgSource(
+                pedb,
+                name="s1",
+                type="current",
+                positive_terminal={"pin_group": "pg1"},
+                negative_terminal={"pin_group": "pg2"},
+                magnitude=0.5,
+            )
             src.set_parameters_to_edb()
 
 
@@ -7465,6 +7718,7 @@ class TestSourcePinGroupDCIR2:
 
     def _src(self, pedb, contact_type):
         from pyedb.configuration.cfg_ports_sources import CfgSource
+
         pg = MagicMock()
         pg.create_terminal.return_value = MagicMock()
         pg2 = MagicMock()
@@ -7482,18 +7736,28 @@ class TestSourcePinGroupDCIR2:
         pedb.terminals = MagicMock()
         pedb.terminals.__contains__ = MagicMock(return_value=True)
         pedb.terminals.__getitem__ = MagicMock(return_value=elem)
-        s = CfgSource(pedb, name="s1", type="current",
-                       positive_terminal={"pin_group": "pg1"},
-                       negative_terminal={"pin_group": "pg2"}, magnitude=0.5)
+        s = CfgSource(
+            pedb,
+            name="s1",
+            type="current",
+            positive_terminal={"pin_group": "pg1"},
+            negative_terminal={"pin_group": "pg2"},
+            magnitude=0.5,
+        )
         s.positive_terminal_info.contact_type = contact_type
         return s
 
     def test_full(self):
         from unittest.mock import patch
+
         pedb = MagicMock()
         pedb.value.return_value = 0.0001
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mt:
-            mt.get.side_effect = lambda n, as_grpc: {"PadstackInstanceTerminal": "padstack_inst", "PinGroupTerminal": "pin_group", "PointTerminal": "point"}.get(n, n)
+            mt.get.side_effect = lambda n, as_grpc: {
+                "PadstackInstanceTerminal": "padstack_inst",
+                "PinGroupTerminal": "pin_group",
+                "PointTerminal": "point",
+            }.get(n, n)
             with patch("pyedb.configuration.cfg_ports_sources.settings") as ms:
                 ms.is_grpc = True
                 self._src(pedb, "full").set_parameters_to_edb()
@@ -7501,10 +7765,15 @@ class TestSourcePinGroupDCIR2:
 
     def test_center(self):
         from unittest.mock import patch
+
         pedb = MagicMock()
         pedb.value.return_value = 0.0001
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mt:
-            mt.get.side_effect = lambda n, as_grpc: {"PadstackInstanceTerminal": "padstack_inst", "PinGroupTerminal": "pin_group", "PointTerminal": "point"}.get(n, n)
+            mt.get.side_effect = lambda n, as_grpc: {
+                "PadstackInstanceTerminal": "padstack_inst",
+                "PinGroupTerminal": "pin_group",
+                "PointTerminal": "point",
+            }.get(n, n)
             with patch("pyedb.configuration.cfg_ports_sources.settings") as ms:
                 ms.is_grpc = True
                 s = self._src(pedb, "center")
@@ -7513,10 +7782,15 @@ class TestSourcePinGroupDCIR2:
 
     def test_other_skips(self):
         from unittest.mock import patch
+
         pedb = MagicMock()
         pedb.value.return_value = 0.0001
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mt:
-            mt.get.side_effect = lambda n, as_grpc: {"PadstackInstanceTerminal": "padstack_inst", "PinGroupTerminal": "pin_group", "PointTerminal": "point"}.get(n, n)
+            mt.get.side_effect = lambda n, as_grpc: {
+                "PadstackInstanceTerminal": "padstack_inst",
+                "PinGroupTerminal": "pin_group",
+                "PointTerminal": "point",
+            }.get(n, n)
             with patch("pyedb.configuration.cfg_ports_sources.settings") as ms:
                 ms.is_grpc = True
                 self._src(pedb, "other").set_parameters_to_edb()
@@ -7524,11 +7798,17 @@ class TestSourcePinGroupDCIR2:
 
     def test_unsupported_raises(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_ports_sources import CfgSource
+
         pedb = MagicMock()
         pedb.value.return_value = 0.0001
         with patch("pyedb.configuration.cfg_ports_sources.TerminalTypeMapper") as mt:
-            mt.get.side_effect = lambda n, as_grpc: {"PadstackInstanceTerminal": "padstack_inst", "PinGroupTerminal": "pin_group", "PointTerminal": "point"}.get(n, n)
+            mt.get.side_effect = lambda n, as_grpc: {
+                "PadstackInstanceTerminal": "padstack_inst",
+                "PinGroupTerminal": "pin_group",
+                "PointTerminal": "point",
+            }.get(n, n)
             with patch("pyedb.configuration.cfg_ports_sources.settings") as ms:
                 ms.is_grpc = True
                 pg = MagicMock()
@@ -7543,9 +7823,14 @@ class TestSourcePinGroupDCIR2:
                 pedb.terminals = MagicMock()
                 pedb.terminals.__contains__ = MagicMock(return_value=True)
                 pedb.terminals.__getitem__ = MagicMock(return_value=elem)
-                s = CfgSource(pedb, name="s1", type="current",
-                               positive_terminal={"pin_group": "pg1"},
-                               negative_terminal={"pin_group": "pg2"}, magnitude=0.5)
+                s = CfgSource(
+                    pedb,
+                    name="s1",
+                    type="current",
+                    positive_terminal={"pin_group": "pg1"},
+                    negative_terminal={"pin_group": "pg2"},
+                    magnitude=0.5,
+                )
                 s.positive_terminal_info.contact_type = "full"
                 with pytest.raises(AttributeError, match="Unsupported terminal type"):
                     s.set_parameters_to_edb()
@@ -7567,7 +7852,13 @@ class TestCfgModelerRemainingLines:
         data = {
             "traces": [{"name": "t1", "layer": "top", "width": "0.1mm", "path": [[0, 0], [1, 0]]}],
             "planes": [
-                {"type": "rectangle", "layer": "top", "name": "r1", "lower_left_point": [0, 0], "upper_right_point": [1, 1]},
+                {
+                    "type": "rectangle",
+                    "layer": "top",
+                    "name": "r1",
+                    "lower_left_point": [0, 0],
+                    "upper_right_point": [1, 1],
+                },
                 {"type": "circle", "layer": "top", "name": "c1", "radius": "1mm", "position": [0, 0]},
                 {"type": "polygon", "layer": "top", "name": "p1", "points": [[0, 0], [1, 0], [1, 1]]},
             ],
@@ -7579,11 +7870,13 @@ class TestCfgModelerRemainingLines:
     def test_to_dict_with_padstack_defs_instances_components(self):
         from pyedb.configuration.cfg_modeler import CfgModeler
 
-        m = CfgModeler(data={
-            "padstack_definitions": [{"name": "via1"}],
-            "padstack_instances": [{"name": "v1", "net_name": "GND"}],
-            "components": [{"reference_designator": "R1"}],
-        })
+        m = CfgModeler(
+            data={
+                "padstack_definitions": [{"name": "via1"}],
+                "padstack_instances": [{"name": "v1", "net_name": "GND"}],
+                "components": [{"reference_designator": "R1"}],
+            }
+        )
         d = m.to_dict()
         assert "padstack_definitions" in d
         assert "padstack_instances" in d
@@ -7612,6 +7905,7 @@ class TestCfgPackageDefinitionRemainingLines:
 
     def test_set_parameters_to_edb_with_extent_bbox(self):
         from unittest.mock import patch
+
         from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 
         pedb = MagicMock()
@@ -7625,13 +7919,21 @@ class TestCfgPackageDefinitionRemainingLines:
             with patch("pyedb.configuration.cfg_package_definition.PackageDef", create=True) as MockPD:
                 # Patch the import inside set_parameters_to_edb
                 import pyedb.configuration.cfg_package_definition as pkg_mod
+
                 original_set = pkg_mod.CfgPackageDefinitions.set_parameters_to_edb
 
-                pd = CfgPackageDefinitions(pedb=pedb, data=[{
-                    "name": "pkg1", "component_definition": "IC_DEF",
-                    "extent_bounding_box": {"x": 1}, "apply_to_all": True,
-                    "heatsink": {"fin_height": "3mm"},
-                }])
+                pd = CfgPackageDefinitions(
+                    pedb=pedb,
+                    data=[
+                        {
+                            "name": "pkg1",
+                            "component_definition": "IC_DEF",
+                            "extent_bounding_box": {"x": 1},
+                            "apply_to_all": True,
+                            "heatsink": {"fin_height": "3mm"},
+                        }
+                    ],
+                )
                 # Can't easily test due to import inside method; just verify the data path
                 assert len(pd.packages) == 1
                 assert pd.packages[0].extent_bounding_box == {"x": 1}
@@ -7639,10 +7941,16 @@ class TestCfgPackageDefinitionRemainingLines:
     def test_set_parameters_to_edb_apply_to_all_false(self):
         from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 
-        pd = CfgPackageDefinitions(data=[{
-            "name": "pkg1", "component_definition": "IC_DEF",
-            "apply_to_all": False, "components": ["U1"],
-        }])
+        pd = CfgPackageDefinitions(
+            data=[
+                {
+                    "name": "pkg1",
+                    "component_definition": "IC_DEF",
+                    "apply_to_all": False,
+                    "components": ["U1"],
+                }
+            ]
+        )
         assert pd.packages[0].apply_to_all is False
         assert pd.packages[0].components == ["U1"]
 
@@ -7657,9 +7965,17 @@ class TestCfgPackageDefinitionRemainingLines:
         comp_def.components = {"U1": MagicMock()}
         pedb.definitions.component = {"IC_DEF": comp_def}
 
-        pd = CfgPackageDefinitions(pedb=pedb, data=[{
-            "name": "pkg1", "component_definition": "IC_DEF", "apply_to_all": False, "components": ["U1"],
-        }])
+        pd = CfgPackageDefinitions(
+            pedb=pedb,
+            data=[
+                {
+                    "name": "pkg1",
+                    "component_definition": "IC_DEF",
+                    "apply_to_all": False,
+                    "components": ["U1"],
+                }
+            ],
+        )
         # We can't call set_parameters_to_edb without the PackageDef import working
         # but we can verify the data is correct
         assert pd.packages[0].name == "pkg1"
@@ -7812,9 +8128,16 @@ class TestCfgPadstacksRemainingLines:
         from pyedb.configuration.cfg_padstacks import CfgPadstacks
 
         ps = CfgPadstacks()
-        d = ps.add_definition("via1", pad_shape="rectangle", pad_x_size="0.5mm", pad_y_size="0.3mm",
-                              anti_pad_shape="rectangle", anti_pad_x_size="0.8mm", anti_pad_y_size="0.6mm",
-                              pad_layers=["top"])
+        d = ps.add_definition(
+            "via1",
+            pad_shape="rectangle",
+            pad_x_size="0.5mm",
+            pad_y_size="0.3mm",
+            anti_pad_shape="rectangle",
+            anti_pad_x_size="0.8mm",
+            anti_pad_y_size="0.6mm",
+            pad_layers=["top"],
+        )
         rp = d.pad_parameters["regular_pad"][0]
         assert rp["x_size"] == "0.5mm"
         assert rp["y_size"] == "0.3mm"
@@ -8006,7 +8329,7 @@ class TestCfgSetupRemainingLines:
 
     def test_add_frequencies_to_sweep(self):
         """Line 164."""
-        from pyedb.configuration.cfg_setup import CfgSetupAC, CfgFrequencies
+        from pyedb.configuration.cfg_setup import CfgFrequencies, CfgSetupAC
 
         sweep = CfgSetupAC.CfgFrequencySweep(name="sw1")
         f = CfgFrequencies(start="1GHz", stop="10GHz", increment=100, distribution="linear_count")
@@ -8015,7 +8338,7 @@ class TestCfgSetupRemainingLines:
 
     def test_add_frequency_sweep_to_ac_base(self):
         """Line 293."""
-        from pyedb.configuration.cfg_setup import CfgSetupAC, CfgFrequencies
+        from pyedb.configuration.cfg_setup import CfgFrequencies, CfgSetupAC
 
         class ConcreteAC(CfgSetupAC):
             pass
@@ -8119,10 +8442,12 @@ class TestBuilderRemainingLines:
 
     def test_from_toml_file(self):
         """Line 265."""
-        import tempfile, os
+        import os
+        import tempfile
+
         from pyedb.configuration.builder import EdbConfigBuilder
 
-        content = '[general]\nanti_pads_always_on = true\n'
+        content = "[general]\nanti_pads_always_on = true\n"
         with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
             f.write(content)
             f.flush()
@@ -8135,7 +8460,9 @@ class TestBuilderRemainingLines:
 
     def test_to_toml_file(self):
         """Line 365."""
-        import tempfile, os
+        import os
+        import tempfile
+
         from pyedb.configuration.builder import EdbConfigBuilder
 
         builder = EdbConfigBuilder()
@@ -8160,21 +8487,44 @@ class TestCfgTerminalsRemainingLines:
     def test_create_pin_group_terminal(self):
         from pyedb.configuration.cfg_terminals import CfgTerminals
 
-        data = [{"terminal_type": "pin_group", "name": "t1", "pin_group": "pg1", "impedance": 50, "boundary_type": "port"}]
+        data = [
+            {"terminal_type": "pin_group", "name": "t1", "pin_group": "pg1", "impedance": 50, "boundary_type": "port"}
+        ]
         mgr = CfgTerminals.create(data)
         assert len(mgr.terminals) == 1
 
     def test_create_point_terminal(self):
         from pyedb.configuration.cfg_terminals import CfgTerminals
 
-        data = [{"terminal_type": "point", "name": "t1", "net": "SIG", "layer": "top", "x": 0, "y": 0, "impedance": 50, "boundary_type": "port"}]
+        data = [
+            {
+                "terminal_type": "point",
+                "name": "t1",
+                "net": "SIG",
+                "layer": "top",
+                "x": 0,
+                "y": 0,
+                "impedance": 50,
+                "boundary_type": "port",
+            }
+        ]
         mgr = CfgTerminals.create(data)
         assert len(mgr.terminals) == 1
 
     def test_create_edge_terminal(self):
         from pyedb.configuration.cfg_terminals import CfgTerminals
 
-        data = [{"terminal_type": "edge", "name": "t1", "primitive": "trace1", "point_on_edge_x": 0, "point_on_edge_y": 0, "impedance": 50, "boundary_type": "port"}]
+        data = [
+            {
+                "terminal_type": "edge",
+                "name": "t1",
+                "primitive": "trace1",
+                "point_on_edge_x": 0,
+                "point_on_edge_y": 0,
+                "impedance": 50,
+                "boundary_type": "port",
+            }
+        ]
         mgr = CfgTerminals.create(data)
         assert len(mgr.terminals) == 1
 
@@ -8192,9 +8542,10 @@ class TestCfgPackageDefSetToEdb:
     pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
 
     def test_set_parameters_to_edb_grpc(self):
-        from unittest.mock import patch
-        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
         import sys
+        from unittest.mock import patch
+
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 
         pedb = MagicMock()
         comp_def = MagicMock()
@@ -8202,10 +8553,17 @@ class TestCfgPackageDefSetToEdb:
         pedb.definitions.component = {"IC_DEF": comp_def}
         pedb.definitions.package = {}
 
-        pd = CfgPackageDefinitions(pedb=pedb, data=[{
-            "name": "pkg1", "component_definition": "IC_DEF", "apply_to_all": True,
-            "heatsink": {"fin_height": "3mm"},
-        }])
+        pd = CfgPackageDefinitions(
+            pedb=pedb,
+            data=[
+                {
+                    "name": "pkg1",
+                    "component_definition": "IC_DEF",
+                    "apply_to_all": True,
+                    "heatsink": {"fin_height": "3mm"},
+                }
+            ],
+        )
 
         mock_pkg_mod = MagicMock()
         mock_pdef = MagicMock()
@@ -8218,9 +8576,10 @@ class TestCfgPackageDefSetToEdb:
         mock_pdef.set_heatsink.assert_called_once()
 
     def test_set_parameters_to_edb_existing_delete(self):
-        from unittest.mock import patch
-        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
         import sys
+        from unittest.mock import patch
+
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 
         pedb = MagicMock()
         comp_def = MagicMock()
@@ -8229,9 +8588,17 @@ class TestCfgPackageDefSetToEdb:
         existing = MagicMock()
         pedb.definitions.package = {"pkg1": existing}
 
-        pd = CfgPackageDefinitions(pedb=pedb, data=[{
-            "name": "pkg1", "component_definition": "IC_DEF", "apply_to_all": False, "components": ["U1"],
-        }])
+        pd = CfgPackageDefinitions(
+            pedb=pedb,
+            data=[
+                {
+                    "name": "pkg1",
+                    "component_definition": "IC_DEF",
+                    "apply_to_all": False,
+                    "components": ["U1"],
+                }
+            ],
+        )
 
         mock_pkg_mod = MagicMock()
         mock_pkg_mod.PackageDef.return_value = MagicMock()
@@ -8243,9 +8610,10 @@ class TestCfgPackageDefSetToEdb:
         existing.delete.assert_called_once()
 
     def test_set_parameters_to_edb_extent_bbox(self):
-        from unittest.mock import patch
-        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
         import sys
+        from unittest.mock import patch
+
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 
         pedb = MagicMock()
         comp_def = MagicMock()
@@ -8253,10 +8621,16 @@ class TestCfgPackageDefSetToEdb:
         pedb.definitions.component = {"IC_DEF": comp_def}
         pedb.definitions.package = {}
 
-        pd = CfgPackageDefinitions(pedb=pedb, data=[{
-            "name": "pkg1", "component_definition": "IC_DEF",
-            "extent_bounding_box": {"x": 1, "y": 2},
-        }])
+        pd = CfgPackageDefinitions(
+            pedb=pedb,
+            data=[
+                {
+                    "name": "pkg1",
+                    "component_definition": "IC_DEF",
+                    "extent_bounding_box": {"x": 1, "y": 2},
+                }
+            ],
+        )
 
         mock_pkg_mod = MagicMock()
         mock_pkg_mod.PackageDef.return_value = MagicMock()
@@ -8283,9 +8657,10 @@ class TestCfgPackageDefSetToEdb:
 
     def test_dotnet_import_path(self):
         """Line 203 - dotnet import path."""
-        from unittest.mock import patch
-        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
         import sys
+        from unittest.mock import patch
+
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
 
         pedb = MagicMock()
         comp_def = MagicMock()
@@ -8293,9 +8668,15 @@ class TestCfgPackageDefSetToEdb:
         pedb.definitions.component = {"IC_DEF": comp_def}
         pedb.definitions.package = {}
 
-        pd = CfgPackageDefinitions(pedb=pedb, data=[{
-            "name": "pkg1", "component_definition": "IC_DEF",
-        }])
+        pd = CfgPackageDefinitions(
+            pedb=pedb,
+            data=[
+                {
+                    "name": "pkg1",
+                    "component_definition": "IC_DEF",
+                }
+            ],
+        )
 
         mock_pkg_mod = MagicMock()
         mock_pkg_mod.PackageDef.return_value = MagicMock()
@@ -8349,4 +8730,3 @@ class TestCfgPinGroupGetFromEdbNotFound:
         pgs = CfgPinGroups(pedb=pedb)
         with pytest.raises(ValueError, match="No pins found"):
             pgs.add(reference_designator="U1", nets=["VDD", "GND"])
-
