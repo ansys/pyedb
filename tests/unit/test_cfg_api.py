@@ -2638,12 +2638,11 @@ class TestPackageDefinitionsConfig:
 import toml as _toml_module
 
 from pyedb.configuration.cfg_nets import CfgNets
-from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 from pyedb.configuration.cfg_padstacks import CfgPadstacks
-from pyedb.configuration.cfg_stackup import CfgLayer, CfgMaterial, CfgStackup
+from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel, CfgSParameters
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
-
+from pyedb.configuration.cfg_stackup import CfgLayer, CfgMaterial, CfgStackup
 
 # ---------------------------------------------------------------------------
 # builder.py – to_toml / from_toml (lines 264-270, 364-368)
@@ -2694,6 +2693,7 @@ class TestBuilderTomlRoundTrip:
         path = tmp_path / "config.toml"
         result = cfg.to_toml(str(path))
         from pathlib import Path
+
         assert isinstance(result, Path)
 
 
@@ -2725,6 +2725,7 @@ class TestBuilderWithPedb:
 class TestCfgBoundariesExtra:
     def test_set_extent(self):
         from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
         b = CfgBoundaries.create()
         b.set_extent(extent_type="ConvexHull", truncate_air_box_at_ground=True)
         assert b.extent_type == "ConvexHull"
@@ -2732,12 +2733,14 @@ class TestCfgBoundariesExtra:
 
     def test_set_extent_with_base_polygon(self):
         from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
         b = CfgBoundaries.create()
         b.set_extent(base_polygon="poly1")
         assert b.base_polygon == "poly1"
 
     def test_set_dielectric_extent(self):
         from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
         b = CfgBoundaries.create()
         b.set_dielectric_extent(extent_type="BoundingBox", expansion_size=0.01, is_multiple=False)
         assert b.dielectric_extent_type == "BoundingBox"
@@ -2745,6 +2748,7 @@ class TestCfgBoundariesExtra:
 
     def test_set_dielectric_extent_with_base_polygon(self):
         from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
         b = CfgBoundaries.create()
         b.set_dielectric_extent(base_polygon="dpoly", honor_user_dielectric=True)
         assert b.dielectric_base_polygon == "dpoly"
@@ -2752,6 +2756,7 @@ class TestCfgBoundariesExtra:
 
     def test_set_dielectric_extent_honor_false_not_set(self):
         from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
         b = CfgBoundaries.create()
         b.set_dielectric_extent()
         # honor_user_dielectric defaults False – should remain unset
@@ -2923,7 +2928,7 @@ class TestCfgPinGroupsMissingBranches:
         return pedb
 
     def test_set_pin_groups_to_edb(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups, CfgPinGroup
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup, CfgPinGroups
 
         pg = CfgPinGroup(None, name="pg1", reference_designator="U1", pins=["A1", "A2"])
         pgs = CfgPinGroups(None)
@@ -2933,7 +2938,7 @@ class TestCfgPinGroupsMissingBranches:
         assert result is not None
 
     def test_set_pin_groups_calls_create(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups, CfgPinGroup
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup, CfgPinGroups
 
         pedb = MagicMock()
         pedb.siwave.create_pin_group.return_value = True
@@ -2960,7 +2965,7 @@ class TestCfgPinGroupsMissingBranches:
         assert result == []
 
     def test_get_existing_pin_group(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups, CfgPinGroup
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup, CfgPinGroups
 
         pgs = CfgPinGroups(None)
         pg = CfgPinGroup(None, name="pg1", reference_designator="U1", pins=["A1"])
@@ -2977,8 +2982,9 @@ class TestCfgPinGroupsMissingBranches:
         assert result.name == "pg_VDD"
 
     def test_get_pin_group_not_found_raises(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
         import pytest
+
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 
         pedb = self._make_pedb()
         pgs = CfgPinGroups(pedb)
@@ -3025,8 +3031,9 @@ class TestCfgPinGroupsMissingBranches:
         assert result is None
 
     def test_add_single_net_no_pins_raises(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
         import pytest
+
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 
         pedb = MagicMock()
         comp = MagicMock()
@@ -3038,8 +3045,9 @@ class TestCfgPinGroupsMissingBranches:
             pgs.add(name="pg1", reference_designator="U1", nets="VDD")
 
     def test_add_component_not_found_raises(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
         import pytest
+
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 
         pedb = MagicMock()
         pedb.components.instances = {}
@@ -3063,8 +3071,9 @@ class TestCfgPinGroupsMissingBranches:
         pedb.siwave.create_pin_group.assert_called_once()
 
     def test_create_no_pins_no_net_raises(self):
-        from pyedb.configuration.cfg_pin_groups import CfgPinGroup
         import pytest
+
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup
 
         pedb = MagicMock()
         pg = CfgPinGroup(pedb, name="pg1", reference_designator="U1")
@@ -3094,8 +3103,10 @@ class TestCfgPackageDefinitionsSetToEdb:
         return pedb, comp_def
 
     def test_set_parameters_apply_to_all(self):
-        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
         from unittest.mock import patch
+
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
         pedb, comp_def = self._make_pedb()
         pkg_defs = CfgPackageDefinitions(pedb)
         pkg_defs.add(
@@ -3104,8 +3115,10 @@ class TestCfgPackageDefinitionsSetToEdb:
             apply_to_all=True,
             maximum_power="5W",
         )
-        with patch("pyedb.configuration.cfg_package_definition.settings") as mock_settings, \
-             patch("pyedb.grpc.database.definition.package_def.PackageDef") as MockPkgDef:
+        with (
+            patch("pyedb.configuration.cfg_package_definition.settings") as mock_settings,
+            patch("pyedb.grpc.database.definition.package_def.PackageDef") as MockPkgDef,
+        ):
             mock_settings.is_grpc = True
             mock_pkg_def_instance = MagicMock()
             MockPkgDef.return_value = mock_pkg_def_instance
@@ -3117,6 +3130,7 @@ class TestCfgPackageDefinitionsSetToEdb:
 
     def test_apply_calls_set_parameters(self):
         from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
         pedb = MagicMock()
         pkg_defs = CfgPackageDefinitions(pedb)
         pkg_defs.set_parameters_to_edb = MagicMock()
@@ -3163,8 +3177,9 @@ class TestCfgPadstacksMissingBranches:
         assert result.name == "VIA_DEF"
 
     def test_get_definition_not_found_no_pedb_raises(self):
-        from pyedb.configuration.cfg_padstacks import CfgPadstacks
         import pytest
+
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
 
         ps = CfgPadstacks()
         with pytest.raises(KeyError):
@@ -3197,8 +3212,9 @@ class TestCfgPadstacksMissingBranches:
         assert result.name == "via_A1"
 
     def test_get_instance_not_found_no_pedb_raises(self):
-        from pyedb.configuration.cfg_padstacks import CfgPadstacks
         import pytest
+
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
 
         ps = CfgPadstacks()
         with pytest.raises(KeyError):
@@ -3236,9 +3252,9 @@ class TestCfgPadstacksMissingBranches:
         from pyedb.configuration.cfg_padstacks import CfgPadstacks
 
         ps = CfgPadstacks()
-        defn = ps.add_definition(name="VIA_RECT", pad_shape="rectangle",
-                                 pad_x_size="0.5mm", pad_y_size="0.3mm",
-                                 pad_layers=["top"])
+        defn = ps.add_definition(
+            name="VIA_RECT", pad_shape="rectangle", pad_x_size="0.5mm", pad_y_size="0.3mm", pad_layers=["top"]
+        )
         assert defn.pad_parameters is not None
 
     def test_add_definition_registers_in_list(self):
@@ -3299,6 +3315,7 @@ class TestCfgPackageDefinitionGetFromEdb:
 
     def test_get_parameters_from_edb(self):
         from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
         pedb, pkg = self._make_pedb()
         pkg_defs = CfgPackageDefinitions(pedb)
         result = pkg_defs.get_parameters_from_edb()
@@ -3306,6 +3323,7 @@ class TestCfgPackageDefinitionGetFromEdb:
 
     def test_apply_delegates_to_set_parameters(self):
         from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
         pedb = MagicMock()
         pedb.definitions.package = {}
         pkg_defs = CfgPackageDefinitions(pedb)
@@ -3337,6 +3355,7 @@ class TestCfgSParametersWithPedb:
 
     def test_apply_with_pedb_apply_to_all(self):
         from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         sp = CfgSParameters(pedb=pedb)
         sp.add("cap_m", "CAP_100nF", "/abs/cap.s2p")
@@ -3344,8 +3363,10 @@ class TestCfgSParametersWithPedb:
         comp_def.add_n_port_model.assert_called_once_with("/abs/cap.s2p", "cap_m")
 
     def test_apply_with_relative_path_uses_lib(self):
-        from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
         from pathlib import Path
+
+        from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         sp = CfgSParameters(pedb=pedb, path_lib="/lib")
         sp.add("cap_m", "CAP_100nF", "cap.s2p", reference_net="GND")
@@ -3355,6 +3376,7 @@ class TestCfgSParametersWithPedb:
 
     def test_apply_with_pin_order(self):
         from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         sp = CfgSParameters(pedb=pedb)
         sp.add("cap_m", "CAP_100nF", "/abs/cap.s2p", pin_order=["1", "2"])
@@ -3363,29 +3385,36 @@ class TestCfgSParametersWithPedb:
 
     def test_apply_with_reference_net_per_component(self):
         from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         sp = CfgSParameters(pedb=pedb)
-        sp.add("cap_m", "CAP_100nF", "/abs/cap.s2p",
-               reference_net="GND", reference_net_per_component={"C1": "AGND"})
+        sp.add("cap_m", "CAP_100nF", "/abs/cap.s2p", reference_net="GND", reference_net_per_component={"C1": "AGND"})
         sp.apply()
         for comp in comp_def.components.values():
             comp.use_s_parameter_model.assert_called()
 
     def test_get_data_from_db_with_models(self):
         from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         model_obj = MagicMock()
         model_obj.reference_file = "/path/cap.s2p"
         comp_def.component_models = {"cap_model": model_obj}
         comp_def.get_properties.return_value = {"pin_order": None}
         sp = CfgSParameters(pedb=pedb)
-        components = [{"definition": "CAP_100nF", "reference_designator": "C1",
-                       "s_parameter_model": {"model_name": "cap_model", "reference_net": "GND"}}]
+        components = [
+            {
+                "definition": "CAP_100nF",
+                "reference_designator": "C1",
+                "s_parameter_model": {"model_name": "cap_model", "reference_net": "GND"},
+            }
+        ]
         result = sp.get_data_from_db(cfg_components=components)
         assert len(result) > 0
 
     def test_get_data_from_db_no_models(self):
         from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
         pedb, comp_def = self._make_pedb()
         comp_def.component_models = {}
         sp = CfgSParameters(pedb=pedb)
@@ -3410,61 +3439,75 @@ class TestCfgSpiceModelApplyWithPedb2:
 
     def test_apply_apply_to_all(self):
         from pyedb.configuration.cfg_spice_models import CfgSpiceModel
+
         pedb, comp_def, comp1, comp2 = self._make_pedb()
         pdata = MagicMock()
         pdata._pedb = pedb
-        m = CfgSpiceModel(pdata, "/lib",
-                          spice_dict={"name": "ic_spice",
-                                      "component_definition": "IC_DEF",
-                                      "file_path": "/abs/ic.sp",
-                                      "apply_to_all": True,
-                                      "components": []})
+        m = CfgSpiceModel(
+            pdata,
+            "/lib",
+            spice_dict={
+                "name": "ic_spice",
+                "component_definition": "IC_DEF",
+                "file_path": "/abs/ic.sp",
+                "apply_to_all": True,
+                "components": [],
+            },
+        )
         m.apply()
         comp1.assign_spice_model.assert_called_once()
         comp2.assign_spice_model.assert_called_once()
 
     def test_apply_apply_to_subset(self):
         from pyedb.configuration.cfg_spice_models import CfgSpiceModel
+
         pedb, comp_def, comp1, comp2 = self._make_pedb()
         pdata = MagicMock()
         pdata._pedb = pedb
-        m = CfgSpiceModel(pdata, "/lib",
-                          spice_dict={"name": "ic_spice",
-                                      "component_definition": "IC_DEF",
-                                      "file_path": "/abs/ic.sp",
-                                      "apply_to_all": False,
-                                      "components": ["U1"]})
+        m = CfgSpiceModel(
+            pdata,
+            "/lib",
+            spice_dict={
+                "name": "ic_spice",
+                "component_definition": "IC_DEF",
+                "file_path": "/abs/ic.sp",
+                "apply_to_all": False,
+                "components": ["U1"],
+            },
+        )
         m.apply()
         comp1.assign_spice_model.assert_called_once()
         comp2.assign_spice_model.assert_not_called()
 
     def test_apply_relative_path(self):
         from pathlib import Path
+
         from pyedb.configuration.cfg_spice_models import CfgSpiceModel
+
         pedb, comp_def, comp1, comp2 = self._make_pedb()
         pdata = MagicMock()
         pdata._pedb = pedb
-        m = CfgSpiceModel(pdata, "/lib",
-                          spice_dict={"name": "ic",
-                                      "component_definition": "IC_DEF",
-                                      "file_path": "ic.sp",
-                                      "apply_to_all": True})
+        m = CfgSpiceModel(
+            pdata,
+            "/lib",
+            spice_dict={"name": "ic", "component_definition": "IC_DEF", "file_path": "ic.sp", "apply_to_all": True},
+        )
         m.apply()
         expected_path = str(Path("/lib") / "ic.sp")
-        comp1.assign_spice_model.assert_called_once_with(
-            expected_path, "ic", "", None
-        )
+        comp1.assign_spice_model.assert_called_once_with(expected_path, "ic", "", None)
 
     def test_components_none_becomes_empty_list(self):
         from pyedb.configuration.cfg_spice_models import CfgSpiceModel
-        m = CfgSpiceModel(spice_dict={"name": "x", "component_definition": "D",
-                                      "file_path": "f.sp", "components": None})
+
+        m = CfgSpiceModel(
+            spice_dict={"name": "x", "component_definition": "D", "file_path": "f.sp", "components": None}
+        )
         assert m.components == []
 
     def test_components_non_iterable_is_wrapped(self):
         from pyedb.configuration.cfg_spice_models import CfgSpiceModel
-        m = CfgSpiceModel(spice_dict={"name": "x", "component_definition": "D",
-                                      "file_path": "f.sp", "components": 7})
+
+        m = CfgSpiceModel(spice_dict={"name": "x", "component_definition": "D", "file_path": "f.sp", "components": 7})
         assert m.components == [7]
 
 
@@ -3476,6 +3519,7 @@ class TestCfgSpiceModelApplyWithPedb2:
 class TestCfgStackupGetters:
     def test_get_signal_layers(self):
         from pyedb.configuration.cfg_stackup import CfgStackup
+
         pedb = MagicMock()
         pedb.stackup.signal_layers = {"top": MagicMock(), "bot": MagicMock()}
         st = CfgStackup()
@@ -3488,6 +3532,7 @@ class TestCfgStackupGetters:
 
     def test_get_layer_by_name(self):
         from pyedb.configuration.cfg_stackup import CfgStackup
+
         st = CfgStackup()
         st.add_signal_layer("top")
         layer = st.get_layer("top")
@@ -3496,6 +3541,7 @@ class TestCfgStackupGetters:
 
     def test_get_layer_missing_returns_none(self):
         from pyedb.configuration.cfg_stackup import CfgStackup
+
         st = CfgStackup()
         # get_layer without pedb raises KeyError - just test with existing layer
         st.add_signal_layer("top")
@@ -3508,14 +3554,17 @@ class TestCfgStackupGetters:
 
     def test_get_material_by_name(self):
         from pyedb.configuration.cfg_stackup import CfgStackup
+
         st = CfgStackup()
         st.add_material("copper", conductivity=5.8e7)
         mat = st.get_material("copper")
         assert mat is not None
 
     def test_get_material_missing_returns_none(self):
-        from pyedb.configuration.cfg_stackup import CfgStackup
         import pytest
+
+        from pyedb.configuration.cfg_stackup import CfgStackup
+
         pedb = MagicMock()
         pedb.materials.materials = {}
         st = CfgStackup()
@@ -3549,6 +3598,7 @@ class TestCfgDataInitExtra:
 
     def test_init_with_minimal_kwargs(self):
         from pyedb.configuration.cfg_data import CfgData
+
         pedb = self._make_pedb()
         data = CfgData(pedb)
         assert data._pedb is pedb
@@ -3557,12 +3607,14 @@ class TestCfgDataInitExtra:
 
     def test_init_with_general_section(self):
         from pyedb.configuration.cfg_data import CfgData
+
         pedb = self._make_pedb()
         data = CfgData(pedb, general={"spice_model_library": "/lib"})
         assert data.general.spice_model_library == "/lib"
 
     def test_init_with_nets_section(self):
         from pyedb.configuration.cfg_data import CfgData
+
         pedb = self._make_pedb()
         data = CfgData(pedb, nets={"signal_nets": ["NET1"], "power_ground_nets": ["GND"]})
         assert "NET1" in data.nets.signal_nets
@@ -3570,6 +3622,7 @@ class TestCfgDataInitExtra:
 
     def test_init_all_sections(self):
         from pyedb.configuration.cfg_data import CfgData
+
         pedb = self._make_pedb()
         data = CfgData(
             pedb,
@@ -3594,8 +3647,10 @@ class TestCfgDataInitExtra:
         assert data.probes is not None
 
     def test_init_unknown_section_warns(self):
-        from pyedb.configuration.cfg_data import CfgData
         import warnings
+
+        from pyedb.configuration.cfg_data import CfgData
+
         pedb = self._make_pedb()
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
@@ -3611,6 +3666,7 @@ class TestCfgDataInitExtra:
 class TestCfgGeneralEdbBranches:
     def test_set_parameters_applies_anti_pads(self):
         from pyedb.configuration.cfg_general import CfgGeneral
+
         pedb = MagicMock()
         g = CfgGeneral(pedb, {"anti_pads_always_on": True, "suppress_pads": False})
         g.set_parameters_to_edb()
@@ -3619,6 +3675,7 @@ class TestCfgGeneralEdbBranches:
 
     def test_set_parameters_skips_none(self):
         from pyedb.configuration.cfg_general import CfgGeneral
+
         pedb = MagicMock()
         g = CfgGeneral(pedb, {})
         initial = pedb.design_options.anti_pads_always_on
@@ -3627,6 +3684,7 @@ class TestCfgGeneralEdbBranches:
 
     def test_get_parameters_with_pedb(self):
         from pyedb.configuration.cfg_general import CfgGeneral
+
         pedb = MagicMock()
         pedb.design_options.anti_pads_always_on = True
         pedb.design_options.suppress_pads = False
@@ -3636,6 +3694,7 @@ class TestCfgGeneralEdbBranches:
 
     def test_apply_calls_set_parameters(self):
         from pyedb.configuration.cfg_general import CfgGeneral
+
         pedb = MagicMock()
         g = CfgGeneral(pedb, {"anti_pads_always_on": True})
         g.apply()
@@ -3643,6 +3702,7 @@ class TestCfgGeneralEdbBranches:
 
     def test_get_data_from_db(self):
         from pyedb.configuration.cfg_general import CfgGeneral
+
         pedb = MagicMock()
         pedb.design_options.anti_pads_always_on = False
         pedb.design_options.suppress_pads = True
@@ -3658,7 +3718,7 @@ class TestCfgGeneralEdbBranches:
 
 class TestCfgCommonExtraBranches:
     def test_serialize_item_uses_model_dump(self):
-        from pyedb.configuration.cfg_common import serialize_item, CfgBaseModel
+        from pyedb.configuration.cfg_common import CfgBaseModel, serialize_item
 
         class M(CfgBaseModel):
             x: int = 5
@@ -3669,6 +3729,7 @@ class TestCfgCommonExtraBranches:
 
     def test_serialize_item_returns_raw_when_no_method(self):
         from pyedb.configuration.cfg_common import serialize_item
+
         result = serialize_item(99)
         assert result == 99
 
@@ -3686,8 +3747,9 @@ class TestCfgCommonExtraBranches:
         assert "b" in result
 
     def test_set_attributes_raises_on_bad_attr(self):
-        from pyedb.configuration.cfg_common import CfgBase
         import pytest
+
+        from pyedb.configuration.cfg_common import CfgBase
 
         class Obj(CfgBase):
             pass
@@ -3734,6 +3796,7 @@ class TestCfgNetsRemainingBranches:
 
     def test_add_power_ground_nets_with_cfgnet(self):
         from pyedb.configuration.cfg_nets import CfgNets
+
         pedb = self._make_pedb()
         nets = CfgNets(pedb)
         net = CfgNets.CfgNet(pedb, "GND")
@@ -3742,6 +3805,7 @@ class TestCfgNetsRemainingBranches:
 
     def test_add_signal_nets_removes_from_power(self):
         from pyedb.configuration.cfg_nets import CfgNets
+
         nets = CfgNets(None, power_nets=["GND"])
         nets.add_signal_nets(["GND"])
         assert "GND" not in nets.power_nets
@@ -3749,20 +3813,24 @@ class TestCfgNetsRemainingBranches:
 
     def test_add_reference_nets_removes_from_signal(self):
         from pyedb.configuration.cfg_nets import CfgNets
+
         nets = CfgNets(None, signal_nets=["GND"])
         nets.add_reference_nets(["GND"])
         assert "GND" not in nets.signal_nets
         assert "GND" in nets.reference_nets
 
     def test_get_with_no_pedb_raises(self):
-        from pyedb.configuration.cfg_nets import CfgNets
         import pytest
+
+        from pyedb.configuration.cfg_nets import CfgNets
+
         nets = CfgNets(None)
         with pytest.raises(KeyError):
             nets.get("NET1")
 
     def test_apply_calls_set_parameters(self):
         from pyedb.configuration.cfg_nets import CfgNets
+
         nets = CfgNets(None)
         nets.set_parameters_to_edb = MagicMock()
         nets.apply()
@@ -3770,6 +3838,7 @@ class TestCfgNetsRemainingBranches:
 
     def test_get_data_from_db_calls_get_params(self):
         from pyedb.configuration.cfg_nets import CfgNets
+
         nets = CfgNets(None)
         nets.get_parameters_from_edb = MagicMock()
         nets.get_data_from_db()
@@ -3900,7 +3969,7 @@ class TestCfgStackupEdbBranches:
             stackup.get_material("copper")
 
     def test_add_material_with_cfgmaterial_config(self):
-        from pyedb.configuration.cfg_stackup import CfgStackup, CfgMaterial
+        from pyedb.configuration.cfg_stackup import CfgMaterial, CfgStackup
 
         stackup = CfgStackup()
         cfg_mat = CfgMaterial(name="fr4", permittivity=4.4)
@@ -3916,7 +3985,7 @@ class TestCfgStackupEdbBranches:
         assert mat.name == "fr4"
 
     def test_add_material_config_name_override(self):
-        from pyedb.configuration.cfg_stackup import CfgStackup, CfgMaterial
+        from pyedb.configuration.cfg_stackup import CfgMaterial, CfgStackup
 
         stackup = CfgStackup()
         cfg_mat = CfgMaterial(name="old_name", permittivity=4.4)
@@ -3924,7 +3993,7 @@ class TestCfgStackupEdbBranches:
         assert mat.name == "new_name"
 
     def test_add_layer_at_bottom_with_cfglayer_config(self):
-        from pyedb.configuration.cfg_stackup import CfgStackup, CfgLayer
+        from pyedb.configuration.cfg_stackup import CfgLayer, CfgStackup
 
         stackup = CfgStackup()
         cfg_layer = CfgLayer(name="top", layer_type="signal", thickness="35um")
@@ -3940,7 +4009,7 @@ class TestCfgStackupEdbBranches:
         assert layer.name == "top"
 
     def test_add_layer_at_bottom_config_name_override(self):
-        from pyedb.configuration.cfg_stackup import CfgStackup, CfgLayer
+        from pyedb.configuration.cfg_stackup import CfgLayer, CfgStackup
 
         stackup = CfgStackup()
         cfg_layer = CfgLayer(name="old", layer_type="signal")
@@ -4055,5 +4124,3 @@ class TestCfgPackageDefinitionMissingBranches:
         result = pd.to_list()
         assert isinstance(result, list)
         assert result[0]["name"] == "PKG_U1"
-
-

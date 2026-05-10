@@ -29,8 +29,6 @@ from pyedb.configuration.cfg_common import CfgBaseModel as CfgBase
 from pyedb.misc.decorators import deprecated
 
 
-
-
 class CfgBackdrillParameters(CfgBase):
     """Store optional backdrill definitions for a padstack instance."""
 

@@ -99,7 +99,6 @@ class CfgNets:
         self.power_nets = list(self._pedb.nets.power)
         return {"signal_nets": self.signal_nets, "power_ground_nets": self.power_nets}
 
-
     def __init__(self, pedb=None, signal_nets=None, power_nets=None, reference_nets=None):
         """Initialize the nets configuration."""
         self._pedb = pedb
