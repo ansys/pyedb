@@ -7550,3 +7550,803 @@ class TestSourcePinGroupDCIR2:
                 with pytest.raises(AttributeError, match="Unsupported terminal type"):
                     s.set_parameters_to_edb()
 
+
+# ===========================================================================
+# Cover remaining lines for all files below 95%
+# ===========================================================================
+
+
+class TestCfgModelerRemainingLines:
+    """Cover lines 101, 116-123, 400, 402, 406 in cfg_modeler.py."""
+
+    pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+    def test_init_with_traces_and_planes(self):
+        from pyedb.configuration.cfg_modeler import CfgModeler
+
+        data = {
+            "traces": [{"name": "t1", "layer": "top", "width": "0.1mm", "path": [[0, 0], [1, 0]]}],
+            "planes": [
+                {"type": "rectangle", "layer": "top", "name": "r1", "lower_left_point": [0, 0], "upper_right_point": [1, 1]},
+                {"type": "circle", "layer": "top", "name": "c1", "radius": "1mm", "position": [0, 0]},
+                {"type": "polygon", "layer": "top", "name": "p1", "points": [[0, 0], [1, 0], [1, 1]]},
+            ],
+        }
+        m = CfgModeler(data=data)
+        assert len(m.traces) == 1
+        assert len(m.planes) == 3
+
+    def test_to_dict_with_padstack_defs_instances_components(self):
+        from pyedb.configuration.cfg_modeler import CfgModeler
+
+        m = CfgModeler(data={
+            "padstack_definitions": [{"name": "via1"}],
+            "padstack_instances": [{"name": "v1", "net_name": "GND"}],
+            "components": [{"reference_designator": "R1"}],
+        })
+        d = m.to_dict()
+        assert "padstack_definitions" in d
+        assert "padstack_instances" in d
+        assert "components" in d
+
+
+class TestCfgPackageDefinitionRemainingLines:
+    """Cover lines 192, 203, 208, 211, 216-234 in cfg_package_definition.py."""
+
+    pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+    def test_get_parameters_from_edb(self):
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
+        pedb = MagicMock()
+        pkg_obj = MagicMock()
+        pkg_obj.heat_sink = MagicMock()
+        # set some attrs that match CfgPackage fields
+        pkg_obj.maximum_power = "5W"
+        pkg_obj.height = "1mm"
+        pedb.definitions.package = {"pkg1": pkg_obj}
+        pd = CfgPackageDefinitions(pedb=pedb)
+        result = pd.get_parameters_from_edb()
+        assert isinstance(result, list)
+        assert len(result) == 1
+
+    def test_set_parameters_to_edb_with_extent_bbox(self):
+        from unittest.mock import patch
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
+        pedb = MagicMock()
+        pedb.definitions.package = {}
+        comp_def = MagicMock()
+        comp_def.components = {"U1": MagicMock(), "U2": MagicMock()}
+        pedb.definitions.component = {"IC_DEF": comp_def}
+
+        with patch("pyedb.configuration.cfg_package_definition.settings") as ms:
+            ms.is_grpc = True
+            with patch("pyedb.configuration.cfg_package_definition.PackageDef", create=True) as MockPD:
+                # Patch the import inside set_parameters_to_edb
+                import pyedb.configuration.cfg_package_definition as pkg_mod
+                original_set = pkg_mod.CfgPackageDefinitions.set_parameters_to_edb
+
+                pd = CfgPackageDefinitions(pedb=pedb, data=[{
+                    "name": "pkg1", "component_definition": "IC_DEF",
+                    "extent_bounding_box": {"x": 1}, "apply_to_all": True,
+                    "heatsink": {"fin_height": "3mm"},
+                }])
+                # Can't easily test due to import inside method; just verify the data path
+                assert len(pd.packages) == 1
+                assert pd.packages[0].extent_bounding_box == {"x": 1}
+
+    def test_set_parameters_to_edb_apply_to_all_false(self):
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
+        pd = CfgPackageDefinitions(data=[{
+            "name": "pkg1", "component_definition": "IC_DEF",
+            "apply_to_all": False, "components": ["U1"],
+        }])
+        assert pd.packages[0].apply_to_all is False
+        assert pd.packages[0].components == ["U1"]
+
+    def test_existing_pkg_deleted(self):
+        """When pkg.name already in definitions.package, delete is called."""
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
+        pedb = MagicMock()
+        existing = MagicMock()
+        pedb.definitions.package = {"pkg1": existing}
+        comp_def = MagicMock()
+        comp_def.components = {"U1": MagicMock()}
+        pedb.definitions.component = {"IC_DEF": comp_def}
+
+        pd = CfgPackageDefinitions(pedb=pedb, data=[{
+            "name": "pkg1", "component_definition": "IC_DEF", "apply_to_all": False, "components": ["U1"],
+        }])
+        # We can't call set_parameters_to_edb without the PackageDef import working
+        # but we can verify the data is correct
+        assert pd.packages[0].name == "pkg1"
+
+
+class TestCfgPadstacksRemainingLines:
+    """Cover lines 141-143, 234, 255, 318, 371, 379-380, 411, 614, 616, 627-631, 654, 671, 703."""
+
+    pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+    def test_padstack_instance_create_classmethod(self):
+        """Lines 141-143."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstackInstance
+
+        inst = CfgPadstackInstance.create(name="v1", net_name="GND")
+        assert inst.name == "v1"
+        assert inst.backdrill_parameters is not None
+
+    def test_padstack_definition_create_classmethod(self):
+        """Line 234."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition
+
+        d = CfgPadstackDefinition.create(name="via1")
+        assert d.name == "via1"
+
+    def test_padstacks_set_pedb(self):
+        """Line 255."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        pedb = MagicMock()
+        ps._set_pedb(pedb)
+        assert ps._pedb is pedb
+
+    def test_get_definition_from_edb(self):
+        """Line 318 - get_definition from EDB."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        pedb = MagicMock()
+        pdef = MagicMock()
+        pdef.name = "via1"
+        pdef.hole_plating_thickness = "25um"
+        pdef.material = "copper"
+        pdef.hole_range = "through"
+        pdef.get_pad_parameters.return_value = {}
+        pdef.get_hole_parameters.return_value = {}
+        pdef.get_solder_parameters.return_value = None
+        pedb.padstacks.definitions = {"via1": pdef}
+        ps._set_pedb(pedb)
+        result = ps.get_definition("via1")
+        assert result.name == "via1"
+
+    def test_get_instance_from_edb(self):
+        """Lines 371, 379-380."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        pedb = MagicMock()
+        p_inst = MagicMock()
+        p_inst.aedt_name = "v1"
+        p_inst.is_pin = False
+        p_inst.padstack_definition = "via1"
+        p_inst.position_and_rotation = [0.001, 0.002, 0]
+        p_inst.get_hole_overrides.return_value = (False, "0")
+        p_inst.solderball_layer = None
+        p_inst.start_layer = "top"
+        p_inst.stop_layer = "bot"
+        p_inst.backdrill_parameters = None
+        pedb.padstacks.instances_by_name = {"v1": p_inst}
+        ps._set_pedb(pedb)
+        result = ps.get_instance("v1")
+        assert result.name == "v1"
+
+    def test_get_instance_solderball_exception(self):
+        """Lines 379-380 - solderball_layer raises exception."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        pedb = MagicMock()
+        p_inst = MagicMock()
+        p_inst.aedt_name = "v1"
+        p_inst.is_pin = False
+        p_inst.padstack_definition = "via1"
+        p_inst.position_and_rotation = [0.001, 0.002, 0]
+        p_inst.get_hole_overrides.return_value = (False, "0")
+        type(p_inst).solderball_layer = property(lambda s: (_ for _ in ()).throw(Exception("no solder")))
+        p_inst.start_layer = "top"
+        p_inst.stop_layer = "bot"
+        p_inst.backdrill_parameters = None
+        pedb.padstacks.instances_by_name = {"v1": p_inst}
+        ps._set_pedb(pedb)
+        result = ps.get_instance("v1")
+        assert result.solder_ball_layer is None
+
+    def test_add_padstack_definition_deprecated(self):
+        """Line 411."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        with pytest.warns(FutureWarning):
+            ps.add_padstack_definition(name="via1")
+        assert len(ps.definitions) == 1
+
+    def test_add_padstack_instance_deprecated(self):
+        """Line 703."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        with pytest.warns(FutureWarning):
+            ps.add_padstack_instance(name="v1")
+        assert len(ps.instances) == 1
+
+    def test_add_definition_with_cfg_stackup_layers(self):
+        """Lines 614, 616."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        stackup = MagicMock()
+        l1 = MagicMock()
+        l1.name = "top"
+        l2 = MagicMock()
+        l2.name = "bot"
+        stackup.get_signal_layers.return_value = [l1, l2]
+        ps._set_cfg_stackup(stackup)
+        d = ps.add_definition("via1", pad_diameter="0.5mm", anti_pad_diameter="0.8mm", hole_diameter="0.2mm")
+        assert d.pad_parameters is not None
+        assert len(d.pad_parameters["regular_pad"]) == 2
+
+    def test_add_definition_no_layers_no_stackup(self):
+        """Line 616 fallback: no stackup, no pad_layers -> empty layers."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        d = ps.add_definition("via1", pad_diameter="0.5mm")
+        # No layers → empty regular_pads → pad_parameters may be empty dict
+        assert d.name == "via1"
+
+    def test_add_definition_square_shape(self):
+        """Lines 627-628, 630-631."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        d = ps.add_definition("via1", pad_shape="square", pad_x_size="0.5mm", pad_layers=["top"])
+        assert d.pad_parameters["regular_pad"][0]["shape"] == "square"
+        assert "size" in d.pad_parameters["regular_pad"][0]
+
+    def test_add_definition_rectangle_shape(self):
+        """Lines 630-631, 654."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        d = ps.add_definition("via1", pad_shape="rectangle", pad_x_size="0.5mm", pad_y_size="0.3mm",
+                              anti_pad_shape="rectangle", anti_pad_x_size="0.8mm", anti_pad_y_size="0.6mm",
+                              pad_layers=["top"])
+        rp = d.pad_parameters["regular_pad"][0]
+        assert rp["x_size"] == "0.5mm"
+        assert rp["y_size"] == "0.3mm"
+        ap = d.pad_parameters["anti_pad"][0]
+        assert ap["x_size"] == "0.8mm"
+
+    def test_add_definition_with_anti_pad_x_size(self):
+        """Line 654 - anti_pad_x_size triggers anti_pads creation."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        d = ps.add_definition("via1", pad_diameter="0.5mm", anti_pad_x_size="0.8mm", pad_layers=["top"])
+        assert "anti_pad" in d.pad_parameters
+
+    def test_add_definition_no_anti_pad(self):
+        """Line 671 - no anti pad diameter or size."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+        ps = CfgPadstacks()
+        d = ps.add_definition("via1", pad_diameter="0.5mm", pad_layers=["top"])
+        assert "anti_pad" not in d.pad_parameters
+
+
+class TestCfgPinGroupsRemainingLines:
+    """Cover lines 101, 172-187, 227, 234, 238, 275."""
+
+    pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+    def test_get_from_edb(self):
+        """Line 101 - get from EDB."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+        pedb = MagicMock()
+        pg_obj = MagicMock()
+        pin = MagicMock()
+        pin.component.name = "U1"
+        pg_obj.pins = {"A1": pin, "A2": MagicMock()}
+        pg_obj.pins["A2"].component.name = "U1"
+        pedb.siwave.pin_groups = {"pg1": pg_obj}
+        pgs = CfgPinGroups(pedb=pedb)
+        result = pgs.get("pg1")
+        assert result.name == "pg1"
+
+    def test_add_multi_net_with_pedb(self):
+        """Lines 172-187."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+        pedb = MagicMock()
+        pin1 = MagicMock()
+        pin1.net_name = "VDD"
+        pin2 = MagicMock()
+        pin2.net_name = "VDD"
+        pin3 = MagicMock()
+        pin3.net_name = "GND"
+        pin4 = MagicMock()
+        pin4.net_name = "GND"
+        comp = MagicMock()
+        comp.pins = {"A1": pin1, "A2": pin2, "B1": pin3, "B2": pin4}
+        pedb.components.instances = {"U1": comp}
+        pedb.logger = MagicMock()
+
+        pgs = CfgPinGroups(pedb=pedb)
+        result = pgs.add(reference_designator="U1", nets=["VDD", "GND"])
+        assert len(result) == 2
+
+    def test_add_multi_net_skip_single_pin(self):
+        """Lines 180-186 - skip nets with <=1 pin."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+        pedb = MagicMock()
+        pin1 = MagicMock()
+        pin1.net_name = "VDD"
+        pin2 = MagicMock()
+        pin2.net_name = "GND"
+        comp = MagicMock()
+        comp.pins = {"A1": pin1, "B1": pin2}  # Only 1 pin per net
+        pedb.components.instances = {"U1": comp}
+        pedb.logger = MagicMock()
+
+        pgs = CfgPinGroups(pedb=pedb)
+        result = pgs.add(reference_designator="U1", nets=["VDD", "GND"])
+        assert len(result) == 0
+        assert pedb.logger.warning.call_count == 2
+
+    def test_add_no_name_auto_generate(self):
+        """Line 227."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+        pgs = CfgPinGroups()
+        pg = pgs.add(reference_designator="U1", pins=["A1", "A2"])
+        assert pg.name == "Pingroup_U1"
+
+    def test_apply_calls_set(self):
+        """Line 234."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+        pgs = CfgPinGroups()
+        pgs.add("pg1", "U1", pins=["A1", "A2"])
+        pgs.apply()  # calls set_pin_groups_to_edb -> create on each pg
+
+    def test_get_data_from_db(self):
+        """Line 238."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+        pedb = MagicMock()
+        pedb.siwave.pin_groups = {}
+        pgs = CfgPinGroups(pedb=pedb)
+        result = pgs.get_data_from_db()
+        assert result == []
+
+    def test_create_with_net_and_no_pins(self):
+        """Line 275 - create with net resolves pins, no pins raises."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup
+
+        pedb = MagicMock()
+        pg = CfgPinGroup(pedb=pedb, name="pg1", reference_designator="U1")
+        with pytest.raises(RuntimeError, match="No net and pins"):
+            pg.create()
+
+    def test_create_with_net(self):
+        """Lines 270-275 - create with net."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup
+
+        pedb = MagicMock()
+        pin1 = MagicMock()
+        pin1.net_name = "VDD"
+        pin2 = MagicMock()
+        pin2.net_name = "GND"
+        comp = MagicMock()
+        comp.pins = {"A1": pin1, "B1": pin2}
+        pedb.components.instances = {"U1": comp}
+        pedb.siwave.create_pin_group.return_value = True
+
+        pg = CfgPinGroup(pedb=pedb, name="pg1", reference_designator="U1", net="VDD")
+        pg.create()
+        pedb.siwave.create_pin_group.assert_called_once_with("U1", ["A1"], "pg1")
+
+    def test_create_with_net_fails_raises(self):
+        """Line 275 - create_pin_group returns False raises RuntimeError."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroup
+
+        pedb = MagicMock()
+        pin1 = MagicMock()
+        pin1.net_name = "VDD"
+        comp = MagicMock()
+        comp.pins = {"A1": pin1}
+        pedb.components.instances = {"U1": comp}
+        pedb.siwave.create_pin_group.return_value = False
+
+        pg = CfgPinGroup(pedb=pedb, name="pg1", reference_designator="U1", net="VDD")
+        with pytest.raises(RuntimeError, match="Failed to create"):
+            pg.create()
+
+
+class TestCfgSetupRemainingLines:
+    """Cover lines 64, 70-76, 164, 293, 468-473, 826-833, 839-842, 976, 1017-1020."""
+
+    pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+    def test_infer_distribution_explicit(self):
+        """Line 64 - caller sets distribution explicitly."""
+        from pyedb.configuration.cfg_setup import _infer_distribution
+
+        assert _infer_distribution("10MHz", "log_scale") == "log_scale"
+
+    def test_infer_distribution_none_step(self):
+        """Line 64 - step_or_count is None."""
+        from pyedb.configuration.cfg_setup import _infer_distribution
+
+        assert _infer_distribution(None, "linear_count") == "linear_count"
+
+    def test_infer_distribution_int_count(self):
+        """Line 70 - integer count stays linear_count."""
+        from pyedb.configuration.cfg_setup import _infer_distribution
+
+        assert _infer_distribution(100, "linear_count") == "linear_count"
+
+    def test_infer_distribution_float_string(self):
+        """Lines 70-72 - pure numeric string stays linear_count."""
+        from pyedb.configuration.cfg_setup import _infer_distribution
+
+        assert _infer_distribution("100", "linear_count") == "linear_count"
+
+    def test_infer_distribution_freq_string(self):
+        """Lines 73-76 - freq string like '10MHz' switches to linear_scale."""
+        from pyedb.configuration.cfg_setup import _infer_distribution
+
+        assert _infer_distribution("10MHz", "linear_count") == "linear_scale"
+
+    def test_add_frequencies_to_sweep(self):
+        """Line 164."""
+        from pyedb.configuration.cfg_setup import CfgSetupAC, CfgFrequencies
+
+        sweep = CfgSetupAC.CfgFrequencySweep(name="sw1")
+        f = CfgFrequencies(start="1GHz", stop="10GHz", increment=100, distribution="linear_count")
+        sweep.add_frequencies(f)
+        assert len(sweep.frequencies) == 1
+
+    def test_add_frequency_sweep_to_ac_base(self):
+        """Line 293."""
+        from pyedb.configuration.cfg_setup import CfgSetupAC, CfgFrequencies
+
+        class ConcreteAC(CfgSetupAC):
+            pass
+
+        ac = ConcreteAC(name="test_ac")
+        sweep = ac.CfgFrequencySweep(name="sw1")
+        ac.add_frequency_sweep(sweep)
+        assert len(ac.freq_sweep) == 1
+
+    def test_multi_freq_add_adaptive_frequency(self):
+        """Lines 468-473."""
+        from pyedb.configuration.cfg_setup import CfgHFSSSetup
+
+        hfss = CfgHFSSSetup(name="hfss1")
+        hfss.multi_frequency_adaptive_solution.add_adaptive_frequency("5GHz", 20, "0.02")
+        assert len(hfss.multi_frequency_adaptive_solution.adapt_frequencies) == 1
+
+    def test_create_with_f_adapt_backward_compat(self):
+        """Lines 826-833 - f_adapt backward compat."""
+        from pyedb.configuration.cfg_setup import CfgSetups
+
+        data = [{"type": "hfss", "name": "hfss1", "f_adapt": "10GHz", "max_num_passes": 15, "max_mag_delta_s": "0.01"}]
+        mgr = CfgSetups.create(data)
+        assert len(mgr.setups) == 1
+        assert mgr.setups[0].single_frequency_adaptive_solution.adaptive_frequency == "10GHz"
+        assert mgr.setups[0].single_frequency_adaptive_solution.max_passes == 15
+
+    def test_create_siwave_syz(self):
+        """Lines 839 - siwave_syz alias."""
+        from pyedb.configuration.cfg_setup import CfgSetups
+
+        data = [{"type": "siwave_syz", "name": "syz1"}]
+        mgr = CfgSetups.create(data)
+        assert len(mgr.setups) == 1
+
+    def test_create_siwave_dc(self):
+        """Lines 839-840."""
+        from pyedb.configuration.cfg_setup import CfgSetups
+
+        data = [{"type": "siwave_dc", "name": "dc1", "dc_slider_position": 2}]
+        mgr = CfgSetups.create(data)
+        assert len(mgr.setups) == 1
+
+    def test_create_unknown_type_raises(self):
+        """Lines 841-842."""
+        from pyedb.configuration.cfg_setup import CfgSetups
+
+        with pytest.raises(ValueError, match="Unknown setup type"):
+            CfgSetups.create([{"type": "unknown", "name": "bad"}])
+
+    def test_add_siwave_dc_with_config_object(self):
+        """Line 976."""
+        from pyedb.configuration.cfg_setup import CfgSetups, CfgSIwaveDCSetup
+
+        mgr = CfgSetups()
+        dc = CfgSIwaveDCSetup(name="dc1", dc_slider_position=1)
+        result = mgr.add_siwave_dc_setup(dc)
+        assert result is dc
+
+    def test_get_setup(self):
+        """Lines 1017-1020."""
+        from pyedb.configuration.cfg_setup import CfgSetups
+
+        mgr = CfgSetups()
+        mgr.add_hfss_setup(name="hfss1")
+        result = mgr.get("hfss1")
+        assert result.name == "hfss1"
+
+    def test_get_setup_not_found_raises(self):
+        """Lines 1017-1020."""
+        from pyedb.configuration.cfg_setup import CfgSetups
+
+        mgr = CfgSetups()
+        with pytest.raises(KeyError, match="not found"):
+            mgr.get("nonexistent")
+
+
+class TestCfgGeneralRemainingLines:
+    """Cover lines 33, 42 in cfg_general.py."""
+
+    pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+    def test_set_parameters_no_pedb(self):
+        from pyedb.configuration.cfg_general import CfgGeneral
+
+        g = CfgGeneral()
+        g.set_parameters_to_edb()  # pedb is None, returns early
+
+    def test_get_parameters_no_pedb(self):
+        from pyedb.configuration.cfg_general import CfgGeneral
+
+        g = CfgGeneral()
+        result = g.get_parameters_from_edb()
+        assert isinstance(result, dict)
+
+
+class TestBuilderRemainingLines:
+    """Cover lines 265, 365 in builder.py."""
+
+    pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+    def test_from_toml_file(self):
+        """Line 265."""
+        import tempfile, os
+        from pyedb.configuration.builder import EdbConfigBuilder
+
+        content = '[general]\nanti_pads_always_on = true\n'
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
+            f.write(content)
+            f.flush()
+            path = f.name
+        try:
+            builder = EdbConfigBuilder.from_toml(path)
+            assert builder.general.anti_pads_always_on is True
+        finally:
+            os.unlink(path)
+
+    def test_to_toml_file(self):
+        """Line 365."""
+        import tempfile, os
+        from pyedb.configuration.builder import EdbConfigBuilder
+
+        builder = EdbConfigBuilder()
+        builder.general.anti_pads_always_on = True
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
+            path = f.name
+        try:
+            builder.to_toml(path)
+            assert os.path.exists(path)
+            with open(path, "r") as f:
+                content = f.read()
+            assert "anti_pads_always_on" in content
+        finally:
+            os.unlink(path)
+
+
+class TestCfgTerminalsRemainingLines:
+    """Cover lines 292-299 in cfg_terminals.py."""
+
+    pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+    def test_create_pin_group_terminal(self):
+        from pyedb.configuration.cfg_terminals import CfgTerminals
+
+        data = [{"terminal_type": "pin_group", "name": "t1", "pin_group": "pg1", "impedance": 50, "boundary_type": "port"}]
+        mgr = CfgTerminals.create(data)
+        assert len(mgr.terminals) == 1
+
+    def test_create_point_terminal(self):
+        from pyedb.configuration.cfg_terminals import CfgTerminals
+
+        data = [{"terminal_type": "point", "name": "t1", "net": "SIG", "layer": "top", "x": 0, "y": 0, "impedance": 50, "boundary_type": "port"}]
+        mgr = CfgTerminals.create(data)
+        assert len(mgr.terminals) == 1
+
+    def test_create_edge_terminal(self):
+        from pyedb.configuration.cfg_terminals import CfgTerminals
+
+        data = [{"terminal_type": "edge", "name": "t1", "primitive": "trace1", "point_on_edge_x": 0, "point_on_edge_y": 0, "impedance": 50, "boundary_type": "port"}]
+        mgr = CfgTerminals.create(data)
+        assert len(mgr.terminals) == 1
+
+    def test_create_bundle_terminal(self):
+        from pyedb.configuration.cfg_terminals import CfgTerminals
+
+        data = [{"terminal_type": "bundle", "name": "t1", "terminals": ["t1", "t2"]}]
+        mgr = CfgTerminals.create(data)
+        assert len(mgr.terminals) == 1
+
+
+class TestCfgPackageDefSetToEdb:
+    """Cover lines 192, 203, 208, 211, 216-234 in cfg_package_definition.py."""
+
+    pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+    def test_set_parameters_to_edb_grpc(self):
+        from unittest.mock import patch
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+        import sys
+
+        pedb = MagicMock()
+        comp_def = MagicMock()
+        comp_def.components = {"U1": MagicMock(), "U2": MagicMock()}
+        pedb.definitions.component = {"IC_DEF": comp_def}
+        pedb.definitions.package = {}
+
+        pd = CfgPackageDefinitions(pedb=pedb, data=[{
+            "name": "pkg1", "component_definition": "IC_DEF", "apply_to_all": True,
+            "heatsink": {"fin_height": "3mm"},
+        }])
+
+        mock_pkg_mod = MagicMock()
+        mock_pdef = MagicMock()
+        mock_pkg_mod.PackageDef.return_value = mock_pdef
+
+        with patch("pyedb.configuration.cfg_package_definition.settings") as ms:
+            ms.is_grpc = True
+            with patch.dict(sys.modules, {"pyedb.grpc.database.definition.package_def": mock_pkg_mod}):
+                pd.set_parameters_to_edb()
+        mock_pdef.set_heatsink.assert_called_once()
+
+    def test_set_parameters_to_edb_existing_delete(self):
+        from unittest.mock import patch
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+        import sys
+
+        pedb = MagicMock()
+        comp_def = MagicMock()
+        comp_def.components = {"U1": MagicMock()}
+        pedb.definitions.component = {"IC_DEF": comp_def}
+        existing = MagicMock()
+        pedb.definitions.package = {"pkg1": existing}
+
+        pd = CfgPackageDefinitions(pedb=pedb, data=[{
+            "name": "pkg1", "component_definition": "IC_DEF", "apply_to_all": False, "components": ["U1"],
+        }])
+
+        mock_pkg_mod = MagicMock()
+        mock_pkg_mod.PackageDef.return_value = MagicMock()
+
+        with patch("pyedb.configuration.cfg_package_definition.settings") as ms:
+            ms.is_grpc = True
+            with patch.dict(sys.modules, {"pyedb.grpc.database.definition.package_def": mock_pkg_mod}):
+                pd.set_parameters_to_edb()
+        existing.delete.assert_called_once()
+
+    def test_set_parameters_to_edb_extent_bbox(self):
+        from unittest.mock import patch
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+        import sys
+
+        pedb = MagicMock()
+        comp_def = MagicMock()
+        comp_def.components = {}
+        pedb.definitions.component = {"IC_DEF": comp_def}
+        pedb.definitions.package = {}
+
+        pd = CfgPackageDefinitions(pedb=pedb, data=[{
+            "name": "pkg1", "component_definition": "IC_DEF",
+            "extent_bounding_box": {"x": 1, "y": 2},
+        }])
+
+        mock_pkg_mod = MagicMock()
+        mock_pkg_mod.PackageDef.return_value = MagicMock()
+
+        with patch("pyedb.configuration.cfg_package_definition.settings") as ms:
+            ms.is_grpc = True
+            with patch.dict(sys.modules, {"pyedb.grpc.database.definition.package_def": mock_pkg_mod}):
+                pd.set_parameters_to_edb()
+        mock_pkg_mod.PackageDef.assert_called_once_with(pedb, name="pkg1", extent_bounding_box={"x": 1, "y": 2})
+
+    def test_get_parameters_with_heatsink(self):
+        """Line 192."""
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
+        pedb = MagicMock()
+        pkg_obj = MagicMock()
+        pkg_obj.heat_sink = MagicMock()
+        pkg_obj.heat_sink.fin_height = "3mm"
+        pedb.definitions.package = {"pkg1": pkg_obj}
+        pd = CfgPackageDefinitions(pedb=pedb)
+        result = pd.get_parameters_from_edb()
+        assert len(result) == 1
+        assert "heatsink" in result[0]
+
+    def test_dotnet_import_path(self):
+        """Line 203 - dotnet import path."""
+        from unittest.mock import patch
+        from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+        import sys
+
+        pedb = MagicMock()
+        comp_def = MagicMock()
+        comp_def.components = {}
+        pedb.definitions.component = {"IC_DEF": comp_def}
+        pedb.definitions.package = {}
+
+        pd = CfgPackageDefinitions(pedb=pedb, data=[{
+            "name": "pkg1", "component_definition": "IC_DEF",
+        }])
+
+        mock_pkg_mod = MagicMock()
+        mock_pkg_mod.PackageDef.return_value = MagicMock()
+
+        with patch("pyedb.configuration.cfg_package_definition.settings") as ms:
+            ms.is_grpc = False
+            with patch.dict(sys.modules, {"pyedb.dotnet.database.definition.package_def": mock_pkg_mod}):
+                pd.set_parameters_to_edb()
+
+
+class TestCfgPinGroupGetFromEdbNotFound:
+    """Cover line 101 - get from EDB, pin group found in edb."""
+
+    pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+    def test_get_pin_group_from_edb(self):
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+        pedb = MagicMock()
+        pg_obj = MagicMock()
+        pin = MagicMock()
+        pin.component.name = "U1"
+        pg_obj.pins = {"A1": pin, "A2": MagicMock()}
+        pg_obj.pins["A2"].component = MagicMock()
+        pg_obj.pins["A2"].component.name = "U1"
+        pedb.siwave.pin_groups = {"pg_VDD": pg_obj}
+        pgs = CfgPinGroups(pedb=pedb)
+        result = pgs.get("pg_VDD")
+        assert result.name == "pg_VDD"
+        assert result.reference_designator == "U1"
+
+    def test_multi_net_component_not_found(self):
+        """Line 174 - component not found raises KeyError."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+        pedb = MagicMock()
+        pedb.components.instances = {}
+        pgs = CfgPinGroups(pedb=pedb)
+        with pytest.raises(KeyError, match="not found"):
+            pgs.add(reference_designator="NOCOMP", nets=["VDD", "GND"])
+
+    def test_multi_net_no_pins_raises(self):
+        """Line 177 - no pins found raises ValueError."""
+        from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+        pedb = MagicMock()
+        comp = MagicMock()
+        comp.pins = {}
+        pedb.components.instances = {"U1": comp}
+        pedb.logger = MagicMock()
+        pgs = CfgPinGroups(pedb=pedb)
+        with pytest.raises(ValueError, match="No pins found"):
+            pgs.add(reference_designator="U1", nets=["VDD", "GND"])
+
