@@ -250,7 +250,6 @@ class CfgPinGroups:
         return self.export_properties()
 
 
-
 class CfgPinGroup(CfgBase):
     """Represent one pin-group definition bound to a component."""
 
