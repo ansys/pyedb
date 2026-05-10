@@ -1,4 +1,4 @@
-EdbConfigBuilder: practical examples
+EdbConfigBuilder: Practical examples
 ======================================
 
 What is ``EdbConfigBuilder``?
