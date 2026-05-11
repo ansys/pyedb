@@ -19,7 +19,7 @@ section is used for, and which fields are supported by each section.
 .. tip::
 
    A machine-readable **JSON Schema** is available for the complete
-   configuration file.  You can use it to validate your config files in any
+   configuration file. You can use it to validate your config files in any
    JSON-schema-aware editor (VS Code, PyCharm, etc.) or with tools such as
    ``jsonschema``.
 
