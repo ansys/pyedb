@@ -16,6 +16,15 @@ section is used for, and which fields are supported by each section.
    also be written as TOML.  The section names and nested field names are
    identical in both formats.
 
+.. tip::
+
+   A machine-readable **JSON Schema** is available for the complete
+   configuration file.  You can use it to validate your config files in any
+   JSON-schema-aware editor (VS Code, PyCharm, etc.) or with tools such as
+   ``jsonschema``.
+
+   :download:`Download pyedb_config.schema.json </_static/pyedb_config.schema.json>`
+
 Two ways to configure a design
 -------------------------------
 
