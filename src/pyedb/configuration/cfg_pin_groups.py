@@ -23,6 +23,7 @@
 """Build named pin-group configuration entries."""
 
 from pyedb.configuration.cfg_common import CfgBase, compact_dict, serialize_list
+from pyedb.misc.decorators import deprecated
 
 
 class CfgPinGroups:
@@ -241,6 +242,7 @@ class CfgPinGroups:
         """Serialize all pin groups to plain dictionaries."""
         return serialize_list(self.pin_groups, method_names=("export_properties", "to_dict"))
 
+    @deprecated("Use export_properties() instead.")
     def to_list(self):
         """Serialize all configured pin groups.
 
