@@ -22,7 +22,9 @@
 """Build the ``boundaries`` configuration section."""
 
 from typing import Any, Optional, Union
+
 from pydantic import Field
+
 from pyedb.configuration.cfg_common import CfgBaseModel
 
 
