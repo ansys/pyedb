@@ -117,6 +117,28 @@ class CfgPinGroups:
         self.pin_groups.append(pg)
         return pg
 
+    def _resolve_pins(self, reference_designator: str, net_name: str, group_name: str) -> list | None:
+        """Return pins for *net_name* on *reference_designator*, or ``None`` to skip.
+
+        Raises ``KeyError`` if the component is not found, ``ValueError`` if no
+        pins exist.  Logs a warning and returns ``None`` when fewer than 2 pins
+        are found (a pin group requires at least 2).
+        """
+        comp = self._pedb.components.instances.get(reference_designator)
+        if comp is None:
+            raise KeyError(f"Component '{reference_designator}' not found in the EDB layout.")
+        pins = [p for p, obj in comp.pins.items() if obj.net_name == net_name]
+        if not pins:
+            raise ValueError(f"No pins found for net '{net_name}' on component '{reference_designator}'.")
+        if len(pins) <= 1:
+            self._pedb.logger.warning(
+                f"Skipping pin group '{group_name}': only {len(pins)} pin(s) found "
+                f"for net '{net_name}' on component '{reference_designator}'. "
+                "A pin group requires at least 2 pins."
+            )
+            return None
+        return pins
+
     def add(self, name=None, reference_designator=None, pins=None, nets=None, net=None):
         """Add one or more pin groups to this configuration.
 
@@ -167,39 +189,21 @@ class CfgPinGroups:
             # Auto-generate name for single net when not provided
             if name is None and len(net_list) == 1:
                 name = f"Pingroup_{reference_designator}.{net_list[0]}"
+
             if len(net_list) > 1:
-                # Multi-net: create one pin group per net with auto-generated names
+                # Multi-net: create one pin group per net
                 created = []
                 for net_name in net_list:
                     pg_name = f"Pingroup_{reference_designator}.{net_name}"
-                    resolved_pins = None
                     if self._pedb is not None:
-                        comp = self._pedb.components.instances.get(reference_designator)
-                        if comp is None:
-                            raise KeyError(f"Component '{reference_designator}' not found in the EDB layout.")
-                        resolved_pins = [p for p, obj in comp.pins.items() if obj.net_name == net_name]
-                        if not resolved_pins:
-                            raise ValueError(
-                                f"No pins found for net '{net_name}' on component '{reference_designator}'."
-                            )
-                        if len(resolved_pins) <= 1:
-                            self._pedb.logger.warning(
-                                f"Skipping pin group '{pg_name}': only {len(resolved_pins)} pin(s) found "
-                                f"for net '{net_name}' on component '{reference_designator}'. "
-                                "A pin group requires at least 2 pins."
-                            )
+                        resolved_pins = self._resolve_pins(reference_designator, net_name, pg_name)
+                        if resolved_pins is None:
                             continue
-                        pg = CfgPinGroup(
-                            self._pedb,
-                            name=pg_name,
-                            reference_designator=reference_designator,
-                            pins=resolved_pins,
-                            net=net_name,
-                        )
+                        pg = CfgPinGroup(self._pedb, name=pg_name, reference_designator=reference_designator,
+                                         pins=resolved_pins, net=net_name)
                     else:
-                        pg = CfgPinGroup(
-                            self._pedb, name=pg_name, reference_designator=reference_designator, net=net_name
-                        )
+                        pg = CfgPinGroup(self._pedb, name=pg_name, reference_designator=reference_designator,
+                                         net=net_name)
                     self.pin_groups.append(pg)
                     created.append(pg)
                 return created
@@ -207,22 +211,11 @@ class CfgPinGroups:
                 # Single net
                 net_name = net_list[0]
                 if self._pedb is not None:
-                    comp = self._pedb.components.instances.get(reference_designator)
-                    if comp is None:
-                        raise KeyError(f"Component '{reference_designator}' not found in the EDB layout.")
-                    pins = [p for p, obj in comp.pins.items() if obj.net_name == net_name]
-                    if not pins:
-                        raise ValueError(f"No pins found for net '{net_name}' on component '{reference_designator}'.")
-                    if len(pins) <= 1:
-                        self._pedb.logger.warning(
-                            f"Skipping pin group '{name}': only {len(pins)} pin(s) found "
-                            f"for net '{net_name}' on component '{reference_designator}'. "
-                            "A pin group requires at least 2 pins."
-                        )
+                    resolved_pins = self._resolve_pins(reference_designator, net_name, name)
+                    if resolved_pins is None:
                         return None
-                    pg = CfgPinGroup(
-                        self._pedb, name=name, reference_designator=reference_designator, pins=pins, net=net_name
-                    )
+                    pg = CfgPinGroup(self._pedb, name=name, reference_designator=reference_designator,
+                                     pins=resolved_pins, net=net_name)
                 else:
                     pg = CfgPinGroup(self._pedb, name=name, reference_designator=reference_designator, net=net_name)
                 self.pin_groups.append(pg)

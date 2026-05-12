@@ -560,7 +560,7 @@ class TestNetsConfig:
 
 class TestPinPairModel:
     def test_basic(self):
-        pp = PinPairModel("1", "2", resistance="100ohm", resistance_enabled=True)
+        pp = PinPairModel(first_pin="1", second_pin="2", resistance="100ohm", resistance_enabled=True)
         d = pp.to_dict()
         assert d["first_pin"] == "1"
         assert d["second_pin"] == "2"
@@ -568,7 +568,7 @@ class TestPinPairModel:
         assert d["resistance_enabled"] is True
 
     def test_defaults(self):
-        pp = PinPairModel("A", "B")
+        pp = PinPairModel(first_pin="A", second_pin="B")
         d = pp.to_dict()
         assert d["is_parallel"] is False
         assert d["inductance_enabled"] is False
@@ -1132,14 +1132,14 @@ class TestFrequencySweepConfig:
 
 class TestHfssSetupConfig:
     def test_defaults(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         d = h.to_dict()
         assert d["name"] == "setup1"
         assert d["type"] == "hfss"
         assert d["adapt_type"] == "single"
 
     def test_set_single_frequency_adaptive(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.set_single_frequency_adaptive("5GHz", max_passes=15, max_delta=0.01)
         d = h.to_dict()
         assert d["adapt_type"] == "single"
@@ -1149,7 +1149,7 @@ class TestHfssSetupConfig:
         assert sfa["max_delta"] == 0.01
 
     def test_set_broadband_adaptive(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.set_broadband_adaptive("1GHz", "20GHz", max_passes=25)
         d = h.to_dict()
         assert d["adapt_type"] == "broadband"
@@ -1159,7 +1159,7 @@ class TestHfssSetupConfig:
         assert bba["max_passes"] == 25
 
     def test_add_multi_frequency_adaptive(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.add_multi_frequency_adaptive("1GHz", max_passes=20, max_delta=0.02)
         h.add_multi_frequency_adaptive("10GHz")
         d = h.to_dict()
@@ -1170,19 +1170,19 @@ class TestHfssSetupConfig:
 
     def test_adaptive_method_chaining(self):
         """set_broadband_adaptive, set_auto_mesh_operation return self."""
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         result = h.set_broadband_adaptive("1GHz", "20GHz").set_auto_mesh_operation(enabled=True)
         assert result is h
 
     def test_set_auto_mesh_operation(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.set_auto_mesh_operation(enabled=True, trace_ratio_seeding=4)
         d = h.to_dict()
         assert d["auto_mesh_operation"]["enabled"] is True
         assert d["auto_mesh_operation"]["trace_ratio_seeding"] == 4
 
     def test_add_length_mesh_operation(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.add_length_mesh_operation("mesh1", {"SIG": ["top"]}, max_length="0.5mm")
         d = h.to_dict()
         assert len(d["mesh_operations"]) == 1
@@ -1190,7 +1190,7 @@ class TestHfssSetupConfig:
         assert d["mesh_operations"][0]["max_length"] == "0.5mm"
 
     def test_add_length_mesh_operation_all_params(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.add_length_mesh_operation(
             "mesh2",
             {"CLK": ["top", "L2"]},
@@ -1205,7 +1205,7 @@ class TestHfssSetupConfig:
         assert mo["refine_inside"] is True
 
     def test_add_frequency_sweep(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         sweep = h.add_frequency_sweep("sweep1")
         assert isinstance(sweep, FrequencySweepConfig)
         d = h.to_dict()
@@ -1213,7 +1213,7 @@ class TestHfssSetupConfig:
         assert d["freq_sweep"][0]["name"] == "sweep1"
 
     def test_add_frequency_sweep_inline_linear_count(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         sweep = h.add_frequency_sweep(
             "sweep1",
             start="1GHz",
@@ -1229,7 +1229,7 @@ class TestHfssSetupConfig:
         assert freqs[0]["increment"] == 200
 
     def test_add_frequency_sweep_inline_log_count(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.add_frequency_sweep(
             "sweep2",
             start="1MHz",
@@ -1241,7 +1241,7 @@ class TestHfssSetupConfig:
         assert freqs[0]["distribution"] == "log_count"
 
     def test_add_frequency_sweep_inline_linear_scale(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.add_frequency_sweep(
             "sweep3",
             start="0Hz",
@@ -1253,7 +1253,7 @@ class TestHfssSetupConfig:
         assert freqs[0]["distribution"] == "linear_scale"
 
     def test_add_frequency_sweep_inline_log_scale(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.add_frequency_sweep(
             "sweep4",
             start="1kHz",
@@ -1264,7 +1264,7 @@ class TestHfssSetupConfig:
         assert h.to_dict()["freq_sweep"][0]["frequencies"][0]["distribution"] == "log_scale"
 
     def test_add_frequency_sweep_inline_single(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.add_frequency_sweep("sw", start="5GHz", distribution="single")
         freqs = h.to_dict()["freq_sweep"][0]["frequencies"]
         assert freqs[0]["distribution"] == "single"
@@ -1272,23 +1272,23 @@ class TestHfssSetupConfig:
 
     def test_add_frequency_sweep_inline_distribution_alias(self):
         """Distribution aliases are normalised (e.g. 'logcount' → 'log_count')."""
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.add_frequency_sweep("sw", start="1GHz", stop="10GHz", step_or_count=50, distribution="logcount")
         assert h.to_dict()["freq_sweep"][0]["frequencies"][0]["distribution"] == "log_count"
 
     def test_add_frequency_sweep_inline_distribution_alias_spaces(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.add_frequency_sweep("sw", start="1GHz", stop="10GHz", step_or_count=50, distribution="log count")
         assert h.to_dict()["freq_sweep"][0]["frequencies"][0]["distribution"] == "log_count"
 
     def test_add_frequency_sweep_no_inline_when_start_none(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         sweep = h.add_frequency_sweep("sweep5")
         # no inline range added → frequencies list is empty
         assert h.to_dict()["freq_sweep"][0]["frequencies"] == []
 
     def test_add_prebuilt_frequency_sweep(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         sweep = FrequencySweepConfig(
             "sweep_prebuilt",
             frequencies=["LIN 0.05GHz 0.2GHz 0.01GHz"],
@@ -1301,7 +1301,7 @@ class TestHfssSetupConfig:
 
     def test_add_frequency_sweep_with_all_flags(self):
         """All sweep flags passed inline."""
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         sw = h.add_frequency_sweep(
             "sw",
             sweep_type="discrete",
@@ -1323,20 +1323,20 @@ class TestHfssSetupConfig:
         assert d["hfss_solver_region_setup_name"] == "hfss_s"
 
     def test_multiple_sweeps(self):
-        h = HfssSetupConfig("setup1")
+        h = HfssSetupConfig(name="setup1")
         h.add_frequency_sweep("s1")
         h.add_frequency_sweep("s2", sweep_type="discrete")
         assert len(h.to_dict()["freq_sweep"]) == 2
 
     def test_no_mesh_ops_key_when_empty(self):
-        h = HfssSetupConfig("s")
+        h = HfssSetupConfig(name="s")
         d = h.to_dict()
         assert "mesh_operations" not in d
 
 
 class TestSIwaveACSetupConfig:
     def test_defaults(self):
-        s = SIwaveACSetupConfig("sw_ac")
+        s = SIwaveACSetupConfig(name="sw_ac")
         d = s.to_dict()
         assert d["type"] == "siwave_ac"
         assert d["si_slider_position"] == 1
@@ -1344,23 +1344,23 @@ class TestSIwaveACSetupConfig:
         assert d["use_si_settings"] is True
 
     def test_custom_sliders(self):
-        s = SIwaveACSetupConfig("sw_ac", si_slider_position=2, pi_slider_position=0)
+        s = SIwaveACSetupConfig(name="sw_ac", si_slider_position=2, pi_slider_position=0)
         d = s.to_dict()
         assert d["si_slider_position"] == 2
         assert d["pi_slider_position"] == 0
 
     def test_use_pi_settings(self):
-        s = SIwaveACSetupConfig("sw_ac", use_si_settings=False)
+        s = SIwaveACSetupConfig(name="sw_ac", use_si_settings=False)
         assert s.to_dict()["use_si_settings"] is False
 
     def test_add_frequency_sweep(self):
-        s = SIwaveACSetupConfig("sw_ac")
+        s = SIwaveACSetupConfig(name="sw_ac")
         sw = s.add_frequency_sweep("sw1")
         assert isinstance(sw, FrequencySweepConfig)
         assert s.to_dict()["freq_sweep"][0]["name"] == "sw1"
 
     def test_add_frequency_sweep_inline(self):
-        s = SIwaveACSetupConfig("sw_ac")
+        s = SIwaveACSetupConfig(name="sw_ac")
         s.add_frequency_sweep(
             "sw2",
             start="1kHz",
@@ -1373,7 +1373,7 @@ class TestSIwaveACSetupConfig:
         assert freqs[0]["increment"] == 100
 
     def test_add_frequency_sweep_inline_linear_scale(self):
-        s = SIwaveACSetupConfig("sw_ac")
+        s = SIwaveACSetupConfig(name="sw_ac")
         s.add_frequency_sweep(
             "sw3",
             start="100kHz",
@@ -1386,12 +1386,12 @@ class TestSIwaveACSetupConfig:
 
     def test_add_frequency_sweep_inline_distribution_alias(self):
         """Distribution aliases work in SIwave AC sweeps too."""
-        s = SIwaveACSetupConfig("sw_ac")
+        s = SIwaveACSetupConfig(name="sw_ac")
         s.add_frequency_sweep("sw", start="1kHz", stop="1GHz", step_or_count=100, distribution="logcount")
         assert s.to_dict()["freq_sweep"][0]["frequencies"][0]["distribution"] == "log_count"
 
     def test_add_frequency_sweep_with_flags(self):
-        s = SIwaveACSetupConfig("sw_ac")
+        s = SIwaveACSetupConfig(name="sw_ac")
         sw = s.add_frequency_sweep(
             "sw4",
             start="1kHz",
@@ -1408,12 +1408,12 @@ class TestSIwaveACSetupConfig:
         assert d["adv_dc_extrapolation"] is True
 
     def test_add_frequency_sweep_no_inline_empty_frequencies(self):
-        s = SIwaveACSetupConfig("sw_ac")
+        s = SIwaveACSetupConfig(name="sw_ac")
         sw = s.add_frequency_sweep("sw5")
         assert sw.to_dict()["frequencies"] == []
 
     def test_add_prebuilt_frequency_sweep(self):
-        s = SIwaveACSetupConfig("sw_ac")
+        s = SIwaveACSetupConfig(name="sw_ac")
         sweep = FrequencySweepConfig(
             "sw_prebuilt",
             frequencies=["LINC 0.01GHz 0.02GHz 11"],
@@ -1427,14 +1427,14 @@ class TestSIwaveACSetupConfig:
 
 class TestSIwaveDCSetupConfig:
     def test_defaults(self):
-        s = SIwaveDCSetupConfig("sw_dc")
+        s = SIwaveDCSetupConfig(name="sw_dc")
         d = s.to_dict()
         assert d["type"] == "siwave_dc"
         assert d["dc_slider_position"] == 1
         assert d["dc_ir_settings"]["export_dc_thermal_data"] is False
 
     def test_custom(self):
-        s = SIwaveDCSetupConfig("sw_dc", dc_slider_position=2, export_dc_thermal_data=True)
+        s = SIwaveDCSetupConfig(name="sw_dc", dc_slider_position=2, export_dc_thermal_data=True)
         d = s.to_dict()
         assert d["dc_slider_position"] == 2
         assert d["dc_ir_settings"]["export_dc_thermal_data"] is True
@@ -1658,7 +1658,7 @@ class TestOperationsConfig:
 
 class TestSParameterModelConfig:
     def test_basic(self):
-        m = SParameterModelConfig("model1", "CAP_100nF", "/path/c.s2p")
+        m = SParameterModelConfig(name="model1", component_definition="CAP_100nF", file_path="/path/c.s2p")
         d = m.to_dict()
         assert d["name"] == "model1"
         assert d["component_definition"] == "CAP_100nF"
@@ -1666,22 +1666,22 @@ class TestSParameterModelConfig:
         assert d["apply_to_all"] is True
 
     def test_with_components(self):
-        m = SParameterModelConfig("m1", "DEF", "f.s2p", apply_to_all=False, components=["C1", "C2"])
+        m = SParameterModelConfig(name="m1", component_definition="DEF", file_path="f.s2p", apply_to_all=False, components=["C1", "C2"])
         d = m.to_dict()
         assert d["apply_to_all"] is False
         assert d["components"] == ["C1", "C2"]
 
     def test_reference_net_per_component(self):
-        m = SParameterModelConfig("m1", "DEF", "f.s2p", reference_net_per_component={"C1": "GND1"})
+        m = SParameterModelConfig(name="m1", component_definition="DEF", file_path="f.s2p", reference_net_per_component={"C1": "GND1"})
         d = m.to_dict()
         assert d["reference_net_per_component"] == {"C1": "GND1"}
 
     def test_pin_order(self):
-        m = SParameterModelConfig("m1", "DEF", "f.s2p", pin_order=["1", "2"])
+        m = SParameterModelConfig(name="m1", component_definition="DEF", file_path="f.s2p", pin_order=["1", "2"])
         assert m.to_dict()["pin_order"] == ["1", "2"]
 
     def test_no_pin_order_key_when_none(self):
-        m = SParameterModelConfig("m1", "DEF", "f.s2p")
+        m = SParameterModelConfig(name="m1", component_definition="DEF", file_path="f.s2p")
         assert "pin_order" not in m.to_dict()
 
 
@@ -2284,7 +2284,7 @@ class TestTerminalInfo:
 
 class TestPadstackInstanceTerminal:
     def test_basic(self):
-        t = PadstackInstanceTerminal("t1", "via_1", 50, "port", None)
+        t = PadstackInstanceTerminal(name="t1", padstack_instance="via_1", impedance=50, boundary_type="port", hfss_type=None)
         d = t.to_dict()
         assert d["terminal_type"] == "padstack_instance"
         assert d["name"] == "t1"
@@ -2294,11 +2294,11 @@ class TestPadstackInstanceTerminal:
 
     def test_optional_fields(self):
         t = PadstackInstanceTerminal(
-            "t1",
-            "via_1",
-            50,
-            "port",
-            "Wave",
+            name="t1",
+            padstack_instance="via_1",
+            impedance=50,
+            boundary_type="port",
+            hfss_type="Wave",
             is_circuit_port=True,
             reference_terminal="ref_t",
             layer="top",
@@ -2314,20 +2314,20 @@ class TestPadstackInstanceTerminal:
 
 class TestPinGroupTerminal:
     def test_basic(self):
-        t = PinGroupTerminal("t1", "pg_VDD", 50, "port")
+        t = PinGroupTerminal(name="t1", pin_group="pg_VDD", impedance=50, boundary_type="port")
         d = t.to_dict()
         assert d["terminal_type"] == "pin_group"
         assert d["pin_group"] == "pg_VDD"
         assert d["is_circuit_port"] is True
 
     def test_reference_terminal(self):
-        t = PinGroupTerminal("t1", "pg_VDD", 50, "port", reference_terminal="ref_t")
+        t = PinGroupTerminal(name="t1", pin_group="pg_VDD", impedance=50, boundary_type="port", reference_terminal="ref_t")
         assert t.to_dict()["reference_terminal"] == "ref_t"
 
 
 class TestPointTerminal:
     def test_basic(self):
-        t = PointTerminal("t1", 0.001, 0.002, "top", "SIG", 50, "port")
+        t = PointTerminal(name="t1", x=0.001, y=0.002, layer="top", net="SIG", impedance=50, boundary_type="port")
         d = t.to_dict()
         assert d["terminal_type"] == "point"
         assert d["x"] == 0.001
@@ -2336,13 +2336,13 @@ class TestPointTerminal:
         assert d["net"] == "SIG"
 
     def test_no_ref_terminal_key_when_none(self):
-        t = PointTerminal("t1", 0, 0, "top", "SIG", 50, "port")
+        t = PointTerminal(name="t1", x=0, y=0, layer="top", net="SIG", impedance=50, boundary_type="port")
         assert "reference_terminal" not in t.to_dict()
 
 
 class TestEdgeTerminal:
     def test_basic(self):
-        t = EdgeTerminal("t1", "prim1", 0.001, 0.002, 50, "port")
+        t = EdgeTerminal(name="t1", primitive="prim1", point_on_edge_x=0.001, point_on_edge_y=0.002, impedance=50, boundary_type="port")
         d = t.to_dict()
         assert d["terminal_type"] == "edge"
         assert d["primitive"] == "prim1"
@@ -2350,7 +2350,7 @@ class TestEdgeTerminal:
         assert d["horizontal_extent_factor"] == 6
 
     def test_custom_extent(self):
-        t = EdgeTerminal("t1", "prim1", 0, 0, 50, "port", horizontal_extent_factor=8, vertical_extent_factor=10)
+        t = EdgeTerminal(name="t1", primitive="prim1", point_on_edge_x=0, point_on_edge_y=0, impedance=50, boundary_type="port", horizontal_extent_factor=8, vertical_extent_factor=10)
         d = t.to_dict()
         assert d["horizontal_extent_factor"] == 8
         assert d["vertical_extent_factor"] == 10
@@ -2358,7 +2358,7 @@ class TestEdgeTerminal:
 
 class TestBundleTerminal:
     def test_basic(self):
-        t = BundleTerminal("bundle1", ["t1", "t2"])
+        t = BundleTerminal(name="bundle1", terminals=["t1", "t2"])
         d = t.to_dict()
         assert d["terminal_type"] == "bundle"
         assert d["terminals"] == ["t1", "t2"]
@@ -2540,18 +2540,18 @@ class TestHeatSinkConfig:
 
 class TestPackageDefinitionConfig:
     def test_minimal(self):
-        pkg = PackageDefinitionConfig("PKG1", "BGA_256")
+        pkg = PackageDefinitionConfig(name="PKG1", component_definition="BGA_256")
         d = pkg.to_dict()
         assert d == {"name": "PKG1", "component_definition": "BGA_256"}
 
     def test_with_thermal_properties(self):
-        pkg = PackageDefinitionConfig("PKG1", "BGA_256", maximum_power="5W", theta_jb="10C/W")
+        pkg = PackageDefinitionConfig(name="PKG1", component_definition="BGA_256", maximum_power="5W", theta_jb="10C/W")
         d = pkg.to_dict()
         assert d["maximum_power"] == "5W"
         assert d["theta_jb"] == "10C/W"
 
     def test_with_heatsink(self):
-        pkg = PackageDefinitionConfig("PKG1", "BGA_256")
+        pkg = PackageDefinitionConfig(name="PKG1", component_definition="BGA_256")
         hs = pkg.set_heatsink(fin_height="3mm", fin_spacing="1mm")
         assert isinstance(hs, HeatSinkConfig)
         d = pkg.to_dict()
@@ -2559,17 +2559,17 @@ class TestPackageDefinitionConfig:
         assert d["heatsink"]["fin_height"] == "3mm"
 
     def test_apply_to_all(self):
-        pkg = PackageDefinitionConfig("PKG1", "BGA", apply_to_all=True)
+        pkg = PackageDefinitionConfig(name="PKG1", component_definition="BGA", apply_to_all=True)
         d = pkg.to_dict()
         assert d["apply_to_all"] is True
 
     def test_explicit_components(self):
-        pkg = PackageDefinitionConfig("PKG1", "BGA", apply_to_all=False, components=["U1", "U2"])
+        pkg = PackageDefinitionConfig(name="PKG1", component_definition="BGA", apply_to_all=False, components=["U1", "U2"])
         d = pkg.to_dict()
         assert d["components"] == ["U1", "U2"]
 
     def test_empty_heatsink_not_emitted(self):
-        pkg = PackageDefinitionConfig("PKG1", "BGA")
+        pkg = PackageDefinitionConfig(name="PKG1", component_definition="BGA")
         # no set_heatsink call → no heatsink key
         assert "heatsink" not in pkg.to_dict()
 
@@ -4226,7 +4226,7 @@ class TestCfgPinPairModel:
     def test_init_and_to_dict(self):
         from pyedb.configuration.cfg_components import CfgPinPairModel
 
-        m = CfgPinPairModel("1", "2", resistance="100ohm", resistance_enabled=True)
+        m = CfgPinPairModel(first_pin="1", second_pin="2", resistance="100ohm", resistance_enabled=True)
         d = m.to_dict()
         assert d["first_pin"] == "1"
         assert d["second_pin"] == "2"

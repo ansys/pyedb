@@ -24,7 +24,7 @@
 
 from typing import Any, ClassVar, List, Optional, Union
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class CfgAutoIdentifyNets(BaseModel):
@@ -68,6 +68,26 @@ class CfgCutout(BaseModel):
         "bounding_box": "BoundingBox",
     }
 
+    @model_validator(mode="before")
+    @classmethod
+    def _normalise_aliases(cls, data):
+        """Map ``signal_nets`` → ``signal_list`` and ``reference_nets`` → ``reference_list``
+        when the aliased field names are not already present."""
+        if isinstance(data, dict):
+            if "signal_nets" in data and "signal_list" not in data:
+                data["signal_list"] = data.pop("signal_nets")
+            if "reference_nets" in data and "reference_list" not in data:
+                data["reference_list"] = data.pop("reference_nets")
+            # Build auto_identify_nets from flat convenience kwargs when not already present
+            if "auto_identify_nets" not in data:
+                data["auto_identify_nets"] = CfgAutoIdentifyNets(
+                    enabled=data.pop("auto_identify_nets_enabled", False),
+                    resistor_below=data.pop("resistor_below", 100),
+                    inductor_below=data.pop("inductor_below", 1),
+                    capacitor_above=data.pop("capacitor_above", "10nF"),
+                )
+        return data
+
     @field_validator("extent_type", mode="before")
     @classmethod
     def _normalise_extent_type(cls, v):
@@ -81,28 +101,6 @@ class CfgCutout(BaseModel):
             return v
         return normalised
 
-    def __init__(
-        self,
-        signal_nets=None,
-        reference_nets=None,
-        auto_identify_nets_enabled: bool = False,
-        resistor_below: float = 100,
-        inductor_below: float = 1,
-        capacitor_above: float | str = "10nF",
-        **kwargs,
-    ):
-        if signal_nets is not None and "signal_list" not in kwargs and "signal_nets" not in kwargs:
-            kwargs["signal_list"] = signal_nets
-        if reference_nets is not None and "reference_list" not in kwargs and "reference_nets" not in kwargs:
-            kwargs["reference_list"] = reference_nets
-        if "auto_identify_nets" not in kwargs:
-            kwargs["auto_identify_nets"] = CfgAutoIdentifyNets(
-                enabled=auto_identify_nets_enabled,
-                resistor_below=resistor_below,
-                inductor_below=inductor_below,
-                capacitor_above=capacitor_above,
-            )
-        super().__init__(**kwargs)
 
     def to_dict(self) -> dict:
         """Serialize the cutout operation."""
@@ -145,9 +143,9 @@ class CfgOperations(BaseModel):
 
     def to_dict(self) -> dict:
         """Serialize the configured operations."""
-        data: dict = {}
+        result = {}
         if self.cutout is not None:
-            data["cutout"] = self.cutout.to_dict()
+            result["cutout"] = self.cutout.to_dict()
         if self.generate_auto_hfss_regions:
-            data["generate_auto_hfss_regions"] = self.generate_auto_hfss_regions
-        return data
+            result["generate_auto_hfss_regions"] = self.generate_auto_hfss_regions
+        return result

@@ -23,7 +23,7 @@
 
 from typing import Literal, Union
 
-from pydantic import Field
+from pydantic import Field, PrivateAttr
 
 from pyedb.configuration.cfg_common import CfgBaseModel as CfgBase
 from pyedb.misc.decorators import deprecated
@@ -129,16 +129,9 @@ class CfgPadstackInstance(CfgBase):
         return self.eid
 
     @classmethod
-    def create(cls, **kwargs):
-        """Create a :class:`CfgPadstackInstance` with an empty backdrill object.
-
-        Returns
-        -------
-        CfgPadstackInstance
-        """
-        obj = cls(**kwargs)
-        obj.backdrill_parameters = CfgBackdrillParameters()
-        return obj
+    def create(cls, **kwargs) -> "CfgPadstackInstance":
+        """Create a :class:`CfgPadstackInstance` with an empty backdrill object."""
+        return cls(**kwargs)
 
     def set_backdrill(
         self,
@@ -223,17 +216,13 @@ class CfgPadstackDefinition(CfgBase):
 
     @classmethod
     def create(cls, **kwargs) -> "CfgPadstackDefinition":
-        """Create a :class:`CfgPadstackDefinition` from keyword arguments.
-
-        Returns
-        -------
-        CfgPadstackDefinition
-        """
+        """Create a :class:`CfgPadstackDefinition` from keyword arguments."""
         return cls(**kwargs)
 
     def to_dict(self) -> dict:
         """Serialize the padstack definition, excluding ``None`` values."""
         return self.model_dump(exclude_none=True, by_alias=False)
+
 
 
 class CfgPadstacks(CfgBase):
@@ -242,31 +231,25 @@ class CfgPadstacks(CfgBase):
     definitions: list[CfgPadstackDefinition] = Field(default_factory=list)
     instances: list[CfgPadstackInstance] = Field(default_factory=list)
 
-    # Not serialized – holds a live EDB reference when built from a session.
-    _pedb: object = None
-    _cfg_stackup: object = None
+    _pedb: object = PrivateAttr(default=None)
+    _cfg_stackup: object = PrivateAttr(default=None)
 
     model_config = {"populate_by_name": True, "extra": "forbid", "arbitrary_types_allowed": True}
 
     def _set_pedb(self, pedb):
         """Attach a live EDB session (called by EdbConfigBuilder)."""
-        object.__setattr__(self, "_pedb", pedb)
+        self._pedb = pedb
 
     def _set_cfg_stackup(self, cfg_stackup):
         """Attach the CfgStackup builder (called by EdbConfigBuilder)."""
-        object.__setattr__(self, "_cfg_stackup", cfg_stackup)
+        self._cfg_stackup = cfg_stackup
 
     @classmethod
     def create(cls, pedb=None, **kwargs) -> "CfgPadstacks":
-        """Create a :class:`CfgPadstacks` from keyword arguments.
-
-        Returns
-        -------
-        CfgPadstacks
-        """
+        """Create a :class:`CfgPadstacks` from keyword arguments."""
         obj = cls(**kwargs)
         if pedb is not None:
-            object.__setattr__(obj, "_pedb", pedb)
+            obj._pedb = pedb
         return obj
 
     def clean(self):

@@ -24,7 +24,7 @@
 
 from typing import Any, List, Optional
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from pyedb.configuration.cfg_common import CfgBaseModel, compact_dict, serialize_list
 from pyedb.generic.settings import settings
@@ -70,36 +70,13 @@ class CfgPackage(CfgBaseModel):
     extent_bounding_box: Optional[Any] = None
     heatsink: Optional[CfgHeatSink] = None
 
-    def __init__(
-        self,
-        name=None,
-        component_definition=None,
-        apply_to_all=None,
-        components=None,
-        maximum_power=None,
-        thermal_conductivity=None,
-        theta_jb=None,
-        theta_jc=None,
-        height=None,
-        extent_bounding_box=None,
-        heatsink=None,
-        **kwargs,
-    ):
-        if isinstance(heatsink, dict) and heatsink:
-            heatsink = CfgHeatSink(**heatsink)
-        super().__init__(
-            name=name,
-            component_definition=component_definition,
-            apply_to_all=apply_to_all,
-            components=components or [],
-            maximum_power=maximum_power,
-            thermal_conductivity=thermal_conductivity,
-            theta_jb=theta_jb,
-            theta_jc=theta_jc,
-            height=height,
-            extent_bounding_box=extent_bounding_box,
-            heatsink=heatsink,
-        )
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_heatsink(cls, data):
+        """Coerce a raw ``heatsink`` dict to :class:`CfgHeatSink` before validation."""
+        if isinstance(data, dict) and isinstance(data.get("heatsink"), dict) and data["heatsink"]:
+            data["heatsink"] = CfgHeatSink(**data["heatsink"])
+        return data
 
     def get_attributes(self, exclude=None):
         """Return dict of non-null/non-protected attributes (CfgBase compatibility)."""

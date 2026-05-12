@@ -27,6 +27,8 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import Field
 
+from pydantic import field_validator
+
 from pyedb.configuration.cfg_common import CfgBaseModel, serialize_list
 
 
@@ -44,30 +46,15 @@ class CfgSParameterModel(CfgBaseModel):
     reference_net_per_component: Dict[str, str] = Field(default_factory=dict)
     pin_order: Optional[Any] = None
 
-    # custom init to support positional argument
-    def __init__(
-        self,
-        name: str = "",
-        component_definition: str = "",
-        file_path: str = "",
-        reference_net: str = "",
-        apply_to_all: bool = True,
-        components=None,
-        reference_net_per_component=None,
-        pin_order=None,
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            component_definition=component_definition,
-            file_path=file_path,
-            reference_net=reference_net,
-            apply_to_all=apply_to_all,
-            components=list(components or []),
-            reference_net_per_component=reference_net_per_component or {},
-            pin_order=pin_order,
-            **kwargs,
-        )
+    @field_validator("components", mode="before")
+    @classmethod
+    def _coerce_components(cls, v):
+        return list(v) if v is not None else []
+
+    @field_validator("reference_net_per_component", mode="before")
+    @classmethod
+    def _coerce_ref_net_per_comp(cls, v):
+        return v or {}
 
     def to_dict(self) -> dict:
         """Serialize the S-parameter model assignment."""

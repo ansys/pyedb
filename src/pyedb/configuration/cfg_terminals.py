@@ -36,7 +36,7 @@ class CfgTerminal(CfgBaseModel):
 
     name: str
     impedance: Union[float, int, str]
-    is_circuit_port: bool
+    is_circuit_port: bool = False
     reference_terminal: Optional[str] = None
     amplitude: Optional[Union[float, int, str]] = 1
     phase: Optional[Union[float, int, str]] = 0
@@ -72,7 +72,7 @@ class CfgTerminal(CfgBaseModel):
         "rlc",
         "pec",
     ]
-    hfss_type: Literal["Wave", "Gap", None]
+    hfss_type: Literal["Wave", "Gap", None] = None
 
     def to_dict(self) -> dict:
         """Serialize this terminal, omitting ``None`` fields."""
@@ -87,38 +87,6 @@ class CfgPadstackInstanceTerminal(CfgTerminal):
     padstack_instance_id: Optional[int] = None
     layer: Optional[Union[str, None]] = None
 
-    # custom init to support positional argument
-    def __init__(
-        self,
-        name: str,
-        padstack_instance: str,
-        impedance: Union[float, int, str],
-        boundary_type,
-        hfss_type=None,
-        is_circuit_port: bool = False,
-        reference_terminal: Optional[str] = None,
-        amplitude: Optional[Union[float, int, str]] = 1,
-        phase: Optional[Union[float, int, str]] = 0,
-        terminal_to_ground="kNoGround",
-        layer=None,
-        padstack_instance_id=None,
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            padstack_instance=padstack_instance,
-            impedance=impedance,
-            boundary_type=boundary_type,
-            hfss_type=hfss_type,
-            is_circuit_port=is_circuit_port,
-            reference_terminal=reference_terminal,
-            amplitude=amplitude,
-            phase=phase,
-            terminal_to_ground=terminal_to_ground,
-            layer=layer,
-            padstack_instance_id=padstack_instance_id,
-        )
-
 
 class CfgPinGroupTerminal(CfgTerminal):
     """Represent a terminal created from a named pin group."""
@@ -127,29 +95,6 @@ class CfgPinGroupTerminal(CfgTerminal):
     is_circuit_port: bool = True
     hfss_type: Literal["Wave", "Gap", None] = None
     pin_group: str
-
-    def __init__(
-        self,
-        name: str,
-        pin_group: str,
-        impedance: Union[float, int, str],
-        boundary_type,
-        reference_terminal: Optional[str] = None,
-        amplitude: Optional[Union[float, int, str]] = 1,
-        phase: Optional[Union[float, int, str]] = 0,
-        terminal_to_ground="kNoGround",
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            pin_group=pin_group,
-            impedance=impedance,
-            boundary_type=boundary_type,
-            reference_terminal=reference_terminal,
-            amplitude=amplitude,
-            phase=phase,
-            terminal_to_ground=terminal_to_ground,
-        )
 
 
 class CfgPointTerminal(CfgTerminal):
@@ -162,35 +107,6 @@ class CfgPointTerminal(CfgTerminal):
     y: Union[float, int, str]
     layer: str
     net: str
-
-    def __init__(
-        self,
-        name: str,
-        x: Union[float, int, str],
-        y: Union[float, int, str],
-        layer: str,
-        net: str,
-        impedance: Union[float, int, str],
-        boundary_type,
-        reference_terminal: Optional[str] = None,
-        amplitude: Optional[Union[float, int, str]] = 1,
-        phase: Optional[Union[float, int, str]] = 0,
-        terminal_to_ground="kNoGround",
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            x=x,
-            y=y,
-            layer=layer,
-            net=net,
-            impedance=impedance,
-            boundary_type=boundary_type,
-            reference_terminal=reference_terminal,
-            amplitude=amplitude,
-            phase=phase,
-            terminal_to_ground=terminal_to_ground,
-        )
 
 
 class CfgEdgeTerminal(CfgTerminal):
@@ -206,43 +122,6 @@ class CfgEdgeTerminal(CfgTerminal):
     pec_launch_width: Union[int, str] = "0.02mm"
     hfss_type: Literal["Wave", "Gap", None] = "Wave"
 
-    def __init__(
-        self,
-        name: str,
-        primitive: str,
-        point_on_edge_x: Union[float, int, str],
-        point_on_edge_y: Union[float, int, str],
-        impedance: Union[float, int, str],
-        boundary_type,
-        hfss_type="Wave",
-        horizontal_extent_factor: Union[int, str] = 6,
-        vertical_extent_factor: Union[int, str] = 8,
-        pec_launch_width: Union[int, str] = "0.02mm",
-        is_circuit_port: bool = False,
-        reference_terminal: Optional[str] = None,
-        amplitude: Optional[Union[float, int, str]] = 1,
-        phase: Optional[Union[float, int, str]] = 0,
-        terminal_to_ground="kNoGround",
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            primitive=primitive,
-            point_on_edge_x=point_on_edge_x,
-            point_on_edge_y=point_on_edge_y,
-            impedance=impedance,
-            boundary_type=boundary_type,
-            hfss_type=hfss_type,
-            horizontal_extent_factor=horizontal_extent_factor,
-            vertical_extent_factor=vertical_extent_factor,
-            pec_launch_width=pec_launch_width,
-            is_circuit_port=is_circuit_port,
-            reference_terminal=reference_terminal,
-            amplitude=amplitude,
-            phase=phase,
-            terminal_to_ground=terminal_to_ground,
-        )
-
 
 class CfgBundleTerminal(CfgBaseModel):
     """Represent a bundle terminal built from other terminal names."""
@@ -252,9 +131,6 @@ class CfgBundleTerminal(CfgBaseModel):
     terminal_type: str = "bundle"
     terminals: List[str]
     name: str
-
-    def __init__(self, name: str, terminals: List[str], **kwargs):
-        super().__init__(name=name, terminals=terminals)
 
     def to_dict(self) -> dict:
         """Serialize this bundle terminal."""
