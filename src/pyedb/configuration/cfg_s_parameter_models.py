@@ -44,6 +44,7 @@ class CfgSParameterModel(CfgBaseModel):
     reference_net_per_component: Dict[str, str] = Field(default_factory=dict)
     pin_order: Optional[Any] = None
 
+    # custom init to support positional argument
     def __init__(
         self,
         name: str = "",
@@ -57,14 +58,15 @@ class CfgSParameterModel(CfgBaseModel):
         **kwargs,
     ):
         super().__init__(
-            name=name or kwargs.get("name", ""),
-            component_definition=component_definition or kwargs.get("component_definition", ""),
-            file_path=file_path or kwargs.get("file_path", ""),
-            reference_net=reference_net or kwargs.get("reference_net", ""),
-            apply_to_all=apply_to_all if apply_to_all is not None else kwargs.get("apply_to_all", True),
-            components=list(components or kwargs.get("components", [])),
-            reference_net_per_component=reference_net_per_component or kwargs.get("reference_net_per_component", {}),
-            pin_order=pin_order if pin_order is not None else kwargs.get("pin_order"),
+            name=name,
+            component_definition=component_definition,
+            file_path=file_path,
+            reference_net=reference_net,
+            apply_to_all=apply_to_all,
+            components=list(components or []),
+            reference_net_per_component=reference_net_per_component or {},
+            pin_order=pin_order,
+            **kwargs,
         )
 
     def to_dict(self) -> dict:
@@ -153,7 +155,6 @@ class CfgSParameters:
         self._pedb = pedb
         self.path_libraries = path_lib
         self.models = [CfgSParameterModel(**i) if isinstance(i, dict) else i for i in (data or [])]
-        self.s_parameters_models = self.models
 
     def add(
         self,

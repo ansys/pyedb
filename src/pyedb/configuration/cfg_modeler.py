@@ -21,7 +21,6 @@
 # SOFTWARE.
 """Build geometry-creation and cleanup entries for the ``modeler`` section."""
 
-from copy import deepcopy as copy
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import Field
@@ -92,27 +91,9 @@ class CfgModeler:
         for trace_data in data.get("traces", []):
             self.add_trace(**trace_data)
 
-        _rect_keys = {
-            "layer",
-            "name",
-            "net_name",
-            "lower_left_point",
-            "upper_right_point",
-            "corner_radius",
-            "rotation",
-            "voids",
-        }
-        _circle_keys = {"layer", "name", "net_name", "corner_radius", "rotation", "voids", "radius", "position"}
-        _polygon_keys = {"layer", "name", "net_name", "corner_radius", "rotation", "voids", "points"}
         for plane_data in data.get("planes", []):
-            plane_data = copy(plane_data)
-            shape = plane_data.pop("type")
-            if shape == "rectangle":
-                self.add_rectangular_plane(**{k: v for k, v in plane_data.items() if k in _rect_keys})
-            elif shape == "circle":
-                self.add_circular_plane(**{k: v for k, v in plane_data.items() if k in _circle_keys})
-            elif shape == "polygon":
-                self.add_polygon_plane(**{k: v for k, v in plane_data.items() if k in _polygon_keys})
+            plane_obj = CfgPlane.model_validate(plane_data)
+            self.planes.append(plane_obj)
 
     def add_trace(
         self,
@@ -201,6 +182,12 @@ class CfgModeler:
         self.traces.append(trace_obj)
         return trace_obj
 
+    def _add_plane(self, **kwargs) -> "CfgPlane":
+        """Create and register a :class:`CfgPlane` from keyword arguments."""
+        plane_obj = CfgPlane(**kwargs)
+        self.planes.append(plane_obj)
+        return plane_obj
+
     def add_rectangular_plane(
         self,
         layer: str,
@@ -248,7 +235,7 @@ class CfgModeler:
         ...     upper_right_point=[0.05, 0.05],
         ... )
         """
-        plane_obj = CfgPlane(
+        return self._add_plane(
             name=name,
             layer=layer,
             net_name=net_name,
@@ -259,8 +246,6 @@ class CfgModeler:
             rotation=rotation,
             voids=voids or [],
         )
-        self.planes.append(plane_obj)
-        return plane_obj
 
     def add_circular_plane(
         self,
@@ -299,7 +284,7 @@ class CfgModeler:
         CfgPlane
             The newly created plane object.
         """
-        plane_obj = CfgPlane(
+        return self._add_plane(
             name=name,
             layer=layer,
             net_name=net_name,
@@ -310,8 +295,6 @@ class CfgModeler:
             radius=radius,
             position=position or [0, 0],
         )
-        self.planes.append(plane_obj)
-        return plane_obj
 
     def add_polygon_plane(
         self,
@@ -356,7 +339,7 @@ class CfgModeler:
         ...     points=[[0, 0], [0.01, 0], [0.01, 0.005], [0, 0.005]],
         ... )
         """
-        plane_obj = CfgPlane(
+        return self._add_plane(
             name=name,
             layer=layer,
             net_name=net_name,
@@ -366,8 +349,6 @@ class CfgModeler:
             voids=voids or [],
             points=points or [],
         )
-        self.planes.append(plane_obj)
-        return plane_obj
 
     def delete_primitives_by_layer(self, layer_names: List[str]):
         """Schedule all primitives on the given layers for deletion."""

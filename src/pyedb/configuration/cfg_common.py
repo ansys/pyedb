@@ -125,19 +125,6 @@ class CfgVariables(BaseModel):
 
     variables: List[CfgVar] = Field(default_factory=list)
 
-    def add_variable(self, name, value, description=""):
-        """Append a raw :class:`CfgVar` entry.
-
-        Parameters
-        ----------
-        name : str
-            Variable name.  Prefix with ``$`` for project-scope.
-        value : int, float, or str
-            Variable value, e.g. ``"0.15mm"`` or ``25``.
-        description : str, optional
-            Human-readable description.  Default is ``""``.
-        """
-        self.variables.append(CfgVar(name=name, value=value, description=description))
 
     def add(self, name, value, description=""):
         """Add a design or project variable.
@@ -157,7 +144,7 @@ class CfgVariables(BaseModel):
         >>> cfg.variables.add("trace_width", "0.15mm", "Default trace width")
         >>> cfg.variables.add("$project_temp", "25cel")
         """
-        self.add_variable(name=name, value=value, description=description)
+        self.variables.append(CfgVar(name=name, value=value, description=description))
 
     def to_list(self) -> List[dict]:
         """Serialize configured design variables."""

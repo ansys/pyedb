@@ -62,27 +62,25 @@ class CfgSpiceModel(CfgBaseModel):
         **kwargs,
     ):
         # Legacy positional-arg call: CfgSpiceModel(name_str, comp_def_str, file_path_str, ...)
-        if isinstance(pdata, str) and not hasattr(pdata, "_pedb"):
+        if isinstance(pdata, str):
             name = pdata
             component_definition = path_lib or component_definition
             file_path = spice_dict if isinstance(spice_dict, str) else file_path
-            pdata = None
-            path_lib = None
-            spice_dict = None
+            pdata = path_lib = spice_dict = None
 
         # Merge dict-based input (from JSON loading) with explicit keyword args.
         merged = dict(spice_dict or {})
-        if name:
-            merged["name"] = name
-        if component_definition:
-            merged["component_definition"] = component_definition
-        if file_path:
-            merged["file_path"] = file_path
-        if sub_circuit_name:
-            merged["sub_circuit_name"] = sub_circuit_name
+        for key, val in {
+            "name": name,
+            "component_definition": component_definition,
+            "file_path": file_path,
+            "sub_circuit_name": sub_circuit_name,
+        }.items():
+            if val:
+                merged[key] = val
+        # apply_to_all=False must be honoured; don't skip falsy values
+        merged.setdefault("apply_to_all", apply_to_all)
         if not apply_to_all:
-            merged["apply_to_all"] = apply_to_all
-        elif "apply_to_all" not in merged:
             merged["apply_to_all"] = apply_to_all
         if components is not None:
             merged["components"] = components
@@ -90,14 +88,12 @@ class CfgSpiceModel(CfgBaseModel):
             merged["terminal_pairs"] = terminal_pairs
         merged.update(kwargs)
 
-        # Pre-coerce components before Pydantic validation
+        # Normalise components to a list before Pydantic validation
         raw_components = merged.get("components", [])
         if isinstance(raw_components, str):
             raw_components = [raw_components]
-        elif raw_components is None:
-            raw_components = []
         elif not isinstance(raw_components, (list, tuple, set)):
-            raw_components = [raw_components]
+            raw_components = [raw_components] if raw_components else []
         merged["components"] = list(raw_components)
 
         super().__init__(**merged)

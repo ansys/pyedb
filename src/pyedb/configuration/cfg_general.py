@@ -21,36 +21,47 @@
 # SOFTWARE.
 """Build the ``general`` configuration section."""
 
+from typing import Any, Optional
+
+from pydantic import BaseModel, PrivateAttr
+
 from pyedb.configuration.cfg_common import compact_dict
 
 
-class CfgGeneral:
+class CfgGeneral(BaseModel):
     """Fluent builder for the ``general`` section."""
+
+    model_config = {"arbitrary_types_allowed": True, "extra": "ignore"}
+
+    spice_model_library: str = ""
+    s_parameter_library: str = ""
+    anti_pads_always_on: Optional[bool] = None
+    suppress_pads: Optional[bool] = None
+
+    _pedb: Any = PrivateAttr(default=None)
+
+    def __init__(self, pedb=None, data=None, **kwargs):
+        data = dict(data or {})
+        data.update(kwargs)
+        super().__init__(**data)
+        self._pedb = pedb
 
     def set_parameters_to_edb(self):
         """Write general design-option settings into the open EDB design."""
-        if self.pedb is None:
+        if self._pedb is None:
             return
         if self.anti_pads_always_on is not None:
-            self.pedb.design_options.anti_pads_always_on = self.anti_pads_always_on
+            self._pedb.design_options.anti_pads_always_on = self.anti_pads_always_on
         if self.suppress_pads is not None:
-            self.pedb.design_options.suppress_pads = self.suppress_pads
+            self._pedb.design_options.suppress_pads = self.suppress_pads
 
     def get_parameters_from_edb(self):
         """Read general design-option settings from EDB."""
-        if self.pedb is None:
+        if self._pedb is None:
             return self.to_dict()
-        opts = self.pedb.design_options
+        opts = self._pedb.design_options
         return {"anti_pads_always_on": opts.anti_pads_always_on, "suppress_pads": opts.suppress_pads}
 
-    def __init__(self, pedb=None, data=None):
-        """Initialize the general configuration."""
-        data = data or {}
-        self.pedb = pedb
-        self.spice_model_library = data.get("spice_model_library", "")
-        self.s_parameter_library = data.get("s_parameter_library", "")
-        self.anti_pads_always_on = data.get("anti_pads_always_on")
-        self.suppress_pads = data.get("suppress_pads")
 
     def to_dict(self) -> dict:
         """Serialize configured general settings."""
