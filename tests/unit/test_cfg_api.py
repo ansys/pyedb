@@ -2723,7 +2723,3 @@ class TestBuilderTomlRoundTrip:
         from pathlib import Path
 
         assert isinstance(result, Path)
-
-
-# ---------------------------------------------------------------------------
-# builder.
