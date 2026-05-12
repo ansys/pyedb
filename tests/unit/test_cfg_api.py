@@ -20,9 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import json
-from unittest.mock import MagicMock
-
 import pytest
 
 from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance, CfgPadstacks
