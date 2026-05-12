@@ -228,7 +228,9 @@ class CfgPinGroups:
                         net=net_name,
                     )
                 else:
-                    pg = CfgPinGroup(pedb=self._pedb, name=name, reference_designator=reference_designator, net=net_name)
+                    pg = CfgPinGroup(
+                        pedb=self._pedb, name=name, reference_designator=reference_designator, net=net_name
+                    )
                 self.pin_groups.append(pg)
                 return pg
 

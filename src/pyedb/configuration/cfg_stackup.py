@@ -138,7 +138,6 @@ class CfgLayer(BaseModel):
         """Alias for ``layer_type`` for backward compatibility."""
         return self.layer_type
 
-
     def set_huray_roughness(
         self,
         nodule_radius: Union[str, float],

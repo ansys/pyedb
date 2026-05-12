@@ -113,6 +113,7 @@ class CfgSetupAC(CfgSetupDC):
             if name:
                 kwargs["name"] = name
             super().__init__(**kwargs)
+
         frequencies: list[CfgFrequencies | str] = Field(
             default_factory=list, description="List of frequency definitions or strings"
         )
