@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 import pytest
-from pyedb.configuration.cfg_operations import CfgOperations
-from pyedb.configuration.cfg_operations import CfgCutout
+
+from pyedb.configuration.cfg_operations import CfgCutout, CfgOperations
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
