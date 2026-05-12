@@ -109,7 +109,6 @@ class CfgPinPairModel(BaseModel):
     inductance_enabled: bool = False
     capacitance_enabled: bool = False
 
-
     def to_dict(self) -> dict:
         return self.model_dump()
 

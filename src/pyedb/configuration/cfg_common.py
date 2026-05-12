@@ -125,7 +125,6 @@ class CfgVariables(BaseModel):
 
     variables: List[CfgVar] = Field(default_factory=list)
 
-
     def add(self, name, value, description=""):
         """Add a design or project variable.
 

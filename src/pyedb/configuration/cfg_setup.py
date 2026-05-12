@@ -301,7 +301,6 @@ class CfgSIwaveACSetup(CfgSetupAC):
     si_slider_position: int = Field(1, description="SI slider position. Options are 0-speed, 1-balanced, 2-accuracy.")
     pi_slider_position: int = Field(1, description="PI Slider position. Options are 0-speed, 1-balanced, 2-accuracy.")
 
-
     def add_frequency_sweep(
         self,
         name: CfgSetupAC.CfgFrequencySweep | str,
@@ -492,7 +491,6 @@ class CfgHFSSSetup(CfgSetupAC):
 
     auto_mesh_operation: CfgAutoMeshOperation | None = Field(default_factory=CfgAutoMeshOperation)
     mesh_operations: list[CfgLengthMeshOperation] | None = Field(default_factory=list)
-
 
     def set_single_frequency_adaptive(
         self, freq: float | str = "5GHz", max_passes: int = 20, max_delta: float | str = 0.02
