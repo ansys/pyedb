@@ -830,9 +830,9 @@ class CfgSetups(CfgBaseModel):
 
         Parameters
         ----------
-        config : CfgHFSSSetup or str, optional
-            Pre-built setup object, a name string (legacy positional argument),
-            or *None* to construct a new setup from *kwargs*.
+        config : CfgHFSSSetup, optional
+            Pre-built setup object, or *None* to construct a new setup from
+            *kwargs*.
         **kwargs
             Keyword arguments forwarded to :class:`CfgHFSSSetup` when *config*
             is *None*.  Common parameters:
@@ -848,13 +848,9 @@ class CfgSetups(CfgBaseModel):
 
         Examples
         --------
-        >>> hfss = cfg.setups.add_hfss_setup("hfss_1", adapt_type="broadband")
+        >>> hfss = cfg.setups.add_hfss_setup(name="hfss_1", adapt_type="broadband")
         >>> hfss.set_broadband_adaptive("1GHz", "20GHz")
         """
-        if isinstance(config, str):
-            kwargs = dict(kwargs)
-            kwargs["name"] = config
-            config = None
         if config:
             hfss_setup = config
         else:
@@ -875,11 +871,11 @@ class CfgSetups(CfgBaseModel):
 
         Parameters
         ----------
-        config : CfgSIwaveACSetup or str, optional
-            Pre-built setup object, a name string, or *None* to construct
-            from the remaining parameters.
+        config : CfgSIwaveACSetup, optional
+            Pre-built setup object, or *None* to construct from the remaining
+            parameters.
         name : str, optional
-            Setup name.  Can also be passed as the first positional argument.
+            Setup name.
         si_slider_position : int, optional
             SI accuracy slider.  ``0`` = Speed, ``1`` = Balanced (default),
             ``2`` = Accuracy.
@@ -899,12 +895,9 @@ class CfgSetups(CfgBaseModel):
 
         Examples
         --------
-        >>> siw = cfg.setups.add_siwave_ac_setup("siw_ac", si_slider_position=2)
+        >>> siw = cfg.setups.add_siwave_ac_setup(name="siw_ac", si_slider_position=2)
         >>> siw.add_frequency_sweep("sw1", start="1kHz", stop="1GHz", step_or_count=100)
         """
-        if isinstance(config, str):
-            name = config
-            config = None
         if config is not None:
             siwave_ac_setup = config
         else:
@@ -930,11 +923,11 @@ class CfgSetups(CfgBaseModel):
 
         Parameters
         ----------
-        config : CfgSIwaveDCSetup or str, optional
-            Pre-built setup object, a name string, or *None* to construct
-            from the remaining parameters.
+        config : CfgSIwaveDCSetup, optional
+            Pre-built setup object, or *None* to construct from the remaining
+            parameters.
         name : str, optional
-            Setup name.  Can also be passed as the first positional argument.
+            Setup name.
         dc_slider_position : int, optional
             DC accuracy slider.  ``0`` = Speed, ``1`` = Balanced (default),
             ``2`` = Accuracy.
@@ -950,11 +943,8 @@ class CfgSetups(CfgBaseModel):
 
         Examples
         --------
-        >>> cfg.setups.add_siwave_dc_setup("siw_dc", dc_slider_position=1, export_dc_thermal_data=True)
+        >>> cfg.setups.add_siwave_dc_setup(name="siw_dc", dc_slider_position=1, export_dc_thermal_data=True)
         """
-        if isinstance(config, str):
-            name = config
-            config = None
         if config is not None:
             siwave_dc_setup = config
         else:
