@@ -33,7 +33,7 @@ from typing import TYPE_CHECKING
 import warnings
 
 if TYPE_CHECKING:
-    from pyedb.configuration.builder import EdbConfigBuilder
+    pass
 
 import toml
 
@@ -102,8 +102,8 @@ class Configuration:
         func()
         self._pedb.logger.info(f"{label} finished. Time lapse {datetime.now() - start}")
 
-    def create_config_builder(self) -> "EdbConfigBuilder":
-        """Create and return an :class:`~pyedb.configuration.builder.EdbConfigBuilder` bound to this EDB session.
+    def create_config_builder(self) -> CfgData:
+        """Create and return a :class:`~pyedb.configuration.cfg_data.CfgData` bound to this EDB session.
 
         Because the builder is initialised with a reference to the live EDB
         session, you can retrieve *existing* objects directly via ``get``
@@ -120,7 +120,7 @@ class Configuration:
 
         Returns
         -------
-        EdbConfigBuilder
+        CfgData
             A new, session-aware configuration builder instance.
 
         Examples
@@ -141,20 +141,18 @@ class Configuration:
         >>> edb.configuration.run(cfg)
 
         """
-        from pyedb.configuration.builder import EdbConfigBuilder  # local import avoids circular refs
-
-        return EdbConfigBuilder(pedb=self._pedb)
+        return CfgData(pedb=self._pedb)
 
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
         """Import configuration settings from a configure file.
 
         Parameters
         ----------
-        config_file : str, dict, or EdbConfigBuilder
+        config_file : str, dict, or CfgData
             Full path to configure file in JSON or TOML format, a plain Python
-            dictionary, or an :class:`pyedb.configuration.builder.EdbConfigBuilder`
-            instance.  When an ``EdbConfigBuilder`` is supplied its
-            :meth:`~pyedb.configuration.builder.EdbConfigBuilder.to_dict` method is
+            dictionary, or a :class:`~pyedb.configuration.cfg_data.CfgData`
+            instance.  When a ``CfgData`` is supplied its
+            :meth:`~pyedb.configuration.cfg_data.CfgData.to_dict` method is
             called automatically so the builder can be passed without any extra
             serialization step.
         append : bool, optional
@@ -174,18 +172,16 @@ class Configuration:
 
         Examples
         --------
-        Pass an :class:`~pyedb.configuration.builder.EdbConfigBuilder` directly:
+        Pass a :class:`~pyedb.configuration.cfg_data.CfgData` directly:
 
-        >>> from pyedb.configuration import EdbConfigBuilder
-        >>> cfg = EdbConfigBuilder()
+        >>> from pyedb.configuration.cfg_data import CfgData
+        >>> cfg = CfgData()
         >>> cfg.general.anti_pads_always_on = False
         >>> edb.configuration.load(cfg, apply_file=True)
 
         """
-        # Accept EdbConfigBuilder directly – convert to dict transparently.
-        from pyedb.configuration.builder import EdbConfigBuilder as _Builder  # local import avoids circular refs
-
-        if isinstance(config_file, _Builder):
+        # Accept CfgData directly – convert to dict transparently.
+        if isinstance(config_file, CfgData):
             config_file = config_file.to_dict()
 
         if isinstance(config_file, dict):
@@ -233,10 +229,10 @@ class Configuration:
 
         Parameters
         ----------
-        config : EdbConfigBuilder, dict, or str, optional
+        config : CfgData, dict, or str, optional
             When supplied the configuration is loaded before applying.
-            Accepts the same types as :meth:`load`: an
-            :class:`~pyedb.configuration.builder.EdbConfigBuilder` instance,
+            Accepts the same types as :meth:`load`: a
+            :class:`~pyedb.configuration.cfg_data.CfgData` instance,
             a plain Python dictionary, or a path to a JSON / TOML file.
             When *None* (default) the previously loaded :attr:`cfg_data` is used.
 
@@ -244,8 +240,8 @@ class Configuration:
         --------
         Pass a builder directly — no ``load`` call needed:
 
-        >>> from pyedb.configuration import EdbConfigBuilder
-        >>> cfg = EdbConfigBuilder()
+        >>> from pyedb.configuration.cfg_data import CfgData
+        >>> cfg = CfgData()
         >>> cfg.general.anti_pads_always_on = False
         >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
         >>> edb.configuration.run(cfg)
@@ -257,7 +253,13 @@ class Configuration:
 
         """
         if config is not None:
-            self.load(config)
+            if isinstance(config, CfgData):
+                # When a CfgData is passed directly, use it as-is without accumulating into self.data.
+                # This avoids cross-contamination from previously loaded configurations.
+                self.data = config.to_dict()
+                self.cfg_data = CfgData(self._pedb, **self.data)
+            else:
+                self.load(config)
 
         if kwargs.get("fix_padstack_def"):
             warnings.warn("fix_padstack_def is deprecated.", DeprecationWarning)
@@ -283,7 +285,7 @@ class Configuration:
 
         self.__apply_with_logging("Applying S-parameters", self.cfg_data.s_parameters.apply)
 
-        for spice_model in self.cfg_data.spice_models:
+        for spice_model in self.cfg_data.spice_models.models:
             self.__apply_with_logging(f"Assigning Spice model {spice_model}", spice_model.apply)
 
         self.__apply_with_logging("Applying package definitions", self.cfg_data.package_definitions.apply)
@@ -757,8 +759,15 @@ class Configuration:
         """Retrieve materials from the current design."""
 
         self.cfg_data.stackup.materials = []
-        for name, mat in self._pedb.materials.materials.items():
-            self.cfg_data.stackup.add_material(**mat.to_dict())
+        saved_pedb = self.cfg_data.stackup._pedb
+        # object.__setattr__ to properly set the private _pedb attribute on the Pydantic model, matching how _set_pedb
+        # does it. This ensures the EDB duplicate check is truly bypassed when reading materials back from the database.
+        object.__setattr__(self.cfg_data.stackup, "_pedb", None)
+        try:
+            for name, mat in self._pedb.materials.materials.items():
+                self.cfg_data.stackup.add_material(**mat.to_dict())
+        finally:
+            object.__setattr__(self.cfg_data.stackup, "_pedb", saved_pedb)
 
     def apply_stackup(self):
         """Apply stackup layer definitions to the current design.
@@ -842,7 +851,6 @@ class Configuration:
         for p_inst in self._pedb.layout.padstack_instances:
             temp_p_inst_layer_map[p_inst.id] = p_inst.layer_map
 
-        # ----------------------------------------------------------------------
         # Apply stackup
         layers = list()
         layers.extend(self.cfg_data.stackup.layers)
@@ -883,14 +891,20 @@ class Configuration:
             elif l.type == "signal":
                 prev_layer_clone = self._pedb.stackup.layers[l.name]
 
-        # ----------------------------------------------------------------------
         # restore padstack definitions
         for pdef_name, pdef_data in temp_pdef_data.items():
             pdef = self._pedb.padstacks.definitions[pdef_name]
-            pdef._padstack_def_data = pdef_data
+            if settings.is_grpc:
+                pdef.data = pdef_data
+            else:
+                pdef._padstack_def_data = pdef_data
+
         # restore padstack instance layer map
         for p_inst in self._pedb.layout.padstack_instances:
-            p_inst._layer_map = temp_p_inst_layer_map[p_inst.id]
+            if settings.is_grpc:
+                p_inst.layer_map = temp_p_inst_layer_map[p_inst.id]
+            else:
+                p_inst._layer_map = temp_p_inst_layer_map[p_inst.id]
 
     def get_stackup(self):
         """Populate :attr:`cfg_data.stackup` layers from the open EDB design.

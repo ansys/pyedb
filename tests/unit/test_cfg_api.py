@@ -8445,7 +8445,7 @@ class TestBuilderRemainingLines:
         import os
         import tempfile
 
-        from pyedb.configuration.builder import EdbConfigBuilder
+        from pyedb.configuration.cfg_data import CfgData as EdbConfigBuilder
 
         content = "[general]\nanti_pads_always_on = true\n"
         with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
@@ -8463,7 +8463,7 @@ class TestBuilderRemainingLines:
         import os
         import tempfile
 
-        from pyedb.configuration.builder import EdbConfigBuilder
+        from pyedb.configuration.cfg_data import CfgData as EdbConfigBuilder
 
         builder = EdbConfigBuilder()
         builder.general.anti_pads_always_on = True

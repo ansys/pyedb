@@ -22,7 +22,7 @@
 
 """Public configuration builders and aliases for :mod:`pyedb.configuration`."""
 
-from pyedb.configuration.builder import EdbConfigBuilder  # noqa: F401
+from pyedb.configuration.cfg_data import CfgData as EdbConfigBuilder  # noqa: F401
 from pyedb.configuration.cfg_boundaries import CfgBoundaries as BoundariesConfig  # noqa: F401
 from pyedb.configuration.cfg_common import CfgVariables as VariablesConfig  # noqa: F401
 from pyedb.configuration.cfg_components import (  # noqa: F401
