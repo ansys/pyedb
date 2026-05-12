@@ -23,11 +23,9 @@
 """Build the ``components`` configuration section and its model helpers."""
 
 import re as _re
-
 from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
 from pydantic import BaseModel
-
 from pyedb.configuration.cfg_common import CfgBase
 
 
@@ -79,7 +77,6 @@ _solder_shape_mapping = {
     "no_solder_ball": CoreSolderballShape.NO_SOLDERBALL,
 }
 
-# adding more tolerance on keys
 _die_type_mapping = {
     "flip_chip": CoreDieType.FLIPCHIP,
     "flipchip": CoreDieType.FLIPCHIP,
