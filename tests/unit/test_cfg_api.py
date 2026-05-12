@@ -25,7 +25,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from pyedb.configuration.cfg_padstacks import CfgPadstackInstance, CfgPadstackDefinition, CfgPadstacks
+from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance, CfgPadstacks
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
