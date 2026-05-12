@@ -24,7 +24,7 @@
 
 from typing import Any, Optional
 
-from pydantic import PrivateAttr
+from pydantic import Field, PrivateAttr
 
 from pyedb.configuration.cfg_common import CfgBaseModel, compact_dict, serialize_list
 from pyedb.misc.decorators import deprecated
@@ -58,7 +58,7 @@ class CfgPinGroups:
                 continue
             refdes = list(pg_obj.pins.values())[0].component.name
             cfg_pg = CfgPinGroup(
-                self._pedb,
+                pedb=self._pedb,
                 name=pg_name,
                 reference_designator=refdes,
                 pins=pins,
@@ -69,7 +69,7 @@ class CfgPinGroups:
     def __init__(self, pedb=None, pin_group_data=None, pingroup_data=None):
         self._pedb = pedb
         pin_group_data = pin_group_data if pin_group_data is not None else pingroup_data
-        self.pin_groups = [CfgPinGroup(self._pedb, **pg) for pg in (pin_group_data or [])]
+        self.pin_groups = [CfgPinGroup(pedb=self._pedb, **pg) for pg in (pin_group_data or [])]
 
     def get(self, name: str) -> "CfgPinGroup":
         """Return the :class:`CfgPinGroup` for an existing pin group.
@@ -113,7 +113,7 @@ class CfgPinGroups:
         pg_obj = layout_pgs[name]
         pins = list(pg_obj.pins.keys())
         refdes = list(pg_obj.pins.values())[0].component.name if pins else None
-        pg = CfgPinGroup(self._pedb, name=name, reference_designator=refdes, pins=pins)
+        pg = CfgPinGroup(pedb=self._pedb, name=name, reference_designator=refdes, pins=pins)
         self.pin_groups.append(pg)
         return pg
 
@@ -200,7 +200,7 @@ class CfgPinGroups:
                         if resolved_pins is None:
                             continue
                         pg = CfgPinGroup(
-                            self._pedb,
+                            pedb=self._pedb,
                             name=pg_name,
                             reference_designator=reference_designator,
                             pins=resolved_pins,
@@ -208,7 +208,7 @@ class CfgPinGroups:
                         )
                     else:
                         pg = CfgPinGroup(
-                            self._pedb, name=pg_name, reference_designator=reference_designator, net=net_name
+                            pedb=self._pedb, name=pg_name, reference_designator=reference_designator, net=net_name
                         )
                     self.pin_groups.append(pg)
                     created.append(pg)
@@ -221,20 +221,20 @@ class CfgPinGroups:
                     if resolved_pins is None:
                         return None
                     pg = CfgPinGroup(
-                        self._pedb,
+                        pedb=self._pedb,
                         name=name,
                         reference_designator=reference_designator,
                         pins=resolved_pins,
                         net=net_name,
                     )
                 else:
-                    pg = CfgPinGroup(self._pedb, name=name, reference_designator=reference_designator, net=net_name)
+                    pg = CfgPinGroup(pedb=self._pedb, name=name, reference_designator=reference_designator, net=net_name)
                 self.pin_groups.append(pg)
                 return pg
 
         if name is None:
             name = f"Pingroup_{reference_designator}"
-        pg = CfgPinGroup(self._pedb, name=name, reference_designator=reference_designator, pins=pins)
+        pg = CfgPinGroup(pedb=self._pedb, name=name, reference_designator=reference_designator, pins=pins)
         self.pin_groups.append(pg)
         return pg
 
@@ -269,13 +269,15 @@ class CfgPinGroup(CfgBaseModel):
     reference_designator: Optional[str] = None
     pins: Optional[Any] = None
     net: Optional[Any] = None
+    pedb: Optional[Any] = Field(default=None, exclude=True, repr=False)
 
     # Runtime-only EDB session reference
     _pedb: Any = PrivateAttr(default=None)
 
-    def __init__(self, pedb=None, name=None, reference_designator=None, pins=None, net=None, **kwargs):
-        super().__init__(name=name, reference_designator=reference_designator, pins=pins, net=net)
-        self._pedb = pedb
+    def model_post_init(self, __context: Any) -> None:
+        """Transfer the ``pedb`` field value to the private ``_pedb`` attribute."""
+        if self.pedb is not None:
+            self._pedb = self.pedb
 
     def create(self):
         """Write this pin group into the open EDB design.

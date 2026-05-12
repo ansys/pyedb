@@ -27,7 +27,7 @@ materials, layers, roughness, and etching definitions.
 
 from typing import Any, List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class CfgMaterialPropertyThermalModifier(BaseModel):
@@ -70,9 +70,6 @@ class CfgMaterial(MaterialProperties):
 
     name: Optional[str] = None
     thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
-
-    def __init__(self, name: str | None = None, **kwargs):
-        super().__init__(name=name, **kwargs)
 
     def to_dict(self) -> dict:
         """Serialize the material, excluding ``None`` values."""
@@ -129,34 +126,18 @@ class CfgLayer(BaseModel):
 
     model_config = {"populate_by_name": True}
 
+    @model_validator(mode="before")
+    @classmethod
+    def _resolve_type_alias(cls, values):
+        if isinstance(values, dict) and "type" in values and "layer_type" not in values:
+            values["layer_type"] = values.pop("type")
+        return values
+
     @property
     def type(self) -> Optional[str]:
         """Alias for ``layer_type`` for backward compatibility."""
         return self.layer_type
 
-    def __init__(
-        self,
-        name: str | None = None,
-        layer_type: Optional[str] = None,
-        material: Optional[str] = None,
-        fill_material: Optional[str] = None,
-        thickness: Optional[Union[str, float]] = None,
-        roughness: Optional[CfgRoughnessModel] = None,
-        etching: Optional[EtchingModel] = None,
-        **kwargs,
-    ):
-        # Accept ``type`` as a back-compat alias passed via **kwargs.
-        resolved_type = layer_type or kwargs.pop("type", None)
-        super().__init__(
-            name=name,
-            layer_type=resolved_type,
-            material=material,
-            fill_material=fill_material,
-            thickness=thickness,
-            roughness=roughness,
-            etching=etching,
-            **kwargs,
-        )
 
     def set_huray_roughness(
         self,

@@ -25,7 +25,7 @@
 from pathlib import Path
 from typing import Any, List, Optional
 
-from pydantic import Field, PrivateAttr
+from pydantic import Field, PrivateAttr, model_validator
 
 from pyedb.configuration.cfg_common import CfgBaseModel, serialize_list
 
@@ -35,6 +35,15 @@ class CfgSpiceModel(CfgBaseModel):
 
     model_config = {"populate_by_name": True, "extra": "ignore", "arbitrary_types_allowed": True}
 
+    def __init__(self, name: str = "", component_definition: str = "", file_path: str = "", **kwargs):
+        if name:
+            kwargs["name"] = name
+        if component_definition:
+            kwargs["component_definition"] = component_definition
+        if file_path:
+            kwargs["file_path"] = file_path
+        super().__init__(**kwargs)
+
     name: str = ""
     component_definition: str = ""
     file_path: str = ""
@@ -43,62 +52,54 @@ class CfgSpiceModel(CfgBaseModel):
     components: List[Any] = Field(default_factory=list)
     terminal_pairs: Optional[Any] = None
 
+    # Runtime-only inputs (excluded from serialization)
+    pedb: Optional[Any] = Field(default=None, exclude=True, repr=False)
+    path_lib: Optional[str] = Field(default=None, exclude=True, repr=False)
+
     # Runtime-only attributes stored as Pydantic private fields
     _pedb: Any = PrivateAttr(default=None)
     _path_libraries: Optional[str] = PrivateAttr(default=None)
 
-    def __init__(
-        self,
-        pdata=None,
-        path_lib=None,
-        spice_dict=None,
-        name: str = "",
-        component_definition: str = "",
-        file_path: str = "",
-        sub_circuit_name: str = "",
-        apply_to_all: bool = True,
-        components=None,
-        terminal_pairs=None,
-        **kwargs,
-    ):
-        # Legacy positional-arg call: CfgSpiceModel(name_str, comp_def_str, file_path_str, ...)
-        if isinstance(pdata, str):
-            name = pdata
-            component_definition = path_lib or component_definition
-            file_path = spice_dict if isinstance(spice_dict, str) else file_path
-            pdata = path_lib = spice_dict = None
-
-        # Merge dict-based input (from JSON loading) with explicit keyword args.
+    @model_validator(mode="before")
+    @classmethod
+    def _normalise_inputs(cls, values):
+        if not isinstance(values, dict):
+            return values
+        # Handle spice_dict merge (from JSON loading or explicit kwarg)
+        spice_dict = values.pop("spice_dict", None)
         merged = dict(spice_dict or {})
-        for key, val in {
-            "name": name,
-            "component_definition": component_definition,
-            "file_path": file_path,
-            "sub_circuit_name": sub_circuit_name,
-        }.items():
+        for key in ("name", "component_definition", "file_path", "sub_circuit_name"):
+            val = values.pop(key, None)
             if val:
                 merged[key] = val
-        # apply_to_all=False must be honoured; don't skip falsy values
+        # apply_to_all=False must be honoured
+        apply_to_all = values.pop("apply_to_all", merged.get("apply_to_all", True))
         merged.setdefault("apply_to_all", apply_to_all)
         if not apply_to_all:
             merged["apply_to_all"] = apply_to_all
+        components = values.pop("components", None)
         if components is not None:
             merged["components"] = components
+        terminal_pairs = values.pop("terminal_pairs", None)
         if terminal_pairs is not None:
             merged["terminal_pairs"] = terminal_pairs
-        merged.update(kwargs)
-
-        # Normalise components to a list before Pydantic validation
+        # carry through any remaining keys (e.g. pedb, path_lib)
+        merged.update(values)
+        # Normalise components to a list
         raw_components = merged.get("components", [])
         if isinstance(raw_components, str):
             raw_components = [raw_components]
         elif not isinstance(raw_components, (list, tuple, set)):
             raw_components = [raw_components] if raw_components else []
         merged["components"] = list(raw_components)
+        return merged
 
-        super().__init__(**merged)
-        self._pedb = getattr(pdata, "_pedb", None)
-        self._path_libraries = path_lib
+    def model_post_init(self, __context: Any) -> None:
+        """Set private runtime attributes from excluded fields."""
+        if self.pedb is not None:
+            self._pedb = self.pedb
+        if self.path_lib is not None:
+            self._path_libraries = self.path_lib
 
     def to_dict(self) -> dict:
         """Serialize the SPICE model assignment."""
@@ -139,7 +140,10 @@ class CfgSpiceModels:
     def __init__(self, pdata=None, data=None, path_lib=None):
         self._pdata = pdata
         self.path_libraries = path_lib
-        self.models = [CfgSpiceModel(pdata, path_lib, spice_model) for spice_model in (data or [])]
+        self.models = [
+            CfgSpiceModel(pedb=getattr(pdata, "_pedb", None), path_lib=path_lib, spice_dict=spice_model)
+            for spice_model in (data or [])
+        ]
 
     def add(
         self,
@@ -153,8 +157,8 @@ class CfgSpiceModels:
     ):
         """Add a SPICE model assignment."""
         model = CfgSpiceModel(
-            self._pdata,
-            self.path_libraries,
+            pedb=getattr(self._pdata, "_pedb", None),
+            path_lib=self.path_libraries,
             name=name,
             component_definition=component_definition,
             file_path=file_path,

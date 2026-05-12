@@ -23,7 +23,7 @@
 
 from typing import List, Literal, Optional, Union
 
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices, Field, model_validator
 
 from pyedb.configuration.cfg_common import CfgBaseModel, serialize_list
 
@@ -107,7 +107,12 @@ class CfgSetupAC(CfgSetupDC):
 
     class CfgFrequencySweep(CfgBaseModel):
         name: str
-        type: Literal["discrete", "interpolation", "interpolating"]
+        type: Literal["discrete", "interpolation", "interpolating"] = "interpolation"
+
+        def __init__(self, name: str = "", **kwargs):
+            if name:
+                kwargs["name"] = name
+            super().__init__(**kwargs)
         frequencies: list[CfgFrequencies | str] = Field(
             default_factory=list, description="List of frequency definitions or strings"
         )
@@ -122,36 +127,19 @@ class CfgSetupAC(CfgSetupDC):
         hfss_solver_region_setup_name: str | None = "<default>"
         hfss_solver_region_sweep_name: str | None = "<default>"
 
-        def __init__(
-            self,
-            name: str,
-            sweep_type: str = "interpolation",
-            frequencies=None,
-            use_q3d_for_dc: bool = False,
-            compute_dc_point: bool = False,
-            enforce_causality: bool = False,
-            enforce_passivity: bool = True,
-            adv_dc_extrapolation: bool = False,
-            use_hfss_solver_regions: bool = False,
-            hfss_solver_region_setup_name: str | None = "<default>",
-            hfss_solver_region_sweep_name: str | None = "<default>",
-            **kwargs,
-        ):
-            sweep_type = kwargs.pop("type", sweep_type)
-            super().__init__(
-                name=name,
-                type=sweep_type,
-                frequencies=list(frequencies or []),
-                use_q3d_for_dc=use_q3d_for_dc,
-                compute_dc_point=compute_dc_point,
-                enforce_causality=enforce_causality,
-                enforce_passivity=enforce_passivity,
-                adv_dc_extrapolation=adv_dc_extrapolation,
-                use_hfss_solver_regions=use_hfss_solver_regions,
-                hfss_solver_region_setup_name=hfss_solver_region_setup_name,
-                hfss_solver_region_sweep_name=hfss_solver_region_sweep_name,
-                **kwargs,
-            )
+        @model_validator(mode="before")
+        @classmethod
+        def _resolve_sweep_type(cls, values):
+            if isinstance(values, dict):
+                # Allow callers to pass sweep_type= as an alias for type=
+                if "sweep_type" in values and "type" not in values:
+                    values["type"] = values.pop("sweep_type")
+                # Ensure frequencies is a list
+                if "frequencies" not in values:
+                    values["frequencies"] = []
+                elif values["frequencies"] is None:
+                    values["frequencies"] = []
+            return values
 
         def add_frequencies(self, freq: CfgFrequencies):
             """Append a pre-built :class:`CfgFrequencies` range to this sweep.
@@ -391,17 +379,17 @@ class CfgSIwaveDCSetup(CfgSetupDC):
         export_dc_thermal_data: bool = Field(False, description="Whether to export DC thermal data.")
 
     type: str = "siwave_dc"
-    dc_slider_position: int | str
+    dc_slider_position: int | str = 1
     dc_ir_settings: CfgDCIRSettings | None = None
 
-    def __init__(self, name: str, dc_slider_position: int | str = 1, export_dc_thermal_data: bool = False, **kwargs):
-        dc_ir_settings = kwargs.pop("dc_ir_settings", None)
-        super().__init__(
-            name=name,
-            dc_slider_position=dc_slider_position,
-            dc_ir_settings=dc_ir_settings or self.CfgDCIRSettings(export_dc_thermal_data=export_dc_thermal_data),
-            **kwargs,
-        )
+    @model_validator(mode="before")
+    @classmethod
+    def _resolve_dc_ir_settings(cls, values):
+        if isinstance(values, dict):
+            if "dc_ir_settings" not in values or values.get("dc_ir_settings") is None:
+                export_dc_thermal_data = values.pop("export_dc_thermal_data", False)
+                values["dc_ir_settings"] = {"export_dc_thermal_data": export_dc_thermal_data}
+        return values
 
     def to_dict(self) -> dict:
         """Serialize this SIwave DC setup to a plain dictionary.
