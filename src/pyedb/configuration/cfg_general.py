@@ -22,9 +22,7 @@
 """Build the ``general`` configuration section."""
 
 from typing import Any, Optional
-
-from pydantic import BaseModel, PrivateAttr
-
+from pydantic import BaseModel, PrivateAttr, field_validator
 from pyedb.configuration.cfg_common import compact_dict
 
 
@@ -37,6 +35,11 @@ class CfgGeneral(BaseModel):
     s_parameter_library: str = ""
     anti_pads_always_on: Optional[bool] = None
     suppress_pads: Optional[bool] = None
+
+    @field_validator("spice_model_library", "s_parameter_library", mode="before")
+    @classmethod
+    def _coerce_to_str(cls, v):
+        return str(v) if v is not None else ""
 
     _pedb: Any = PrivateAttr(default=None)
 
