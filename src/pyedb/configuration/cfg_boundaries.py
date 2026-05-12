@@ -210,7 +210,4 @@ class CfgBoundaries(CfgBaseModel):
 
     def to_dict(self) -> dict:
         """Serialize explicitly configured boundary fields."""
-        raw = self.model_dump(exclude_none=True)
-        if not self.honor_user_dielectric:
-            raw.pop("honor_user_dielectric", None)
-        return raw
+        return self.model_dump(exclude_none=True, exclude_defaults=True)

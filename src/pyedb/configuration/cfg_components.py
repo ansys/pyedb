@@ -109,8 +109,6 @@ class CfgPinPairModel(BaseModel):
     inductance_enabled: bool = False
     capacitance_enabled: bool = False
 
-    def __init__(self, first_pin: str, second_pin: str, **kwargs):
-        super().__init__(first_pin=first_pin, second_pin=second_pin, **kwargs)
 
     def to_dict(self) -> dict:
         return self.model_dump()
@@ -447,8 +445,8 @@ class CfgComponent(CfgBase):
         """
         self.pin_pair_model.append(
             CfgPinPairModel(
-                first_pin,
-                second_pin,
+                first_pin=first_pin,
+                second_pin=second_pin,
                 resistance=resistance,
                 inductance=inductance,
                 capacitance=capacitance,
@@ -795,11 +793,8 @@ class CfgComponents:
         for comp in self.components:
             comp.set_parameters_to_edb()
 
-    def get_data_from_db(self):
-        """Read all component settings from the open EDB design."""
-        return self.retrieve_parameters_from_edb()
-
     def retrieve_parameters_from_edb(self):
+        """Read all component settings from the open EDB design."""
         self.clean()
         if self._pedb is None:
             return self.to_list()
@@ -807,6 +802,10 @@ class CfgComponents:
             cfg_comp = CfgComponent(self._pedb, obj)
             cfg_comp.retrieve_parameters_from_edb()
             self.components.append(cfg_comp)
+
+    def get_data_from_db(self):
+        """Read all component settings from the open EDB design."""
+        return self.retrieve_parameters_from_edb()
 
     def to_list(self):
         """Serialize all configured components."""
