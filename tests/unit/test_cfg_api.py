@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 import pytest
-from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions, CfgPackage, CfgHeatSink
+
+from pyedb.configuration.cfg_package_definition import CfgHeatSink, CfgPackage, CfgPackageDefinitions
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
@@ -52,9 +53,7 @@ class TestPackageDefinitionConfig:
         assert d["apply_to_all"] is True
 
     def test_explicit_components(self):
-        pkg = CfgPackage(
-            name="PKG1", component_definition="BGA", apply_to_all=False, components=["U1", "U2"]
-        )
+        pkg = CfgPackage(name="PKG1", component_definition="BGA", apply_to_all=False, components=["U1", "U2"])
         d = pkg.to_dict()
         assert d["components"] == ["U1", "U2"]
 
