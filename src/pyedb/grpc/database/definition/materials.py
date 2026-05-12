@@ -104,7 +104,7 @@ def get_line_float_value(line):
         return None
 
 
-class MateiralPropertyId(str, Enum):
+class MaterialPropertyId(str, Enum):
     permittivity = "PERMITTIVITY"
     permeability = "PERMEABILITY"
     conductivity = "CONDUCTIVITY"
@@ -705,7 +705,7 @@ class Material:
         )
 
         thermal_modifier = CoreMaterialPropertyThermalModifier.create(basic, advanced)
-        temp = MateiralPropertyId[property_name]
+        temp = MaterialPropertyId[property_name]
         self.core.set_thermal_modifier(CoreMaterialProperty[temp], thermal_modifier)
         return True
 
