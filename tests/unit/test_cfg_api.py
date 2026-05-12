@@ -32,12 +32,12 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 class TestPadstackDefinitionConfig:
     def test_minimal(self):
-        p = CfgPadstackDefinition("via_0.2")
+        p = CfgPadstackDefinition(name="via_0.2")
         d = p.to_dict()
         assert d == {"name": "via_0.2"}
 
     def test_with_properties(self):
-        p = CfgPadstackDefinition("via", hole_plating_thickness="25um", material="copper")
+        p = CfgPadstackDefinition(name="via", hole_plating_thickness="25um", material="copper")
         d = p.to_dict()
         assert d["hole_plating_thickness"] == "25um"
         assert d["material"] == "copper"
@@ -45,7 +45,7 @@ class TestPadstackDefinitionConfig:
     def test_all_explicit_params(self):
         """All CfgPadstackDefinition fields are explicit — no **kwargs."""
         p = CfgPadstackDefinition(
-            "via_full",
+            name="via_full",
             hole_plating_thickness="25um",
             material="copper",
             hole_range="upper_pad_to_lower_pad",

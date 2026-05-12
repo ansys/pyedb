@@ -23,7 +23,7 @@
 
 from typing import Literal, Union
 
-from pydantic import Field, PrivateAttr, field_validator
+from pydantic import Field, PrivateAttr, field_validator, model_validator
 
 from pyedb.configuration.cfg_common import CfgBaseModel as CfgBase
 from pyedb.misc.decorators import deprecated
@@ -168,29 +168,12 @@ class CfgPadstackDefinition(CfgBase):
     hole_parameters: dict | None = None
     solder_ball_parameters: dict | None = None
 
-    def __init__(
-        self,
-        name: str,
-        hole_plating_thickness: str | float | None = None,
-        material: str | None = None,
-        hole_range: Literal["through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad"]
-        | None = None,
-        pad_parameters: dict | None = None,
-        hole_parameters: dict | None = None,
-        solder_ball_parameters: dict | None = None,
-        **kwargs,
-    ):
-        if material is not None and "hole_material" not in kwargs:
-            kwargs["hole_material"] = material
-        super().__init__(
-            name=name,
-            hole_plating_thickness=hole_plating_thickness,
-            hole_range=hole_range,
-            pad_parameters=pad_parameters,
-            hole_parameters=hole_parameters,
-            solder_ball_parameters=solder_ball_parameters,
-            **kwargs,
-        )
+    @model_validator(mode="before")
+    @classmethod
+    def _remap_material(cls, values):
+        if isinstance(values, dict) and "material" in values and "hole_material" not in values:
+            values["hole_material"] = values.pop("material")
+        return values
 
     @classmethod
     def create(cls, **kwargs) -> "CfgPadstackDefinition":
