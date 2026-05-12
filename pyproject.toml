@@ -2,7 +2,6 @@
 requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
-
 [project]
 name = "pyedb"
 dynamic = ["version"]
@@ -93,7 +92,6 @@ doc = [
     "sphinx-gallery>=0.14.0,<0.22",
     "sphinx_design>=0.4.0,<0.7"
 ]
-
 
 [tool.flit.module]
 name = "pyedb"
@@ -303,13 +301,18 @@ title_format = "`{version} <https://github.com/ansys/pyedb/releases/tag/v{versio
 issue_format = "`#{issue} <https://github.com/ansys/pyedb/pull/{issue}>`_"
 
 [[tool.towncrier.type]]
+directory = "breaking"
+name = "Breaking"
+showcontent = true
+
+[[tool.towncrier.type]]
 directory = "added"
 name = "Added"
 showcontent = true
 
 [[tool.towncrier.type]]
-directory = "dependencies"
-name = "Dependencies"
+directory = "fixed"
+name = "Fixed"
 showcontent = true
 
 [[tool.towncrier.type]]
@@ -318,8 +321,8 @@ name = "Documentation"
 showcontent = true
 
 [[tool.towncrier.type]]
-directory = "fixed"
-name = "Fixed"
+directory = "dependencies"
+name = "Dependencies"
 showcontent = true
 
 [[tool.towncrier.type]]
