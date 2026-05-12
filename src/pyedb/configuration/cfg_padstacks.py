@@ -23,7 +23,7 @@
 
 from typing import Literal, Union
 
-from pydantic import Field, PrivateAttr
+from pydantic import Field, PrivateAttr, field_validator
 
 from pyedb.configuration.cfg_common import CfgBaseModel as CfgBase
 from pyedb.misc.decorators import deprecated
@@ -92,37 +92,15 @@ class CfgPadstackInstance(CfgBase):
     hole_override_diameter: str | float | None = None
     solder_ball_layer: str | None = None
 
-    def __init__(
-        self,
-        name: str = None,
-        net_name: str | None = None,
-        definition: str | None = None,
-        layer_range: list[str] | None = None,
-        position: list[str | float] | None = None,
-        rotation: str | float | None = None,
-        is_pin: bool = False,
-        hole_override_enabled: bool | None = None,
-        hole_override_diameter: str | float | None = None,
-        solder_ball_layer: str | None = None,
-        eid: int | None = None,
-        backdrill_parameters: CfgBackdrillParameters | None = None,
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            net_name=net_name,
-            definition=definition,
-            layer_range=layer_range,
-            position=position,
-            rotation=str(rotation) if rotation is not None else None,
-            is_pin=is_pin,
-            hole_override_enabled=hole_override_enabled,
-            hole_override_diameter=hole_override_diameter,
-            solder_ball_layer=solder_ball_layer,
-            eid=eid,
-            backdrill_parameters=backdrill_parameters or CfgBackdrillParameters(),
-            **kwargs,
-        )
+    @field_validator("rotation", mode="before")
+    @classmethod
+    def _coerce_rotation_to_str(cls, v):
+        return str(v) if v is not None else None
+
+    @field_validator("backdrill_parameters", mode="before")
+    @classmethod
+    def _default_backdrill(cls, v):
+        return v if v is not None else CfgBackdrillParameters()
 
     @property
     def _id(self):
