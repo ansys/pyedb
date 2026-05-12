@@ -23,12 +23,29 @@
 """Build SPICE model assignment entries for configuration payloads."""
 
 from pathlib import Path
+from typing import Any, List, Optional
 
-from pyedb.configuration.cfg_common import serialize_list
+from pydantic import Field, PrivateAttr
+
+from pyedb.configuration.cfg_common import CfgBaseModel, serialize_list
 
 
-class CfgSpiceModel:
+class CfgSpiceModel(CfgBaseModel):
     """Represent one SPICE subcircuit model assignment."""
+
+    model_config = {"populate_by_name": True, "extra": "ignore", "arbitrary_types_allowed": True}
+
+    name: str = ""
+    component_definition: str = ""
+    file_path: str = ""
+    sub_circuit_name: str = ""
+    apply_to_all: bool = True
+    components: List[Any] = Field(default_factory=list)
+    terminal_pairs: Optional[Any] = None
+
+    # Runtime-only attributes stored as Pydantic private fields
+    _pedb: Any = PrivateAttr(default=None)
+    _path_libraries: Optional[str] = PrivateAttr(default=None)
 
     def __init__(
         self,
@@ -45,7 +62,6 @@ class CfgSpiceModel:
         **kwargs,
     ):
         # Legacy positional-arg call: CfgSpiceModel(name_str, comp_def_str, file_path_str, ...)
-        # Detect by checking whether pdata is a plain string (not an EDB session).
         if isinstance(pdata, str) and not hasattr(pdata, "_pedb"):
             name = pdata
             component_definition = path_lib or component_definition
@@ -55,7 +71,6 @@ class CfgSpiceModel:
             spice_dict = None
 
         # Merge dict-based input (from JSON loading) with explicit keyword args.
-        # Explicit kwargs only override dict values when they differ from their defaults.
         merged = dict(spice_dict or {})
         if name:
             merged["name"] = name
@@ -65,7 +80,7 @@ class CfgSpiceModel:
             merged["file_path"] = file_path
         if sub_circuit_name:
             merged["sub_circuit_name"] = sub_circuit_name
-        if not apply_to_all:  # only override if caller explicitly passed False
+        if not apply_to_all:
             merged["apply_to_all"] = apply_to_all
         elif "apply_to_all" not in merged:
             merged["apply_to_all"] = apply_to_all
@@ -75,13 +90,7 @@ class CfgSpiceModel:
             merged["terminal_pairs"] = terminal_pairs
         merged.update(kwargs)
 
-        self._pedb = getattr(pdata, "_pedb", None)
-        self.path_libraries = path_lib
-        self.name = merged.get("name", "")
-        self.component_definition = merged.get("component_definition", "")
-        self.file_path = str(merged.get("file_path", "") or "")
-        self.sub_circuit_name = merged.get("sub_circuit_name", "")
-        self.apply_to_all = merged.get("apply_to_all", True)
+        # Pre-coerce components before Pydantic validation
         raw_components = merged.get("components", [])
         if isinstance(raw_components, str):
             raw_components = [raw_components]
@@ -89,8 +98,12 @@ class CfgSpiceModel:
             raw_components = []
         elif not isinstance(raw_components, (list, tuple, set)):
             raw_components = [raw_components]
-        self.components = list(raw_components)
-        self.terminal_pairs = merged.get("terminal_pairs", None)
+        merged["components"] = list(raw_components)
+
+        super().__init__(**merged)
+        self._pedb = getattr(pdata, "_pedb", None)
+        self._path_libraries = path_lib
+
 
     def to_dict(self) -> dict:
         """Serialize the SPICE model assignment."""
@@ -111,7 +124,7 @@ class CfgSpiceModel:
         if self._pedb is None:
             return self.to_dict()
         if not Path(self.file_path).anchor:
-            fpath = str(Path(self.path_libraries or "") / self.file_path)
+            fpath = str(Path(self._path_libraries or "") / self.file_path)
         else:
             fpath = self.file_path
 

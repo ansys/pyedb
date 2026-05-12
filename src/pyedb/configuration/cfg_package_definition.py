@@ -22,15 +22,53 @@
 
 """Build thermal package-definition configuration entries."""
 
-from pyedb.configuration.cfg_common import CfgBase, compact_dict, serialize_list
+from typing import Any, List, Optional
+
+from pydantic import Field
+
+from pyedb.configuration.cfg_common import CfgBaseModel, compact_dict, serialize_list
 from pyedb.generic.settings import settings
 
 
-class CfgPackage(CfgBase):
+class CfgHeatSink(CfgBaseModel):
+    """Configuration heat sink class."""
+
+    model_config = {"populate_by_name": True, "extra": "ignore"}
+
+    fin_base_height: Optional[Any] = None
+    fin_height: Optional[Any] = None
+    fin_orientation: Optional[str] = None
+    fin_spacing: Optional[Any] = None
+    fin_thickness: Optional[Any] = None
+
+    def to_dict(self) -> dict:
+        """Serialize non-null heat-sink properties."""
+        return {k: v for k, v in self.model_dump().items() if v is not None}
+
+    def get_attributes(self, exclude=None):
+        """Return non-null attribute dict (CfgBase compatibility)."""
+        return self.to_dict()
+
+
+class CfgPackage(CfgBaseModel):
     """Configuration package class."""
 
+    model_config = {"populate_by_name": True, "extra": "ignore", "arbitrary_types_allowed": True}
+
     # Attributes cannot be set to package definition class or don't exist in package definition class.
-    protected_attributes = ["name", "apply_to_all", "components", "extent_bounding_box", "component_definition"]
+    _protected_attributes: List[str] = ["name", "apply_to_all", "components", "extent_bounding_box", "component_definition"]
+
+    name: Optional[str] = None
+    component_definition: Optional[str] = None
+    apply_to_all: Optional[bool] = None
+    components: List[str] = Field(default_factory=list)
+    maximum_power: Optional[Any] = None
+    thermal_conductivity: Optional[Any] = None
+    theta_jb: Optional[Any] = None
+    theta_jc: Optional[Any] = None
+    height: Optional[Any] = None
+    extent_bounding_box: Optional[Any] = None
+    heatsink: Optional[CfgHeatSink] = None
 
     def __init__(
         self,
@@ -47,39 +85,37 @@ class CfgPackage(CfgBase):
         heatsink=None,
         **kwargs,
     ):
-        self.name = name if name is not None else kwargs.get("name", None)
-        self.component_definition = (
-            component_definition if component_definition is not None else kwargs.get("component_definition", None)
+        if isinstance(heatsink, dict) and heatsink:
+            heatsink = CfgHeatSink(**heatsink)
+        super().__init__(
+            name=name,
+            component_definition=component_definition,
+            apply_to_all=apply_to_all,
+            components=components or [],
+            maximum_power=maximum_power,
+            thermal_conductivity=thermal_conductivity,
+            theta_jb=theta_jb,
+            theta_jc=theta_jc,
+            height=height,
+            extent_bounding_box=extent_bounding_box,
+            heatsink=heatsink,
         )
-        self.maximum_power = maximum_power if maximum_power is not None else kwargs.get("maximum_power", None)
-        self.thermal_conductivity = (
-            thermal_conductivity if thermal_conductivity is not None else kwargs.get("thermal_conductivity", None)
-        )
-        self.theta_jb = theta_jb if theta_jb is not None else kwargs.get("theta_jb", None)
-        self.theta_jc = theta_jc if theta_jc is not None else kwargs.get("theta_jc", None)
-        self.height = height if height is not None else kwargs.get("height", None)
-        self.apply_to_all = apply_to_all if apply_to_all is not None else kwargs.get("apply_to_all", None)
-        self.components = components if components is not None else kwargs.get("components", [])
-        self.extent_bounding_box = (
-            extent_bounding_box if extent_bounding_box is not None else kwargs.get("extent_bounding_box", None)
-        )
-        heatsink_data = heatsink if heatsink is not None else kwargs.get("heatsink")
-        self._heatsink = CfgHeatSink(**heatsink_data) if isinstance(heatsink_data, dict) and heatsink_data else None
 
-    @property
-    def heatsink(self):
-        """CfgHeatSink or None: Heat-sink geometry attached to this package."""
-        return self._heatsink
+    def get_attributes(self, exclude=None):
+        """Return dict of non-null/non-protected attributes (CfgBase compatibility)."""
+        protected = set(self._protected_attributes) | {"heatsink"}
+        if exclude:
+            protected.update(exclude if isinstance(exclude, list) else [exclude])
+        data = self.model_dump(exclude_none=True)
+        return {k: v for k, v in data.items() if k not in protected}
 
-    @heatsink.setter
-    def heatsink(self, value):
-        """Set the heat-sink geometry.
-
-        Parameters
-        ----------
-        value : CfgHeatSink or None
-        """
-        self._heatsink = value
+    def set_attributes(self, pedb_object):
+        """Set non-protected attributes onto *pedb_object* (CfgBase compatibility)."""
+        attrs = self.get_attributes()
+        for attr, value in attrs.items():
+            if attr not in dir(pedb_object):
+                raise AttributeError(f"Invalid attribute '{attr}' in '{pedb_object}'")
+            setattr(pedb_object, attr, value)
 
     def set_heatsink(
         self,
@@ -119,14 +155,15 @@ class CfgPackage(CfgBase):
         ...     fin_thickness="0.2mm",
         ... )
         """
-        self.heatsink = CfgHeatSink(
+        hs = CfgHeatSink(
             fin_base_height=fin_base_height,
             fin_height=fin_height,
             fin_orientation=fin_orientation,
             fin_spacing=fin_spacing,
             fin_thickness=fin_thickness,
         )
-        return self.heatsink
+        object.__setattr__(self, "heatsink", hs)
+        return hs
 
     def to_dict(self) -> dict:
         """Serialize the package definition."""
@@ -156,20 +193,6 @@ class CfgPackage(CfgBase):
         return data
 
 
-class CfgHeatSink(CfgBase):
-    """Configuration heat sink class."""
-
-    def __init__(self, **kwargs):
-        self.fin_base_height = kwargs.get("fin_base_height", None)
-        self.fin_height = kwargs.get("fin_height", None)
-        self.fin_orientation = kwargs.get("fin_orientation", None)
-        self.fin_spacing = kwargs.get("fin_spacing", None)
-        self.fin_thickness = kwargs.get("fin_thickness", None)
-
-    def to_dict(self) -> dict:
-        """Serialize non-null heat-sink properties."""
-        return self.get_attributes()
-
 
 class CfgPackageDefinitions:
     """Manage thermal package definitions for the ``package_definitions`` section."""
@@ -177,17 +200,19 @@ class CfgPackageDefinitions:
     def get_parameters_from_edb(self):
         """Read thermal package definitions from EDB."""
         package_definitions = []
+        _pkg_field_names = set(CfgPackage.model_fields.keys())
+        _hs_field_names = set(CfgHeatSink.model_fields.keys())
         for pkg_name, pkg_obj in self._pedb.definitions.package.items():
             pkg = {}
             pkg_attrs = [i for i in dir(pkg_obj) if not i.startswith("_")]
-            pkg_attrs = {i for i in pkg_attrs if i in CfgPackage().__dict__}
+            pkg_attrs = {i for i in pkg_attrs if i in _pkg_field_names}
             for pkg_attr_name in pkg_attrs:
                 pkg[pkg_attr_name] = getattr(pkg_obj, pkg_attr_name)
             hs_obj = pkg_obj.heat_sink
             if hs_obj:
                 hs = {}
                 hs_attrs = [i for i in dir(hs_obj) if not i.startswith("_")]
-                hs_attrs = [i for i in hs_attrs if i in CfgHeatSink().__dict__]
+                hs_attrs = [i for i in hs_attrs if i in _hs_field_names]
                 for hs_attr_name in hs_attrs:
                     hs[hs_attr_name] = getattr(hs_obj, hs_attr_name)
                 pkg["heatsink"] = hs

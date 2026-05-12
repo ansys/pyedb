@@ -22,7 +22,11 @@
 
 """Build named pin-group configuration entries."""
 
-from pyedb.configuration.cfg_common import CfgBase, compact_dict, serialize_list
+from typing import Any, Optional
+
+from pydantic import PrivateAttr
+
+from pyedb.configuration.cfg_common import CfgBaseModel, compact_dict, serialize_list
 from pyedb.misc.decorators import deprecated
 
 
@@ -252,8 +256,22 @@ class CfgPinGroups:
         return self.export_properties()
 
 
-class CfgPinGroup(CfgBase):
+class CfgPinGroup(CfgBaseModel):
     """Represent one pin-group definition bound to a component."""
+
+    model_config = {"populate_by_name": True, "extra": "ignore", "arbitrary_types_allowed": True}
+
+    name: Optional[str] = None
+    reference_designator: Optional[str] = None
+    pins: Optional[Any] = None
+    net: Optional[Any] = None
+
+    # Runtime-only EDB session reference
+    _pedb: Any = PrivateAttr(default=None)
+
+    def __init__(self, pedb=None, name=None, reference_designator=None, pins=None, net=None, **kwargs):
+        super().__init__(name=name, reference_designator=reference_designator, pins=pins, net=net)
+        self._pedb = pedb
 
     def create(self):
         """Write this pin group into the open EDB design.
@@ -276,13 +294,6 @@ class CfgPinGroup(CfgBase):
                 raise RuntimeError(f"Failed to create pin group {self.name}")
         else:
             raise RuntimeError(f"No net and pins defined for defining pin group {self.name}")
-
-    def __init__(self, pedb=None, name=None, reference_designator=None, pins=None, net=None, **kwargs):
-        self._pedb = pedb
-        self.name = name
-        self.reference_designator = reference_designator
-        self.pins = pins
-        self.net = net
 
     def to_dict(self) -> dict:
         """Serialize the pin-group definition."""

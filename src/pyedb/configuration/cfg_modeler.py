@@ -22,31 +22,35 @@
 """Build geometry-creation and cleanup entries for the ``modeler`` section."""
 
 from copy import deepcopy as copy
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from typing import Any, Dict, List, Optional, Union
 
+from pydantic import Field
+
+from pyedb.configuration.cfg_common import CfgBaseModel
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance
 
 
-@dataclass
-class CfgTrace:
+class CfgTrace(CfgBaseModel):
     """Represent one trace primitive scheduled for creation."""
+
+    model_config = {"populate_by_name": True, "extra": "ignore"}
 
     name: str
     layer: str
-    path: List[List[Union[float, str]]]
+    path: List[List[Union[float, str]]] = Field(default_factory=list)
     width: str
-    net_name: str
-    start_cap_style: str
-    end_cap_style: str
-    corner_style: str
-    incremental_path: List[List[Union[float, str]]]
+    net_name: str = ""
+    start_cap_style: str = "round"
+    end_cap_style: str = "round"
+    corner_style: str = "sharp"
+    incremental_path: List[List[Union[float, str]]] = Field(default_factory=list)
 
 
-@dataclass
-class CfgPlane:
+class CfgPlane(CfgBaseModel):
     """Represent one plane primitive scheduled for creation."""
+
+    model_config = {"populate_by_name": True, "extra": "ignore"}
 
     name: str = ""
     layer: str = ""
@@ -54,34 +58,22 @@ class CfgPlane:
     type: str = "rectangle"
 
     # rectangle
-    lower_left_point: List[Union[float, str]] = field(default_factory=list)
-    upper_right_point: List[Union[float, str]] = field(default_factory=list)
+    lower_left_point: List[Union[float, str]] = Field(default_factory=list)
+    upper_right_point: List[Union[float, str]] = Field(default_factory=list)
     corner_radius: Union[float, str] = 0
     rotation: Union[float, str] = 0
-    voids: List[Any] = field(default_factory=list)
+    voids: List[Any] = Field(default_factory=list)
 
     # polygon
-    points: List[List[float]] = field(default_factory=list)
+    points: List[List[Union[float, str]]] = Field(default_factory=list)
 
     # circle
     radius: Union[float, str] = 0
-    position: List[Union[float, str]] = field(default_factory=lambda: [0, 0])
+    position: List[Union[float, str]] = Field(default_factory=lambda: [0, 0])
 
 
-class PrimitivesToDeleteDict(TypedDict, total=False):
-    """Typed mapping of primitives queued for deletion by selector."""
-
-    layer_name: List[str]
-    name: List[str]
-    net_name: List[str]
-
-
-@dataclass
 class CfgModeler:
     """Collect geometry and modeler operations for serialization."""
-
-    traces: List[CfgTrace] = field(default_factory=list)
-    planes: List[CfgPlane] = field(default_factory=list)
 
     def __init__(self, pedb=None, data: Dict | None = None):
         data = data or {}
@@ -93,7 +85,7 @@ class CfgModeler:
         self.padstack_instances = [CfgPadstackInstance.create(**i) for i in data.get("padstack_instances", [])]
 
         self.components = [CfgComponent(pedb, None, **i) for i in data.get("components", [])]
-        self.primitives_to_delete: PrimitivesToDeleteDict = data.get(
+        self.primitives_to_delete: Dict[str, List[str]] = data.get(
             "primitives_to_delete", {"layer_name": [], "name": [], "net_name": []}
         )
 
@@ -196,15 +188,15 @@ class CfgModeler:
         """
 
         trace_obj = CfgTrace(
-            name,
-            layer,
-            path or [],
-            width,
-            net_name,
-            start_cap_style,
-            end_cap_style,
-            corner_style,
-            incremental_path or [],
+            name=name,
+            layer=layer,
+            path=path or [],
+            width=width,
+            net_name=net_name,
+            start_cap_style=start_cap_style,
+            end_cap_style=end_cap_style,
+            corner_style=corner_style,
+            incremental_path=incremental_path or [],
         )
         self.traces.append(trace_obj)
         return trace_obj
@@ -393,9 +385,9 @@ class CfgModeler:
         """Serialize the modeler configuration."""
         data: dict = {}
         if self.traces:
-            data["traces"] = [vars(t) for t in self.traces]
+            data["traces"] = [t.model_dump() for t in self.traces]
         if self.planes:
-            data["planes"] = [vars(p) for p in self.planes]
+            data["planes"] = [p.model_dump() for p in self.planes]
         if self.padstack_defs:
             data["padstack_definitions"] = [p.model_dump(exclude_none=True) for p in self.padstack_defs]
         if self.padstack_instances:

@@ -23,12 +23,26 @@
 """Build S-parameter model assignment entries for configuration payloads."""
 
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from pyedb.configuration.cfg_common import serialize_list
+from pydantic import Field
+
+from pyedb.configuration.cfg_common import CfgBaseModel, serialize_list
 
 
-class CfgSParameterModel:
+class CfgSParameterModel(CfgBaseModel):
     """Represent one Touchstone model assignment for a component definition."""
+
+    model_config = {"populate_by_name": True, "extra": "ignore"}
+
+    name: str = ""
+    component_definition: str = ""
+    file_path: str = ""
+    reference_net: str = ""
+    apply_to_all: bool = True
+    components: List[str] = Field(default_factory=list)
+    reference_net_per_component: Dict[str, str] = Field(default_factory=dict)
+    pin_order: Optional[Any] = None
 
     def __init__(
         self,
@@ -42,14 +56,16 @@ class CfgSParameterModel:
         pin_order=None,
         **kwargs,
     ):
-        self.name = name or kwargs.get("name", "")
-        self.component_definition = component_definition or kwargs.get("component_definition", "")
-        self.file_path = file_path or kwargs.get("file_path", "")
-        self.apply_to_all = apply_to_all if apply_to_all is not None else kwargs.get("apply_to_all", False)
-        self.components = list(components or kwargs.get("components", []))
-        self.reference_net = reference_net or kwargs.get("reference_net", "")
-        self.reference_net_per_component = reference_net_per_component or kwargs.get("reference_net_per_component", {})
-        self.pin_order = pin_order if pin_order is not None else kwargs.get("pin_order", None)
+        super().__init__(
+            name=name or kwargs.get("name", ""),
+            component_definition=component_definition or kwargs.get("component_definition", ""),
+            file_path=file_path or kwargs.get("file_path", ""),
+            reference_net=reference_net or kwargs.get("reference_net", ""),
+            apply_to_all=apply_to_all if apply_to_all is not None else kwargs.get("apply_to_all", True),
+            components=list(components or kwargs.get("components", [])),
+            reference_net_per_component=reference_net_per_component or kwargs.get("reference_net_per_component", {}),
+            pin_order=pin_order if pin_order is not None else kwargs.get("pin_order"),
+        )
 
     def to_dict(self) -> dict:
         """Serialize the S-parameter model assignment."""
@@ -136,7 +152,7 @@ class CfgSParameters:
     def __init__(self, pedb=None, data=None, path_lib=None):
         self._pedb = pedb
         self.path_libraries = path_lib
-        self.models = [CfgSParameterModel(**i) for i in (data or [])]
+        self.models = [CfgSParameterModel(**i) if isinstance(i, dict) else i for i in (data or [])]
         self.s_parameters_models = self.models
 
     def add(
