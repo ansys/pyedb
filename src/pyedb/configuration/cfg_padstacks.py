@@ -64,7 +64,7 @@ class CfgPadstackInstance(CfgBase):
     name: str = None
     eid: int | None = Field(None, alias="id")
 
-    backdrill_parameters: CfgBackdrillParameters | None = CfgBackdrillParameters()
+    backdrill_parameters: CfgBackdrillParameters | None = Field(default_factory=CfgBackdrillParameters)
     is_pin: bool = Field(default=False)
 
     net_name: str | None = None
@@ -84,7 +84,6 @@ class CfgPadstackInstance(CfgBase):
     @classmethod
     def create(cls, **kwargs):
         obj = cls(**kwargs)
-        obj.backdrill_parameters = CfgBackdrillParameters()
         return obj
 
 
