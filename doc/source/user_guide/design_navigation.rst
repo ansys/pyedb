@@ -33,14 +33,14 @@ For user scripts and documentation, import ``Edb`` from the top-level package:
 
 At instantiation time, the ``grpc`` flag selects the backend:
 
+* ``grpc=True`` uses the gRPC backend (default).
 * ``grpc=False`` uses the DotNet backend.
-* ``grpc=True`` uses the gRPC backend.
 
 .. important::
 
-   The current default is ``grpc=False``.
+   The current default is ``grpc=True``.
 
-   DotNet is the current official backend. For clarity, it is still a good
+   gRPC is the current official backend. For clarity, it is still a good
    practice to pass ``grpc=True`` or ``grpc=False`` explicitly in user scripts.
 
 Typical usage patterns are:
@@ -49,15 +49,15 @@ Typical usage patterns are:
 
    from pyedb import Edb
 
-   # Current official backend
-   edb = Edb(edbpath=r"C:\projects\board.aedb", version="2026.1", grpc=False)
+   # Current official backend (also the default)
+   edb = Edb(edbpath=r"C:\projects\board.aedb", version="2026.1", grpc=True)
 
 .. code-block:: python
 
    from pyedb import Edb
 
-   # New gRPC backend
-   edb = Edb(edbpath=r"C:\projects\board.aedb", version="2026.1", grpc=True)
+   # Legacy DotNet backend
+   edb = Edb(edbpath=r"C:\projects\board.aedb", version="2026.1", grpc=False)
 
 .. note::
 
@@ -80,14 +80,14 @@ PyEDB currently supports two backend implementations behind the same public API.
      - Backend
      - Current status
      - Notes
-   * - ``grpc=False``
-     - DotNet
-     - Current official backend
-     - Uses the .NET-based EDB access layer and remains the default behavior
    * - ``grpc=True``
      - gRPC
-     - New backend
+     - Current official backend (default)
      - Uses ``ansys-edb-core`` and requires Ansys 2026.1 or later
+   * - ``grpc=False``
+     - DotNet
+     - Legacy backend
+     - Uses the .NET-based EDB access layer; deprecated, kept for backward compatibility
 
 The gRPC backend requires a supported AEDT version:
 
@@ -106,9 +106,10 @@ can work with two different backends.
 A practical way to understand the architecture is:
 
 1. **PyEDB** provides the user API and the ``Edb`` entry point.
-2. **DotNet backend** is the current official implementation.
-3. **gRPC backend** is the newer implementation and is based on
+2. **gRPC backend** is the current official implementation and is based on
    ``ansys-edb-core``.
+3. **DotNet backend** is the legacy implementation, kept for backward
+   compatibility.
 4. **Ansys EDB technologies** provide the underlying database capabilities used
    by those backends.
 
