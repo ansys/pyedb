@@ -1448,24 +1448,24 @@ class TestSetupsConfig:
 
     def test_add_hfss_setup(self):
         sc = SetupsConfig()
-        h = sc.add_hfss_setup("h1")
+        h = sc.add_hfss_setup(name="h1")
         assert isinstance(h, HfssSetupConfig)
         assert sc.to_list()[0]["type"] == "hfss"
 
     def test_add_hfss_setup_adapt_type(self):
         sc = SetupsConfig()
-        h = sc.add_hfss_setup("h1", adapt_type="broadband")
+        h = sc.add_hfss_setup(name="h1", adapt_type="broadband")
         assert h.to_dict()["adapt_type"] == "broadband"
 
     def test_add_siwave_ac(self):
         sc = SetupsConfig()
-        s = sc.add_siwave_ac_setup("sw_ac")
+        s = sc.add_siwave_ac_setup(name="sw_ac")
         assert isinstance(s, SIwaveACSetupConfig)
         assert sc.to_list()[0]["type"] == "siwave_ac"
 
     def test_add_siwave_ac_all_params(self):
         sc = SetupsConfig()
-        s = sc.add_siwave_ac_setup("sw_ac", si_slider_position=2, pi_slider_position=0, use_si_settings=False)
+        s = sc.add_siwave_ac_setup(name="sw_ac", si_slider_position=2, pi_slider_position=0, use_si_settings=False)
         d = s.to_dict()
         assert d["si_slider_position"] == 2
         assert d["pi_slider_position"] == 0
@@ -1473,29 +1473,29 @@ class TestSetupsConfig:
 
     def test_add_siwave_dc(self):
         sc = SetupsConfig()
-        s = sc.add_siwave_dc_setup("sw_dc")
+        s = sc.add_siwave_dc_setup(name="sw_dc")
         assert isinstance(s, SIwaveDCSetupConfig)
         assert sc.to_list()[0]["type"] == "siwave_dc"
 
     def test_add_siwave_dc_all_params(self):
         sc = SetupsConfig()
-        s = sc.add_siwave_dc_setup("sw_dc", dc_slider_position=2, export_dc_thermal_data=True)
+        s = sc.add_siwave_dc_setup(name="sw_dc", dc_slider_position=2, export_dc_thermal_data=True)
         d = s.to_dict()
         assert d["dc_slider_position"] == 2
         assert d["dc_ir_settings"]["export_dc_thermal_data"] is True
 
     def test_mixed_setups(self):
         sc = SetupsConfig()
-        sc.add_hfss_setup("h1")
-        sc.add_siwave_ac_setup("ac1")
-        sc.add_siwave_dc_setup("dc1")
+        sc.add_hfss_setup(name="h1")
+        sc.add_siwave_ac_setup(name="ac1")
+        sc.add_siwave_dc_setup(name="dc1")
         types = [s["type"] for s in sc.to_list()]
         assert types == ["hfss", "siwave_ac", "siwave_dc"]
 
     def test_inline_sweep_in_full_setup(self):
         """End-to-end: one-call add_frequency_sweep with inline range in SetupsConfig."""
         sc = SetupsConfig()
-        hfss = sc.add_hfss_setup("hfss1")
+        hfss = sc.add_hfss_setup(name="hfss1")
         hfss.set_broadband_adaptive("1GHz", "20GHz")
         hfss.add_frequency_sweep(
             "sweep1",
@@ -1868,7 +1868,7 @@ class TestEdbConfigBuilder:
         cfg.probes.add("probe1", {"net": "DDR4_DQ0"}, {"net": "GND"})
 
         # setups – HFSS broadband (inline sweep syntax)
-        hfss = cfg.setups.add_hfss_setup("hfss_bb")
+        hfss = cfg.setups.add_hfss_setup(name="hfss_bb")
         hfss.set_broadband_adaptive("1GHz", "20GHz", max_passes=20, max_delta=0.02)
         hfss.set_auto_mesh_operation(enabled=True)
         hfss.add_length_mesh_operation("mesh1", {"DDR4_DQ0": ["top"]}, max_length="0.5mm")
@@ -1886,16 +1886,16 @@ class TestEdbConfigBuilder:
         s1.add_single_frequency("5GHz")
 
         # setups – HFSS single
-        hfss2 = cfg.setups.add_hfss_setup("hfss_single")
+        hfss2 = cfg.setups.add_hfss_setup(name="hfss_single")
         hfss2.set_single_frequency_adaptive("5GHz", max_passes=15)
 
         # setups – HFSS multi-freq
-        hfss3 = cfg.setups.add_hfss_setup("hfss_multi")
+        hfss3 = cfg.setups.add_hfss_setup(name="hfss_multi")
         hfss3.add_multi_frequency_adaptive("2GHz")
         hfss3.add_multi_frequency_adaptive("10GHz")
 
         # setups – SIwave AC (inline sweep syntax)
-        siw = cfg.setups.add_siwave_ac_setup("siw_ac", si_slider_position=2, pi_slider_position=1)
+        siw = cfg.setups.add_siwave_ac_setup(name="siw_ac", si_slider_position=2, pi_slider_position=1)
         siw.add_frequency_sweep(
             "siw_sw1",
             start="1kHz",
@@ -1905,7 +1905,7 @@ class TestEdbConfigBuilder:
         )
 
         # setups – SIwave DC
-        cfg.setups.add_siwave_dc_setup("siw_dc", dc_slider_position=1, export_dc_thermal_data=True)
+        cfg.setups.add_siwave_dc_setup(name="siw_dc", dc_slider_position=1, export_dc_thermal_data=True)
 
         # boundaries
         cfg.boundaries.set_radiation_boundary()
@@ -2159,7 +2159,7 @@ class TestEdbConfigBuilder:
     def test_inline_sweep_round_trip(self, tmp_path):
         """Inline add_frequency_sweep survives JSON round-trip correctly."""
         cfg = EdbConfigBuilder()
-        hfss = cfg.setups.add_hfss_setup("h1")
+        hfss = cfg.setups.add_hfss_setup(name="h1")
         hfss.set_broadband_adaptive("1GHz", "20GHz")
         hfss.add_frequency_sweep(
             "sweep1",
@@ -2181,7 +2181,7 @@ class TestEdbConfigBuilder:
     def test_inline_sweep_siwave_round_trip(self, tmp_path):
         """SIwave AC inline sweep round-trip."""
         cfg = EdbConfigBuilder()
-        siw = cfg.setups.add_siwave_ac_setup("siw1", si_slider_position=2)
+        siw = cfg.setups.add_siwave_ac_setup(name="siw1", si_slider_position=2)
         siw.add_frequency_sweep(
             "sw1",
             start="1kHz",
