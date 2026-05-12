@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import copy
 import json
 from unittest.mock import MagicMock
 
@@ -29,11 +28,11 @@ import pytest
 from pyedb.configuration import (
     BoundariesConfig,
     BundleTerminal,
+    CfgData,
     ComponentConfig,
     ComponentsConfig,
     CutoutConfig,
     DiffWavePortConfig,
-    EdbConfigBuilder,
     EdgePortConfig,
     EdgeTerminal,
     FrequencySweepConfig,
@@ -74,6 +73,9 @@ from pyedb.configuration import (
     TerminalsConfig,
     VariablesConfig,
 )
+
+# EdbConfigBuilder was merged into CfgData
+EdbConfigBuilder = CfgData
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 

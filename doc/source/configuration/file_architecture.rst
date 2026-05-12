@@ -45,7 +45,7 @@ Two ways to configure a design
 .. tip::
 
    ``edb.configuration.run()`` accepts a file path, a plain dictionary, **or**
-   an ``EdbConfigBuilder`` instance, so you can mix and match approaches in the
+   a :class:`~pyedb.configuration.cfg_data.CfgData` instance, so you can mix and match approaches in the
    same script.
 
 How a configuration file is consumed
@@ -62,7 +62,7 @@ the active EDB design.
        node [shape=box, style="rounded,filled", fillcolor="#F7F7F7", color="#4F81BD"];
        edge [color="#4F81BD"];
 
-       file    [label="JSON / TOML file\nor EdbConfigBuilder"];
+       file    [label="JSON / TOML file\nor CfgData"];
        load    [label="Configuration.load(...)"];
        cfgdata [label="CfgData\n(section manager)"];
        run     [label="Configuration.run(cfg)\napply methods"];

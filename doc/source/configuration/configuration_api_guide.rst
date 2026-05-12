@@ -3,8 +3,8 @@ Configuration API guide and complete example
 
 The :mod:`pyedb.configuration` package provides a Python interface for
 building the same configuration payload described in :doc:`file_architecture`.
-Instead of manually authoring JSON, you populate an
-``EdbConfigBuilder`` and then pass it directly
+Instead of manually authoring JSON, you populate a
+:class:`~pyedb.configuration.cfg_data.CfgData` object and then pass it directly
 to ``Configuration.run`` with no
 serialization step required.
 
@@ -13,7 +13,7 @@ serialization step required.
    The easiest way to obtain a builder when you already have an open EDB session
    is ``edb.configuration.create_config_builder()``.  This keeps everything
    within the ``edb.configuration`` namespace and avoids a direct import of
-   ``EdbConfigBuilder``.
+   ``CfgData``.
 
 Why use the configuration API?
 ------------------------------
@@ -38,7 +38,7 @@ Configuration API workflow
        edge [color="#4F81BD"];
 
        create [label="edb.configuration\n.create_config_builder()"];
-       build  [label="EdbConfigBuilder\n(section builders)"];
+       build  [label="CfgData\n(section builders)"];
        decide [label="apply now\nor export first?", shape=diamond, fillcolor="#FFF2CC", color="#D6B656"];
        export [label="cfg.to_json()\ncfg.to_toml()\ncfg.to_dict()"];
        run    [label="edb.configuration.run(cfg)\nor Configuration.load(...)\n+ run()"];
@@ -70,9 +70,9 @@ There are two equivalent ways to start a programmatic configuration:
 
 .. code-block:: python
 
-   from pyedb.configuration import EdbConfigBuilder
+   from pyedb.configuration import CfgData
 
-   cfg = EdbConfigBuilder()
+   cfg = CfgData()
    cfg.general.anti_pads_always_on = False
    cfg.nets.add_signal_nets(["SIG1", "CLK"])
 
@@ -206,7 +206,7 @@ You can pass any of the supported input types directly:
 
    * - Input type
      - Behaviour
-   * - ``EdbConfigBuilder``
+   * - ``CfgData``
      - Serialized to a dict via ``to_dict()`` then loaded and applied.
    * - ``dict``
      - Merged with the existing ``data`` store then applied.
@@ -578,7 +578,7 @@ applies the configuration with a single ``run()`` call.
 Persisting the configuration
 -----------------------------
 
-``EdbConfigBuilder`` can be passed **directly** to ``edb.configuration.run()``—
+:class:`~pyedb.configuration.cfg_data.CfgData` can be passed **directly** to ``edb.configuration.run()``—
 no ``.to_dict()`` call is required:
 
 .. code-block:: python
@@ -607,7 +607,7 @@ another project, serialize the builder before (or instead of) calling ``run()``:
 
 .. note::
 
-   ``edb.configuration.run(cfg)`` accepts an ``EdbConfigBuilder`` instance
+   ``edb.configuration.run(cfg)`` accepts a :class:`~pyedb.configuration.cfg_data.CfgData` instance
    directly and handles the serialization step internally. You only need
    ``cfg.to_dict()`` when you want to inspect the payload programmatically or
    pass it to another API that expects a plain dictionary.
@@ -621,754 +621,17 @@ re-exporting.
 
 .. code-block:: python
 
-   from pyedb.configuration import EdbConfigBuilder
+   from pyedb.configuration import CfgData
 
    # Load from a file, modify, and save back
-   cfg = EdbConfigBuilder.from_json("base_config.json")
+   cfg = CfgData.from_json("base_config.json")
    cfg.general.suppress_pads = True
    cfg.stackup.add_material("silver", conductivity=6.3e7)
    cfg.to_json("modified_config.json")
 
    # Load from a dict
-   cfg2 = EdbConfigBuilder.from_dict({"nets": {"signal_nets": ["CLK"]}})
+   cfg2 = CfgData.from_dict({"nets": {"signal_nets": ["CLK"]}})
    cfg2.to_toml("nets_only.toml")
-
-Setups
-------
-
-Three setup types are available via ``cfg.setups``.  Each ``add_*`` method
-returns a typed builder so that IDEs provide full autocomplete.
-
-Use ``cfg.setups.get(name)`` to retrieve a previously registered setup by name
-(useful when a setup is added in a helper function and you want to append
-sweeps later without keeping an explicit reference).
-
-**HFSS setup:** ``cfg.setups.add_hfss_setup(name, adapt_type="single")``
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 15 50
-
-   * - Method / parameter
-     - Default
-     - Description
-   * - ``add_hfss_setup(name, adapt_type)``
-     - ``None``
-     - Create setup. ``adapt_type``: ``"single"`` \| ``"broadband"`` \|
-       ``"multi_frequencies"``.
-   * - ``set_single_frequency_adaptive(freq, max_passes, max_delta)``
-     - ``"5GHz"``, ``20``, ``0.02``
-     - Refine at one adaptive frequency. Returns *self* for chaining.
-   * - ``set_broadband_adaptive(low_freq, high_freq, max_passes, max_delta)``
-     - ``"1GHz"``, ``"10GHz"``, ``20``, ``0.02``
-     - Refine across a low/high frequency pair. Returns *self* for chaining.
-   * - ``add_multi_frequency_adaptive(freq, max_passes, max_delta)``
-     - ``None``, ``20``, ``0.02``
-     - Append one adaptive point (call multiple times). Returns *self*.
-   * - ``set_auto_mesh_operation(enabled, trace_ratio_seeding, signal_via_side_number)``
-     - ``True``, ``3.0``, ``12``
-     - Configure automatic mesh seeding. Returns *self* for chaining.
-   * - ``add_length_mesh_operation(name, nets_layers_list, max_length, max_elements, restrict_length, refine_inside)``
-     - ``None``, ``None``, ``"1mm"``, ``1000``, ``True``, ``False``
-     - Append a length-based mesh operation. Returns *self* for chaining.
-   * - ``add_frequency_sweep(name, sweep_type, start, stop, step_or_count, distribution, …)``
-     - ``None``, ``"interpolation"``, ``None``, ``None``, ``None``, ``"linear_count"``
-     - Add a sweep; returns :class:`FrequencySweepConfig`.
-
-**SIwave AC setup:** ``cfg.setups.add_siwave_ac_setup(name, …)``
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 15 50
-
-   * - Parameter
-     - Default
-     - Description
-   * - ``si_slider_position``
-     - ``1``
-     - SI accuracy slider: 0 = Speed, 1 = Balanced, 2 = Accuracy.
-   * - ``pi_slider_position``
-     - ``1``
-     - PI accuracy slider (same scale).
-   * - ``use_si_settings``
-     - ``True``
-     - ``True`` = SI slider active; ``False`` = PI slider active.
-   * - ``.add_frequency_sweep(name, sweep_type, start, stop, step_or_count, distribution, …)``
-     - ``None``, ``"interpolation"``, ``None``, ``None``, ``None``, ``"linear_count"``
-     - Add a sweep; returns :class:`FrequencySweepConfig`.
-
-**SIwave DC setup:** ``cfg.setups.add_siwave_dc_setup(name, …)``
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 15 50
-
-   * - Parameter
-     - Default
-     - Description
-   * - ``dc_slider_position``
-     - ``1``
-     - DC accuracy slider: 0 = Speed, 1 = Balanced, 2 = Accuracy.
-   * - ``export_dc_thermal_data``
-     - ``False``
-     - Export DC thermal (loss) data after the solve.
-
-**Frequency sweep:** returned by ``add_frequency_sweep(…)``
-
-All sweep types share the same :class:`FrequencySweepConfig` builder.
-
-``add_frequency_sweep`` now accepts optional *inline range* parameters
-(``start``, ``stop``, ``step_or_count``, ``distribution``) so that a single
-frequency range can be fully described in the call itself—no subsequent
-``add_*_frequencies`` call is required. For multiple ranges use the chained
-``add_*_frequencies`` helpers on the returned builder.
-
-.. code-block:: python
-
-   # Inline (one call — most concise)
-   hfss.add_frequency_sweep(
-       "sweep1",
-       start="1GHz",
-       stop="20GHz",
-       step_or_count=100,
-       distribution="linear_count",
-   )
-
-   # Chained (for multiple ranges on the same sweep)
-   sw = hfss.add_frequency_sweep("sweep2")
-   sw.add_linear_count_frequencies("1GHz", "10GHz", 100)
-   sw.add_single_frequency("0Hz")
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 15 50
-
-   * - Parameter / method
-     - Default
-     - Description
-   * - ``sweep_type``
-     - ``"interpolation"``
-     - ``"interpolation"`` or ``"discrete"``.
-   * - ``start``
-     - ``None``
-     - Start frequency of an inline range, for example ``"1GHz"``. When supplied
-       *stop* and *step_or_count* are also required.
-   * - ``stop``
-     - ``None``
-     - Stop frequency of the inline range.
-   * - ``step_or_count``
-     - ``None``
-     - Point count (``"linear_count"``, ``"log_count"``) or step size
-       (``"linear_scale"``, ``"log_scale"``).
-   * - ``distribution``
-     - ``"linear_count"``
-     - Frequency distribution for the inline range. Accepted values and
-       aliases:
-
-       * ``"linear_count"`` / ``"linearcount"`` / ``"linear count"``
-       * ``"log_count"`` / ``"logcount"`` / ``"log count"``
-       * ``"linear_scale"`` / ``"linearscale"`` / ``"linear scale"``
-       * ``"log_scale"`` / ``"logscale"`` / ``"log scale"``
-       * ``"single"``
-
-       .. note::
-
-           When ``step_or_count`` is a frequency string (for example, ``"10MHz"``), the
-          distribution is automatically inferred as ``"linear_scale"``.
-   * - ``use_q3d_for_dc``
-     - ``False``
-     - Use Q3D solver for DC point (HFSS only).
-   * - ``compute_dc_point``
-     - ``False``
-     - Enable AC/DC merge.
-   * - ``enforce_causality``
-     - ``False``
-     - Enforce causality.
-   * - ``enforce_passivity``
-     - ``True``
-     - Enforce passivity.
-   * - ``adv_dc_extrapolation``
-     - ``False``
-     - Enable advanced DC extrapolation.
-   * - ``use_hfss_solver_regions``
-     - ``False``
-     - Solve using HFSS solver regions.
-   * - ``hfss_solver_region_setup_name``
-     - ``"<default>"``
-     - HFSS solver-region setup name.
-   * - ``hfss_solver_region_sweep_name``
-     - ``"<default>"``
-     - HFSS solver-region sweep name.
-   * - ``add_linear_count_frequencies(start, stop, count)``
-     - –
-     - Linear distribution with explicit point count. Returns *self*.
-   * - ``add_log_count_frequencies(start, stop, count)``
-     - –
-     - Logarithmic distribution with explicit point count. Returns *self*.
-   * - ``add_linear_scale_frequencies(start, stop, step)``
-     - –
-     - Linear distribution with explicit step size. Returns *self*.
-   * - ``add_log_scale_frequencies(start, stop, step)``
-     - –
-     - Logarithmic distribution with explicit step. Returns *self*.
-   * - ``add_single_frequency(freq)``
-     - –
-     - Single discrete frequency point. Returns *self*.
-
-Nets
-----
-
-Use ``cfg.nets.get(net_name)`` to query whether a net already exists in EDB
-and what its current classification is. The net is also registered in the
-appropriate list (``signal_nets`` or ``power_nets``) automatically.
-
-.. list-table::
-   :header-rows: 1
-   :widths: 40 60
-
-   * - Method / property
-     - Description
-   * - ``add_signal_nets(nets)``
-     - Classify net names as signal nets.
-   * - ``add_power_ground_nets(nets)``
-     - Classify net names as power or ground nets.
-   * - ``add_reference_nets(nets)``
-     - Store reference (ground) net names (not serialized; forwarded to cutout).
-   * - ``get(net_name)``
-     - Return a :class:`CfgNet` object with attributes ``name``,
-       ``is_power_ground``, and ``classification``. Returns ``False`` if the
-       net is not found. Requires a session-aware builder.
-   * - ``signal_nets`` *(property)*
-     - Read-only list of configured signal net names.
-   * - ``power_ground_nets`` *(property)*
-     - Read-only list of configured power/ground net names.
-   * - ``reference_nets`` *(property)*
-     - Read-only list of configured reference net names.
-
-Example—forward net lists directly to the cutout:
-
-.. code-block:: python
-
-   cfg.nets.add_signal_nets(["PCIe_RX0_P", "PCIe_RX0_N"])
-   cfg.nets.add_reference_nets(["GND"])
-
-   cfg.operations.add_cutout(
-       signal_nets=cfg.nets.signal_nets,
-       reference_nets=cfg.nets.reference_nets,
-       extent_type="ConvexHull",
-   )
-
-Stackup
--------
-
-Use ``cfg.stackup.get_layer(name)`` / ``cfg.stackup.get_material(name)`` to
-retrieve *existing* layers or materials from the live EDB session and modify
-them. Use ``add_material`` / ``add_signal_layer`` / ``add_dielectric_layer``
-to define *new* entries.
-
-**Materials:** ``cfg.stackup.add_material(name, …)`` / ``cfg.stackup.get_material(name)``
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 15 50
-
-   * - Parameter
-     - Default
-     - Description
-   * - ``conductivity``
-     - –
-     - Electrical conductivity in S/m (for example ``5.8e7`` for copper).
-   * - ``permittivity``
-     - –
-     - Relative permittivity.
-   * - ``dielectric_loss_tangent``
-     - –
-     - Dielectric loss tangent.
-   * - ``magnetic_loss_tangent``
-     - –
-     - Magnetic loss tangent.
-   * - ``mass_density``
-     - –
-     - Mass density in kg/m³.
-   * - ``permeability``
-     - –
-     - Relative permeability.
-   * - ``poisson_ratio``
-     - –
-     - Poisson's ratio.
-   * - ``specific_heat``
-     - –
-     - Specific heat in J/(kg·K).
-   * - ``thermal_conductivity``
-     - –
-     - Thermal conductivity in W/(m·K).
-   * - ``youngs_modulus``
-     - –
-     - Young's modulus in Pa.
-   * - ``thermal_expansion_coefficient``
-     - –
-     - CTE in 1/K.
-   * - ``dc_conductivity``
-     - –
-     - DC conductivity override.
-   * - ``dc_permittivity``
-     - –
-     - DC permittivity override.
-   * - ``dielectric_model_frequency``
-     - –
-     - Reference frequency for frequency-dependent model.
-   * - ``loss_tangent_at_frequency``
-     - –
-     - Loss tangent at *dielectric_model_frequency*.
-   * - ``permittivity_at_frequency``
-     - –
-     - Permittivity at *dielectric_model_frequency*.
-
-.. note::
-
-   A material can also carry a ``thermal_modifiers`` list where each entry is a
-   :class:`CfgMaterialPropertyThermalModifier` with the following fields:
-   ``property_name``, ``basic_quadratic_c1``, ``basic_quadratic_c2``,
-   ``basic_quadratic_temperature_reference``,
-   ``advanced_quadratic_lower_limit``, ``advanced_quadratic_upper_limit``,
-   ``advanced_quadratic_auto_calculate``, ``advanced_quadratic_lower_constant``,
-   ``advanced_quadratic_upper_constant``.  These are set via the JSON/TOML
-   file format; no dedicated builder helper is provided yet. / ``add_dielectric_layer(name, …)`` / ``get_layer(name)``
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 15 50
-
-   * - Parameter / method
-     - Default
-     - Description
-   * - ``material``
-     - ``"copper"`` / ``"FR4_epoxy"``
-     - Conductor or dielectric material name.
-   * - ``fill_material``
-     - ``"FR4_epoxy"``
-     - Fill material for signal layers.
-   * - ``thickness``
-     - ``"35um"`` / ``"100um"``
-     - Layer thickness.
-   * - ``set_huray_roughness(nodule_radius, surface_ratio, enabled, top, bottom, side)``
-     - –, –, ``True``, ``True``, ``True``, ``True``
-     - Huray roughness model.
-   * - ``set_groisse_roughness(roughness_value, enabled, top, bottom, side)``
-     - –, ``True``, ``True``, ``True``, ``True``
-     - Groisse roughness model.
-   * - ``set_etching(factor, etch_power_ground_nets, enabled)``
-     - ``0.5``, ``False``, ``True``
-     - Trapezoidal etching model.
-
-Padstacks
----------
-
-Use ``cfg.padstacks.get_definition(name)`` / ``cfg.padstacks.get_instance(name)``
-to retrieve *existing* EDB padstacks. Use ``add_definition`` / ``add_instance``
-to register *new* ones.
-
-**Definitions:** ``cfg.padstacks.add_definition(name, …)`` / ``get_definition(name)``
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 15 50
-
-   * - Parameter
-     - Default
-     - Description
-   * - ``hole_plating_thickness``
-     - –
-     - Plating thickness, for example ``"25um"``.
-   * - ``material``
-     - –
-     - Hole conductor material name.
-   * - ``hole_range``
-     - –
-     - Layer range the hole spans.
-   * - ``pad_parameters``
-     - –
-     - Raw pad-parameter dictionary.
-   * - ``hole_parameters``
-     - –
-     - Raw hole-parameter dictionary.
-   * - ``solder_ball_parameters``
-     - –
-     - Raw solder-ball parameter dictionary.
-
-**Instances:** ``cfg.padstacks.add_instance(…)`` / ``get_instance(name)``
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 15 50
-
-   * - Parameter / method
-     - Default
-     - Description
-   * - ``name``
-     - –
-     - Instance AEDT name.
-   * - ``net_name``
-     - –
-     - Net name.
-   * - ``definition``
-     - –
-     - Padstack definition name.
-   * - ``layer_range``
-     - –
-     - ``[start_layer, stop_layer]``.
-   * - ``position``
-     - –
-     - ``[x, y]`` in metres.
-   * - ``rotation``
-     - –
-     - Rotation in degrees.
-   * - ``is_pin``
-     - ``False``
-     - Whether the instance is a component pin.
-   * - ``hole_override_enabled``
-     - –
-     - Enable hole-size override.
-   * - ``hole_override_diameter``
-     - –
-     - Override drill diameter.
-   * - ``solder_ball_layer``
-     - –
-     - Layer on which the solder ball sits.
-   * - ``set_backdrill(drill_to_layer, diameter, stub_length, drill_from_bottom)``
-     - ``None, ``None``, ``None``, ``True``
-     - Configure backdrill.
-
-Components
-----------
-
-When the builder is created via ``edb.configuration.create_config_builder()``,
-it is bound to the live EDB session. This means you can retrieve *existing*
-components directly without calling ``add`` first:
-
-.. code-block:: python
-
-   cfg = edb.configuration.create_config_builder()
-
-   # Retrieve an existing component from the database
-   u1 = cfg.components.get("U1")  # pre-loads all current properties
-   u1.set_solder_ball_properties("cylinder", "150um", "100um")
-   u1.set_ic_die_properties("flip_chip", orientation="chip_down")
-   u1.set_port_properties(reference_height="50um")
-   edb.configuration.run(cfg)
-
-``get()`` caches the component—calling it twice with the same reference
-designator returns the same object. If the component was already registered
-with :meth:`add`, that entry is returned instead.
-
-**Adding new entries:** ``cfg.components.add(reference_designator, …)``
-
-**Retrieving existing entries:** ``cfg.components.get(reference_designator)``
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 15 50
-
-   * - Parameter
-     - Default
-     - Description
-   * - ``part_type``
-     - –
-     - ``"resistor"``, ``"capacitor"``, ``"inductor"``, ``"ic"``, ``"io"``, ``"other"``.
-   * - ``enabled``
-     - –
-     - Whether the component is enabled.
-   * - ``definition``
-     - –
-     - Component part / definition name.
-   * - ``placement_layer``
-     - –
-     - Layer on which the component is placed.
-
-**Model helpers** on the returned :class:`ComponentConfig`:
-
-.. list-table::
-   :header-rows: 1
-   :widths: 50 50
-
-   * - Method
-     - Description
-   * - ``add_pin_pair_rlc(first_pin, second_pin, resistance, inductance, capacitance, is_parallel, *_enabled)``
-     - Append a series/parallel RLC model between two pins.
-   * - ``set_s_parameter_model(model_name, model_path, reference_net)``
-     - Assign a Touchstone model.
-   * - ``set_spice_model(model_name, model_path, sub_circuit, terminal_pairs)``
-     - Assign a SPICE subcircuit model.
-   * - ``set_netlist_model(netlist)``
-     - Assign a raw netlist.
-   * - ``set_ic_die_properties(die_type, orientation, height)``
-     - Set die type (``"flip_chip"``, ``"wire_bond"``, ``"no_die"``).
-   * - ``set_solder_ball_properties(shape, diameter, height, material, mid_diameter)``
-     - Configure solder-ball geometry.
-   * - ``set_port_properties(reference_height, reference_size_auto, reference_size_x, reference_size_y)``
-     - Configure port reference geometry.
-
-Pin groups
-----------
-
-``cfg.pin_groups.add(name, reference_designator, pins=None, net=None)``
-
-Provide either *pins* (explicit list) **or** *net* (all pins on that net).
-
-``cfg.pin_groups.get(name)`` retrieves an *existing* pin group from EDB (returns a
-:class:`PinGroupConfig` pre-loaded with its current pin membership).
-
-Terminals (low-level)
----------------------
-
-Most users use ``ports`` / ``sources`` instead. Use the terminal builders
-only when fine-grained control over individual terminal objects is required.
-
-.. list-table::
-   :header-rows: 1
-   :widths: 50 50
-
-   * - Method
-     - Type created
-   * - ``add_padstack_instance_terminal(name, padstack_instance, impedance, boundary_type, hfss_type, …)``
-     - :class:`PadstackInstanceTerminal`
-   * - ``add_pin_group_terminal(name, pin_group, impedance, boundary_type, …)``
-     - :class:`PinGroupTerminal`
-   * - ``add_point_terminal(name, x, y, layer, net, impedance, boundary_type, …)``
-     - :class:`PointTerminal`
-   * - ``add_edge_terminal(name, primitive, point_on_edge_x, point_on_edge_y, impedance, boundary_type, …)``
-     - :class:`EdgeTerminal`
-   * - ``add_bundle_terminal(name, terminals)``
-     - :class:`BundleTerminal`
-
-**Accepted** ``boundary_type`` **values**
-
-The following human-friendly aliases are recommended:
-
-* ``"port"``: generic port boundary (maps to ``"PortBoundary"``)
-* ``"pec"``: perfect electric conductor (maps to ``"PecBoundary"``)
-* ``"rlc"``: RLC boundary (maps to ``"RlcBoundary"``)
-* ``"current_source"``: current source (maps to ``"kCurrentSource"``)
-* ``"voltage_source"``: voltage source (maps to ``"kVoltageSource"``)
-* ``"voltage_probe"``: voltage probe (maps to ``"kVoltageProbe"``)
-* ``"dc_terminal"``: DC terminal (maps to ``"kDcTerminal"``)
-
-The full set of accepted values also includes the raw AEDT literals
-``"PortBoundary"``, ``"PecBoundary"``, ``"RlcBoundary"``,
-``"kCurrentSource"``, ``"kVoltageSource"``, ``"kNexximGround"``,
-``"kNexximPort"``, ``"kDcTerminal"``, ``"kVoltageProbe"``,
-``"InvalidBoundary"``.
-
-**Accepted** ``terminal_to_ground`` **values**
-
-* ``"no_ground"`` / ``"kNoGround"``: no ground connection (default)
-* ``"negative"`` / ``"kNegative"``: negative terminal to ground
-* ``"positive"`` / ``"kPositive"``: positive terminal to ground
-
-The full set also includes ``"kNegativeNode"`` and ``"kPositiveNode"``.
-
-Ports
------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 50 50
-
-   * - Method
-     - Description
-   * - ``add_circuit_port(name, positive_terminal, negative_terminal, reference_designator, impedance, distributed)``
-     - Lumped circuit port.
-   * - ``add_coax_port(name, positive_terminal, reference_designator, impedance, padstack, net, pin)``
-     - Coaxial (via) port. Accepts a raw *positive_terminal* dict **or** one
-       of the convenience shortcuts *padstack*, *net*, *pin* (see below).
-   * - ``add_wave_port(name, primitive_name, point_on_edge, horizontal_extent_factor, vertical_extent_factor, pec_launch_width)``
-     - Wave port on a trace edge.
-   * - ``add_gap_port(name, primitive_name, point_on_edge, …)``
-     - Gap port on a trace edge.
-   * - ``add_diff_wave_port(name, positive_terminal, negative_terminal, …)``
-     - Differential wave port.
-
-**Coaxial port terminal shortcuts**
-
-``add_coax_port`` supports three mutually exclusive shortcuts so you never
-need to build the terminal dict by hand:
-
-.. list-table::
-   :header-rows: 1
-   :widths: 30 20 50
-
-   * - Shortcut parameter
-     - Also requires
-     - Behaviour
-   * - ``padstack="via_A1"``
-     - –
-     - Single named padstack instance → one coax port.
-   * - ``net="VDD"``
-     - ``reference_designator="U1"``
-     - All pins of *VDD* on *U1*.  When more than one pin matches the port is
-       created as **distributed** (one coax port per pin).
-   * - ``pin="A1"``
-     - ``reference_designator="U1"``
-     - Single named pin on the component.
-
-.. code-block:: python
-
-   # Via padstack name
-   cfg.ports.add_coax_port("coax_via", padstack="via_A1")
-
-   # All VDD pins on U1 (distributed when >1 pin)
-   cfg.ports.add_coax_port("coax_vdd", net="VDD", reference_designator="U1")
-
-   # Single pin
-   cfg.ports.add_coax_port("coax_a1", pin="A1", reference_designator="U1", impedance=50)
-
-   # Using TerminalInfo (raw dict style still works)
-   cfg.ports.add_coax_port(
-       "coax_pg",
-       positive_terminal=TerminalInfo.net("SIG", reference_designator="U1"),
-   )
-
-.. note::
-
-   **Solder-ball geometry** (diameter, height, shape) is a *component*
-   property, not a port property. Configure it via
-   ``cfg.components.add(refdes).set_solder_ball_properties(shape, diameter, height)``
-   or through the ``components`` section of the JSON/TOML configuration file.
-
-Sources
--------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 50 50
-
-   * - Method
-     - Description
-   * - ``add_current_source(name, positive_terminal, negative_terminal, magnitude, impedance, …)``
-     - Current source (default magnitude ``0.001`` A).
-   * - ``add_voltage_source(name, positive_terminal, negative_terminal, magnitude, impedance, …)``
-     - Voltage source (default magnitude ``1.0`` V).
-
-Boundaries
-----------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 50 50
-
-   * - Method
-     - Description
-   * - ``set_radiation_boundary(use_open_region=True)``
-     - Enable radiation open-region boundary.
-   * - ``set_pml_boundary(operating_freq, radiation_level, is_pml_visible)``
-     - Enable PML open-region boundary.
-   * - ``set_air_box_extents(horizontal_size, horizontal_is_multiple, positive_vertical_size, …)``
-     - Set air-box padding on all sides.
-   * - ``set_extent(extent_type, base_polygon, truncate_air_box_at_ground)``
-     - Set the layout extent shape. ``truncate_air_box_at_ground`` is an
-       air-box option and belongs to ``set_air_box_extents``; it is accepted
-       here as a convenient pass-through.
-   * - ``set_dielectric_extent(extent_type, expansion_size, is_multiple, base_polygon, honor_user_dielectric)``
-     - Configure the dielectric envelope.
-
-Operations
-----------
-
-``cfg.operations.add_cutout(signal_nets, reference_nets, extent_type, expansion_size, expansion_factor, …)``
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 15 50
-
-   * - Parameter
-     - Default
-     - Description
-   * - ``signal_nets``
-     - –
-     - Signal nets to retain inside the cutout.
-   * - ``reference_nets``
-     - –
-     - Reference (ground) nets.
-   * - ``extent_type``
-     - ``"ConvexHull"``
-     - ``"BoundingBox"`` \| ``"Conformal"`` \| ``"ConvexHull"`` (case-insensitive).
-   * - ``expansion_size``
-     - ``0.002``
-     - Absolute boundary expansion in metres.
-   * - ``expansion_factor``
-     - ``0``
-     - Relative expansion factor (takes precedence when > 0).
-   * - ``auto_identify_nets_enabled``
-     - ``False``
-     - Auto-populate signal nets from passive thresholds.
-   * - ``resistor_below``
-     - ``100``
-     - Resistance threshold for auto-identification (Ω).
-   * - ``inductor_below``
-     - ``1``
-     - Inductance threshold for auto-identification (H).
-   * - ``capacitor_above``
-     - ``"10nF"``
-     - Capacitance threshold for auto-identification.
-
-``cfg.operations.generate_auto_hfss_regions = True``  to generate automatic HFSS solver regions.
-
-S-parameters
-------------
-
-``cfg.s_parameters.add(name, component_definition, file_path, reference_net, apply_to_all, components, reference_net_per_component, pin_order)``
-
-SPICE models
-------------
-
-``cfg.spice_models.add(name, component_definition, file_path, sub_circuit_name, apply_to_all, components, terminal_pairs)``
-
-Package definitions
--------------------
-
-``cfg.package_definitions.add(name, component_definition, apply_to_all, components, maximum_power, thermal_conductivity, theta_jb, theta_jc, height, extent_bounding_box)``
-
-Call ``set_heatsink(fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness)`` on the returned object to add heat-sink fin geometry.
-
-Variables
----------
-
-``cfg.variables.add(name, value, description="")``
-
-``add_variable(name, value, description="")`` is an alias for ``add()`` and
-can be used interchangeably.
-
-Prefix *name* with ``$`` for project-scope variables; no prefix for design-scope.
-
-Modeler
--------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 50 50
-
-   * - Method
-     - Description
-   * - ``add_trace(name, layer, width, net_name, path, incremental_path, start_cap_style, end_cap_style, corner_style)``
-     - Create a trace.
-   * - ``add_rectangular_plane(layer, name, net_name, lower_left_point, upper_right_point, corner_radius, rotation, voids)``
-     - Create a rectangle.
-   * - ``add_circular_plane(layer, name, net_name, radius, position, voids)``
-     - Create a circle.
-   * - ``add_polygon_plane(layer, name, net_name, points, voids)``
-     - Create a polygon.
-   * - ``add_padstack_definition(name, hole_plating_thickness, material, hole_range, …)``
-     - Add a padstack definition in the modeler section.
-   * - ``add_padstack_instance(name, net_name, definition, layer_range, position, rotation, …)``
-     - Place a padstack instance.
-   * - ``add_component(reference_designator, part_type, enabled, definition, placement_layer, pins)``
-     - Add a component created from padstack instances.
-   * - ``delete_primitives_by_layer(layer_names)``
-     - Schedule all primitives on listed layers for deletion.
-   * - ``delete_primitives_by_name(primitive_names)``
-     - Schedule named primitives for deletion.
-   * - ``delete_primitives_by_net(net_names)``
-     - Schedule all primitives on listed nets for deletion.
 
 Practical recommendations
 -------------------------
@@ -1381,12 +644,12 @@ Practical recommendations
 * **Prefer** ``TerminalInfo`` factory methods
   over hand-written terminal dictionaries.
 * **Build only the sections you need**: empty sections are omitted by
-  ``EdbConfigBuilder.to_dict()`` so the
+  :meth:`~pyedb.configuration.cfg_data.CfgData.to_dict` so the
   serialized payload stays minimal.
 * **Persist to JSON / TOML** when you want a reviewed artifact kept in version
   control and applied without a Python script.
 * **Store reusable snippets** as plain Python functions that accept and return
-  an ``EdbConfigBuilder``. Composing
+  a :class:`~pyedb.configuration.cfg_data.CfgData` instance. Composing
   builders is straightforward.
 
 Related reference
@@ -1394,4 +657,3 @@ Related reference
 
 For the file-oriented view of the same data model, including field-by-field
 section descriptions, see :doc:`file_architecture`.
-

@@ -1,10 +1,10 @@
-EdbConfigBuilder: Practical examples
+Configuration API: Practical examples
 ======================================
 
-What is ``EdbConfigBuilder``?
-------------------------------
+What is ``CfgData``?
+---------------------
 
-Think of ``EdbConfigBuilder`` as a **live blueprint** of your PCB design setup.
+Think of :class:`~pyedb.configuration.cfg_data.CfgData` as a **live blueprint** of your PCB design setup.
 Instead of manually crafting a JSON file, you describe what you want—nets,
 components, ports, setups, and geometry—through a clean Python object-oriented
 API.  When you are happy with the blueprint, you hand it to PyEDB and it
@@ -28,7 +28,7 @@ workflows: *definition*, *validation*, and *application*.
        node [shape=box, style="rounded,filled", fillcolor="#F7F7F7", color="#4F81BD"];
        edge [color="#4F81BD"];
 
-       create  [label="create_config_builder()\nor EdbConfigBuilder()"];
+       create  [label="create_config_builder()\nor CfgData()"];
        build   [label="Populate sections\n(nets, ports, setups …)"];
        decide  [label="apply\nor export?", shape=diamond, fillcolor="#FFF2CC", color="#D6B656"];
        run     [label="edb.configuration.run(cfg)\n→ layout updated"];
@@ -53,7 +53,7 @@ When you already have an open EDB layout the preferred way is:
    edb = Edb("my_design.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
-``create_config_builder()`` returns an ``EdbConfigBuilder`` that is *bound* to
+``create_config_builder()`` returns a :class:`~pyedb.configuration.cfg_data.CfgData` instance that is *bound* to
 the live session. Bound builders can read existing objects from the database.
 This is useful for ``cfg.components.get("U1")``, ``cfg.stackup.get_layer("1_Top")``,
 ``cfg.nets.get("GND")``, etc.
@@ -62,9 +62,9 @@ This is useful for ``cfg.components.get("U1")``, ``cfg.stackup.get_layer("1_Top"
 
 .. code-block:: python
 
-   from pyedb.configuration import EdbConfigBuilder
+   from pyedb.configuration import CfgData
 
-   cfg = EdbConfigBuilder()
+   cfg = CfgData()
 
 Standalone builders are ideal for templates, CI pipelines, or situations where
 you want to author a configuration before opening any design.
@@ -77,15 +77,15 @@ only override the values that need to change:
 
 .. code-block:: python
 
-   from pyedb.configuration import EdbConfigBuilder
+   from pyedb.configuration import CfgData
 
    # Start from a JSON baseline and tweak one setup
-   cfg = EdbConfigBuilder.from_json("baseline_config.json")
+   cfg = CfgData.from_json("baseline_config.json")
    cfg.setups.add_hfss_setup("new_setup", adapt_type="broadband")
    cfg.to_json("updated_config.json")
 
    # Or build from a plain dictionary (for example, loaded from a database)
-   cfg2 = EdbConfigBuilder.from_dict({"nets": {"signal_nets": ["CLK", "DATA"]}})
+   cfg2 = CfgData.from_dict({"nets": {"signal_nets": ["CLK", "DATA"]}})
 
 Applying a configuration to the layout
 ---------------------------------------
