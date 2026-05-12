@@ -56,7 +56,13 @@ class CfgPackage(CfgBaseModel):
     model_config = {"populate_by_name": True, "extra": "ignore", "arbitrary_types_allowed": True}
 
     # Attributes cannot be set to package definition class or don't exist in package definition class.
-    _protected_attributes: List[str] = ["name", "apply_to_all", "components", "extent_bounding_box", "component_definition"]
+    _protected_attributes: List[str] = [
+        "name",
+        "apply_to_all",
+        "components",
+        "extent_bounding_box",
+        "component_definition",
+    ]
 
     name: Optional[str] = None
     component_definition: Optional[str] = None
@@ -168,7 +174,6 @@ class CfgPackage(CfgBaseModel):
             if hs:
                 data["heatsink"] = hs
         return data
-
 
 
 class CfgPackageDefinitions:

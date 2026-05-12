@@ -224,7 +224,6 @@ class CfgPadstackDefinition(CfgBase):
         return self.model_dump(exclude_none=True, by_alias=False)
 
 
-
 class CfgPadstacks(CfgBase):
     """Collect padstack definitions and instances for serialization."""
 

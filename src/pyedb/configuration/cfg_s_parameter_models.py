@@ -25,9 +25,7 @@
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from pydantic import Field
-
-from pydantic import field_validator
+from pydantic import Field, field_validator
 
 from pyedb.configuration.cfg_common import CfgBaseModel, serialize_list
 

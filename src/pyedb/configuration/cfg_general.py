@@ -22,7 +22,9 @@
 """Build the ``general`` configuration section."""
 
 from typing import Any, Optional
+
 from pydantic import BaseModel, PrivateAttr, field_validator
+
 from pyedb.configuration.cfg_common import compact_dict
 
 
@@ -64,7 +66,6 @@ class CfgGeneral(BaseModel):
             return self.to_dict()
         opts = self._pedb.design_options
         return {"anti_pads_always_on": opts.anti_pads_always_on, "suppress_pads": opts.suppress_pads}
-
 
     def to_dict(self) -> dict:
         """Serialize configured general settings."""

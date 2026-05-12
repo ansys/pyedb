@@ -22,7 +22,6 @@
 
 """Public configuration builders and aliases for :mod:`pyedb.configuration`."""
 
-from pyedb.configuration.cfg_data import CfgData  # noqa: F401
 from pyedb.configuration.cfg_boundaries import CfgBoundaries as BoundariesConfig  # noqa: F401
 from pyedb.configuration.cfg_common import CfgVariables as VariablesConfig  # noqa: F401
 from pyedb.configuration.cfg_components import (  # noqa: F401
@@ -30,6 +29,7 @@ from pyedb.configuration.cfg_components import (  # noqa: F401
     CfgComponents as ComponentsConfig,
     CfgPinPairModel as PinPairModel,
 )
+from pyedb.configuration.cfg_data import CfgData  # noqa: F401
 from pyedb.configuration.cfg_general import CfgGeneral as GeneralConfig  # noqa: F401
 from pyedb.configuration.cfg_modeler import CfgModeler as ModelerConfig  # noqa: F401
 from pyedb.configuration.cfg_nets import CfgNets as NetsConfig  # noqa: F401

@@ -1668,13 +1668,17 @@ class TestSParameterModelConfig:
         assert d["apply_to_all"] is True
 
     def test_with_components(self):
-        m = SParameterModelConfig(name="m1", component_definition="DEF", file_path="f.s2p", apply_to_all=False, components=["C1", "C2"])
+        m = SParameterModelConfig(
+            name="m1", component_definition="DEF", file_path="f.s2p", apply_to_all=False, components=["C1", "C2"]
+        )
         d = m.to_dict()
         assert d["apply_to_all"] is False
         assert d["components"] == ["C1", "C2"]
 
     def test_reference_net_per_component(self):
-        m = SParameterModelConfig(name="m1", component_definition="DEF", file_path="f.s2p", reference_net_per_component={"C1": "GND1"})
+        m = SParameterModelConfig(
+            name="m1", component_definition="DEF", file_path="f.s2p", reference_net_per_component={"C1": "GND1"}
+        )
         d = m.to_dict()
         assert d["reference_net_per_component"] == {"C1": "GND1"}
 
@@ -2286,7 +2290,9 @@ class TestTerminalInfo:
 
 class TestPadstackInstanceTerminal:
     def test_basic(self):
-        t = PadstackInstanceTerminal(name="t1", padstack_instance="via_1", impedance=50, boundary_type="port", hfss_type=None)
+        t = PadstackInstanceTerminal(
+            name="t1", padstack_instance="via_1", impedance=50, boundary_type="port", hfss_type=None
+        )
         d = t.to_dict()
         assert d["terminal_type"] == "padstack_instance"
         assert d["name"] == "t1"
@@ -2323,7 +2329,9 @@ class TestPinGroupTerminal:
         assert d["is_circuit_port"] is True
 
     def test_reference_terminal(self):
-        t = PinGroupTerminal(name="t1", pin_group="pg_VDD", impedance=50, boundary_type="port", reference_terminal="ref_t")
+        t = PinGroupTerminal(
+            name="t1", pin_group="pg_VDD", impedance=50, boundary_type="port", reference_terminal="ref_t"
+        )
         assert t.to_dict()["reference_terminal"] == "ref_t"
 
 
@@ -2344,7 +2352,14 @@ class TestPointTerminal:
 
 class TestEdgeTerminal:
     def test_basic(self):
-        t = EdgeTerminal(name="t1", primitive="prim1", point_on_edge_x=0.001, point_on_edge_y=0.002, impedance=50, boundary_type="port")
+        t = EdgeTerminal(
+            name="t1",
+            primitive="prim1",
+            point_on_edge_x=0.001,
+            point_on_edge_y=0.002,
+            impedance=50,
+            boundary_type="port",
+        )
         d = t.to_dict()
         assert d["terminal_type"] == "edge"
         assert d["primitive"] == "prim1"
@@ -2352,7 +2367,16 @@ class TestEdgeTerminal:
         assert d["horizontal_extent_factor"] == 6
 
     def test_custom_extent(self):
-        t = EdgeTerminal(name="t1", primitive="prim1", point_on_edge_x=0, point_on_edge_y=0, impedance=50, boundary_type="port", horizontal_extent_factor=8, vertical_extent_factor=10)
+        t = EdgeTerminal(
+            name="t1",
+            primitive="prim1",
+            point_on_edge_x=0,
+            point_on_edge_y=0,
+            impedance=50,
+            boundary_type="port",
+            horizontal_extent_factor=8,
+            vertical_extent_factor=10,
+        )
         d = t.to_dict()
         assert d["horizontal_extent_factor"] == 8
         assert d["vertical_extent_factor"] == 10
@@ -2566,7 +2590,9 @@ class TestPackageDefinitionConfig:
         assert d["apply_to_all"] is True
 
     def test_explicit_components(self):
-        pkg = PackageDefinitionConfig(name="PKG1", component_definition="BGA", apply_to_all=False, components=["U1", "U2"])
+        pkg = PackageDefinitionConfig(
+            name="PKG1", component_definition="BGA", apply_to_all=False, components=["U1", "U2"]
+        )
         d = pkg.to_dict()
         assert d["components"] == ["U1", "U2"]
 

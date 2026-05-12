@@ -100,7 +100,6 @@ class CfgSpiceModel(CfgBaseModel):
         self._pedb = getattr(pdata, "_pedb", None)
         self._path_libraries = path_lib
 
-
     def to_dict(self) -> dict:
         """Serialize the SPICE model assignment."""
         data = {

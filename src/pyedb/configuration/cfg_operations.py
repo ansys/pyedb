@@ -101,7 +101,6 @@ class CfgCutout(BaseModel):
             return v
         return normalised
 
-
     def to_dict(self) -> dict:
         """Serialize the cutout operation."""
         return self.model_dump(exclude_none=True, by_alias=True)

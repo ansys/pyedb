@@ -199,11 +199,17 @@ class CfgPinGroups:
                         resolved_pins = self._resolve_pins(reference_designator, net_name, pg_name)
                         if resolved_pins is None:
                             continue
-                        pg = CfgPinGroup(self._pedb, name=pg_name, reference_designator=reference_designator,
-                                         pins=resolved_pins, net=net_name)
+                        pg = CfgPinGroup(
+                            self._pedb,
+                            name=pg_name,
+                            reference_designator=reference_designator,
+                            pins=resolved_pins,
+                            net=net_name,
+                        )
                     else:
-                        pg = CfgPinGroup(self._pedb, name=pg_name, reference_designator=reference_designator,
-                                         net=net_name)
+                        pg = CfgPinGroup(
+                            self._pedb, name=pg_name, reference_designator=reference_designator, net=net_name
+                        )
                     self.pin_groups.append(pg)
                     created.append(pg)
                 return created
@@ -214,8 +220,13 @@ class CfgPinGroups:
                     resolved_pins = self._resolve_pins(reference_designator, net_name, name)
                     if resolved_pins is None:
                         return None
-                    pg = CfgPinGroup(self._pedb, name=name, reference_designator=reference_designator,
-                                     pins=resolved_pins, net=net_name)
+                    pg = CfgPinGroup(
+                        self._pedb,
+                        name=name,
+                        reference_designator=reference_designator,
+                        pins=resolved_pins,
+                        net=net_name,
+                    )
                 else:
                     pg = CfgPinGroup(self._pedb, name=name, reference_designator=reference_designator, net=net_name)
                 self.pin_groups.append(pg)
