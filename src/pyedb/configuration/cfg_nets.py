@@ -21,9 +21,6 @@
 # SOFTWARE.
 """Build the ``nets`` configuration section."""
 
-from pyedb.configuration.cfg_common import compact_dict
-
-
 class CfgNets:
     """Fluent builder for the ``nets`` configuration section."""
 
@@ -94,7 +91,7 @@ class CfgNets:
     def get_parameters_from_edb(self):
         """Read net classifications from EDB."""
         if self._pedb is None:
-            return self.to_dict()
+            return {"signal_nets": list(self.signal_nets), "power_ground_nets": list(self.power_nets)}
         self.signal_nets = list(self._pedb.nets.signal)
         self.power_nets = list(self._pedb.nets.power)
         return {"signal_nets": self.signal_nets, "power_ground_nets": self.power_nets}
@@ -197,9 +194,6 @@ class CfgNets:
         """
         self._add_to_list(self.reference_nets, [self.signal_nets, self.power_nets], nets)
 
-    def to_dict(self) -> dict:
-        """Serialize the configured net classification lists."""
-        return compact_dict({"signal_nets": list(self.signal_nets), "power_ground_nets": list(self.power_nets)})
 
     def apply(self):
         """Apply net configuration on the layout."""

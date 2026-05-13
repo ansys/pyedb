@@ -20,11 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import json
-from unittest.mock import MagicMock
-
 import pytest
-
 from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_operations import CfgOperations
 
@@ -34,32 +30,29 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 class TestNetsConfig:
     def test_empty(self):
         n = CfgNets()
-        assert n.to_dict() == {}
+        assert n.signal_nets == []
+        assert n.power_nets == []
 
     def test_signal_nets(self):
         n = CfgNets()
         n.add_signal_nets(["SIG1", "SIG2"])
-        d = n.to_dict()
-        assert d["signal_nets"] == ["SIG1", "SIG2"]
-        assert "power_ground_nets" not in d
+        assert n.signal_nets == ["SIG1", "SIG2"]
+        assert n.power_nets == []
 
     def test_power_ground_nets(self):
         n = CfgNets()
         n.add_power_ground_nets(["VDD", "GND"])
-        d = n.to_dict()
-        assert d["power_ground_nets"] == ["VDD", "GND"]
+        assert n.power_ground_nets == ["VDD", "GND"]
 
     def test_accumulates(self):
         n = CfgNets()
         n.add_signal_nets(["A"])
         n.add_signal_nets(["B", "C"])
-        assert n.to_dict()["signal_nets"] == ["A", "B", "C"]
+        assert n.signal_nets == ["A", "B", "C"]
 
     def test_add_reference_nets(self):
         n = CfgNets()
         n.add_reference_nets(["GND", "AGND"])
-        # reference_nets are NOT serialized in to_dict (only used for cutout forwarding)
-        assert "reference_nets" not in n.to_dict()
         assert n.reference_nets == ["GND", "AGND"]
 
     def test_reference_nets_property(self):
@@ -83,7 +76,7 @@ class TestNetsConfig:
         n.add_signal_nets(["SIG"])
         n.add_reference_nets(["GND"])
         ops = CfgOperations()
-        c = ops.add_cutout(signal_nets=n.signal_nets, reference_nets=n.reference_nets)
-        d = c.to_dict()
-        assert d["cutout"]["signal_list"] == ["SIG"]
-        assert d["cutout"]["reference_list"] == ["GND"]
+        ops.add_cutout(signal_nets=n.signal_nets, reference_nets=n.reference_nets)
+        d = ops.model_dump()
+        assert d["cutout"]["signal_nets"] == ["SIG"]
+        assert d["cutout"]["reference_nets"] == ["GND"]
