@@ -187,17 +187,18 @@ class CfgPadstacks(CfgBase):
     definitions: list[CfgPadstackDefinition] = Field(default_factory=list)
     instances: list[CfgPadstackInstance] = Field(default_factory=list)
 
+    # PrivateAttr used to not serialize pydantic model_dump()
     _pedb: object = PrivateAttr(default=None)
     _cfg_stackup: object = PrivateAttr(default=None)
 
     model_config = {"populate_by_name": True, "extra": "forbid", "arbitrary_types_allowed": True}
 
     def _set_pedb(self, pedb):
-        """Attach a live EDB session (called by EdbConfigBuilder)."""
+        """Attach a live EDB session (called by CfData)."""
         self._pedb = pedb
 
     def _set_cfg_stackup(self, cfg_stackup):
-        """Attach the CfgStackup builder (called by EdbConfigBuilder)."""
+        """Attach the CfgStackup builder (called by CfData)."""
         self._cfg_stackup = cfg_stackup
 
     @classmethod
