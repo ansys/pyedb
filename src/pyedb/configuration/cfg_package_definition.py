@@ -23,7 +23,9 @@
 """Build thermal package-definition configuration entries."""
 
 from typing import Any, List, Optional
+
 from pydantic import Field, model_validator
+
 from pyedb.configuration.cfg_common import CfgBaseModel
 from pyedb.generic.settings import settings
 
@@ -214,8 +216,8 @@ class CfgPackageDefinitions:
 
     def add(
         self,
-        name:str,
-        component_definition:str,
+        name: str,
+        component_definition: str,
         apply_to_all=None,
         components=None,
         maximum_power=None,
@@ -292,5 +294,3 @@ class CfgPackageDefinitions:
     def get_data_from_db(self):
         """Read package definitions from EDB."""
         return self.get_parameters_from_edb()
-
-
