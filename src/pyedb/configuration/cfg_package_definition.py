@@ -215,8 +215,8 @@ class CfgPackageDefinitions:
 
     def add(
         self,
-        name,
-        component_definition,
+        name:str,
+        component_definition:str,
         apply_to_all=None,
         components=None,
         maximum_power=None,
@@ -293,4 +293,5 @@ class CfgPackageDefinitions:
     def get_data_from_db(self):
         """Read package definitions from EDB."""
         return self.get_parameters_from_edb()
+
 

@@ -30,12 +30,15 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 class TestPackageDefinitionConfig:
     def test_minimal(self):
         pkg = CfgPackage(name="PKG1", component_definition="BGA_256")
-        d = pkg.to_dict()
-        assert d == {"name": "PKG1", "component_definition": "BGA_256"}
+        d = pkg.model_dump(exclude_none=True)
+        assert d["name"] == "PKG1"
+        assert d["component_definition"] == "BGA_256"
+        # only name, component_definition and empty components list are present
+        assert set(d.keys()) <= {"name", "component_definition", "components"}
 
     def test_with_thermal_properties(self):
         pkg = CfgPackage(name="PKG1", component_definition="BGA_256", maximum_power="5W", theta_jb="10C/W")
-        d = pkg.to_dict()
+        d = pkg.model_dump(exclude_none=True)
         assert d["maximum_power"] == "5W"
         assert d["theta_jb"] == "10C/W"
 
@@ -43,35 +46,35 @@ class TestPackageDefinitionConfig:
         pkg = CfgPackage(name="PKG1", component_definition="BGA_256")
         hs = pkg.set_heatsink(fin_height="3mm", fin_spacing="1mm")
         assert isinstance(hs, CfgHeatSink)
-        d = pkg.to_dict()
+        d = pkg.model_dump(exclude_none=True)
         assert "heatsink" in d
         assert d["heatsink"]["fin_height"] == "3mm"
 
     def test_apply_to_all(self):
         pkg = CfgPackage(name="PKG1", component_definition="BGA", apply_to_all=True)
-        d = pkg.to_dict()
+        d = pkg.model_dump(exclude_none=True)
         assert d["apply_to_all"] is True
 
     def test_explicit_components(self):
         pkg = CfgPackage(name="PKG1", component_definition="BGA", apply_to_all=False, components=["U1", "U2"])
-        d = pkg.to_dict()
+        d = pkg.model_dump(exclude_none=True)
         assert d["components"] == ["U1", "U2"]
 
     def test_empty_heatsink_not_emitted(self):
         pkg = CfgPackage(name="PKG1", component_definition="BGA")
         # no set_heatsink call → no heatsink key
-        assert "heatsink" not in pkg.to_dict()
+        assert "heatsink" not in pkg.model_dump(exclude_none=True)
 
 
 class TestPackageDefinitionsConfig:
     def test_empty(self):
-        assert CfgPackageDefinitions().to_list() == []
+        assert CfgPackageDefinitions().packages == []
 
     def test_add(self):
         pc = CfgPackageDefinitions()
         pkg = pc.add("PKG1", "BGA_256", maximum_power="5W")
         assert isinstance(pkg, CfgPackage)
-        lst = pc.to_list()
+        lst = [p.model_dump(exclude_none=True) for p in pc.packages]
         assert len(lst) == 1
         assert lst[0]["name"] == "PKG1"
 
@@ -88,7 +91,7 @@ class TestPackageDefinitionsConfig:
             theta_jc="5C/W",
             height="1mm",
         )
-        d = pkg.to_dict()
+        d = pkg.model_dump(exclude_none=True)
         assert d["maximum_power"] == "5W"
         assert d["thermal_conductivity"] == "0.3W/mK"
         assert d["theta_jb"] == "10C/W"
@@ -99,4 +102,4 @@ class TestPackageDefinitionsConfig:
         pc = CfgPackageDefinitions()
         pc.add("P1", "DEF1")
         pc.add("P2", "DEF2", theta_jc="5C/W")
-        assert len(pc.to_list()) == 2
+        assert len(pc.packages) == 2
