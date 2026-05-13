@@ -21,36 +21,13 @@
 # SOFTWARE.
 
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
-        SIWaveSimulationSettings as CoreSIWaveSimulationSettings,
-    )
-from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
-from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
 from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
 from pyedb.grpc.database.simulation_setup.siwave_general_settings import SIWaveGeneralSettings
 from pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings import SIWaveSParameterSettings
+from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSettings
 
 
-class SIWaveSimulationSettings:
-    def __init__(self, pedb, core: "CoreSIWaveSimulationSettings"):
-        """PyEDB SIWave simulation settings class."""
-        self.core = core
-        self._pedb = pedb
-
-    @property
-    def advanced(self) -> SIWaveAdvancedSettings:
-        """Advanced settings class.
-
-        Returns
-        -------
-        :class:`SIWaveAdvancedSettings <pyedb.grpc.database.simulation_setup.
-        siwave_advanced_settings.SIWaveAdvancedSettings>`
-
-        """
-        return SIWaveAdvancedSettings(self._pedb, self.core.advanced)
+class SIWaveSimulationSettings(SimulationSettings):
 
     @property
     def dc(self) -> SIWaveDCSettings:
@@ -63,18 +40,6 @@ class SIWaveSimulationSettings:
 
         """
         return SIWaveDCSettings(self._pedb, self.core.dc)
-
-    @property
-    def dc_advanced(self) -> SIWaveDCAdvancedSettings:
-        """DC advanced settings class.
-
-        Returns
-        -------
-        :class:`SIWaveDCAdvancedSettings <pyedb.grpc.database.simulation_setup.
-        siwave_dc_advanced.SIWaveDCAdvancedSettings>`
-
-        """
-        return SIWaveDCAdvancedSettings(self._pedb, self.core.dc_advanced)
 
     @property
     def enabled(self) -> bool:

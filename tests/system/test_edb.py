@@ -109,7 +109,7 @@ class TestClass(BaseTestClass):
         setup = edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
         setup.settings.add_source_terminal_to_ground("Vsource_U1_USB3_D_P_U1_GND", 1)
         if edbapp.grpc:
-            assert "Vsource_U1_USB3_D_P_U1_GND" in setup.settings.dc.source_terms_to_ground
+            assert "Vsource_U1_USB3_D_P_U1_GND" in setup.settings.source_terms_to_ground
         else:
             assert "Vsource_U1_USB3_D_P_U1_GND" in setup.settings.dc_ir.source_terms_to_ground
         edbapp.close(terminate_rpc_session=False)
@@ -177,14 +177,14 @@ class TestClass(BaseTestClass):
         syz_setup = edbapp.siwave.add_siwave_syz_analysis(start_freq="1GHz", stop_freq="10GHz", step_freq="10MHz")
         syz_setup.use_custom_settings = False
         assert not syz_setup.use_custom_settings
-        syz_setup.advanced_settings.min_void_area = "4mm2"
-        assert syz_setup.advanced_settings.min_void_area == 4e-06
-        syz_setup.advanced_settings.mesh_automatic = True
-        assert syz_setup.advanced_settings.mesh_automatic
-        syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh = "0.5mm2"
-        assert syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh == "0.5mm2"
-        syz_setup.dc_settings.use_dc_custom_settings = False
-        assert not syz_setup.dc_settings.use_dc_custom_settings
+        syz_setup.settings.advanced.min_void_area = "4mm2"
+        assert syz_setup.settings.advanced.min_void_area == 4e-06
+        syz_setup.mesh_automatic = True
+        assert syz_setup.mesh_automatic
+        syz_setup.dc_min_plane_area_to_mesh = "0.5mm2"
+        assert syz_setup.dc_min_plane_area_to_mesh == "0.5mm2"
+        syz_setup.settings.dc.use_dc_custom_settings = False
+        assert not syz_setup.settings.dc.use_dc_custom_settings
         syz_sweep = syz_setup.add_sweep()
         syz_sweep.enforce_causality = False
         assert not syz_sweep.enforce_causality
@@ -1185,7 +1185,8 @@ class TestClass(BaseTestClass):
     def test_siwave_simulation_setup_dotnet_compatibility(self):
         edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")
-        setup.set_dc_slider = 1
+
+
         settings = setup.settings
 
         settings.dc_report_show_active_devices = True
@@ -1201,7 +1202,22 @@ class TestClass(BaseTestClass):
         settings.export_dc_thermal_data = True
         settings.full_dc_report_path = "full_dc_report.txt"
         settings.use_loop_res_for_per_pin = True
-        # settings.add_source_terminal_to_ground("test", 1)
+        settings.add_source_terminal_to_ground("test", 1)
+
+
+        setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        assert setup_2.settings.use_loop_res_for_per_pin
+        assert setup_2.settings.dc_report_show_active_devices
+        assert setup_2.settings.dc_report_config_file == "custom_dc_report.cfg"
+        assert setup_2.settings.enabled
+        assert setup_2.settings.icepak_temp_file == "icepak_temp_file.txt"
+        assert setup_2.settings.import_thermal_data
+        assert setup_2.settings.per_pin_res_path == "per_pin_res.txt"
+        assert setup_2.settings.per_pin_use_pin_format
+        assert setup_2.settings.via_report_path == "via_report.txt"
+        assert setup_2.settings.export_dc_thermal_data
+        assert setup_2.settings.full_dc_report_path == "full_dc_report.txt"
+        assert settings.source_terms_to_ground["test"] == 1
 
         # DC settings
         dc = settings.dc
@@ -1209,16 +1225,13 @@ class TestClass(BaseTestClass):
         dc.contact_radius = "1mm"
         dc.dc_slider_position = 0
         dc.plot_jv = False
-        dc.use_dc_custom_settings = False
-        dc.dc_report_config_file = "custom_dc_report.cfg"
-        dc.export_dc_thermal_data = True
-        dc.full_dc_report_path = "full_dc_report.txt"
-        dc.icepak_temp_file = "icepak_temp_file.txt"
-        dc.import_thermal_data = True
-        dc.per_pin_res_path = "per_pin_res.txt"
-        dc.per_pin_use_pin_format = True
-        dc.via_report_path = "via_report.txt"
-        dc.use_loop_res_for_per_pin = True
+
+        setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        assert setup_2.settings.dc.compute_inductance
+        assert setup_2.settings.dc.contact_radius == "1mm"
+        assert setup_2.settings.dc.dc_slider_position == 0
+        assert not setup_2.settings.dc.plot_jv
+        assert not setup_2.settings.dc.use_dc_custom_settings
 
         # DC advanced settings
         dc_adv = settings.dc_advanced
@@ -1236,52 +1249,9 @@ class TestClass(BaseTestClass):
         dc_adv.refine_bws = True
         dc_adv.refine_vias = True
 
-        # General settings (backward compat — proxies to DC settings for DCIR setups)
-        general = settings.general
-        general.compute_inductance = True
-        general.contact_radius = "1mm"
-        general.dc_slider_position = 0
-        general.plot_jv = False
-        general.use_dc_custom_settings = False
+        setup_2 = edbapp.simulation_setups.setups["setup_1"]
 
-        # -------------------------
-        # Validate settings (ASSERTS)
-        # -------------------------
-
-        setup = edbapp.setups["setup_1"]
-        settings = setup.settings
-
-        # assert settings.source_terms_to_ground["test"]
-        assert settings.use_loop_res_for_per_pin
-        assert settings.dc_report_show_active_devices
-        assert settings.dc_report_config_file == "custom_dc_report.cfg"
-        assert settings.enabled
-        assert settings.icepak_temp_file == "icepak_temp_file.txt"
-        assert settings.import_thermal_data
-        assert settings.per_pin_res_path == "per_pin_res.txt"
-        assert settings.per_pin_use_pin_format
-        assert settings.via_report_path == "via_report.txt"
-        assert settings.export_dc_thermal_data
-        assert settings.full_dc_report_path == "full_dc_report.txt"
-
-        # DC assertions
-        assert dc.compute_inductance
-        assert dc.contact_radius == "1mm"
-        assert dc.dc_slider_position == 0
-        assert not dc.plot_jv
-        assert not dc.use_dc_custom_settings
-        assert dc.dc_report_config_file == "custom_dc_report.cfg"
-        assert dc.export_dc_thermal_data
-        assert dc.full_dc_report_path == "full_dc_report.txt"
-        assert dc.icepak_temp_file == "icepak_temp_file.txt"
-        assert dc.import_thermal_data
-        assert dc.per_pin_res_path == "per_pin_res.txt"
-        assert dc.per_pin_use_pin_format
-        assert dc.via_report_path == "via_report.txt"
-        assert dc.use_loop_res_for_per_pin
-
-        # DC advanced assertions
-        assert dc_adv.dc_min_plane_area_to_mesh == "0.30mm2"
+        assert setup_2.settings.dc_advanced.dc_min_plane_area_to_mesh == "0.30mm2"
         assert dc_adv.dc_min_void_area_to_mesh == "0.02mm2"
         assert dc_adv.energy_error == 1.5
         assert dc_adv.max_init_mesh_edge_length == "2.0mm"
@@ -1295,12 +1265,22 @@ class TestClass(BaseTestClass):
         assert dc_adv.refine_bws
         assert dc_adv.refine_vias
 
+        # General settings (backward compat — proxies to DC settings for DCIR setups)
+        general = settings.general
+        general.pi_slider_position = 0
+        general.si_slider_position = 0
+        general.use_custom_settings = False
+        general.use_si_settings = False
+
+        # -------------------------
+        # Validate settings (ASSERTS)
+        # -------------------------
+        setup_2 = edbapp.simulation_setups.setups["setup_1"]
         # General assertions (backward compat)
-        assert general.compute_inductance
-        assert general.contact_radius == "1mm"
-        assert general.dc_slider_position == 0
-        assert not general.plot_jv
-        assert not general.use_dc_custom_settings
+        assert setup_2.settings.general.pi_slider_position == 0
+        assert setup_2.settings.general.si_slider_position == 0
+        assert not setup_2.settings.general.use_custom_settings
+        assert not setup_2.settings.general.use_si_settings
 
         # test syz setup
 

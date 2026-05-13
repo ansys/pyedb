@@ -680,3 +680,93 @@ class Settings(DeprecatedSettings):
     def general(self):
         warnings.warn("Deprecated: settings.dc.", DeprecationWarning)
         return SIWaveGeneralSettings(self._parent)
+
+    @property
+    def compute_inductance(self):
+        """Whether to compute Inductance.
+
+        Returns
+        -------
+        bool
+            ``True`` if inductances will be computed, ``False`` otherwise.
+        """
+
+        return self.sim_setup_info.simulation_settings.DCSettings.ComputeInductance
+
+    @compute_inductance.setter
+    def compute_inductance(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCSettings.ComputeInductance = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
+    @property
+    def contact_radius(self):
+        """Circuit element contact radius.
+
+        Returns
+        -------
+        str
+        """
+        return self.sim_setup_info.simulation_settings.DCSettings.ContactRadius
+
+    @contact_radius.setter
+    def contact_radius(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCSettings.ContactRadius = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
+    @property
+    def dc_slider_position(self):
+        """DC simulation accuracy level slider position. This property only change slider position.
+        Options:
+        0- ``optimal speed``
+        1- ``balanced``
+        2- ``optimal accuracy``.
+        """
+        return self.sim_setup_info.simulation_settings.DCSettings.DCSliderPos
+
+    @dc_slider_position.setter
+    def dc_slider_position(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCSettings.DCSliderPos = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
+    @property
+    def use_dc_custom_settings(self):
+        """Whether to use DC custom settings.
+        This setting is automatically enabled by other properties when needed.
+
+        Returns
+        -------
+        bool
+            ``True`` if custom dc settings are used, ``False`` otherwise.
+        """
+        return self.sim_setup_info.simulation_settings.DCSettings.UseDCCustomSettings
+
+    @use_dc_custom_settings.setter
+    def use_dc_custom_settings(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCSettings.UseDCCustomSettings = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
+    @property
+    def plot_jv(self):
+        """Plot current and voltage distributions.
+
+        Returns
+        -------
+        bool
+            ``True`` if plot JV is used, ``False`` otherwise.
+        """
+        return self.sim_setup_info.simulation_settings.DCSettings.PlotJV
+
+    @plot_jv.setter
+    def plot_jv(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCSettings.PlotJV = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
