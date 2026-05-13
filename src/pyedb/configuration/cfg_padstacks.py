@@ -21,7 +21,7 @@
 # SOFTWARE.
 """Build padstack definition and instance entries for configuration payloads."""
 
-from typing import Literal, Union
+from typing import Union
 
 from pydantic import Field, PrivateAttr, field_validator, model_validator
 
@@ -162,7 +162,7 @@ class CfgPadstackDefinition(CfgBase):
 
     hole_plating_thickness: str | float | None = None
     material: str | None = Field(None, alias="hole_material")
-    hole_range: Literal["through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad"] | None = None
+    hole_range: str | None = None
 
     pad_parameters: dict | None = None
     hole_parameters: dict | None = None
