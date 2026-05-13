@@ -23,6 +23,7 @@
 """Build the ``operations`` configuration section, including cutouts."""
 
 from typing import Any, ClassVar, Optional
+
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
