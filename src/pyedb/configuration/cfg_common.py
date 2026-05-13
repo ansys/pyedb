@@ -29,26 +29,44 @@ from pydantic import BaseModel, Field
 _EMPTY_SERIALIZATION_VALUES = (None, [], {})
 
 
-def compact_dict(data=None, /, *, empty_values=_EMPTY_SERIALIZATION_VALUES, **kwargs) -> dict:
+def compact_dict(
+    data: Optional[dict] = None,
+    /,
+    *,
+    exclude: tuple = _EMPTY_SERIALIZATION_VALUES,
+    **kwargs,
+) -> dict:
     """Return a copy of *data* with empty values removed.
 
     Parameters
     ----------
     data : dict, optional
         Base mapping to filter.
-    empty_values : tuple, optional
+    exclude : tuple, optional
         Values to omit. Defaults to ``(None, [], {})``.
     **kwargs
         Extra key-value pairs merged into *data* before filtering.
     """
     raw = dict(data or {})
     raw.update(kwargs)
-    return {key: value for key, value in raw.items() if value not in empty_values}
+    return {key: value for key, value in raw.items() if value not in exclude}
 
 
-def serialize_item(item: Any, method_names: tuple[str, ...] = ("to_dict", "export_properties")) -> Any:
-    """Serialize one configuration item using its first available export method."""
-    for method_name in method_names:
+def serialize_item(
+    item: Any,
+    export_methods: tuple[str, ...] = ("to_dict", "export_properties"),
+) -> Any:
+    """Serialize one configuration item using its first available export method.
+
+    Parameters
+    ----------
+    item : Any
+        The configuration object to serialize.
+    export_methods : tuple of str, optional
+        Ordered method names to try for serialization.
+        Defaults to ``("to_dict", "export_properties")``.
+    """
+    for method_name in export_methods:
         method = getattr(item, method_name, None)
         if callable(method):
             return method()
@@ -57,9 +75,21 @@ def serialize_item(item: Any, method_names: tuple[str, ...] = ("to_dict", "expor
     return item
 
 
-def serialize_list(items: Iterable[Any], method_names: tuple[str, ...] = ("to_dict", "export_properties")) -> list:
-    """Serialize an iterable of configuration items to plain Python objects."""
-    return [serialize_item(item, method_names=method_names) for item in items]
+def serialize_list(
+    items: Iterable[Any],
+    export_methods: tuple[str, ...] = ("to_dict", "export_properties"),
+) -> list:
+    """Serialize an iterable of configuration items to plain Python objects.
+
+    Parameters
+    ----------
+    items : iterable
+        Configuration objects to serialize.
+    export_methods : tuple of str, optional
+        Ordered method names to try for serialization.
+        Defaults to ``("to_dict", "export_properties")``.
+    """
+    return [serialize_item(item, export_methods=export_methods) for item in items]
 
 
 class CfgBase:
