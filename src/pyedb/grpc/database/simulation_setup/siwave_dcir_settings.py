@@ -34,11 +34,11 @@ class SIWaveDCIRSettings:
 
     @property
     def advanced(self):
-        return SIWaveAdvancedSettings(self._pedb, self.core)
+        return SIWaveAdvancedSettings(self._pedb, self.core.advanced)
 
     @property
     def dc(self):
-        return SIWaveDCSettings(self._pedb, self.core)
+        return SIWaveDCSettings(self._pedb, self.core.dc)
 
     @property
     def dc_settings(self) -> SIWaveDCSettings:
@@ -47,15 +47,15 @@ class SIWaveDCIRSettings:
 
     @property
     def dc_advanced(self):
-        return SIWaveDCAdvancedSettings(self._pedb, self.core)
+        return SIWaveDCAdvancedSettings(self._pedb, self.core.dc_advanced)
 
     @property
     def general(self):
-        return SIWaveGeneralSettings(self._pedb, self.core)
+        return SIWaveGeneralSettings(self._pedb, self.core.general)
 
     @property
     def s_parameter(self):
-        return SIWaveSParameterSettings(self._pedb, self.core)
+        return SIWaveSParameterSettings(self._pedb, self.core.s_parameter)
 
     @property
     def dc_report_config_file(self) -> str:

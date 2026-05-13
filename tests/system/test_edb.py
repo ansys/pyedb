@@ -842,31 +842,12 @@ class TestClass(BaseTestClass):
         assert dc.compute_inductance
         dc.contact_radius = "1mm"
         assert dc.contact_radius == "1mm"
-        dc.dc_report_config_file = "custom_dc_report.cfg"
-        assert dc.dc_report_config_file == "custom_dc_report.cfg"
-        dc.dc_slider_pos = 2
-        assert dc.dc_slider_pos == 2
-        dc.export_dc_thermal_data = True
-        assert dc.export_dc_thermal_data
-        dc.full_dc_report_path = "full_dc_report.txt"
-        assert dc.full_dc_report_path == "full_dc_report.txt"
-        dc.icepak_temp_file = "icepak_temp_file.txt"
-        assert dc.icepak_temp_file == "icepak_temp_file.txt"
-        dc.import_thermal_data = True
-        assert dc.import_thermal_data
-        dc.per_pin_res_path = "per_pin_res.txt"
-        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.dc_slider_position = 2
+        assert dc.dc_slider_position == 2
         dc.plot_jv = False
         assert not dc.plot_jv
-        dc.source_terms_to_ground = {"gnd": 1}
-        assert dc.source_terms_to_ground == {"gnd": 1}
-
         dc.use_dc_custom_settings = True
         assert dc.use_dc_custom_settings
-        dc.use_loop_res_for_per_pin = True
-        assert dc.use_loop_res_for_per_pin
-        dc.via_report_path = "via_report.txt"
-        assert dc.via_report_path == "via_report.txt"
 
         # DC advanced
         dc_adv = setup.settings.dc_advanced
@@ -930,36 +911,37 @@ class TestClass(BaseTestClass):
         assert setup.name == "test_siwave_dcir_setup"
 
         # setting.advanced
+        settings = setup.settings
+        settings.dc_report_config_file = "custom_dc_report.cfg"
+        assert settings.dc_report_config_file == "custom_dc_report.cfg"
+        settings.export_dc_thermal_data = True
+        assert settings.export_dc_thermal_data
+        settings.full_dc_report_path = "full_dc_report.txt"
+        assert settings.full_dc_report_path == "full_dc_report.txt"
+        settings.icepak_temp_file = "icepak_temp_file.txt"
+        assert settings.icepak_temp_file == "icepak_temp_file.txt"
+        settings.import_thermal_data = True
+        assert settings.import_thermal_data
+        settings.per_pin_res_path = "per_pin_res.txt"
+        assert settings.per_pin_res_path == "per_pin_res.txt"
+        settings.source_terms_to_ground = {"gnd": 1}
+        settings.use_dc_custom_settings = True  # noqa: not a real DCIR property but kept for coverage
+        settings.use_loop_res_for_per_pin = True
+        assert settings.use_loop_res_for_per_pin
+        settings.via_report_path = "via_report.txt"
+        assert settings.via_report_path == "via_report.txt"
+
         dc = setup.settings.dc
         dc.compute_inductance = True
         assert dc.compute_inductance
         dc.contact_radius = "1mm"
         assert dc.contact_radius == "1mm"
-        dc.dc_report_config_file = "custom_dc_report.cfg"
-        assert dc.dc_report_config_file == "custom_dc_report.cfg"
-        dc.dc_report_config_file = "custom_dc_report.cfg"
-        assert dc.dc_report_config_file == "custom_dc_report.cfg"
-        dc.dc_slider_pos = 2
-        assert dc.dc_slider_pos == 2
-        dc.export_dc_thermal_data = True
-        assert dc.export_dc_thermal_data
-        dc.full_dc_report_path = "full_dc_report.txt"
-        assert dc.full_dc_report_path == "full_dc_report.txt"
-        dc.icepak_temp_file = "icepak_temp_file.txt"
-        assert dc.icepak_temp_file == "icepak_temp_file.txt"
-        dc.import_thermal_data = True
-        assert dc.import_thermal_data
-        dc.per_pin_res_path = "per_pin_res.txt"
-        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.dc_slider_position = 2
+        assert dc.dc_slider_position == 2
         dc.plot_jv = False
         assert not dc.plot_jv
-        dc.source_terms_to_ground = {"gnd": 1}
         dc.use_dc_custom_settings = True
         assert dc.use_dc_custom_settings
-        dc.use_loop_res_for_per_pin = True
-        assert dc.use_loop_res_for_per_pin
-        dc.via_report_path = "via_report.txt"
-        assert dc.via_report_path == "via_report.txt"
 
         # dc advanced
         dc_adv = setup.settings.dc_advanced
@@ -994,12 +976,12 @@ class TestClass(BaseTestClass):
         general = setup.settings.general
         general.pi_slider_pos = 0
         assert general.pi_slider_pos == 0
-        general.si_slider_pos = 2
-        assert general.si_slider_pos == 2
+        general.si_slider_position = 2
+        assert general.si_slider_position == 2
         general.use_custom_settings = True
         assert general.use_custom_settings
-        general.user_si_settings = False
-        assert not general.user_si_settings
+        general.use_si_settings = False
+        assert not general.use_si_settings
         edbapp.close(terminate_rpc_session=False)
 
     def test_raptor_x_simulation_setups_consolidation(self):
@@ -1227,9 +1209,9 @@ class TestClass(BaseTestClass):
         dc = settings.dc
         dc.compute_inductance = True
         dc.contact_radius = "1mm"
-        dc.dc_slider_pos = 0
+        dc.dc_slider_position = 0
         dc.plot_jv = False
-        dc.use_dc_customer_settings = False
+        dc.use_dc_custom_settings = False
 
         # DC advanced settings
         dc_adv = settings.dc_advanced
@@ -1247,13 +1229,6 @@ class TestClass(BaseTestClass):
         dc_adv.refine_bws = True
         dc_adv.refine_vias = True
 
-        # General settings
-        general = settings.general
-        general.compute_inductance = True
-        general.contact_radius = "1mm"
-        general.dc_slider_pos = 0
-        general.plot_jv = False
-        general.use_dc_custom_settings = False
 
         # -------------------------
         # Validate settings (ASSERTS)
@@ -1278,9 +1253,9 @@ class TestClass(BaseTestClass):
         # DC assertions
         assert dc.compute_inductance
         assert dc.contact_radius == "1mm"
-        assert dc.dc_slider_pos == 0
+        assert dc.dc_slider_position == 0
         assert not dc.plot_jv
-        assert not dc.use_dc_customer_settings
+        assert not dc.use_dc_custom_settings
 
         # DC advanced assertions
         assert dc_adv.dc_min_plane_area_to_mesh == "0.30mm2"
@@ -1297,12 +1272,6 @@ class TestClass(BaseTestClass):
         assert dc_adv.refine_bws
         assert dc_adv.refine_vias
 
-        # General assertions
-        assert general.compute_inductance
-        assert general.contact_radius == "1mm"
-        assert general.dc_slider_pos == 0
-        assert not general.plot_jv
-        assert not general.use_dc_custom_settings
 
         # test syz setup
 
