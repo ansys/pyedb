@@ -25,8 +25,7 @@
 from typing import Any, List, Optional
 
 from pydantic import Field, model_validator
-
-from pyedb.configuration.cfg_common import CfgBaseModel, compact_dict, serialize_list
+from pyedb.configuration.cfg_common import CfgBaseModel
 from pyedb.generic.settings import settings
 
 
@@ -41,13 +40,9 @@ class CfgHeatSink(CfgBaseModel):
     fin_spacing: Optional[Any] = None
     fin_thickness: Optional[Any] = None
 
-    def to_dict(self) -> dict:
-        """Serialize non-null heat-sink properties."""
-        return {k: v for k, v in self.model_dump().items() if v is not None}
-
     def get_attributes(self, exclude=None):
         """Return non-null attribute dict (CfgBase compatibility)."""
-        return self.to_dict()
+        return self.model_dump(exclude_none=True)
 
 
 class CfgPackage(CfgBaseModel):
@@ -89,8 +84,7 @@ class CfgPackage(CfgBaseModel):
         protected = set(self._protected_attributes) | {"heatsink"}
         if exclude:
             protected.update(exclude if isinstance(exclude, list) else [exclude])
-        data = self.model_dump(exclude_none=True)
-        return {k: v for k, v in data.items() if k not in protected}
+        return {k: v for k, v in self.model_dump(exclude_none=True).items() if k not in protected}
 
     def set_attributes(self, pedb_object):
         """Set non-protected attributes onto *pedb_object* (CfgBase compatibility)."""
@@ -148,33 +142,6 @@ class CfgPackage(CfgBaseModel):
         object.__setattr__(self, "heatsink", hs)
         return hs
 
-    def to_dict(self) -> dict:
-        """Serialize the package definition."""
-        data = {
-            "name": self.name,
-            "component_definition": self.component_definition,
-        }
-        data.update(
-            compact_dict(
-                {
-                    "apply_to_all": self.apply_to_all,
-                    "maximum_power": self.maximum_power,
-                    "thermal_conductivity": self.thermal_conductivity,
-                    "theta_jb": self.theta_jb,
-                    "theta_jc": self.theta_jc,
-                    "height": self.height,
-                    "extent_bounding_box": self.extent_bounding_box,
-                }
-            )
-        )
-        if self.components:
-            data["components"] = self.components
-        if self.heatsink is not None:
-            hs = self.heatsink.to_dict()
-            if hs:
-                data["heatsink"] = hs
-        return data
-
 
 class CfgPackageDefinitions:
     """Manage thermal package definitions for the ``package_definitions`` section."""
@@ -221,8 +188,7 @@ class CfgPackageDefinitions:
             pkg.set_attributes(package_def)
 
             if pkg.heatsink:
-                attrs = pkg.heatsink.get_attributes()
-                package_def.set_heatsink(**attrs)
+                package_def.set_heatsink(**pkg.heatsink.get_attributes())
 
             comp_list = dict()
             if pkg.apply_to_all:
@@ -328,6 +294,3 @@ class CfgPackageDefinitions:
         """Read package definitions from EDB."""
         return self.get_parameters_from_edb()
 
-    def to_list(self):
-        """Serialize all configured package definitions."""
-        return serialize_list(self.packages)
