@@ -22,8 +22,7 @@
 
 """Build the ``operations`` configuration section, including cutouts."""
 
-from typing import Any, ClassVar, List, Optional, Union
-
+from typing import Any, ClassVar, Optional
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
@@ -40,16 +39,10 @@ class CfgCutout(BaseModel):
     """Represent one cutout operation configuration payload."""
 
     auto_identify_nets: CfgAutoIdentifyNets | None = Field(default_factory=CfgAutoIdentifyNets)
-    signal_nets: Optional[List[str]] = Field(
-        default=None,
-        alias="signal_list",
-    )
-    reference_nets: Optional[List[str]] = Field(
-        default=None,
-        alias="reference_list",
-    )
+    signal_nets: Optional[list[str]] = Field(default=None)
+    reference_nets: Optional[list[str]] = Field(default=None)
     extent_type: Optional[str] = "ConvexHull"
-    expansion_size: Optional[Union[float, str]] = 0.002
+    expansion_size: Optional[float | str] = 0.002
     number_of_threads: Optional[int] = 1
     custom_extent: Optional[Any] = None
     custom_extent_units: str = Field(default="meter")
@@ -69,15 +62,14 @@ class CfgCutout(BaseModel):
     }
 
     @model_validator(mode="before")
-    @classmethod
-    def _normalise_aliases(cls, data):
-        """Map ``signal_nets`` → ``signal_list`` and ``reference_nets`` → ``reference_list``
-        when the aliased field names are not already present."""
+    @staticmethod
+    def _normalise_aliases(data):
+        """Accept legacy ``signal_list`` / ``reference_list`` keys used in stored JSON."""
         if isinstance(data, dict):
-            if "signal_nets" in data and "signal_list" not in data:
-                data["signal_list"] = data.pop("signal_nets")
-            if "reference_nets" in data and "reference_list" not in data:
-                data["reference_list"] = data.pop("reference_nets")
+            if "signal_list" in data and "signal_nets" not in data:
+                data["signal_nets"] = data.pop("signal_list")
+            if "reference_list" in data and "reference_nets" not in data:
+                data["reference_nets"] = data.pop("reference_list")
             # Build auto_identify_nets from flat convenience kwargs when not already present
             if "auto_identify_nets" not in data:
                 data["auto_identify_nets"] = CfgAutoIdentifyNets(
@@ -101,9 +93,10 @@ class CfgCutout(BaseModel):
             return v
         return normalised
 
-    def to_dict(self) -> dict:
-        """Serialize the cutout operation."""
-        return self.model_dump(exclude_none=True, by_alias=True)
+    def model_dump(self, **kwargs) -> dict:
+        """Override to always exclude None values."""
+        kwargs.setdefault("exclude_none", True)
+        return super().model_dump(**kwargs)
 
 
 class CfgOperations(BaseModel):
@@ -132,19 +125,17 @@ class CfgOperations(BaseModel):
             extent_type=extent_type,
             expansion_size=expansion_size,
             expansion_factor=expansion_factor,
-            auto_identify_nets_enabled=auto_identify_nets_enabled,
-            resistor_below=resistor_below,
-            inductor_below=inductor_below,
-            capacitor_above=capacitor_above,
+            auto_identify_nets=CfgAutoIdentifyNets(
+                enabled=auto_identify_nets_enabled,
+                resistor_below=resistor_below,
+                inductor_below=inductor_below,
+                capacitor_above=capacitor_above,
+            ),
             **kwargs,
         )
         return self.cutout
 
-    def to_dict(self) -> dict:
-        """Serialize the configured operations."""
-        result = {}
-        if self.cutout is not None:
-            result["cutout"] = self.cutout.to_dict()
-        if self.generate_auto_hfss_regions:
-            result["generate_auto_hfss_regions"] = self.generate_auto_hfss_regions
-        return result
+    def model_dump(self, **kwargs) -> dict:
+        """Override to propagate exclude_none=True to nested models."""
+        kwargs.setdefault("exclude_none", True)
+        return super().model_dump(**kwargs)

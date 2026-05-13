@@ -29,38 +29,40 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 class TestOperationsConfig:
     def test_empty(self):
-        assert CfgOperations().to_dict() == {}
+        d = CfgOperations().model_dump()
+        assert d.get("cutout") is None
+        assert d["generate_auto_hfss_regions"] is False
 
     def test_add_cutout(self):
         ops = CfgOperations()
         c = ops.add_cutout(signal_nets=["SIG1"], reference_nets=["GND"])
         assert isinstance(c, CfgCutout)
-        d = ops.to_dict()
+        d = ops.model_dump()
         assert "cutout" in d
-        assert d["cutout"]["signal_list"] == ["SIG1"]
+        assert d["cutout"]["signal_nets"] == ["SIG1"]
 
     def test_add_cutout_extent_type_convexhull(self):
         ops = CfgOperations()
         ops.add_cutout(signal_nets=["SIG"], reference_nets=["GND"], extent_type="ConvexHull")
-        assert ops.to_dict()["cutout"]["extent_type"] == "ConvexHull"
+        assert ops.model_dump(exclude_none=True)["cutout"]["extent_type"] == "ConvexHull"
 
     def test_add_cutout_extent_type_case_insensitive(self):
         ops = CfgOperations()
         ops.add_cutout(signal_nets=["SIG"], reference_nets=["GND"], extent_type="convexhull")
-        assert ops.to_dict()["cutout"]["extent_type"] == "ConvexHull"
+        assert ops.model_dump(exclude_none=True)["cutout"]["extent_type"] == "ConvexHull"
 
     def test_add_cutout_extent_type_boundingbox_case_insensitive(self):
         ops = CfgOperations()
         ops.add_cutout(signal_nets=["SIG"], reference_nets=["GND"], extent_type="BOUNDINGBOX")
-        assert ops.to_dict()["cutout"]["extent_type"] == "BoundingBox"
+        assert ops.model_dump(exclude_none=True)["cutout"]["extent_type"] == "BoundingBox"
 
     def test_add_cutout_expansion_size(self):
         ops = CfgOperations()
         ops.add_cutout(signal_nets=["SIG"], reference_nets=["GND"], expansion_size=0.003)
-        assert ops.to_dict()["cutout"]["expansion_size"] == 0.003
+        assert ops.model_dump(exclude_none=True)["cutout"]["expansion_size"] == 0.003
 
     def test_generate_auto_hfss_regions(self):
         ops = CfgOperations()
         ops.generate_auto_hfss_regions = True
-        d = ops.to_dict()
+        d = ops.model_dump(exclude_none=True)
         assert d["generate_auto_hfss_regions"] is True
