@@ -1229,7 +1229,6 @@ class TestClass(BaseTestClass):
         dc_adv.refine_bws = True
         dc_adv.refine_vias = True
 
-
         # -------------------------
         # Validate settings (ASSERTS)
         # -------------------------
@@ -1271,7 +1270,6 @@ class TestClass(BaseTestClass):
         assert dc_adv.percent_local_refinement == 30
         assert dc_adv.refine_bws
         assert dc_adv.refine_vias
-
 
         # test syz setup
 

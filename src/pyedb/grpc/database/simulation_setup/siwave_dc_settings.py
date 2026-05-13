@@ -89,7 +89,6 @@ class SIWaveDCSettings:
     def dc_slider_position(self, value: int):
         self.core.dc_slider_pos = value
 
-
     @property
     def plot_jv(self) -> bool:
         """Plot JV flag.
@@ -121,5 +120,3 @@ class SIWaveDCSettings:
     @use_dc_custom_settings.setter
     def use_dc_custom_settings(self, value: bool):
         self.core.use_dc_custom_settings = value
-
-
