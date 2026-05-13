@@ -24,10 +24,10 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.siwave_simulation_settings import SIWaveDCSettings as CoreSIWaveDCSettings
     from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
         SIWaveDCIRSimulationSettings as CoreSIWaveDCIRSettings,
     )
+    from ansys.edb.core.simulation_setup.siwave_simulation_settings import SIWaveDCSettings as CoreSIWaveDCSettings
 
 
 class SIWaveDCSettings:
@@ -163,4 +163,3 @@ class SIWaveDCIRDCSettings(SIWaveDCSettings):
     @via_report_path.setter
     def via_report_path(self, value: str):
         self._dcir_core.via_report_path = value
-
