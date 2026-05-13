@@ -21,10 +21,7 @@
 # SOFTWARE.
 """Build padstack definition and instance entries for configuration payloads."""
 
-from typing import Union
-
 from pydantic import Field, PrivateAttr, field_validator, model_validator
-
 from pyedb.configuration.cfg_common import CfgBaseModel as CfgBase
 from pyedb.misc.decorators import deprecated
 
@@ -37,7 +34,7 @@ class CfgBackdrillParameters(CfgBase):
         diameter: str
 
     class DrillParametersByLayerWithStub(DrillParametersByLayer):
-        stub_length: Union[str, None]
+        stub_length: str | None
 
     class DrillParameters(CfgBase):
         drill_depth: str
@@ -46,7 +43,8 @@ class CfgBackdrillParameters(CfgBase):
     from_top: DrillParameters | DrillParametersByLayer | DrillParametersByLayerWithStub | None = None
     from_bottom: DrillParameters | DrillParametersByLayer | DrillParametersByLayerWithStub | None = None
 
-    def add_backdrill_to_layer(self, drill_to_layer, diameter, stub_length=None, drill_from_bottom=True):
+    def add_backdrill_to_layer(self, drill_to_layer:str, diameter:str, stub_length:str=None,
+                               drill_from_bottom:bool=True):
         """Configure a backdrill stopping at a named layer.
 
         Parameters
@@ -93,13 +91,19 @@ class CfgPadstackInstance(CfgBase):
     solder_ball_layer: str | None = None
 
     @field_validator("rotation", mode="before")
-    @classmethod
-    def _coerce_rotation_to_str(cls, v):
+    @staticmethod
+    def _coerce_rotation_to_str(v):
+        """Coerce rotation to string.
+        ensures that any numeric rotation value (like 45 or 90.5) is converted to its string representation
+        (like "45" or "90.5"), while leaving None values unchanged. This maintains consistency since rotation
+        can be specified as either a string or float in the method signatures, but the model stores it as a string
+        internally.
+        """
         return str(v) if v is not None else None
 
     @field_validator("backdrill_parameters", mode="before")
-    @classmethod
-    def _default_backdrill(cls, v):
+    @staticmethod
+    def _default_backdrill(v):
         return v if v is not None else CfgBackdrillParameters()
 
     @property
@@ -150,9 +154,6 @@ class CfgPadstackInstance(CfgBase):
         )
         return self
 
-    def to_dict(self) -> dict:
-        """Serialize the padstack instance."""
-        return self.model_dump(exclude_none=True, by_alias=False)
 
 
 class CfgPadstackDefinition(CfgBase):
@@ -161,28 +162,23 @@ class CfgPadstackDefinition(CfgBase):
     name: str
 
     hole_plating_thickness: str | float | None = None
-    material: str | None = Field(None, alias="hole_material")
+    material: str | None = None
     hole_range: str | None = None
 
     pad_parameters: dict | None = None
     hole_parameters: dict | None = None
     solder_ball_parameters: dict | None = None
 
-    @model_validator(mode="before")
-    @classmethod
-    def _remap_material(cls, values):
-        if isinstance(values, dict) and "material" in values and "hole_material" not in values:
-            values["hole_material"] = values.pop("material")
-        return values
+    model_config = {
+        "populate_by_name": True,
+        "extra": "forbid",
+    }
 
     @classmethod
     def create(cls, **kwargs) -> "CfgPadstackDefinition":
         """Create a :class:`CfgPadstackDefinition` from keyword arguments."""
         return cls(**kwargs)
 
-    def to_dict(self) -> dict:
-        """Serialize the padstack definition, excluding ``None`` values."""
-        return self.model_dump(exclude_none=True, by_alias=False)
 
 
 class CfgPadstacks(CfgBase):
@@ -353,7 +349,7 @@ class CfgPadstacks(CfgBase):
 
     def add_definition(
         self,
-        name,
+        name: str,
         hole_plating_thickness=None,
         material=None,
         hole_range=None,
@@ -533,9 +529,6 @@ class CfgPadstacks(CfgBase):
         ...     },
         ... )
         """
-        # ------------------------------------------------------------------ #
-        # Build hole_parameters from convenience args if not supplied directly #
-        # ------------------------------------------------------------------ #
         if hole_parameters is None and hole_diameter is not None:
             hole_parameters = {
                 "shape": hole_shape,
@@ -545,9 +538,6 @@ class CfgPadstacks(CfgBase):
                 "rotation": "0",
             }
 
-        # ------------------------------------------------------------------ #
-        # Build pad_parameters from convenience args if not supplied directly  #
-        # ------------------------------------------------------------------ #
         if pad_parameters is None and (pad_diameter is not None or pad_x_size is not None):
             # Resolve layer list
             layers = pad_layers
@@ -579,14 +569,14 @@ class CfgPadstacks(CfgBase):
 
             regular_pads = [
                 _make_pad_entry(
-                    layer,
-                    pad_shape,
-                    pad_diameter,
-                    pad_x_size,
-                    pad_y_size,
-                    pad_offset_x,
-                    pad_offset_y,
-                    pad_rotation,
+                    layer=layer,
+                    shape=pad_shape,
+                    diameter=pad_diameter,
+                    x_size=pad_x_size,
+                    y_size=pad_y_size,
+                    offset_x=pad_offset_x,
+                    offset_y=pad_offset_y,
+                    rotation=pad_rotation,
                 )
                 for layer in layers
             ]
@@ -594,14 +584,14 @@ class CfgPadstacks(CfgBase):
             if anti_pad_diameter is not None or anti_pad_x_size is not None:
                 anti_pads = [
                     _make_pad_entry(
-                        layer,
-                        anti_pad_shape,
-                        anti_pad_diameter,
-                        anti_pad_x_size,
-                        anti_pad_y_size,
-                        "0",
-                        "0",
-                        "0",
+                        layer=layer,
+                        shape=anti_pad_shape,
+                        diameter=anti_pad_diameter,
+                        x_size=anti_pad_x_size,
+                        y_size=anti_pad_y_size,
+                        offset_x="0",
+                        offset_y="0",
+                        rotation="0",
                     )
                     for layer in layers
                 ]
@@ -614,7 +604,7 @@ class CfgPadstacks(CfgBase):
         kwargs = {
             "name": name,
             "hole_plating_thickness": hole_plating_thickness,
-            "hole_material": material,
+            "material": material,
             "hole_range": hole_range,
             "pad_parameters": pad_parameters,
             "hole_parameters": hole_parameters,
@@ -716,11 +706,11 @@ class CfgPadstacks(CfgBase):
         self.instances.append(obj)
         return obj
 
-    def to_dict(self) -> dict:
-        """Serialize all configured padstack definitions and instances."""
+    def _to_dict(self) -> dict:
+        """Internal serialization of configured padstack definitions and instances."""
         data = {}
         if self.definitions:
-            data["definitions"] = [d.to_dict() for d in self.definitions]
+            data["definitions"] = [d.model_dump(exclude_none=True, by_alias=False) for d in self.definitions]
         if self.instances:
-            data["instances"] = [i.to_dict() for i in self.instances]
+            data["instances"] = [i.model_dump(exclude_none=True, by_alias=False) for i in self.instances]
         return data

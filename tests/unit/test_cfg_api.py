@@ -30,12 +30,12 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 class TestPadstackDefinitionConfig:
     def test_minimal(self):
         p = CfgPadstackDefinition(name="via_0.2")
-        d = p.to_dict()
+        d = p.model_dump(exclude_none=True)
         assert d == {"name": "via_0.2"}
 
     def test_with_properties(self):
         p = CfgPadstackDefinition(name="via", hole_plating_thickness="25um", material="copper")
-        d = p.to_dict()
+        d = p.model_dump(exclude_none=True)
         assert d["hole_plating_thickness"] == "25um"
         assert d["material"] == "copper"
 
@@ -50,7 +50,7 @@ class TestPadstackDefinitionConfig:
             hole_parameters={"shape": "circle"},
             solder_ball_parameters={"diameter": "150um"},
         )
-        d = p.to_dict()
+        d = p.model_dump(exclude_none=True)
         assert d["hole_range"] == "upper_pad_to_lower_pad"
         assert d["pad_parameters"]["pad_type"] == "circle"
         assert d["solder_ball_parameters"]["diameter"] == "150um"
@@ -59,13 +59,13 @@ class TestPadstackDefinitionConfig:
 class TestPadstackInstanceConfig:
     def test_minimal(self):
         inst = CfgPadstackInstance(name="via_1", net_name="GND")
-        d = inst.to_dict()
+        d = inst.model_dump(exclude_none=True)
         assert d["name"] == "via_1"
         assert d["net_name"] == "GND"
 
     def test_layer_range(self):
         inst = CfgPadstackInstance(layer_range=["top", "bot"])
-        d = inst.to_dict()
+        d = inst.model_dump(exclude_none=True)
         assert d["layer_range"] == ["top", "bot"]
 
     def test_all_explicit_params(self):
@@ -82,7 +82,7 @@ class TestPadstackInstanceConfig:
             hole_override_diameter="0.22mm",
             solder_ball_layer="top",
         )
-        d = inst.to_dict()
+        d = inst.model_dump(exclude_none=True)
         assert d["definition"] == "via_0.2"
         assert d["hole_override_enabled"] is True
         assert d["hole_override_diameter"] == "0.22mm"
@@ -91,13 +91,13 @@ class TestPadstackInstanceConfig:
     def test_backdrill(self):
         inst = CfgPadstackInstance(name="via_bd")
         inst.set_backdrill("L4", "0.3mm", drill_from_bottom=True)
-        d = inst.to_dict()
+        d = inst.model_dump(exclude_none=True)
         assert d["backdrill_parameters"]["from_bottom"]["drill_to_layer"] == "L4"
 
     def test_backdrill_with_stub(self):
         inst = CfgPadstackInstance(name="via_bd2")
         inst.set_backdrill("L4", "0.3mm", stub_length="0.05mm", drill_from_bottom=False)
-        d = inst.to_dict()
+        d = inst.model_dump(exclude_none=True)
         assert "from_top" in d["backdrill_parameters"]
         assert d["backdrill_parameters"]["from_top"]["stub_length"] == "0.05mm"
 
@@ -110,13 +110,14 @@ class TestPadstackInstanceConfig:
 
 class TestPadstacksConfig:
     def test_empty(self):
-        assert CfgPadstacks().to_dict() == {}
+        result = CfgPadstacks().model_dump(exclude_none=True, exclude_defaults=True)
+        assert result == {}
 
     def test_add_definition(self):
         ps = CfgPadstacks()
         pdef = ps.add_definition("via", material="copper")
         assert isinstance(pdef, CfgPadstackDefinition)
-        d = ps.to_dict()
+        d = ps.model_dump(exclude_none=True)
         assert d["definitions"][0]["name"] == "via"
 
     def test_add_definition_all_params(self):
@@ -127,14 +128,14 @@ class TestPadstacksConfig:
             material="copper",
             hole_range="upper_pad_to_lower_pad",
         )
-        d = ps.to_dict()["definitions"][0]
+        d = ps.model_dump(exclude_none=True)["definitions"][0]
         assert d["hole_range"] == "upper_pad_to_lower_pad"
 
     def test_add_instance(self):
         ps = CfgPadstacks()
         inst = ps.add_instance(name="v1", net_name="SIG1")
         assert isinstance(inst, CfgPadstackInstance)
-        d = ps.to_dict()
+        d = ps.model_dump(exclude_none=True)
         assert d["instances"][0]["name"] == "v1"
 
     def test_add_instance_all_params(self):
@@ -149,6 +150,6 @@ class TestPadstacksConfig:
             is_pin=False,
             hole_override_enabled=False,
         )
-        d = ps.to_dict()["instances"][0]
+        d = ps.model_dump(exclude_none=True)["instances"][0]
         assert d["definition"] == "via_0.2"
         assert d["layer_range"] == ["top", "bot"]
