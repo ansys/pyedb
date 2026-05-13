@@ -22,8 +22,7 @@
 
 from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
 from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
-from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCIRDCSettings, SIWaveDCSettings
-from pyedb.grpc.database.simulation_setup.siwave_general_settings import SIWaveGeneralSettings
+from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCIRDCSettings, SIWaveDCSettings  # noqa: F401
 from pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings import SIWaveSParameterSettings
 
 
@@ -51,7 +50,8 @@ class SIWaveDCIRSettings:
 
     @property
     def general(self):
-        return SIWaveGeneralSettings(self._pedb, self.core.general)
+        """General settings — for DCIR setups proxies to DC settings for backward compatibility."""
+        return SIWaveDCIRDCSettings(self._pedb, self.core.dc, self.core)
 
     @property
     def s_parameter(self):

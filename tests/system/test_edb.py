@@ -930,9 +930,12 @@ class TestClass(BaseTestClass):
         assert dc.import_thermal_data
         dc.per_pin_res_path = "per_pin_res.txt"
         assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.per_pin_use_pin_format = True
+        assert dc.per_pin_use_pin_format
         dc.plot_jv = False
         assert not dc.plot_jv
         dc.source_terms_to_ground = {"gnd": 1}
+        assert dc.source_terms_to_ground == {"gnd": 1}
         dc.use_dc_custom_settings = True
         assert dc.use_dc_custom_settings
         dc.use_loop_res_for_per_pin = True
@@ -969,16 +972,18 @@ class TestClass(BaseTestClass):
         dc_adv.refine_vias = True
         assert dc_adv.refine_vias
 
-        # general
+        # general (for DCIR setups, general proxies to DC settings for backward compat)
         general = setup.settings.general
-        general.pi_slider_pos = 0
-        assert general.pi_slider_pos == 0
-        general.si_slider_position = 2
-        assert general.si_slider_position == 2
-        general.use_custom_settings = True
-        assert general.use_custom_settings
-        general.use_si_settings = False
-        assert not general.use_si_settings
+        general.compute_inductance = True
+        assert general.compute_inductance
+        general.contact_radius = "0.5mm"
+        assert general.contact_radius == "0.5mm"
+        general.dc_slider_position = 1
+        assert general.dc_slider_position == 1
+        general.plot_jv = True
+        assert general.plot_jv
+        general.use_dc_custom_settings = False
+        assert not general.use_dc_custom_settings
         edbapp.close(terminate_rpc_session=False)
 
     def test_raptor_x_simulation_setups_consolidation(self):
@@ -1231,6 +1236,14 @@ class TestClass(BaseTestClass):
         dc_adv.refine_bws = True
         dc_adv.refine_vias = True
 
+        # General settings (backward compat — proxies to DC settings for DCIR setups)
+        general = settings.general
+        general.compute_inductance = True
+        general.contact_radius = "1mm"
+        general.dc_slider_position = 0
+        general.plot_jv = False
+        general.use_dc_custom_settings = False
+
         # -------------------------
         # Validate settings (ASSERTS)
         # -------------------------
@@ -1281,6 +1294,13 @@ class TestClass(BaseTestClass):
         assert dc_adv.percent_local_refinement == 30
         assert dc_adv.refine_bws
         assert dc_adv.refine_vias
+
+        # General assertions (backward compat)
+        assert general.compute_inductance
+        assert general.contact_radius == "1mm"
+        assert general.dc_slider_position == 0
+        assert not general.plot_jv
+        assert not general.use_dc_custom_settings
 
         # test syz setup
 
