@@ -109,6 +109,7 @@ class CfgVariables(BaseModel):
         """
         self.variables.append(CfgVar(name=name, value=value, description=description))
 
+
 class CfgBaseModel(BaseModel):
     """Base Pydantic model used by typed configuration payload classes."""
 
