@@ -22,6 +22,7 @@
 """Build padstack definition and instance entries for configuration payloads."""
 
 from pydantic import Field, PrivateAttr, field_validator, model_validator
+
 from pyedb.configuration.cfg_common import CfgBaseModel as CfgBase
 from pyedb.misc.decorators import deprecated
 
@@ -43,8 +44,9 @@ class CfgBackdrillParameters(CfgBase):
     from_top: DrillParameters | DrillParametersByLayer | DrillParametersByLayerWithStub | None = None
     from_bottom: DrillParameters | DrillParametersByLayer | DrillParametersByLayerWithStub | None = None
 
-    def add_backdrill_to_layer(self, drill_to_layer:str, diameter:str, stub_length:str=None,
-                               drill_from_bottom:bool=True):
+    def add_backdrill_to_layer(
+        self, drill_to_layer: str, diameter: str, stub_length: str = None, drill_from_bottom: bool = True
+    ):
         """Configure a backdrill stopping at a named layer.
 
         Parameters
@@ -167,7 +169,6 @@ class CfgPadstackInstance(CfgBase):
         return self
 
 
-
 class CfgPadstackDefinition(CfgBase):
     """Represent one padstack definition entry."""
 
@@ -190,7 +191,6 @@ class CfgPadstackDefinition(CfgBase):
     def create(cls, **kwargs) -> "CfgPadstackDefinition":
         """Create a :class:`CfgPadstackDefinition` from keyword arguments."""
         return cls(**kwargs)
-
 
 
 class CfgPadstacks(CfgBase):
