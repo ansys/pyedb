@@ -1201,7 +1201,6 @@ class TestClass(BaseTestClass):
     def test_siwave_simulation_setup_dotnet_compatibility(self):
         edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")
-        setup.set_dc_slider = 1
         settings = setup.settings
 
         # -------------------------
