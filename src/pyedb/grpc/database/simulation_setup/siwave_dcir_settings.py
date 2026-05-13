@@ -22,7 +22,7 @@
 
 from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
 from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
-from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
+from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCIRDCSettings, SIWaveDCSettings
 from pyedb.grpc.database.simulation_setup.siwave_general_settings import SIWaveGeneralSettings
 from pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings import SIWaveSParameterSettings
 
@@ -38,7 +38,7 @@ class SIWaveDCIRSettings:
 
     @property
     def dc(self):
-        return SIWaveDCSettings(self._pedb, self.core.dc)
+        return SIWaveDCIRDCSettings(self._pedb, self.core.dc, self.core)
 
     @property
     def dc_settings(self) -> SIWaveDCSettings:
