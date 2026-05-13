@@ -22,74 +22,9 @@
 
 """Shared helpers, base classes, and variable models for configuration builders."""
 
-from typing import Any, Iterable, List, Optional, Union
+from typing import List, Optional, Union
 
 from pydantic import BaseModel, Field
-
-_EMPTY_SERIALIZATION_VALUES = (None, [], {})
-
-
-def compact_dict(
-    data: Optional[dict] = None,
-    /,
-    *,
-    exclude: tuple = _EMPTY_SERIALIZATION_VALUES,
-    **kwargs,
-) -> dict:
-    """Return a copy of *data* with empty values removed.
-
-    Parameters
-    ----------
-    data : dict, optional
-        Base mapping to filter.
-    exclude : tuple, optional
-        Values to omit. Defaults to ``(None, [], {})``.
-    **kwargs
-        Extra key-value pairs merged into *data* before filtering.
-    """
-    raw = dict(data or {})
-    raw.update(kwargs)
-    return {key: value for key, value in raw.items() if value not in exclude}
-
-
-def serialize_item(
-    item: Any,
-    export_methods: tuple[str, ...] = ("to_dict", "export_properties"),
-) -> Any:
-    """Serialize one configuration item using its first available export method.
-
-    Parameters
-    ----------
-    item : Any
-        The configuration object to serialize.
-    export_methods : tuple of str, optional
-        Ordered method names to try for serialization.
-        Defaults to ``("to_dict", "export_properties")``.
-    """
-    for method_name in export_methods:
-        method = getattr(item, method_name, None)
-        if callable(method):
-            return method()
-    if hasattr(item, "model_dump"):
-        return item.model_dump(exclude_none=True)
-    return item
-
-
-def serialize_list(
-    items: Iterable[Any],
-    export_methods: tuple[str, ...] = ("to_dict", "export_properties"),
-) -> list:
-    """Serialize an iterable of configuration items to plain Python objects.
-
-    Parameters
-    ----------
-    items : iterable
-        Configuration objects to serialize.
-    export_methods : tuple of str, optional
-        Ordered method names to try for serialization.
-        Defaults to ``("to_dict", "export_properties")``.
-    """
-    return [serialize_item(item, export_methods=export_methods) for item in items]
 
 
 class CfgBase:
@@ -153,7 +88,7 @@ class CfgVar(BaseModel):
 class CfgVariables(BaseModel):
     """Collect variable definitions for the ``variables`` section."""
 
-    variables: List[CfgVar] = Field(default_factory=list)
+    variables: list[CfgVar] = Field(default_factory=list)
 
     def add(self, name, value, description=""):
         """Add a design or project variable.
@@ -174,11 +109,6 @@ class CfgVariables(BaseModel):
         >>> cfg.variables.add("$project_temp", "25cel")
         """
         self.variables.append(CfgVar(name=name, value=value, description=description))
-
-    def to_list(self) -> List[dict]:
-        """Serialize configured design variables."""
-        return [v.model_dump(exclude_none=True) for v in self.variables]
-
 
 class CfgBaseModel(BaseModel):
     """Base Pydantic model used by typed configuration payload classes."""
