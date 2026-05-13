@@ -22,8 +22,7 @@
 
 """Shared helpers, base classes, and variable models for configuration builders."""
 
-from typing import List, Optional, Union
-
+from typing import Optional, Union
 from pydantic import BaseModel, Field
 
 
