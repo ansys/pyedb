@@ -23,7 +23,6 @@
 """Build thermal package-definition configuration entries."""
 
 from typing import Any, List, Optional
-
 from pydantic import Field, model_validator
 from pyedb.configuration.cfg_common import CfgBaseModel
 from pyedb.generic.settings import settings
@@ -72,8 +71,8 @@ class CfgPackage(CfgBaseModel):
     heatsink: Optional[CfgHeatSink] = None
 
     @model_validator(mode="before")
-    @classmethod
-    def _coerce_heatsink(cls, data):
+    @staticmethod
+    def _coerce_heatsink(data):
         """Coerce a raw ``heatsink`` dict to :class:`CfgHeatSink` before validation."""
         if isinstance(data, dict) and isinstance(data.get("heatsink"), dict) and data["heatsink"]:
             data["heatsink"] = CfgHeatSink(**data["heatsink"])
