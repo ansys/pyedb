@@ -92,12 +92,24 @@ class CfgPadstackInstance(CfgBase):
 
     @field_validator("rotation", mode="before")
     @staticmethod
-    def _coerce_rotation_to_str(v):
-        """Coerce rotation to string.
-        ensures that any numeric rotation value (like 45 or 90.5) is converted to its string representation
-        (like "45" or "90.5"), while leaving None values unchanged. This maintains consistency since rotation
-        can be specified as either a string or float in the method signatures, but the model stores it as a string
-        internally.
+    def _coerce_rotation_to_str(v: str | float | None) -> str | None:
+        """Coerce rotation value to string.
+
+        Converts any numeric rotation value (like 45 or 90.5) to its string
+        representation (like "45" or "90.5"), while leaving None values unchanged.
+        This maintains consistency since rotation can be specified as either a
+        string or float in the method signatures, but the model stores it as a
+        string internally.
+
+        Parameters
+        ----------
+        v : str, float, or None
+            Rotation value to coerce.
+
+        Returns
+        -------
+        str or None
+            String representation of the rotation value, or None if input is None.
         """
         return str(v) if v is not None else None
 
