@@ -882,12 +882,12 @@ class TestClass(BaseTestClass):
         general = setup.settings.general
         general.pi_slider_pos = 0
         assert general.pi_slider_pos == 0
-        general.si_slider_pos = 2
-        assert general.si_slider_pos == 2
+        general.si_slider_position = 2
+        assert general.si_slider_position == 2
         general.use_custom_settings = True
         assert general.use_custom_settings
-        general.user_si_settings = False
-        assert not general.user_si_settings
+        general.use_si_settings = False
+        assert not general.use_si_settings
 
         # S-parameters
         sp = setup.settings.s_parameter

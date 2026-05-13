@@ -36,7 +36,45 @@ class SIWaveDCSettings:
         self.core = core
         self._pedb = pedb
 
-    # ...existing code...
+    @property
+    def compute_inductance(self) -> bool:
+        """Compute inductance flag.
+
+        Returns
+        -------
+        bool
+            True if compute inductance is enabled, False otherwise.
+
+        """
+        return self.core.compute_inductance
+
+    @compute_inductance.setter
+    def compute_inductance(self, value: bool):
+        """Set compute inductance flag.
+
+        Parameters
+        ----------
+        value : bool
+            True to enable compute inductance, False to disable.
+
+        """
+        self.core.compute_inductance = value
+
+    @property
+    def contact_radius(self) -> str:
+        """Contact radius value.
+
+        Returns
+        -------
+        str
+            Contact radius.
+
+        """
+        return self.core.contact_radius
+
+    @contact_radius.setter
+    def contact_radius(self, value: str):
+        self.core.contact_radius = value
 
     @property
     def dc_slider_position(self) -> int:
@@ -54,7 +92,37 @@ class SIWaveDCSettings:
     def dc_slider_position(self, value: int):
         self.core.dc_slider_pos = value
 
-    # ...existing code...
+    @property
+    def plot_jv(self) -> bool:
+        """Plot JV flag.
+
+        Returns
+        -------
+        bool
+            True if plot JV is enabled, False otherwise.
+
+        """
+        return self.core.plot_jv
+
+    @plot_jv.setter
+    def plot_jv(self, value: bool):
+        self.core.plot_jv = value
+
+    @property
+    def use_dc_custom_settings(self) -> bool:
+        """Use DC custom settings flag.
+
+        Returns
+        -------
+        bool
+            True if DC custom settings are used, False otherwise.
+
+        """
+        return self.core.use_dc_custom_settings
+
+    @use_dc_custom_settings.setter
+    def use_dc_custom_settings(self, value: bool):
+        self.core.use_dc_custom_settings = value
 
 
 class SIWaveDCIRDCSettings(SIWaveDCSettings):
@@ -163,4 +231,3 @@ class SIWaveDCIRDCSettings(SIWaveDCSettings):
     @via_report_path.setter
     def via_report_path(self, value: str):
         self._dcir_core.via_report_path = value
-
