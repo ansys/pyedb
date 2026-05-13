@@ -21,6 +21,7 @@
 # SOFTWARE.
 """Build the ``nets`` configuration section."""
 
+
 class CfgNets:
     """Fluent builder for the ``nets`` configuration section."""
 
@@ -193,7 +194,6 @@ class CfgNets:
             Net name(s) to use as reference nets.
         """
         self._add_to_list(self.reference_nets, [self.signal_nets, self.power_nets], nets)
-
 
     def apply(self):
         """Apply net configuration on the layout."""

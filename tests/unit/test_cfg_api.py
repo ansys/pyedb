@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import pytest
+
 from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_operations import CfgOperations
 
