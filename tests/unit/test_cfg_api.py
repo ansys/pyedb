@@ -44,7 +44,9 @@ class TestCfgStackup:
 
     def test_add_material_all_props(self):
         s = CfgStackup()
-        s.add_material(name="fr4", permittivity=4.4, dielectric_loss_tangent=0.02, thermal_conductivity=0.3, mass_density=1900)
+        s.add_material(
+            name="fr4", permittivity=4.4, dielectric_loss_tangent=0.02, thermal_conductivity=0.3, mass_density=1900
+        )
         d = s.materials[0].model_dump(exclude_none=True)
         assert d["permittivity"] == 4.4
         assert d["thermal_conductivity"] == 0.3

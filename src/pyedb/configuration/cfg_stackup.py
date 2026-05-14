@@ -123,12 +123,10 @@ class CfgLayer(BaseModel):
 
     model_config = {"populate_by_name": True}
 
-
     @property
     def type(self) -> Optional[str]:
         """Alias for ``layer_type`` for backward compatibility."""
         return self.layer_type
-
 
     def set_huray_roughness(
         self,
@@ -243,7 +241,6 @@ class CfgLayer(BaseModel):
             enabled=enabled,
         )
         return self
-
 
 
 class CfgStackup(BaseModel):
@@ -547,7 +544,7 @@ class CfgStackup(BaseModel):
 
     def add_layer(
         self,
-        name:str,
+        name: str,
         layer_type: Optional[str] = None,
         material: Optional[str] = None,
         fill_material: Optional[str] = None,
@@ -642,7 +639,6 @@ class CfgStackup(BaseModel):
     ):
         """Add a dielectric layer with common defaults."""
         return self.add_layer(name, layer_type="dielectric", material=material, thickness=thickness)
-
 
     def normalize_thickness(self, unit="m"):
         """Normalise all layer thicknesses to a common unit in-place.
