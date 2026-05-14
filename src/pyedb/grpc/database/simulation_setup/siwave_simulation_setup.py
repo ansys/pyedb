@@ -67,4 +67,3 @@ class SiwaveSimulationSetup(SimulationSetup):
     def settings(self) -> SIWaveSimulationSettings:
         """Setup simulation settings."""
         return SIWaveSimulationSettings(self._pedb, self.core.settings)
-

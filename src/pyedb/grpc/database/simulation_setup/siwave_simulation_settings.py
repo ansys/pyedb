@@ -21,14 +21,13 @@
 # SOFTWARE.
 
 
+from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSettings
 from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
 from pyedb.grpc.database.simulation_setup.siwave_general_settings import SIWaveGeneralSettings
 from pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings import SIWaveSParameterSettings
-from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSettings
 
 
 class SIWaveSimulationSettings(SimulationSettings):
-
     @property
     def dc(self) -> SIWaveDCSettings:
         """DC settings class.

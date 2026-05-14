@@ -26,7 +26,6 @@ from pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings import SIW
 
 
 class SIWaveDCIRSimulationSettings(SimulationSettings):
-
     @property
     def dc(self):
         return SIWaveDCSettings(self._pedb, self.core.dc)
