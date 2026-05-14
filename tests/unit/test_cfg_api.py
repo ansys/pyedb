@@ -20,10 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pytest
 from unittest.mock import MagicMock
 
-from pyedb.configuration.cfg_padstacks import CfgBackdrillParameters, CfgPadstackDefinition, CfgPadstackInstance, CfgPadstacks
+import pytest
+
+from pyedb.configuration.cfg_padstacks import (
+    CfgBackdrillParameters,
+    CfgPadstackDefinition,
+    CfgPadstackInstance,
+    CfgPadstacks,
+)
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
@@ -393,4 +399,3 @@ class TestCfgBackdrillParameters:
         d = bd.model_dump(exclude_none=True)
         assert d["from_bottom"]["drill_to_layer"] == "L3"
         assert "from_top" not in d
-
