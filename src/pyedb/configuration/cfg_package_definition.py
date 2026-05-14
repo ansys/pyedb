@@ -24,7 +24,7 @@
 
 from typing import Any, List, Optional
 
-from pydantic import Field, model_validator
+from pydantic import Field
 
 from pyedb.configuration.cfg_common import CfgBaseModel
 from pyedb.generic.settings import settings
@@ -72,13 +72,6 @@ class CfgPackage(CfgBaseModel):
     extent_bounding_box: Optional[Any] = None
     heatsink: Optional[CfgHeatSink] = None
 
-    @model_validator(mode="before")
-    @staticmethod
-    def _coerce_heatsink(data):
-        """Coerce a raw ``heatsink`` dict to :class:`CfgHeatSink` before validation."""
-        if isinstance(data, dict) and isinstance(data.get("heatsink"), dict) and data["heatsink"]:
-            data["heatsink"] = CfgHeatSink(**data["heatsink"])
-        return data
 
     def get_attributes(self, exclude=None):
         """Return dict of non-null/non-protected attributes (CfgBase compatibility)."""
