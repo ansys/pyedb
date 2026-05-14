@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import pytest
+from unittest.mock import MagicMock
 
 from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_operations import CfgOperations
@@ -28,11 +29,58 @@ from pyedb.configuration.cfg_operations import CfgOperations
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 
+class TestCfgNet:
+    """Tests for the inner CfgNet class using a mock pedb."""
+
+    def _make_net(self, name, is_power_ground=False):
+        mock_net = MagicMock()
+        mock_net.is_power_ground = is_power_ground
+        mock_pedb = MagicMock()
+        mock_pedb.nets.nets = {name: mock_net}
+        return CfgNets.CfgNet(mock_pedb, name), mock_net
+
+    def test_name(self):
+        net, _ = self._make_net("GND")
+        assert net.name == "GND"
+
+    def test_is_power_ground_false(self):
+        net, _ = self._make_net("CLK", is_power_ground=False)
+        assert net.is_power_ground is False
+
+    def test_is_power_ground_true(self):
+        net, _ = self._make_net("VDD", is_power_ground=True)
+        assert net.is_power_ground is True
+
+    def test_is_power_ground_setter(self):
+        net, mock_net = self._make_net("GND")
+        net.is_power_ground = True
+        assert mock_net.is_power_ground is True
+
+    def test_classification_power_ground(self):
+        net, _ = self._make_net("VDD", is_power_ground=True)
+        assert net.classification == "power_ground"
+
+    def test_classification_signal(self):
+        net, _ = self._make_net("CLK", is_power_ground=False)
+        assert net.classification == "signal"
+
+    def test_repr(self):
+        net, _ = self._make_net("GND", is_power_ground=True)
+        assert "GND" in repr(net)
+        assert "power_ground" in repr(net)
+
+
 class TestNetsConfig:
     def test_empty(self):
         n = CfgNets()
         assert n.signal_nets == []
         assert n.power_nets == []
+
+    def test_init_with_values(self):
+        n = CfgNets(signal_nets=["CLK"], power_nets=["VDD"], reference_nets=["GND"])
+        assert n.signal_nets == ["CLK"]
+        assert n.power_nets == ["VDD"]
+        assert n.reference_nets == ["GND"]
 
     def test_signal_nets(self):
         n = CfgNets()
@@ -45,6 +93,16 @@ class TestNetsConfig:
         n.add_power_ground_nets(["VDD", "GND"])
         assert n.power_ground_nets == ["VDD", "GND"]
 
+    def test_power_ground_nets_setter(self):
+        n = CfgNets()
+        n.power_ground_nets = ["V1", "V2"]
+        assert n.power_nets == ["V1", "V2"]
+
+    def test_power_ground_nets_setter_none(self):
+        n = CfgNets()
+        n.power_ground_nets = None
+        assert n.power_nets == []
+
     def test_accumulates(self):
         n = CfgNets()
         n.add_signal_nets(["A"])
@@ -56,23 +114,86 @@ class TestNetsConfig:
         n.add_reference_nets(["GND", "AGND"])
         assert n.reference_nets == ["GND", "AGND"]
 
-    def test_reference_nets_property(self):
+    def test_add_single_string(self):
+        """add_signal_nets accepts a plain string (not just lists)."""
+        n = CfgNets()
+        n.add_signal_nets("CLK")
+        assert "CLK" in n.signal_nets
+
+    def test_exclusive_signal_to_power(self):
+        n = CfgNets()
+        n.add_signal_nets(["CLK"])
+        n.add_power_ground_nets(["CLK"])
+        assert "CLK" not in n.signal_nets
+        assert "CLK" in n.power_nets
+
+    def test_exclusive_power_to_signal(self):
+        n = CfgNets()
+        n.add_power_ground_nets(["GND"])
+        n.add_signal_nets(["GND"])
+        assert "GND" not in n.power_nets
+        assert "GND" in n.signal_nets
+
+    def test_exclusive_reference_to_signal(self):
         n = CfgNets()
         n.add_reference_nets(["GND"])
-        assert n.reference_nets == ["GND"]
+        n.add_signal_nets(["GND"])
+        assert "GND" not in n.reference_nets
+        assert "GND" in n.signal_nets
 
-    def test_signal_nets_property(self):
+    def test_no_duplicate(self):
         n = CfgNets()
-        n.add_signal_nets(["CLK", "DATA"])
-        assert n.signal_nets == ["CLK", "DATA"]
+        n.add_signal_nets(["A"])
+        n.add_signal_nets(["A"])
+        assert n.signal_nets.count("A") == 1
 
-    def test_power_ground_nets_property(self):
+    def test_add_cfgnet_object(self):
+        """add_signal_nets accepts CfgNet objects."""
+        mock_pedb = MagicMock()
+        mock_pedb.nets.nets = {"SIG": MagicMock()}
+        net_obj = CfgNets.CfgNet(mock_pedb, "SIG")
         n = CfgNets()
-        n.add_power_ground_nets(["VDD"])
-        assert n.power_ground_nets == ["VDD"]
+        n.add_signal_nets(net_obj)
+        assert "SIG" in n.signal_nets
+
+    def test_get_raises_without_pedb(self):
+        n = CfgNets()
+        with pytest.raises(KeyError):
+            n.get("GND")
+
+    def test_get_returns_false_when_not_found(self):
+        mock_pedb = MagicMock()
+        mock_pedb.nets.nets = {}
+        n = CfgNets(pedb=mock_pedb)
+        result = n.get("MISSING")
+        assert result is False
+
+    def test_get_returns_cfgnet(self):
+        mock_net = MagicMock()
+        mock_pedb = MagicMock()
+        mock_pedb.nets.nets = {"GND": mock_net}
+        n = CfgNets(pedb=mock_pedb)
+        result = n.get("GND")
+        assert isinstance(result, CfgNets.CfgNet)
+        assert result.name == "GND"
+
+    def test_get_parameters_from_edb_without_pedb(self):
+        n = CfgNets(signal_nets=["SIG"], power_nets=["PWR"])
+        d = n.get_parameters_from_edb()
+        assert d["signal_nets"] == ["SIG"]
+        assert d["power_ground_nets"] == ["PWR"]
+
+    def test_get_data_from_db_without_pedb(self):
+        n = CfgNets(signal_nets=["SIG"])
+        d = n.get_data_from_db()
+        assert "signal_nets" in d
+
+    def test_apply_without_pedb(self):
+        """apply() with no pedb is a no-op (should not raise)."""
+        n = CfgNets(signal_nets=["SIG"])
+        n.apply()  # no error
 
     def test_reference_nets_usable_in_cutout(self):
-        """Verify the reference_nets property can be passed directly to add_cutout."""
         n = CfgNets()
         n.add_signal_nets(["SIG"])
         n.add_reference_nets(["GND"])
