@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 import pytest
-from pyedb.configuration.cfg_modeler import CfgModeler, CfgTrace, CfgPlane
+
+from pyedb.configuration.cfg_modeler import CfgModeler, CfgPlane, CfgTrace
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
@@ -146,5 +147,3 @@ class TestModelerConfig:
         m.delete_primitives_by_layer(["L1"])
         m.delete_primitives_by_layer(["L2"])
         assert m.primitives_to_delete["layer_name"] == ["L1", "L2"]
-
-
