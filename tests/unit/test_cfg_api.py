@@ -25,10 +25,10 @@ import pytest
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel, CfgSParameters
 from pyedb.configuration.cfg_setup import (
     CfgHFSSSetup,
-    CfgSIwaveACSetup,
-    CfgSIwaveDCSetup,
     CfgSetupAC,
     CfgSetups,
+    CfgSIwaveACSetup,
+    CfgSIwaveDCSetup,
 )
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
@@ -179,7 +179,9 @@ class TestCfgHFSSSetup:
 
     def test_add_frequency_sweep_inline_linear_scale(self):
         h = CfgHFSSSetup(name="setup1")
-        h.add_frequency_sweep(name="sweep3", start="0Hz", stop="1GHz", step_or_count="10MHz", distribution="linear_scale")
+        h.add_frequency_sweep(
+            name="sweep3", start="0Hz", stop="1GHz", step_or_count="10MHz", distribution="linear_scale"
+        )
         freqs = h.model_dump()["freq_sweep"][0]["frequencies"]
         assert freqs[0]["distribution"] == "linear_scale"
 
@@ -286,7 +288,9 @@ class TestCfgSIwaveACSetup:
 
     def test_add_frequency_sweep_inline_linear_scale(self):
         s = CfgSIwaveACSetup(name="sw_ac")
-        s.add_frequency_sweep(name="sw3", start="100kHz", stop="1GHz", step_or_count="100kHz", distribution="linear_scale")
+        s.add_frequency_sweep(
+            name="sw3", start="100kHz", stop="1GHz", step_or_count="100kHz", distribution="linear_scale"
+        )
         freqs = s.model_dump()["freq_sweep"][0]["frequencies"]
         assert freqs[0]["distribution"] == "linear_scale"
 
@@ -399,7 +403,9 @@ class TestCfgSetups:
         sc = CfgSetups()
         hfss = sc.add_hfss_setup(name="hfss1")
         hfss.set_broadband_adaptive("1GHz", "20GHz")
-        hfss.add_frequency_sweep(name="sweep1", start="1GHz", stop="20GHz", step_or_count=200, distribution="linear_count")
+        hfss.add_frequency_sweep(
+            name="sweep1", start="1GHz", stop="20GHz", step_or_count=200, distribution="linear_count"
+        )
         d = sc.setups[0].model_dump()
         assert d["freq_sweep"][0]["frequencies"][0]["distribution"] == "linear_count"
         assert d["freq_sweep"][0]["frequencies"][0]["increment"] == 200

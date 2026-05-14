@@ -115,6 +115,7 @@ class CfgSetupAC(CfgSetupDC):
             if name:
                 kwargs["name"] = name
             super().__init__(**kwargs)
+
         frequencies: list[CfgFrequencies | str] = Field(
             default_factory=list, description="List of frequency definitions or strings"
         )
@@ -128,7 +129,6 @@ class CfgSetupAC(CfgSetupDC):
         use_hfss_solver_regions: bool = Field(False)
         hfss_solver_region_setup_name: str | None = "<default>"
         hfss_solver_region_sweep_name: str | None = "<default>"
-
 
         def add_frequencies(self, freq: CfgFrequencies):
             """Append a pre-built :class:`CfgFrequencies` range to this sweep.
@@ -167,7 +167,7 @@ class CfgSetupAC(CfgSetupDC):
             )
             return self
 
-        def add_log_count_frequencies(self, start:str | float, stop: str | float, count:int):
+        def add_log_count_frequencies(self, start: str | float, stop: str | float, count: int):
             """Append a logarithmic-count frequency range to this sweep.
 
             Parameters
@@ -187,7 +187,7 @@ class CfgSetupAC(CfgSetupDC):
             self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=count, distribution="log_count"))
             return self
 
-        def add_linear_scale_frequencies(self, start: str | float, stop: str | float, step:str | float):
+        def add_linear_scale_frequencies(self, start: str | float, stop: str | float, step: str | float):
             """Append a linear-step frequency range to this sweep.
 
             Parameters
@@ -207,7 +207,7 @@ class CfgSetupAC(CfgSetupDC):
             self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=step, distribution="linear_scale"))
             return self
 
-        def add_log_scale_frequencies(self, start:str | float, stop:str | float, step:str | float):
+        def add_log_scale_frequencies(self, start: str | float, stop: str | float, step: str | float):
             """Append a logarithmic-step frequency range to this sweep.
 
             Parameters
@@ -227,7 +227,7 @@ class CfgSetupAC(CfgSetupDC):
             self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=step, distribution="log_scale"))
             return self
 
-        def add_single_frequency(self, freq:str | float):
+        def add_single_frequency(self, freq: str | float):
             """Append a single discrete frequency point to this sweep.
 
             Parameters
@@ -246,7 +246,6 @@ class CfgSetupAC(CfgSetupDC):
             """
             self.frequencies.append(CfgFrequencies(start=freq, stop=freq, increment=1, distribution="single"))
             return self
-
 
     freq_sweep: list[CfgFrequencySweep] | None = Field(default_factory=list)
 
@@ -342,7 +341,6 @@ class CfgSIwaveACSetup(CfgSetupAC):
         return sweep
 
 
-
 class CfgSIwaveDCSetup(CfgSetupDC):
     """Represent one SIwave DC setup entry."""
 
@@ -361,7 +359,6 @@ class CfgSIwaveDCSetup(CfgSetupDC):
                 export_dc_thermal_data = values.pop("export_dc_thermal_data", False)
                 values["dc_ir_settings"] = {"export_dc_thermal_data": export_dc_thermal_data}
         return values
-
 
 
 class CfgHFSSSetup(CfgSetupAC):
@@ -741,7 +738,6 @@ class CfgHFSSSetup(CfgSetupAC):
         return sweep
 
 
-
 class CfgSetups(CfgBaseModel):
     """Collect all configured HFSS and SIwave setup entries."""
 
@@ -943,4 +939,3 @@ class CfgSetups(CfgBaseModel):
             if setup.name == name:
                 return setup
         raise KeyError(f"Setup '{name}' not found. Available setups: {[s.name for s in self.setups]}")
-
