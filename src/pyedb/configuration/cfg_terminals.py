@@ -187,7 +187,6 @@ class CfgTerminal(CfgBaseModel):
     hfss_type: Literal["Wave", "Gap", None] = None
 
 
-
 class CfgPadstackInstanceTerminal(CfgTerminal):
     """Represent a terminal created from a named padstack instance."""
 
@@ -242,13 +241,16 @@ class CfgBundleTerminal(CfgBaseModel):
     name: str
 
 
-
-
 class CfgTerminals(CfgBaseModel):
     """Collect low-level terminal definitions for serialization."""
 
     terminals: list[
-        CfgPadstackInstanceTerminal | CfgPinGroupTerminal | CfgPointTerminal | CfgEdgeTerminal | CfgBundleTerminal | dict
+        CfgPadstackInstanceTerminal
+        | CfgPinGroupTerminal
+        | CfgPointTerminal
+        | CfgEdgeTerminal
+        | CfgBundleTerminal
+        | dict
     ] = Field(default_factory=list)
 
     @classmethod
@@ -674,7 +676,3 @@ class CfgTerminals(CfgBaseModel):
         )
         self.terminals.append(terminal)
         return terminal
-
-
-
-

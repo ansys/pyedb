@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pytest
 from pydantic import ValidationError
+import pytest
 
 from pyedb.configuration.cfg_terminals import (
     CfgBundleTerminal,
@@ -102,9 +102,7 @@ class TestCfgTerminalInfo:
 
 class TestCfgPadstackInstanceTerminal:
     def test_basic(self):
-        t = CfgPadstackInstanceTerminal(
-            name="t1", padstack_instance="via_1", impedance=50, boundary_type="port"
-        )
+        t = CfgPadstackInstanceTerminal(name="t1", padstack_instance="via_1", impedance=50, boundary_type="port")
         d = t.model_dump(exclude_none=True)
         assert d["terminal_type"] == "padstack_instance"
         assert d["name"] == "t1"
@@ -138,24 +136,25 @@ class TestCfgPadstackInstanceTerminal:
         assert d["padstack_instance_id"] == 42
 
     def test_defaults(self):
-        t = CfgPadstackInstanceTerminal(
-            name="t1", padstack_instance="via_1", impedance=50, boundary_type="port"
-        )
+        t = CfgPadstackInstanceTerminal(name="t1", padstack_instance="via_1", impedance=50, boundary_type="port")
         assert t.is_circuit_port is False
         assert t.amplitude == 1
         assert t.phase == 0
         assert t.terminal_to_ground == "kNoGround"
 
     def test_impedance_as_string(self):
-        t = CfgPadstackInstanceTerminal(
-            name="t1", padstack_instance="via_1", impedance="50ohm", boundary_type="port"
-        )
+        t = CfgPadstackInstanceTerminal(name="t1", padstack_instance="via_1", impedance="50ohm", boundary_type="port")
         assert t.impedance == "50ohm"
 
     def test_round_trip(self):
         t = CfgPadstackInstanceTerminal(
-            name="t1", padstack_instance="via_1", impedance=50, boundary_type="port",
-            hfss_type="Wave", layer="sig", padstack_instance_id=7,
+            name="t1",
+            padstack_instance="via_1",
+            impedance=50,
+            boundary_type="port",
+            hfss_type="Wave",
+            layer="sig",
+            padstack_instance_id=7,
         )
         d = t.model_dump()
         t2 = CfgPadstackInstanceTerminal.model_validate(d)
@@ -278,22 +277,31 @@ class TestCfgEdgeTerminal:
 
     def test_hfss_type_gap(self):
         t = CfgEdgeTerminal(
-            name="t1", primitive="p", point_on_edge_x=0, point_on_edge_y=0,
-            impedance=50, boundary_type="port", hfss_type="Gap"
+            name="t1",
+            primitive="p",
+            point_on_edge_x=0,
+            point_on_edge_y=0,
+            impedance=50,
+            boundary_type="port",
+            hfss_type="Gap",
         )
         assert t.hfss_type == "Gap"
 
     def test_pec_launch_width_custom(self):
         t = CfgEdgeTerminal(
-            name="t1", primitive="p", point_on_edge_x=0, point_on_edge_y=0,
-            impedance=50, boundary_type="port", pec_launch_width="0.05mm"
+            name="t1",
+            primitive="p",
+            point_on_edge_x=0,
+            point_on_edge_y=0,
+            impedance=50,
+            boundary_type="port",
+            pec_launch_width="0.05mm",
         )
         assert t.pec_launch_width == "0.05mm"
 
     def test_round_trip(self):
         t = CfgEdgeTerminal(
-            name="t1", primitive="p", point_on_edge_x=0, point_on_edge_y=0,
-            impedance=50, boundary_type="port"
+            name="t1", primitive="p", point_on_edge_x=0, point_on_edge_y=0, impedance=50, boundary_type="port"
         )
         t2 = CfgEdgeTerminal.model_validate(t.model_dump())
         assert t == t2
@@ -523,4 +531,3 @@ class TestCfgTerminals:
         tc.add_bundle_terminal("b1", ["t1"])
         tc2 = CfgTerminals.model_validate(tc.model_dump())
         assert len(tc2.terminals) == 2
-
