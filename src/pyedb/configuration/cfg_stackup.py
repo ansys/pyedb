@@ -71,9 +71,6 @@ class CfgMaterial(MaterialProperties):
     name: Optional[str] = None
     thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
 
-    def to_dict(self) -> dict:
-        """Serialize the material, excluding ``None`` values."""
-        return self.model_dump(exclude_none=True)
 
 
 class CfgHurayRoughnessModel(BaseModel):
