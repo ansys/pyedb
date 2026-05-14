@@ -72,7 +72,6 @@ class CfgMaterial(MaterialProperties):
     thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
 
 
-
 class CfgHurayRoughnessModel(BaseModel):
     """Represent a Huray surface-roughness model."""
 
