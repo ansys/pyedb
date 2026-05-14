@@ -586,9 +586,9 @@ class Configuration:
         """Retrieve variables from database."""
         self.cfg_data.variables.variables = []
         for name, obj in self._pedb.design_variables.items():
-            self.cfg_data.variables.add_variable(name, str(obj.value), obj.description)
+            self.cfg_data.variables.add(name, str(obj.value), obj.description)
         for name, obj in self._pedb.project_variables.items():
-            self.cfg_data.variables.add_variable(name, str(obj.value), obj.description)
+            self.cfg_data.variables.add(name, str(obj.value), obj.description)
 
     def apply_materials(self):
         """Apply material settings to the current design."""
