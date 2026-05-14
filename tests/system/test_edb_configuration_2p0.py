@@ -1375,7 +1375,7 @@ class TestClassSetups(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         siwave_ac = edbapp.setups["siwave_1"]
         assert siwave_ac.use_si_settings is True
-        assert siwave_ac.si_slider_position == 1
+        assert siwave_ac.si_slider_pos == 1
 
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
         src_siwave_dc = [i for i in data_from_db["setups"] if i["name"] == "siwave_1"][0]

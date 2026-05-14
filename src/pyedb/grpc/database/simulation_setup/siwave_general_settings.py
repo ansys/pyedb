@@ -35,7 +35,7 @@ class SIWaveGeneralSettings:
         self._pedb = pedb
 
     @property
-    def pi_slider_position(self) -> int:
+    def pi_slider_pos(self) -> int:
         """Position of the PI slider.
 
         Returns
@@ -45,8 +45,8 @@ class SIWaveGeneralSettings:
         """
         return self.core.pi_slider_pos
 
-    @pi_slider_position.setter
-    def pi_slider_position(self, value: int):
+    @pi_slider_pos.setter
+    def pi_slider_pos(self, value: int):
         self.core.pi_slider_pos = value
 
     @property

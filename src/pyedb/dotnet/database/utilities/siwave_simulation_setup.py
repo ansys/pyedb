@@ -293,7 +293,7 @@ class SIwaveSimulationSetup(SimulationSetup):
         """
         self._name = name
         self._create(name, simulation_setup_type="kSIwave")
-        self.si_slider_position = 1
+        self.si_slider_pos = 1
 
         return self
 
@@ -307,7 +307,7 @@ class SIwaveSimulationSetup(SimulationSetup):
         """
         return {
             "pi_slider_position": self.pi_slider_position,
-            "si_slider_position": self.si_slider_position,
+            "si_slider_position": self.si_slider_pos,
             "use_custom_settings": self.use_si_settings,
             "use_si_settings": self.use_si_settings,
             "advanced_settings": self.advanced_settings.get_configurations(),
@@ -349,7 +349,7 @@ class SIwaveSimulationSetup(SimulationSetup):
         """
         self.use_si_settings = True
         self.use_custom_settings = False
-        self.si_slider_position = value
+        self.si_slider_pos = value
         self.advanced_settings.set_si_slider(value)
 
     @property
@@ -375,30 +375,24 @@ class SIwaveSimulationSetup(SimulationSetup):
 
     @property
     def pi_slider_pos(self):
-        return self.get_sim_setup_info.simulation_settings.PISliderPos
+        return self.settings.general.pi_slider_pos
 
     @pi_slider_pos.setter
     def pi_slider_pos(self, value):
-        edb_setup_info = self.get_sim_setup_info
-        edb_setup_info.simulation_settings.PISliderPos = value
-        self._edb_object = self._set_edb_setup_info(edb_setup_info)
-        self._update_setup()
+        self.settings.general.pi_slider_pos = value
 
         self.use_si_settings = False
         self.use_custom_settings = False
         self.advanced_settings.set_pi_slider(value)
 
     @property
-    def si_slider_position(self):
+    def si_slider_pos(self):
         """SI slider position. Values are from ``1`` to ``3``."""
-        return self.get_sim_setup_info.simulation_settings.SISliderPos
+        return self.settings.general.si_slider_pos
 
-    @si_slider_position.setter
-    def si_slider_position(self, value):
-        edb_setup_info = self.get_sim_setup_info
-        edb_setup_info.simulation_settings.SISliderPos = value
-        self._edb_object = self._set_edb_setup_info(edb_setup_info)
-        self._update_setup()
+    @si_slider_pos.setter
+    def si_slider_pos(self, value):
+        self.settings.general.si_slider_pos = value
 
         self.use_si_settings = True
         self.use_custom_settings = False
@@ -521,7 +515,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     @property
     def get_sim_setup_info(self):  # todo remove after refactoring
         """Get simulation information from the setup."""
-        self._pedb.logger.warning("Use new property :func:`sim_setup_info` instead.")
+        # self._pedb.logger.warning("Use new property :func:`sim_setup_info` instead.")
         sim_setup_info = SimSetupInfo(
             self._pedb, sim_setup=self, setup_type="kSIwaveDCIR", name=self._edb_object.GetName()
         )
@@ -632,6 +626,64 @@ class SIWaveGeneralSettings:
         else:
             return object.__getattribute__(self, item)
 
+    @property
+    def pi_slider_pos(self):
+        return self._parent.sim_setup_info.simulation_settings.PISliderPos
+
+    @pi_slider_pos.setter
+    def pi_slider_pos(self, value):
+        setup = self._parent
+        edb_setup_info = setup.sim_setup_info
+        edb_setup_info.simulation_settings.PISliderPos = value
+        setup._edb_object = setup._set_edb_setup_info(edb_setup_info)
+        setup._update_setup()
+
+    @property
+    def si_slider_pos(self):
+        return self._parent.sim_setup_info.simulation_settings.SISliderPos
+
+    @si_slider_pos.setter
+    def si_slider_pos(self, value):
+        setup = self._parent
+        edb_setup_info = setup.sim_setup_info
+        edb_setup_info.simulation_settings.SISliderPos = value
+        setup._edb_object = setup._set_edb_setup_info(edb_setup_info)
+        setup._update_setup()
+
+    @property
+    def use_custom_settings(self):
+        """Custom settings to use.
+
+        Returns
+        -------
+        bool
+        """
+        return self._parent.sim_setup_info.simulation_settings.UseCustomSettings
+
+    @use_custom_settings.setter
+    def use_custom_settings(self, value):
+        edb_setup_info = self._parent.sim_setup_info
+        edb_setup_info.simulation_settings.UseCustomSettings = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
+    @property
+    def use_si_settings(self):
+        """Whether to use SI Settings.
+
+        Returns
+        -------
+        bool
+        """
+        return self._parent.sim_setup_info.simulation_settings.UseSISettings
+
+    @use_si_settings.setter
+    def use_si_settings(self, value):
+        edb_setup_info = self._parent.sim_setup_info
+        edb_setup_info.simulation_settings.UseSISettings = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
     def __setattr__(self, key, value):
         if key in [
             "dc_report_config_file",
@@ -678,7 +730,6 @@ class Settings(DeprecatedSettings):
 
     @property
     def general(self):
-        warnings.warn("Deprecated: settings.dc.", DeprecationWarning)
         return SIWaveGeneralSettings(self._parent)
 
     @property

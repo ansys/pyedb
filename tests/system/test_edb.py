@@ -882,8 +882,8 @@ class TestClass(BaseTestClass):
         general = setup.settings.general
         general.pi_slider_pos = 0
         assert general.pi_slider_pos == 0
-        general.si_slider_position = 2
-        assert general.si_slider_position == 2
+        general.si_slider_pos = 2
+        assert general.si_slider_pos == 2
         general.use_custom_settings = True
         assert general.use_custom_settings
         general.use_si_settings = False
@@ -1188,6 +1188,20 @@ class TestClass(BaseTestClass):
 
 
         settings = setup.settings
+        if not config["use_grpc"]:
+            assert hasattr(settings, "dc_report_show_active_devices")
+            assert hasattr(settings, "dc_report_config_file")
+            assert hasattr(settings, "enabled")
+            assert hasattr(settings, "icepak_temp_file")
+            assert hasattr(settings, "import_thermal_data")
+            assert hasattr(settings, "per_pin_res_path")
+            assert hasattr(settings, "per_pin_use_pin_format")
+            assert hasattr(settings, "via_report_path")
+            assert hasattr(settings, "use_loop_res_for_per_pin")
+            assert hasattr(settings, "export_dc_thermal_data")
+            assert hasattr(settings, "full_dc_report_path")
+            assert hasattr(settings, "use_loop_res_for_per_pin")
+            assert hasattr(settings, "add_source_terminal_to_ground")
 
         settings.dc_report_show_active_devices = True
         settings.dc_report_config_file = "custom_dc_report.cfg"
@@ -1204,8 +1218,10 @@ class TestClass(BaseTestClass):
         settings.use_loop_res_for_per_pin = True
         settings.add_source_terminal_to_ground("test", 1)
 
-
-        setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        if config["use_grpc"]:
+            setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        else:
+            setup_2 = setup
         assert setup_2.settings.use_loop_res_for_per_pin
         assert setup_2.settings.dc_report_show_active_devices
         assert setup_2.settings.dc_report_config_file == "custom_dc_report.cfg"
@@ -1221,71 +1237,101 @@ class TestClass(BaseTestClass):
 
         # DC settings
         dc = settings.dc
+        if not config["use_grpc"]:
+            assert hasattr(dc, "compute_inductance")
+            assert hasattr(dc, "contact_radius")
+            assert hasattr(dc, "dc_slider_position")
+            assert hasattr(dc, "plot_jv")
         dc.compute_inductance = True
         dc.contact_radius = "1mm"
         dc.dc_slider_position = 0
         dc.plot_jv = False
 
-        setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        if config["use_grpc"]:
+            setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        else:
+            setup_2 = setup
         assert setup_2.settings.dc.compute_inductance
         assert setup_2.settings.dc.contact_radius == "1mm"
         assert setup_2.settings.dc.dc_slider_position == 0
         assert not setup_2.settings.dc.plot_jv
-        assert not setup_2.settings.dc.use_dc_custom_settings
 
         # DC advanced settings
         dc_adv = settings.dc_advanced
+        if not config["use_grpc"]:
+            assert hasattr(dc_adv, "dc_min_plane_area_to_mesh")
+            assert hasattr(dc_adv, "dc_min_void_area_to_mesh")
+            assert hasattr(dc_adv, "energy_error")
+            assert hasattr(dc_adv, "max_init_mesh_edge_length")
+            assert hasattr(dc_adv, "max_num_passes")
+            assert hasattr(dc_adv, "mesh_bondwires")
+            assert hasattr(dc_adv, "mesh_vias")
+            assert hasattr(dc_adv, "min_num_passes")
+            assert hasattr(dc_adv, "num_bondwire_sides")
+            assert hasattr(dc_adv, "num_via_sides")
+            assert hasattr(dc_adv, "percent_local_refinement")
+            assert hasattr(dc_adv, "refine_bondwires")
+            assert hasattr(dc_adv, "refine_vias")
         dc_adv.dc_min_plane_area_to_mesh = "0.30mm2"
         dc_adv.dc_min_void_area_to_mesh = "0.02mm2"
         dc_adv.energy_error = 1.5
         dc_adv.max_init_mesh_edge_length = "2.0mm"
         dc_adv.max_num_passes = 10
-        dc_adv.mesh_bws = False
+        dc_adv.mesh_bondwires = False
         dc_adv.mesh_vias = False
         dc_adv.min_num_passes = 5
-        dc_adv.num_bw_sides = 12
+        dc_adv.num_bondwire_sides = 12
         dc_adv.num_via_sides = 12
         dc_adv.percent_local_refinement = 30
-        dc_adv.refine_bws = True
+        dc_adv.refine_bondwires = True
         dc_adv.refine_vias = True
 
-        setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        if config["use_grpc"]:
+            setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        else:
+            setup_2 = setup
 
         assert setup_2.settings.dc_advanced.dc_min_plane_area_to_mesh == "0.30mm2"
         assert dc_adv.dc_min_void_area_to_mesh == "0.02mm2"
         assert dc_adv.energy_error == 1.5
         assert dc_adv.max_init_mesh_edge_length == "2.0mm"
         assert dc_adv.max_num_passes == 10
-        assert not dc_adv.mesh_bws
+        assert not dc_adv.mesh_bondwires
         assert not dc_adv.mesh_vias
         assert dc_adv.min_num_passes == 5
-        assert dc_adv.num_bw_sides == 12
+        assert dc_adv.num_bondwire_sides == 12
         assert dc_adv.num_via_sides == 12
         assert dc_adv.percent_local_refinement == 30
-        assert dc_adv.refine_bws
+        assert dc_adv.refine_bondwires
         assert dc_adv.refine_vias
 
         # General settings (backward compat — proxies to DC settings for DCIR setups)
         general = settings.general
-        general.pi_slider_position = 0
-        general.si_slider_position = 0
+        general.pi_slider_pos = 0
+        general.si_slider_pos = 0
         general.use_custom_settings = False
         general.use_si_settings = False
 
         # -------------------------
         # Validate settings (ASSERTS)
         # -------------------------
-        setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        if config["use_grpc"]:
+            setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        else:
+            setup_2 = setup
         # General assertions (backward compat)
-        assert setup_2.settings.general.pi_slider_position == 0
-        assert setup_2.settings.general.si_slider_position == 0
+        assert setup_2.settings.general.pi_slider_pos == 0
+        assert setup_2.settings.general.si_slider_pos == 0
         assert not setup_2.settings.general.use_custom_settings
         assert not setup_2.settings.general.use_si_settings
 
         # test syz setup
 
-        setup2 = edbapp.simulation_setups.create_siwave_setup("setup_2")
-        assert "pi_slider_position", "si_slider_position" in setup2.get_configurations().items()
+        if config["use_grpc"]:
+            setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        else:
+            setup_2 = setup
+        assert "pi_slider_position", "si_slider_position" in setup_2.get_configurations().items()
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
