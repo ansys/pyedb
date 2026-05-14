@@ -45,8 +45,6 @@ class CfgSParameterModel(CfgBaseModel):
     pin_order: Optional[Any] = None
 
 
-
-
 class CfgSParameters:
     """Manage all configured S-parameter model assignments."""
 
@@ -178,4 +176,3 @@ class CfgSParameters:
         )
         self.models.append(model)
         return model
-

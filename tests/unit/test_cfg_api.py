@@ -26,6 +26,7 @@ from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel, CfgSP
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
+
 class TestCfgSParameterModel:
     def test_basic(self):
         m = CfgSParameterModel(name="model1", component_definition="CAP_100nF", file_path="/path/c.s2p")
