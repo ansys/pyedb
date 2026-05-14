@@ -109,12 +109,38 @@ class CfgPinPairModel(BaseModel):
     inductance_enabled: bool = False
     capacitance_enabled: bool = False
 
-    def to_dict(self) -> dict:
-        return self.model_dump()
-
 
 class CfgComponent(CfgBase):
     """Fluent builder for a single component entry."""
+
+    def __init__(self, _pedb=None, pedb_object=None, **kwargs):
+        if (
+            pedb_object is None
+            and not hasattr(_pedb, "components")
+            and "reference_designator" not in kwargs
+            and _pedb is not None
+        ):
+            kwargs["reference_designator"] = _pedb
+            _pedb = None
+        self._pedb = _pedb
+        self.pyedb_obj = pedb_object
+
+        self.enabled = kwargs.get("enabled")
+        self.reference_designator = kwargs.get("reference_designator")
+        self.definition = kwargs.get("definition")
+        self.type = kwargs["part_type"].lower() if kwargs.get("part_type") else None
+        self.placement_layer = kwargs.get("placement_layer")
+        self.pins = kwargs.get("pins", [])
+
+        self.port_properties = kwargs.get("port_properties", {})
+        self.solder_ball_properties = kwargs.get("solder_ball_properties", {})
+        ic_die = kwargs.get("ic_die_properties")
+        self._ic_die_explicitly_set = ic_die is not None
+        self.ic_die_properties = ic_die if ic_die is not None else {"type": "no_die"}
+        self.pin_pair_model = kwargs.get("pin_pair_model", [])
+        self.spice_model = kwargs.get("spice_model", {})
+        self.s_parameter_model = kwargs.get("s_parameter_model", {})
+        self.netlist_model = kwargs.get("netlist_model", {})
 
     def retrieve_model_properties_from_edb(self):
         c_p = self.pyedb_obj
@@ -340,7 +366,7 @@ class CfgComponent(CfgBase):
     def set_parameters_to_edb(self):
         obj = self.pyedb_obj
         if obj is None:
-            return self.to_dict()
+            return
         if self.type:
             obj.type = self.type
         if self.enabled is not None:
@@ -358,7 +384,7 @@ class CfgComponent(CfgBase):
     def retrieve_parameters_from_edb(self):
         obj = self.pyedb_obj
         if obj is None:
-            return self.to_dict()
+            return
         self.type = obj.type
         self.definition = obj.part_name
         self.reference_designator = obj.name
@@ -372,34 +398,6 @@ class CfgComponent(CfgBase):
             self._retrieve_solder_ball_properties_from_edb()
             self._retrieve_port_properties_from_edb()
 
-    def __init__(self, _pedb=None, pedb_object=None, **kwargs):
-        if (
-            pedb_object is None
-            and not hasattr(_pedb, "components")
-            and "reference_designator" not in kwargs
-            and _pedb is not None
-        ):
-            kwargs["reference_designator"] = _pedb
-            _pedb = None
-        self._pedb = _pedb
-        self.pyedb_obj = pedb_object
-
-        self.enabled = kwargs.get("enabled")
-        self.reference_designator = kwargs.get("reference_designator")
-        self.definition = kwargs.get("definition")
-        self.type = kwargs["part_type"].lower() if kwargs.get("part_type") else None
-        self.placement_layer = kwargs.get("placement_layer")
-        self.pins = kwargs.get("pins", [])
-
-        self.port_properties = kwargs.get("port_properties", {})
-        self.solder_ball_properties = kwargs.get("solder_ball_properties", {})
-        ic_die = kwargs.get("ic_die_properties")
-        self._ic_die_explicitly_set = ic_die is not None
-        self.ic_die_properties = ic_die if ic_die is not None else {"type": "no_die"}
-        self.pin_pair_model = kwargs.get("pin_pair_model", [])
-        self.spice_model = kwargs.get("spice_model", {})
-        self.s_parameter_model = kwargs.get("s_parameter_model", {})
-        self.netlist_model = kwargs.get("netlist_model", {})
 
     def add_pin_pair_rlc(
         self,
@@ -453,7 +451,7 @@ class CfgComponent(CfgBase):
                 resistance_enabled=resistance_enabled,
                 inductance_enabled=inductance_enabled,
                 capacitance_enabled=capacitance_enabled,
-            ).to_dict()
+            ).model_dump()
         )
 
     def set_s_parameter_model(self, model_name: str, model_path: str, reference_net: str):
@@ -796,7 +794,7 @@ class CfgComponents:
         """Read all component settings from the open EDB design."""
         self.clean()
         if self._pedb is None:
-            return self.to_list()
+            return [c.to_dict() for c in self.components]
         for obj in self._pedb.components.instances.values():
             cfg_comp = CfgComponent(self._pedb, obj)
             cfg_comp.retrieve_parameters_from_edb()
