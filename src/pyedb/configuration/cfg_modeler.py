@@ -21,10 +21,8 @@
 # SOFTWARE.
 """Build geometry-creation and cleanup entries for the ``modeler`` section."""
 
-from typing import Any, Dict, List, Optional, Union
-
+from typing import Optional
 from pydantic import Field
-
 from pyedb.configuration.cfg_common import CfgBaseModel
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance
@@ -37,13 +35,13 @@ class CfgTrace(CfgBaseModel):
 
     name: str
     layer: str
-    path: List[List[Union[float, str]]] = Field(default_factory=list)
+    path: list[list[float | str]] = Field(default_factory=list)
     width: str
     net_name: str = ""
     start_cap_style: str = "round"
     end_cap_style: str = "round"
     corner_style: str = "sharp"
-    incremental_path: List[List[Union[float, str]]] = Field(default_factory=list)
+    incremental_path: list[list[float | str]] = Field(default_factory=list)
 
 
 class CfgPlane(CfgBaseModel):
@@ -57,24 +55,24 @@ class CfgPlane(CfgBaseModel):
     type: str = "rectangle"
 
     # rectangle
-    lower_left_point: List[Union[float, str]] = Field(default_factory=list)
-    upper_right_point: List[Union[float, str]] = Field(default_factory=list)
-    corner_radius: Union[float, str] = 0
-    rotation: Union[float, str] = 0
-    voids: List[Any] = Field(default_factory=list)
+    lower_left_point: list[float | str] = Field(default_factory=list)
+    upper_right_point: list[float | str] = Field(default_factory=list)
+    corner_radius: float | str = 0
+    rotation: float | str = 0
+    voids: list = Field(default_factory=list)
 
     # polygon
-    points: List[List[Union[float, str]]] = Field(default_factory=list)
+    points: list[list[float | str]] = Field(default_factory=list)
 
     # circle
-    radius: Union[float, str] = 0
-    position: List[Union[float, str]] = Field(default_factory=lambda: [0, 0])
+    radius: float | str = 0
+    position: list[float | str] = Field(default_factory=lambda: [0, 0])
 
 
 class CfgModeler:
     """Collect geometry and modeler operations for serialization."""
 
-    def __init__(self, pedb=None, data: Dict | None = None):
+    def __init__(self, pedb=None, data: dict | None = None):
         data = data or {}
         self._pedb = pedb
         self.traces = []
@@ -84,7 +82,7 @@ class CfgModeler:
         self.padstack_instances = [CfgPadstackInstance.create(**i) for i in data.get("padstack_instances", [])]
 
         self.components = [CfgComponent(pedb, None, **i) for i in data.get("components", [])]
-        self.primitives_to_delete: Dict[str, List[str]] = data.get(
+        self.primitives_to_delete: dict[str, list[str]] = data.get(
             "primitives_to_delete", {"layer_name": [], "name": [], "net_name": []}
         )
 
@@ -104,8 +102,8 @@ class CfgModeler:
         start_cap_style: str = "round",
         end_cap_style: str = "round",
         corner_style: str = "sharp",
-        path: Optional[List[List[Union[float, str]]]] = None,
-        incremental_path: Optional[List[List[Union[float, str]]]] = None,
+        path: Optional[list[list[float | str]]] = None,
+        incremental_path: Optional[list[list[float | str]]] = None,
     ):
         """Add a trace to the modeler configuration.
 
@@ -193,11 +191,11 @@ class CfgModeler:
         layer: str,
         name: str = "",
         net_name: str = "",
-        lower_left_point: Optional[List[float]] = None,
-        upper_right_point: Optional[List[float]] = None,
+        lower_left_point: Optional[list[float]] = None,
+        upper_right_point: Optional[list[float]] = None,
         corner_radius: float = 0,
         rotation: float = 0,
-        voids: Optional[List[Any]] = None,
+        voids: Optional[list] = None,
     ):
         """Add a rectangular copper plane.
 
@@ -254,9 +252,9 @@ class CfgModeler:
         net_name: str = "",
         corner_radius: float = 0,
         rotation: float = 0,
-        voids: Optional[List[Any]] = None,
-        radius: Union[float, str] = 0,
-        position: Optional[List[Union[float, str]]] = None,
+        voids: Optional[list] = None,
+        radius: float | str = 0,
+        position: Optional[list[float | str]] = None,
     ):
         """Add a circular copper plane.
 
@@ -303,8 +301,8 @@ class CfgModeler:
         net_name: str = "",
         corner_radius: float = 0,
         rotation: float = 0,
-        voids: Optional[List[Any]] = None,
-        points: Optional[List[List[float]]] = None,
+        voids: Optional[list] = None,
+        points: Optional[list[list[float]]] = None,
     ):
         """Add a polygon copper plane.
 
@@ -350,33 +348,14 @@ class CfgModeler:
             points=points or [],
         )
 
-    def delete_primitives_by_layer(self, layer_names: List[str]):
+    def delete_primitives_by_layer(self, layer_names: list[str]):
         """Schedule all primitives on the given layers for deletion."""
         self.primitives_to_delete.setdefault("layer_name", []).extend(layer_names)
 
-    def delete_primitives_by_name(self, primitive_names: List[str]):
+    def delete_primitives_by_name(self, primitive_names: list[str]):
         """Schedule primitives with the given names for deletion."""
         self.primitives_to_delete.setdefault("name", []).extend(primitive_names)
 
-    def delete_primitives_by_net(self, net_names: List[str]):
+    def delete_primitives_by_net(self, net_names: list[str]):
         """Schedule all primitives on the given nets for deletion."""
         self.primitives_to_delete.setdefault("net_name", []).extend(net_names)
-
-    def to_dict(self) -> dict:
-        """Serialize the modeler configuration."""
-        data: dict = {}
-        if self.traces:
-            data["traces"] = [t.model_dump() for t in self.traces]
-        if self.planes:
-            data["planes"] = [p.model_dump() for p in self.planes]
-        if self.padstack_defs:
-            data["padstack_definitions"] = [p.model_dump(exclude_none=True) for p in self.padstack_defs]
-        if self.padstack_instances:
-            data["padstack_instances"] = [
-                p.model_dump(exclude_none=True, by_alias=False) for p in self.padstack_instances
-            ]
-        if self.components:
-            data["components"] = [c.to_dict() for c in self.components]
-        if any(v for v in self.primitives_to_delete.values()):
-            data["primitives_to_delete"] = self.primitives_to_delete
-        return data
