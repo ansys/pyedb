@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_operations import CfgOperations
