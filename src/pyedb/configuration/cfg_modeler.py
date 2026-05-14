@@ -22,7 +22,9 @@
 """Build geometry-creation and cleanup entries for the ``modeler`` section."""
 
 from typing import Optional
+
 from pydantic import Field
+
 from pyedb.configuration.cfg_common import CfgBaseModel
 from pyedb.configuration.cfg_components import CfgComponent
 from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance

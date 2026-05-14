@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import pytest
+
 from pyedb.configuration.cfg_modeler import CfgModeler
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
