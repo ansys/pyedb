@@ -20,20 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import json
-from unittest.mock import MagicMock
-
 import pytest
 
 from pyedb.configuration.cfg_boundaries import CfgBoundaries
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
-
-
-# ---------------------------------------------------------------------------
-# GeneralConfig
-# ---------------------------------------------------------------------------
-
 
 class TestBoundariesConfig:
     def test_empty(self):
