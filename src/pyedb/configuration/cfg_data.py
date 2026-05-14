@@ -34,7 +34,7 @@ from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 from pyedb.configuration.cfg_ports_sources import CfgPorts, CfgProbes, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
 from pyedb.configuration.cfg_setup import CfgSetups
-from pyedb.configuration.cfg_spice_models import CfgSpiceModel
+from pyedb.configuration.cfg_spice_models import CfgSpiceModels
 from pyedb.configuration.cfg_stackup import CfgStackup
 from pyedb.configuration.cfg_terminals import CfgTerminals
 
@@ -74,10 +74,11 @@ class CfgData(object):
 
         self.s_parameters = CfgSParameters(self._pedb, kwargs.get("s_parameters", []), self.general.s_parameter_library)
 
-        self.spice_models = [
-            CfgSpiceModel(self, self.general.spice_model_library, spice_model)
-            for spice_model in kwargs.get("spice_models", [])
-        ]
+        self.spice_models = CfgSpiceModels(
+            pdata=self,
+            data=kwargs.get("spice_models", []),
+            path_lib=self.general.spice_model_library,
+        )
 
         self.package_definitions = CfgPackageDefinitions(self._pedb, data=kwargs.get("package_definitions", []))
         self.operations = CfgOperations(**kwargs.get("operations", {}))

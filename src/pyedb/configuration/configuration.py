@@ -182,7 +182,7 @@ class Configuration:
 
         self.__apply_with_logging("Applying S-parameters", self.cfg_data.s_parameters.apply)
 
-        for spice_model in self.cfg_data.spice_models:
+        for spice_model in self.cfg_data.spice_models.models:
             self.__apply_with_logging(f"Assigning Spice model {spice_model}", spice_model.apply)
 
         self.__apply_with_logging("Applying package definitions", self.cfg_data.package_definitions.apply)
