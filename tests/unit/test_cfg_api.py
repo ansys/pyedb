@@ -132,9 +132,11 @@ class TestGeneralConfig:
         g = CfgGeneral(pedb=mock_pedb)  # all None
         g.set_parameters_to_edb()
         mock_pedb.design_options.anti_pads_always_on  # not assigned
-        assert not hasattr(mock_pedb.design_options, "_mock_calls") or \
-               all("anti_pads_always_on" not in str(c) for c in mock_pedb.design_options.mock_calls
-                   if "anti_pads_always_on" not in str(c))
+        assert not hasattr(mock_pedb.design_options, "_mock_calls") or all(
+            "anti_pads_always_on" not in str(c)
+            for c in mock_pedb.design_options.mock_calls
+            if "anti_pads_always_on" not in str(c)
+        )
 
     def test_apply_calls_set_parameters(self):
         mock_pedb = MagicMock()
@@ -146,4 +148,3 @@ class TestGeneralConfig:
         """extra='ignore' — unknown keys must not raise."""
         g = CfgGeneral(unknown_field="value")
         assert not hasattr(g, "unknown_field")
-

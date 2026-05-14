@@ -65,7 +65,6 @@ class CfgGeneral(BaseModel):
         opts = self._pedb.design_options
         return {"anti_pads_always_on": opts.anti_pads_always_on, "suppress_pads": opts.suppress_pads}
 
-
     def apply(self):
         """Write general configuration into the open EDB design."""
         self.set_parameters_to_edb()
