@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from pyedb.configuration.cfg_package_definition import CfgHeatSink, CfgPackage, CfgPackageDefinitions
 
@@ -120,9 +121,7 @@ class TestPackageDefinitionConfig:
 
     def test_heatsink_from_raw_dict(self):
         """Pydantic v2 natively coerces a raw dict to CfgHeatSink (no custom validator needed)."""
-        pkg = CfgPackage.model_validate(
-            {"name": "P", "component_definition": "D", "heatsink": {"fin_height": "3mm"}}
-        )
+        pkg = CfgPackage.model_validate({"name": "P", "component_definition": "D", "heatsink": {"fin_height": "3mm"}})
         assert isinstance(pkg.heatsink, CfgHeatSink)
         assert pkg.heatsink.fin_height == "3mm"
 

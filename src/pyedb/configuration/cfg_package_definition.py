@@ -72,7 +72,6 @@ class CfgPackage(CfgBaseModel):
     extent_bounding_box: Optional[Any] = None
     heatsink: Optional[CfgHeatSink] = None
 
-
     def get_attributes(self, exclude=None):
         """Return dict of non-null/non-protected attributes (CfgBase compatibility)."""
         protected = set(self._protected_attributes) | {"heatsink"}
