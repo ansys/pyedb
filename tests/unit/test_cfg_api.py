@@ -20,21 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pytest
 from unittest.mock import MagicMock
 
+import pytest
+
 from pyedb.configuration.cfg_ports_sources import (
+    CfgCoordinateTerminalInfo,
     CfgDiffWavePort,
     CfgEdgePort,
+    CfgNearestPinTerminalInfo,
     CfgPort,
+    CfgPorts,
     CfgProbe,
     CfgProbes,
     CfgSource,
     CfgSources,
-    CfgPorts,
     CfgTerminalInfo,
-    CfgCoordinateTerminalInfo,
-    CfgNearestPinTerminalInfo,
 )
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
@@ -43,6 +44,7 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 # ---------------------------------------------------------------------------
 # CfgTerminalInfo helpers
 # ---------------------------------------------------------------------------
+
 
 class TestTerminalInfoFactories:
     def test_pin(self):
@@ -137,6 +139,7 @@ class TestCfgNearestPinTerminalInfo:
 # CfgPort (single port)
 # ---------------------------------------------------------------------------
 
+
 class TestCfgPort:
     def test_circuit_port(self):
         p = CfgPort("p1", "circuit", {"pin_group": "pg1"}, {"net": "GND"})
@@ -168,15 +171,19 @@ class TestCfgPort:
         assert result == p.export_properties()
 
     def test_nearest_pin_negative_terminal(self):
-        p = CfgPort("p1", "coax", {"padstack": "via_A1"},
-                    {"nearest_pin": {"reference_net": "GND", "search_radius": "5mm"}})
+        p = CfgPort(
+            "p1", "coax", {"padstack": "via_A1"}, {"nearest_pin": {"reference_net": "GND", "search_radius": "5mm"}}
+        )
         d = p.export_properties()
         assert d["negative_terminal"] == {"nearest_pin": {"reference_net": "GND", "search_radius": "5mm"}}
 
     def test_coordinate_positive_terminal(self):
-        p = CfgPort("p1", "circuit",
-                    {"coordinates": {"layer": "top", "point": [0.001, 0.002], "net": "SIG"}},
-                    {"pin_group": "pg_gnd"})
+        p = CfgPort(
+            "p1",
+            "circuit",
+            {"coordinates": {"layer": "top", "point": [0.001, 0.002], "net": "SIG"}},
+            {"pin_group": "pg_gnd"},
+        )
         d = p.export_properties()
         assert "coordinates" in d["positive_terminal"]
 
@@ -184,6 +191,7 @@ class TestCfgPort:
 # ---------------------------------------------------------------------------
 # CfgEdgePort
 # ---------------------------------------------------------------------------
+
 
 class TestCfgEdgePort:
     def test_wave_port(self):
@@ -197,8 +205,9 @@ class TestCfgEdgePort:
         assert d["pec_launch_width"] == "0.01mm"
 
     def test_gap_port_custom_extent(self):
-        ep = CfgEdgePort("gp1", "gap_port", "trace2", [0.003, 0.004],
-                         horizontal_extent_factor=3, vertical_extent_factor=2)
+        ep = CfgEdgePort(
+            "gp1", "gap_port", "trace2", [0.003, 0.004], horizontal_extent_factor=3, vertical_extent_factor=2
+        )
         d = ep.export_properties()
         assert d["horizontal_extent_factor"] == 3
         assert d["vertical_extent_factor"] == 2
@@ -212,6 +221,7 @@ class TestCfgEdgePort:
 # ---------------------------------------------------------------------------
 # CfgDiffWavePort
 # ---------------------------------------------------------------------------
+
 
 class TestCfgDiffWavePort:
     def test_diff_wave_port(self):
@@ -251,6 +261,7 @@ class TestCfgDiffWavePort:
 # ---------------------------------------------------------------------------
 # CfgPorts (collection)
 # ---------------------------------------------------------------------------
+
 
 class TestCfgPorts:
     def test_empty(self):
@@ -356,31 +367,42 @@ class TestCfgPorts:
         assert len(pc.export_properties()) == 3
 
     def test_init_from_ports_data(self):
-        data = [{"name": "p1", "type": "circuit",
-                 "positive_terminal": {"pin_group": "pg1"},
-                 "negative_terminal": {"pin_group": "pg2"}}]
+        data = [
+            {
+                "name": "p1",
+                "type": "circuit",
+                "positive_terminal": {"pin_group": "pg1"},
+                "negative_terminal": {"pin_group": "pg2"},
+            }
+        ]
         pc = CfgPorts(ports_data=data)
         assert len(pc.ports) == 1
         assert pc.ports[0].name == "p1"
 
     def test_init_from_edge_port_data(self):
-        data = [{"name": "wp1", "type": "wave_port",
-                 "primitive_name": "trace1", "point_on_edge": [0, 0]}]
+        data = [{"name": "wp1", "type": "wave_port", "primitive_name": "trace1", "point_on_edge": [0, 0]}]
         pc = CfgPorts(ports_data=data)
         assert isinstance(pc.ports[0], CfgEdgePort)
 
     def test_init_from_diff_port_data(self):
-        data = [{"name": "d1", "type": "diff_wave_port",
-                 "positive_terminal": {"primitive_name": "t1", "point_on_edge": [0, 0]},
-                 "negative_terminal": {"primitive_name": "t2", "point_on_edge": [0, 1e-4]}}]
+        data = [
+            {
+                "name": "d1",
+                "type": "diff_wave_port",
+                "positive_terminal": {"primitive_name": "t1", "point_on_edge": [0, 0]},
+                "negative_terminal": {"primitive_name": "t2", "point_on_edge": [0, 1e-4]},
+            }
+        ]
         pc = CfgPorts(ports_data=data)
         assert isinstance(pc.ports[0], CfgDiffWavePort)
 
     def test_init_unknown_port_type_raises(self):
         with pytest.raises(ValueError):
-            CfgPorts(ports_data=[{"name": "x", "type": "unknown",
-                                  "positive_terminal": {"pin": "A1"},
-                                  "negative_terminal": {}}])
+            CfgPorts(
+                ports_data=[
+                    {"name": "x", "type": "unknown", "positive_terminal": {"pin": "A1"}, "negative_terminal": {}}
+                ]
+            )
 
     def test_get_data_from_db_no_pedb(self):
         pc = CfgPorts()
@@ -397,6 +419,7 @@ class TestCfgPorts:
 # ---------------------------------------------------------------------------
 # CfgSource (single source)
 # ---------------------------------------------------------------------------
+
 
 class TestCfgSource:
     def test_current_source(self):
@@ -426,6 +449,7 @@ class TestCfgSource:
 # CfgSources (collection)
 # ---------------------------------------------------------------------------
 
+
 class TestCfgSources:
     def test_empty(self):
         assert CfgSources().export_properties() == []
@@ -438,8 +462,15 @@ class TestCfgSources:
 
     def test_add_current_source_all_params(self):
         sc = CfgSources()
-        sc.add_current_source("i1", {"pin_group": "pg1"}, {"pin_group": "pg2"},
-                              magnitude=0.5, impedance=1e6, reference_designator="U1", distributed=True)
+        sc.add_current_source(
+            "i1",
+            {"pin_group": "pg1"},
+            {"pin_group": "pg2"},
+            magnitude=0.5,
+            impedance=1e6,
+            reference_designator="U1",
+            distributed=True,
+        )
         d = sc.export_properties()[0]
         assert d["magnitude"] == 0.5
         assert d["impedance"] == 1e6
@@ -453,8 +484,9 @@ class TestCfgSources:
 
     def test_add_voltage_source_all_params(self):
         sc = CfgSources()
-        sc.add_voltage_source("v1", {"pin_group": "pg1"}, {"pin_group": "pg2"},
-                              magnitude=3.3, impedance=1e-6, distributed=False)
+        sc.add_voltage_source(
+            "v1", {"pin_group": "pg1"}, {"pin_group": "pg2"}, magnitude=3.3, impedance=1e-6, distributed=False
+        )
         d = sc.export_properties()[0]
         assert d["magnitude"] == 3.3
 
@@ -465,9 +497,14 @@ class TestCfgSources:
         assert len(sc.export_properties()) == 2
 
     def test_init_from_data(self):
-        data = [{"name": "i1", "type": "current",
-                 "positive_terminal": {"pin_group": "pg1"},
-                 "negative_terminal": {"pin_group": "pg2"}}]
+        data = [
+            {
+                "name": "i1",
+                "type": "current",
+                "positive_terminal": {"pin_group": "pg1"},
+                "negative_terminal": {"pin_group": "pg2"},
+            }
+        ]
         sc = CfgSources(sources_data=data)
         assert len(sc.sources) == 1
 
@@ -486,6 +523,7 @@ class TestCfgSources:
 # ---------------------------------------------------------------------------
 # CfgProbe / CfgProbes
 # ---------------------------------------------------------------------------
+
 
 class TestCfgProbe:
     def test_probe_export(self):
@@ -528,9 +566,9 @@ class TestCfgProbes:
         assert len(pc.to_list()) == 2
 
     def test_init_from_data(self):
-        data = [{"name": "pr1", "type": "probe",
-                 "positive_terminal": {"net": "SIG"},
-                 "negative_terminal": {"net": "GND"}}]
+        data = [
+            {"name": "pr1", "type": "probe", "positive_terminal": {"net": "SIG"}, "negative_terminal": {"net": "GND"}}
+        ]
         pc = CfgProbes(data=data)
         assert len(pc.probes) == 1
 
@@ -538,4 +576,3 @@ class TestCfgProbes:
         pc = CfgProbes()
         pc.add("pr1", {"net": "SIG"}, {"net": "GND"})
         pc.apply()  # must not raise
-

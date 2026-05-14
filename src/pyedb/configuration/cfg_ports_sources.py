@@ -134,7 +134,7 @@ class CfgTerminalInfo(CfgBase):
         return {"padstack": padstack_instance_name}
 
     @staticmethod
-    def coordinates(layer: str, x:float, y:float, net:str) -> dict:
+    def coordinates(layer: str, x: float, y: float, net: str) -> dict:
         """Create a terminal selector at an exact XY location on a layer.
 
         Parameters
@@ -298,9 +298,9 @@ class CfgSources:
 
     def add_current_source(
         self,
-        name:str,
-        positive_terminal:dict,
-        negative_terminal:dict,
+        name: str,
+        positive_terminal: dict,
+        negative_terminal: dict,
         magnitude=0.001,
         impedance=None,
         reference_designator=None,
@@ -358,9 +358,9 @@ class CfgSources:
 
     def add_voltage_source(
         self,
-        name:str,
-        positive_terminal:dict,
-        negative_terminal:dict,
+        name: str,
+        positive_terminal: dict,
+        negative_terminal: dict,
         magnitude=1.0,
         impedance=None,
         reference_designator=None,
@@ -794,9 +794,9 @@ class CfgPorts:
         name,
         primitive,
         point_on_edge,
-        horizontal_extent_factor:int=5,
-        vertical_extent_factor:int=3,
-        pec_launch_width:str="0.01mm",
+        horizontal_extent_factor: int = 5,
+        vertical_extent_factor: int = 3,
+        pec_launch_width: str = "0.01mm",
     ):
         primitive_name = (
             primitive
@@ -818,9 +818,9 @@ class CfgPorts:
 
     def add_wave_port(
         self,
-        name:str,
+        name: str,
         primitive,
-        point_on_edge:list[float],
+        point_on_edge: list[float],
         horizontal_extent_factor=5,
         vertical_extent_factor=3,
         pec_launch_width="0.01mm",
@@ -867,9 +867,9 @@ class CfgPorts:
 
     def add_gap_port(
         self,
-        name:str,
-        primitive:str | Any,
-        point_on_edge:list[float],
+        name: str,
+        primitive: str | Any,
+        point_on_edge: list[float],
         horizontal_extent_factor=5,
         vertical_extent_factor=3,
         pec_launch_width="0.01mm",
@@ -909,16 +909,16 @@ class CfgPorts:
 
     def add_diff_wave_port(
         self,
-        name:str=None,
-        positive_terminal:dict=None,
-        negative_terminal:dict=None,
-        horizontal_extent_factor:int=5,
-        vertical_extent_factor:int=3,
-        pec_launch_width:str="0.01mm",
-        positive_primitive:str | Any=None,
-        positive_terminal_point:list[float]=None,
-        negative_primitive:str | Any=None,
-        negative_terminal_point:list[float]=None,
+        name: str = None,
+        positive_terminal: dict = None,
+        negative_terminal: dict = None,
+        horizontal_extent_factor: int = 5,
+        vertical_extent_factor: int = 3,
+        pec_launch_width: str = "0.01mm",
+        positive_primitive: str | Any = None,
+        positive_terminal_point: list[float] = None,
+        negative_primitive: str | Any = None,
+        negative_terminal_point: list[float] = None,
     ):
         """Add a differential wave port from two edge-terminal descriptors.
 
@@ -1115,7 +1115,7 @@ class CfgProbes:
         self._pedb = pedb
         self.probes = [CfgProbe(self._pedb, **probe) for probe in (data or [])]
 
-    def add(self, name:str, positive_terminal:dict, negative_terminal:dict, reference_designator=None):
+    def add(self, name: str, positive_terminal: dict, negative_terminal: dict, reference_designator=None):
         """Add a voltage probe to this configuration.
 
         Parameters
@@ -1202,11 +1202,15 @@ class CfgCircuitElement(CfgBase):
             "positive_terminal": self.positive_terminal_info.export_properties(),
         }
         data.update(
-            {k: v for k, v in {
-                "impedance": self.impedance,
-                "reference_designator": self.reference_designator,
-                "distributed": self.distributed if self.distributed else None,
-            }.items() if v is not None}
+            {
+                k: v
+                for k, v in {
+                    "impedance": self.impedance,
+                    "reference_designator": self.reference_designator,
+                    "distributed": self.distributed if self.distributed else None,
+                }.items()
+                if v is not None
+            }
         )
         data.update({k: v for k, v in extra.items() if v is not None})
         return data
@@ -1491,7 +1495,6 @@ class CfgSource(CfgCircuitElement):
 
         self.magnitude = kwargs.get("magnitude", 0.001)
 
-
     def set_parameters_to_edb(self):
         """Create sources."""
         if self._pedb is None:
@@ -1613,7 +1616,6 @@ class CfgProbe(CfgCircuitElement):
         kwargs["type"] = "probe"
         super().__init__(pedb, **kwargs)
 
-
     def export_properties(self):
         """Serialize this probe to a plain dictionary."""
         data = self._export_base_properties()
@@ -1664,7 +1666,6 @@ class CfgEdgePort:
             "vertical_extent_factor": self.vertical_extent_factor,
             "pec_launch_width": self.pec_launch_width,
         }
-
 
     def __init__(self, pedb=None, *args, **kwargs):
         if isinstance(pedb, str):
@@ -1774,4 +1775,3 @@ class CfgDiffWavePort:
             "vertical_extent_factor": self.vertical_extent_factor,
             "pec_launch_width": self.pec_launch_width,
         }
-
