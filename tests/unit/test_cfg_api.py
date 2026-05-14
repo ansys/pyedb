@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 import pytest
-from pyedb.configuration.cfg_modeler import CfgModeler
+from pyedb.configuration.cfg_modeler import CfgModeler, CfgTrace, CfgPlane
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
@@ -77,3 +77,74 @@ class TestModelerConfig:
         m = CfgModeler()
         m.delete_primitives_by_net(["old_net"])
         assert m.primitives_to_delete["net_name"] == ["old_net"]
+
+    def test_add_trace_incremental_path(self):
+        m = CfgModeler()
+        m.add_trace("t2", "bot", "0.1mm", incremental_path=[[0, 0], [0.005, 0]])
+        t = m.traces[0]
+        assert t.incremental_path == [[0, 0], [0.005, 0]]
+        assert t.path == []
+
+    def test_add_trace_default_styles(self):
+        m = CfgModeler()
+        t = m.add_trace("t3", "top", "0.1mm")
+        assert t.start_cap_style == "round"
+        assert t.end_cap_style == "round"
+        assert t.corner_style == "sharp"
+
+    def test_add_trace_custom_styles(self):
+        m = CfgModeler()
+        t = m.add_trace("t4", "top", "0.1mm", start_cap_style="flat", end_cap_style="extended", corner_style="mitered")
+        assert t.start_cap_style == "flat"
+        assert t.end_cap_style == "extended"
+        assert t.corner_style == "mitered"
+
+    def test_multiple_traces(self):
+        m = CfgModeler()
+        m.add_trace("t1", "top", "0.1mm")
+        m.add_trace("t2", "bot", "0.2mm")
+        assert len(m.traces) == 2
+        assert m.traces[1].layer == "bot"
+
+    def test_multiple_planes(self):
+        m = CfgModeler()
+        m.add_rectangular_plane("L1", "r1", "GND")
+        m.add_circular_plane("L2", "c1", "VDD", radius="1mm")
+        assert len(m.planes) == 2
+
+    def test_init_from_data_dict_traces(self):
+        data = {"traces": [{"name": "t1", "layer": "top", "width": "0.1mm", "path": [[0, 0], [1e-3, 0]]}]}
+        m = CfgModeler(data=data)
+        assert len(m.traces) == 1
+        assert m.traces[0].name == "t1"
+
+    def test_init_from_data_dict_planes(self):
+        data = {"planes": [{"name": "p1", "layer": "bot", "net_name": "GND", "type": "rectangle"}]}
+        m = CfgModeler(data=data)
+        assert len(m.planes) == 1
+        assert m.planes[0].net_name == "GND"
+
+    def test_init_from_data_primitives_to_delete(self):
+        data = {"primitives_to_delete": {"layer_name": ["L1"], "name": [], "net_name": []}}
+        m = CfgModeler(data=data)
+        assert m.primitives_to_delete["layer_name"] == ["L1"]
+
+    def test_trace_model_dump(self):
+        t = CfgTrace(name="t1", layer="top", width="0.1mm")
+        d = t.model_dump()
+        assert d["name"] == "t1"
+        assert d["width"] == "0.1mm"
+
+    def test_plane_model_dump(self):
+        p = CfgPlane(name="p1", layer="top", net_name="GND", type="rectangle")
+        d = p.model_dump()
+        assert d["type"] == "rectangle"
+        assert d["net_name"] == "GND"
+
+    def test_delete_primitives_accumulates(self):
+        m = CfgModeler()
+        m.delete_primitives_by_layer(["L1"])
+        m.delete_primitives_by_layer(["L2"])
+        assert m.primitives_to_delete["layer_name"] == ["L1", "L2"]
+
+
