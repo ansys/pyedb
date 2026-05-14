@@ -39,7 +39,9 @@ class TestCfgSpiceModel:
         assert s.sub_circuit_name == "IC_SUB"
 
     def test_components_list(self):
-        s = CfgSpiceModel(name="ic", component_definition="DEF", file_path="ic.sp", apply_to_all=False, components=["U1", "U2"])
+        s = CfgSpiceModel(
+            name="ic", component_definition="DEF", file_path="ic.sp", apply_to_all=False, components=["U1", "U2"]
+        )
         assert s.apply_to_all is False
         assert s.components == ["U1", "U2"]
 
@@ -71,7 +73,15 @@ class TestCfgSpiceModels:
 
     def test_add_all_params(self):
         sc = CfgSpiceModels()
-        m = sc.add(name="sp1", component_definition="DEF", file_path="f.sp", sub_circuit_name="SUB", apply_to_all=False, components=["U1"], terminal_pairs=[["1", "2"]])
+        m = sc.add(
+            name="sp1",
+            component_definition="DEF",
+            file_path="f.sp",
+            sub_circuit_name="SUB",
+            apply_to_all=False,
+            components=["U1"],
+            terminal_pairs=[["1", "2"]],
+        )
         assert m.sub_circuit_name == "SUB"
         assert m.apply_to_all is False
         assert m.components == ["U1"]

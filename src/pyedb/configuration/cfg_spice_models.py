@@ -23,8 +23,10 @@
 """Build SPICE model assignment entries for configuration payloads."""
 
 from pathlib import Path
-from typing import Optional, Any
+from typing import Any, Optional
+
 from pydantic import Field, PrivateAttr, model_validator
+
 from pyedb.configuration.cfg_common import CfgBaseModel
 
 
@@ -32,7 +34,6 @@ class CfgSpiceModel(CfgBaseModel):
     """Represent one SPICE subcircuit model assignment."""
 
     model_config = {"populate_by_name": True, "extra": "ignore", "arbitrary_types_allowed": True}
-
 
     name: str = ""
     component_definition: str = ""
