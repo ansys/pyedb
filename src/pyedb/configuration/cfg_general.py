@@ -25,8 +25,6 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, PrivateAttr, field_validator
 
-from pyedb.configuration.cfg_common import compact_dict
-
 
 class CfgGeneral(BaseModel):
     """Fluent builder for the ``general`` section."""
@@ -39,9 +37,9 @@ class CfgGeneral(BaseModel):
     suppress_pads: Optional[bool] = None
 
     @field_validator("spice_model_library", "s_parameter_library", mode="before")
-    @classmethod
-    def _coerce_to_str(cls, v):
-        return str(v) if v is not None else ""
+    @staticmethod
+    def _coerce_to_str(v):
+        return "" if v is None else v
 
     _pedb: Any = PrivateAttr(default=None)
 
@@ -63,21 +61,10 @@ class CfgGeneral(BaseModel):
     def get_parameters_from_edb(self):
         """Read general design-option settings from EDB."""
         if self._pedb is None:
-            return self.to_dict()
+            return {k: v for k, v in self.model_dump(exclude_none=True).items() if v != ""}
         opts = self._pedb.design_options
         return {"anti_pads_always_on": opts.anti_pads_always_on, "suppress_pads": opts.suppress_pads}
 
-    def to_dict(self) -> dict:
-        """Serialize configured general settings."""
-        return compact_dict(
-            {
-                "spice_model_library": self.spice_model_library,
-                "s_parameter_library": self.s_parameter_library,
-                "anti_pads_always_on": self.anti_pads_always_on,
-                "suppress_pads": self.suppress_pads,
-            },
-            empty_values=(None, ""),
-        )
 
     def apply(self):
         """Write general configuration into the open EDB design."""
