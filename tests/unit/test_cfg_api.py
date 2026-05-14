@@ -26,6 +26,7 @@ from pyedb.configuration.cfg_boundaries import CfgBoundaries
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
+
 class TestBoundariesConfig:
     def test_empty(self):
         assert CfgBoundaries().model_dump(exclude_none=True, exclude_defaults=True) == {}

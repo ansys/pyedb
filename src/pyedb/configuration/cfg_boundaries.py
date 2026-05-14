@@ -159,11 +159,11 @@ class CfgBoundaries(CfgBaseModel):
 
     def set_air_box_extents(
         self,
-        horizontal_size:float = 0.15,
+        horizontal_size: float = 0.15,
         horizontal_is_multiple: bool = False,
-        positive_vertical_size:float=0.15,
+        positive_vertical_size: float = 0.15,
         positive_vertical_is_multiple: bool = False,
-        negative_vertical_size:float=0.15,
+        negative_vertical_size: float = 0.15,
         negative_vertical_is_multiple: bool = False,
         sync: bool = False,
         truncate_at_ground: bool = False,
@@ -197,7 +197,7 @@ class CfgBoundaries(CfgBaseModel):
     def set_dielectric_extent(
         self,
         extent_type: str = "BoundingBox",
-        expansion_size:int=0,
+        expansion_size: int = 0,
         is_multiple: bool = False,
         base_polygon: Optional[str] = None,
         honor_user_dielectric: bool = False,
@@ -209,4 +209,3 @@ class CfgBoundaries(CfgBaseModel):
             self.dielectric_base_polygon = base_polygon
         if honor_user_dielectric:
             self.honor_user_dielectric = honor_user_dielectric
-
