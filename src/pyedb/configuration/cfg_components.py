@@ -398,7 +398,6 @@ class CfgComponent(CfgBase):
             self._retrieve_solder_ball_properties_from_edb()
             self._retrieve_port_properties_from_edb()
 
-
     def add_pin_pair_rlc(
         self,
         first_pin: str,
