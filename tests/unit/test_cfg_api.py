@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from pyedb.configuration.cfg_pin_groups import CfgPinGroup, CfgPinGroups
 
@@ -203,4 +204,3 @@ class TestCfgPinGroups:
         """set_pingroup_to_edb is an alias for set_pin_groups_to_edb."""
         pgs = CfgPinGroups()
         assert pgs.set_pingroup_to_edb == pgs.set_pin_groups_to_edb
-

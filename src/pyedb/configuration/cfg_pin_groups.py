@@ -22,7 +22,7 @@
 
 """Build named pin-group configuration entries."""
 
-from typing import Optional, Any
+from typing import Any, Optional
 
 from pydantic import Field, PrivateAttr
 
@@ -227,8 +227,9 @@ class CfgPinGroups:
                         net=net_name,
                     )
                 else:
-                    pg = CfgPinGroup(pedb=self._pedb, name=name, reference_designator=reference_designator,
-                                     net=net_name)
+                    pg = CfgPinGroup(
+                        pedb=self._pedb, name=name, reference_designator=reference_designator, net=net_name
+                    )
                 self.pin_groups.append(pg)
                 return pg
 
@@ -249,7 +250,6 @@ class CfgPinGroups:
     def export_properties(self):
         """Serialize all pin groups to plain dictionaries."""
         return [pg.export_properties() for pg in self.pin_groups]
-
 
 
 class CfgPinGroup(CfgBaseModel):
@@ -293,7 +293,6 @@ class CfgPinGroup(CfgBaseModel):
                 raise RuntimeError(f"Failed to create pin group {self.name}")
         else:
             raise RuntimeError(f"No net and pins defined for defining pin group {self.name}")
-
 
     def export_properties(self):
         """Serialize this pin group to a plain dictionary."""
