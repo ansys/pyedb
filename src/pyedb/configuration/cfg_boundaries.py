@@ -21,7 +21,7 @@
 # SOFTWARE.
 """Build the ``boundaries`` configuration section."""
 
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from pydantic import Field
 
@@ -34,7 +34,7 @@ class CfgBoundaries(CfgBaseModel):
     class PaddingData(CfgBaseModel):
         """Represent padding data for extent regions."""
 
-        size: Union[float, str]
+        size: float | str
         is_multiple: bool
 
     use_open_region: Optional[bool] = Field(default=None, description="Whether to enable the use of an open region")
@@ -159,11 +159,11 @@ class CfgBoundaries(CfgBaseModel):
 
     def set_air_box_extents(
         self,
-        horizontal_size,
+        horizontal_size:float = 0.15,
         horizontal_is_multiple: bool = False,
-        positive_vertical_size=0.15,
+        positive_vertical_size:float=0.15,
         positive_vertical_is_multiple: bool = False,
-        negative_vertical_size=0.15,
+        negative_vertical_size:float=0.15,
         negative_vertical_is_multiple: bool = False,
         sync: bool = False,
         truncate_at_ground: bool = False,
@@ -197,7 +197,7 @@ class CfgBoundaries(CfgBaseModel):
     def set_dielectric_extent(
         self,
         extent_type: str = "BoundingBox",
-        expansion_size=0,
+        expansion_size:int=0,
         is_multiple: bool = False,
         base_polygon: Optional[str] = None,
         honor_user_dielectric: bool = False,
@@ -210,6 +210,3 @@ class CfgBoundaries(CfgBaseModel):
         if honor_user_dielectric:
             self.honor_user_dielectric = honor_user_dielectric
 
-    def to_dict(self) -> dict:
-        """Serialize explicitly configured boundary fields."""
-        return self.model_dump(exclude_none=True, exclude_defaults=True)
