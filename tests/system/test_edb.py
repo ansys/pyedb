@@ -880,10 +880,10 @@ class TestClass(BaseTestClass):
 
         # General
         general = setup.settings.general
-        general.pi_slider_pos = 0
-        assert general.pi_slider_pos == 0
-        general.si_slider_pos = 2
-        assert general.si_slider_pos == 2
+        general.pi_slider_position = 0
+        assert general.pi_slider_position == 0
+        general.si_slider_position = 2
+        assert general.si_slider_position == 2
         general.use_custom_settings = True
         assert general.use_custom_settings
         general.use_si_settings = False
@@ -1307,8 +1307,8 @@ class TestClass(BaseTestClass):
 
         # General settings (backward compat — proxies to DC settings for DCIR setups)
         general = settings.general
-        general.pi_slider_pos = 0
-        general.si_slider_pos = 0
+        general.pi_slider_position = 0
+        general.si_slider_position = 0
         general.use_custom_settings = False
         general.use_si_settings = False
 
@@ -1320,8 +1320,8 @@ class TestClass(BaseTestClass):
         else:
             setup_2 = setup
         # General assertions (backward compat)
-        assert setup_2.settings.general.pi_slider_pos == 0
-        assert setup_2.settings.general.si_slider_pos == 0
+        assert setup_2.settings.general.pi_slider_position == 0
+        assert setup_2.settings.general.si_slider_position == 0
         assert not setup_2.settings.general.use_custom_settings
         assert not setup_2.settings.general.use_si_settings
 

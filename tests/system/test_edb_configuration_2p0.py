@@ -1320,8 +1320,8 @@ class TestClassSetups(BaseTestClass):
 
         siwave_dc = edbapp.setups["siwave_1"]
 
-        assert siwave_dc.dc_settings.dc_slider_position == 2
-        assert siwave_dc.dc_ir_settings.export_dc_thermal_data is True
+        assert siwave_dc.settings.dc.dc_slider_position == 2
+        assert siwave_dc.settings.export_dc_thermal_data is True
 
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
         src_siwave_dc = data_from_db["setups"][0]
@@ -1374,8 +1374,8 @@ class TestClassSetups(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.configuration.load(data, apply_file=True)
         siwave_ac = edbapp.setups["siwave_1"]
-        assert siwave_ac.use_si_settings is True
-        assert siwave_ac.si_slider_pos == 1
+        assert siwave_ac.settings.general.use_si_settings is True
+        assert siwave_ac.settings.general.si_slider_position == 1
 
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
         src_siwave_dc = [i for i in data_from_db["setups"] if i["name"] == "siwave_1"][0]

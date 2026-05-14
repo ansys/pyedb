@@ -375,24 +375,24 @@ class SIwaveSimulationSetup(SimulationSetup):
 
     @property
     def pi_slider_pos(self):
-        return self.settings.general.pi_slider_pos
+        return self.settings.general.pi_slider_position
 
     @pi_slider_pos.setter
     def pi_slider_pos(self, value):
-        self.settings.general.pi_slider_pos = value
+        self.settings.general.pi_slider_position = value
 
         self.use_si_settings = False
         self.use_custom_settings = False
         self.advanced_settings.set_pi_slider(value)
 
     @property
-    def si_slider_pos(self):
+    def si_slider_position(self):
         """SI slider position. Values are from ``1`` to ``3``."""
-        return self.settings.general.si_slider_pos
+        return self.settings.general.si_slider_position
 
-    @si_slider_pos.setter
-    def si_slider_pos(self, value):
-        self.settings.general.si_slider_pos = value
+    @si_slider_position.setter
+    def si_slider_position(self, value):
+        self.settings.general.si_slider_position = value
 
         self.use_si_settings = True
         self.use_custom_settings = False
@@ -627,11 +627,11 @@ class SIWaveGeneralSettings:
             return object.__getattribute__(self, item)
 
     @property
-    def pi_slider_pos(self):
+    def pi_slider_position(self):
         return self._parent.sim_setup_info.simulation_settings.PISliderPos
 
-    @pi_slider_pos.setter
-    def pi_slider_pos(self, value):
+    @pi_slider_position.setter
+    def pi_slider_position(self, value):
         setup = self._parent
         edb_setup_info = setup.sim_setup_info
         edb_setup_info.simulation_settings.PISliderPos = value
@@ -639,11 +639,11 @@ class SIWaveGeneralSettings:
         setup._update_setup()
 
     @property
-    def si_slider_pos(self):
+    def si_slider_position(self):
         return self._parent.sim_setup_info.simulation_settings.SISliderPos
 
-    @si_slider_pos.setter
-    def si_slider_pos(self, value):
+    @si_slider_position.setter
+    def si_slider_position(self, value):
         setup = self._parent
         edb_setup_info = setup.sim_setup_info
         edb_setup_info.simulation_settings.SISliderPos = value
