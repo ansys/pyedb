@@ -1642,7 +1642,7 @@ class CfgEdgePort:
             primitive_name=self.primitive_name,
             name=self.name,
             impedance=50,
-            type=self.type == "wave_port",
+            is_wave_port=self.type == "wave_port",
             horizontal_extent_factor=self.horizontal_extent_factor,
             vertical_extent_factor=self.vertical_extent_factor,
             pec_launch_width=self.pec_launch_width,
