@@ -614,21 +614,22 @@ class Configuration:
 
     def apply_stackup(self):
         layers = self.cfg_data.stackup.layers
-        input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
-        if len(input_signal_layers) == 0:
+        if not layers:
             return
-        else:  # Create materials with default properties used in stackup but not defined
-            materials = [m.name for m in self.cfg_data.stackup.materials]
+        input_signal_layers = [i for i in layers if i.type and i.type.lower() == "signal"]
+        if len(input_signal_layers) > 0:  # Create materials with default properties used in stackup but not defined
             for i in self.cfg_data.stackup.layers:
+                materials = [m.name for m in self.cfg_data.stackup.materials]
                 if i.type == "signal":
                     if i.material not in materials:
                         self.cfg_data.stackup.add_material(
                             name=i.material, config=self._pedb.materials.default_conductor_property_values
                         )
+                        materials = [m.name for m in self.cfg_data.stackup.materials]
 
-                    if i.fill_material not in materials:
+                    if i.fill_material and i.fill_material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material, config=self._pedb.materials.default_dielectric_property_values
+                            name=i.fill_material, config=self._pedb.materials.default_dielectric_property_values
                         )
 
                 elif i.type == "dielectric":
@@ -792,7 +793,7 @@ class Configuration:
             data.update(self.cfg_data.variables.model_dump(exclude_none=True))
         if kwargs.get("stackup", False):
             self.get_stackup()
-            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
+            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True, by_alias=True)
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
