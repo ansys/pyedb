@@ -39,7 +39,7 @@ class CfgGeneral(BaseModel):
     @field_validator("spice_model_library", "s_parameter_library", mode="before")
     @staticmethod
     def _coerce_to_str(v):
-        return "" if v is None else v
+        return "" if v is None else str(v)
 
     _pedb: Any = PrivateAttr(default=None)
 
