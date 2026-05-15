@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSettings
-from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCIRDCSettings, SIWaveDCSettings  # noqa: F401
+from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
 from pyedb.grpc.database.simulation_setup.siwave_general_settings import SIWaveGeneralSettings
 from pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings import SIWaveSParameterSettings
 
