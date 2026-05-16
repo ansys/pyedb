@@ -138,7 +138,8 @@ class PolygonDataDotNet:  # pragma: no cover
 
         Parameters
         ----------
-        polygons : list or `Edb.Geometry.PolygonData`"""
+        polygons : list or `Edb.Geometry.PolygonData`
+        """
         if isinstance(polygons, list):
             polygons = convert_py_list_to_net_list(polygons)
         return self.dotnetobj.GetBBoxOfPolygons(polygons)
@@ -231,7 +232,6 @@ class NetDotNet:
         -------
         :class:`NetDotNet`
         """
-
         return NetDotNet(self._app, self.net.Create(layout, name))
 
     def delete(self):
@@ -334,7 +334,6 @@ class NetClassDotNet:
 
     def delete(self):  # pragma: no cover
         """Edb Dotnet Api Database `Delete`."""
-
         if self.api_object:
             self.api_object.Delete()
             self.api_object = None
@@ -683,7 +682,6 @@ class CellDotNet:
     @property
     def definition(self):
         """Edb Dotnet Api Definition."""
-
         return self.core.Definition
 
     @property
@@ -697,7 +695,8 @@ class CellDotNet:
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.dotnet.database.CellClassDotNet`"""
+        :class:`pyedb.dotnet.database.dotnet.database.CellClassDotNet`
+        """
         return CellClassDotNet(self._app)
 
     @property
@@ -706,8 +705,8 @@ class CellDotNet:
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.dotnet.database.UtilityDotNet`"""
-
+        :class:`pyedb.dotnet.database.dotnet.database.UtilityDotNet`
+        """
         return UtilityDotNet(self._app)
 
     @property
@@ -716,7 +715,8 @@ class CellDotNet:
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.dotnet.database.GeometryDotNet`"""
+        :class:`pyedb.dotnet.database.dotnet.database.GeometryDotNet`
+        """
         return GeometryDotNet(self._app)
 
 
