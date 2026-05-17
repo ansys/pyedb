@@ -86,7 +86,7 @@ class DjordjecvicSarkarModel(DielectricMaterialModel):
 
     @property
     def use_dc_relative_permittivity(self):
-        """Whether the DC relative permittivity nominal value is used"""
+        """Whether the DC relative permittivity nominal value is used."""
         return self._edb_object.UseDCRelativePermitivity()
 
     @use_dc_relative_permittivity.setter
