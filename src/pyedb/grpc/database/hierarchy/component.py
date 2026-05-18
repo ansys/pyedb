@@ -223,7 +223,7 @@ class Component:
     def ic_die_properties(self) -> "ICDieProperty | None":
         """IC Die property.
 
-        returns
+        Returns
         -------
         :class:`ICDieProperty <pyedb.grpc.database.hierarchy.component.ICDieProperty>`
         """
@@ -349,7 +349,6 @@ class Component:
         :class:`Model <ansys.edb.core.hierarchy.model.Model>`
 
         """
-
         if isinstance(self.component_property.model, CoreSPICEModel):
             return SpiceModel(
                 component=self,
@@ -1140,12 +1139,12 @@ class Component:
 
         ..deprecated:: 0.51.0
            Use: func:`num_pins` instead.
+
         Returns
         -------
         int
             Component pins number.
         """
-
         try:
             return self.core.num_pins
         except Exception as e:
@@ -1294,7 +1293,6 @@ class Component:
     def _set_model(self, model):  # pragma: no cover
         """Set component model
 
-
         Returns
         -------
         :class:`Model <ansys.edb.core.hierarchy.model.Model>`
@@ -1397,7 +1395,6 @@ class Component:
         -------
 
         """
-
         model = CoreNetlistModel.create(netlist)
 
         return self._set_model(model)

@@ -319,6 +319,7 @@ class SimulationSetup(SystemObject):
             List of frequency points. The default is ``None``.
         sweep_type : str, optional
             Sweep type. The default is ``"interpolation"``. Options are ``"discrete"``,"discrete"``.
+
         Returns
         -------
 

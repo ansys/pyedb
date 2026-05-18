@@ -108,7 +108,6 @@ def cel2kel(val, inverse=True):  # pragma: no cover
         Temperature value converted to Kelvin.
 
     """
-
     if inverse:
         return val - 273.15
     else:
@@ -130,7 +129,6 @@ def unit_system(units):  # pragma: no cover
     ``False`` when the units specified are not defined in AEDT units.
 
     """
-
     for unit_type, unit_dict in AEDT_UNITS.items():
         if units in unit_dict:
             return unit_type
@@ -662,7 +660,6 @@ class SweepType(object):
 
 class BasisOrder(object):
     """Enumeration-class for HFSS basis order settings.
-
 
     Warning: the value ``single`` has been renamed to ``Single`` for consistency. Please update references to
     ``single``.

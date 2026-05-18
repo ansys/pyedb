@@ -131,7 +131,6 @@ class SourceExcitationInternal:
         -------
         EDB terminal.
         """
-
         from_layer, _ = pin.get_layer_range()
         if term_name is None:
             try:
@@ -194,6 +193,7 @@ class SourceExcitationInternal:
 
         term_type: Type of terminal, gap, circuit or auto.
         str.
+
         Returns
         -------
         Edb pin group terminal.
@@ -254,7 +254,6 @@ class SourceExcitationInternal:
         -------
         Edb.Cell.Terminal.EdgeTerminal
         """
-
         if not terminal_name:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, tuple):
@@ -510,7 +509,6 @@ class SourceExcitation(SourceExcitationInternal):
         >>> source = Source(source_type=SourceType.Vsource, amplitude="1V", ...)
         >>> edb.excitation_manager.create_source_on_component([source])
         """
-
         if not sources:  # pragma: no cover
             return False
         if isinstance(sources, Source):  # pragma: no cover
@@ -605,6 +603,7 @@ class SourceExcitation(SourceExcitationInternal):
             Whether it is a circuit port. The default is ``False``.
         name: str, optional
             Name of the created port. The default is None, a random name is generated.
+
         Returns
         -------
         :class:`GapPort <pyedb.grpc.database.ports.ports.GapPort>` or
@@ -619,7 +618,6 @@ class SourceExcitation(SourceExcitationInternal):
         >>> ref_term = edb.terminals["RefTerminal"]
         >>> port = edb.excitation_manager.create_port(term, ref_term, name="Port1")
         """
-
         from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
 
         if terminal.boundary_type == "port":
@@ -690,7 +688,6 @@ class SourceExcitation(SourceExcitationInternal):
         >>> edb.save()
         >>> edb.close()
         """
-
         if isinstance(refdes, str):
             refdes = self._pedb.components.instances[refdes]
         pins = self._get_pins_for_ports(pins, refdes)
@@ -798,7 +795,6 @@ class SourceExcitation(SourceExcitationInternal):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
@@ -1231,7 +1227,6 @@ class SourceExcitation(SourceExcitationInternal):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -1285,7 +1280,6 @@ class SourceExcitation(SourceExcitationInternal):
         c : float, int
             Capacitor value
         """
-
         top_layer_pos, bottom_layer_pos = positive_pin.get_layer_range()
         top_layer_neg, bottom_layer_neg = negative_pin.get_layer_range()
         pos_term_layer = bottom_layer_pos
@@ -1400,7 +1394,6 @@ class SourceExcitation(SourceExcitationInternal):
         >>> pin2 = edb.components["U1"].pins["GND"]
         >>> edb.excitation_manager.create_voltage_source_on_pin(pin1, pin2, 3.3, name="VSource1")
         """
-
         if not source_name:
             source_name = (
                 f"VSource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
@@ -1452,7 +1445,6 @@ class SourceExcitation(SourceExcitationInternal):
         >>> pin2 = edb.components["U1"].pins["GND"]
         >>> edb.excitation_manager.create_current_source_on_pin(pin1, pin2, 0.1, name="ISource1")
         """
-
         if not source_name:
             source_name = (
                 f"VSource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
@@ -2779,7 +2771,6 @@ class SourceExcitation(SourceExcitationInternal):
         >>> pin2 = edb.components["U1"].pins["Pin2"]
         >>> term = edb.excitation_manager.create_rlc_boundary_on_pins(pin1, pin2, rvalue=50)
         """
-
         if positive_pin and negative_pin:
             positive_pin_term = positive_pin.get_terminal(create_new_terminal=True)
             negative_pin_term = negative_pin.get_terminal(create_new_terminal=True)
@@ -3276,7 +3267,6 @@ class SourceExcitation(SourceExcitationInternal):
         -------
         :class:`Terminal <pyedb.dotnet.database.edb_data.terminals.Terminal>`
         """
-
         if isinstance(terminal, PadstackInstance):
             terminal = self._create_terminal(terminal)
             if not terminal:
@@ -3360,7 +3350,6 @@ class SourceExcitation(SourceExcitationInternal):
         >>> edb = Edb()
         >>> edb.excitation_manager.create_dc_terminal("U1", "VCC", "DC_VCC")
         """
-
         node_pin = self._pedb.components.get_pin_from_component(component_name, net_name)
         if node_pin:
             node_pin = node_pin[0]
