@@ -97,7 +97,6 @@ _NO_DIE_TYPES = ("no_die", "none", None)
 
 
 class CfgPinPairModel(BaseModel):
-
     """Represent one pin-pair RLC model entry."""
 
     first_pin: str
@@ -112,7 +111,6 @@ class CfgPinPairModel(BaseModel):
 
 
 class CfgComponent(CfgBase):
-
     """Fluent builder for a single component entry."""
 
     def __init__(self, _pedb=None, pedb_object=None, **kwargs):
@@ -678,7 +676,6 @@ class CfgComponent(CfgBase):
 
 
 class CfgComponents:
-
     """Fluent builder for the ``components`` configuration list."""
 
     def __init__(self, pedb=None, components_data=None):
