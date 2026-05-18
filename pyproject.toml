@@ -136,7 +136,7 @@ ignore = [
     "D106", # undocumented-public-nested-class
     "D200", # unnecessary-multiline-docstring
     #"D202", # blank-line-after-function
-    #"D205", # missing-blank-line-after-summary
+    "D205", # missing-blank-line-after-summary
     "D208", # over-indentation
     #"D209", # new-line-after-last-paragraph
     "D210", # surrounding-whitespace
