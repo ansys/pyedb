@@ -142,7 +142,6 @@ class HfssSimulationSetup(SimulationSetup):
         Use :attr:`settings <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings>`
         instead.
 
-        #
         """
         return self.settings
 
