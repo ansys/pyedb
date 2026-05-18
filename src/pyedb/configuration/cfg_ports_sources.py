@@ -134,7 +134,7 @@ class CfgTerminalInfo(CfgBase):
         return {"padstack": padstack_instance_name}
 
     @staticmethod
-    def coordinates(layer: str, x: float, y: float, net: str) -> dict:
+    def coordinates(layer: str, x: float | int, y: float | int, net: str) -> dict:
         """Create a terminal selector at an exact XY location on a layer.
 
         Parameters
@@ -187,19 +187,22 @@ class CfgTerminalInfo(CfgBase):
         """
         return {"nearest_pin": {"reference_net": reference_net, "search_radius": search_radius}}
 
-    def update_contact_radius(self, radius: str | float):
+    def update_contact_radius(self, radius: str | float | int):
         """Update the contact radius used for equipotential region creation.
 
         Parameters
         ----------
-        radius : str or float
+        radius : str float, or int.
             Contact radius.  A unit string (``"0.1mm"``) is accepted when an
             EDB session is attached; otherwise the value is stored as-is.
         """
         if self._pedb is None:
             self.contact_radius = radius
         else:
-            self.contact_radius = self._pedb.edb_value(radius).ToDouble()
+            if self._pedb.grpc:
+                self.contact_radius = self._pedb.edb_value(radius).value
+            else:
+                self.contact_radius = self._pedb.edb_value(radius).ToDouble()
 
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
@@ -730,9 +733,7 @@ class CfgPorts:
         ...     net_list=["PCIe_TX0_P", "PCIe_TX0_N"],
         ... )
         """
-        # ------------------------------------------------------------------
         # net_list + reference_designator path: EDB-assisted pin discovery
-        # ------------------------------------------------------------------
         if net_list is not None:
             if not reference_designator:
                 raise ValueError("'reference_designator' is required when 'net_list' is supplied.")
@@ -916,9 +917,9 @@ class CfgPorts:
         vertical_extent_factor: int = 3,
         pec_launch_width: str = "0.01mm",
         positive_primitive: str | Any = None,
-        positive_terminal_point: list[float] = None,
+        positive_terminal_point: list[float | int] = None,
         negative_primitive: str | Any = None,
-        negative_terminal_point: list[float] = None,
+        negative_terminal_point: list[float | int] = None,
     ):
         """Add a differential wave port from two edge-terminal descriptors.
 
