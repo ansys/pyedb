@@ -127,7 +127,8 @@ class SIWaveDCSettings:
 
 class SIWaveDCIRDCSettings(SIWaveDCSettings):
     """SIWave DC settings for DCIR setups — extends base DC settings with DCIR-specific properties
-    accessible via the parent DCIR settings core."""
+    accessible via the parent DCIR settings core.
+    """
 
     def __init__(self, pedb, dc_core: "CoreSIWaveDCSettings", dcir_core: "CoreSIWaveDCIRSettings"):
         super().__init__(pedb, dc_core)

@@ -116,7 +116,6 @@ class TestClass(BaseTestClass):
 
     def test_siwave_create_current_source(self):
         """Create a current source."""
-
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.excitation_manager.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0)
         pins = edbapp.components.get_pin_from_component("U1")
