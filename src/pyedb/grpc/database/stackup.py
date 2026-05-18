@@ -788,8 +788,8 @@ class Stackup:
         if operation in ["change_position", "change_attribute", "change_name"]:
             _lc = CoreLayerCollection.create()
 
-            layers = [i for i in lc.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)]
-            non_stackup = [i for i in lc.get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)]
+            layers = self._get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
+            non_stackup = self._get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)
             _lc.mode = lc.mode
             if lc.mode.name.lower() == "overlapping":
                 for layer in layers:
@@ -2165,10 +2165,16 @@ class Stackup:
 
         lc_new = CoreLayerCollection.create()
         for name, _ in df.iterrows():
-            layer = self.layers[name]
+            layer = self.layers.get(name)
+            if layer is None or layer.core is None or layer.core.is_null:
+                logger.warning(f"Skipping null or missing layer '{name}' while rebuilding layer collection.")
+                continue
             lc_new.add_layer_bottom(layer.core)
 
         for name, layer in self.non_stackup_layers.items():
+            if layer.core is None or layer.core.is_null:
+                logger.warning(f"Skipping null non-stackup layer '{name}' while rebuilding layer collection.")
+                continue
             lc_new.add_layer_bottom(layer.core)
 
         self._pedb.layout.layer_collection = lc_new
