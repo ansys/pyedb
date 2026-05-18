@@ -128,7 +128,8 @@ class FrequencyData:
 
 class SweepData:
     """Frequency sweep data class.
-    PARAMETERS
+
+    Parameters
     ----------
     pedb : Pedb
         Parent EDB object.

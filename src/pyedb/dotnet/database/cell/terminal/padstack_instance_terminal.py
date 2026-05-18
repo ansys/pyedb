@@ -33,6 +33,7 @@ class PadstackInstanceTerminal(Terminal):
     @property
     def position(self):
         """Return terminal position.
+
         Returns
         -------
         Position [x,y] : [float, float]

@@ -295,7 +295,6 @@ class ComponentDef:
         Nport model : :class:`NPortComponentModel <ansys.edb.core.definition.component_model.NPortComponentModel>`
 
         """
-
         if not name:
             name = os.path.splitext(os.path.basename(fpath)[0])
         model = [model for model in self.component_models if model.name == name]

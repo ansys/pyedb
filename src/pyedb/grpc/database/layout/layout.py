@@ -544,6 +544,7 @@ class PrimitivesQuery:
             Set filter on primitive type. Default is ``None``.
         is_void : bool, optional
             Set filter on is_void. When ``None``, both standard primitives and voids are returned.
+
         Returns
         -------
         List of filtered primitives
@@ -670,7 +671,6 @@ class Layout(PrimitivesQuery):
         List[:class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`]
             List of extended nets.
         """
-
         return [ExtendedNet(self._pedb, i) for i in self._pedb.active_cell.layout.extended_nets]
 
     @property
