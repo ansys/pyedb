@@ -32,8 +32,7 @@ from pyedb.configuration.cfg_common import CfgBase
 
 
 def _smallest_pin_pad_size(comp) -> float | None:
-    """
-    Return the smallest pin pad dimension (metres) for *comp*, or ``None``.
+    """Return the smallest pin pad dimension (metres) for *comp*, or ``None``.
 
     Only pins that expose a valid ``bounding_box`` attribute returning a
     non-degenerate ``((x1, y1), (x2, y2))`` tuple are considered.  Pins
@@ -99,7 +98,6 @@ _NO_DIE_TYPES = ("no_die", "none", None)
 
 
 class CfgPinPairModel(BaseModel):
-
     """Represent one pin-pair RLC model entry."""
 
     first_pin: str
@@ -114,7 +112,6 @@ class CfgPinPairModel(BaseModel):
 
 
 class CfgComponent(CfgBase):
-
     """Fluent builder for a single component entry."""
 
     def __init__(self, _pedb=None, pedb_object=None, **kwargs):
@@ -687,7 +684,6 @@ class CfgComponent(CfgBase):
 
 
 class CfgComponents:
-
     """Fluent builder for the ``components`` configuration list."""
 
     def __init__(self, pedb=None, components_data=None):
