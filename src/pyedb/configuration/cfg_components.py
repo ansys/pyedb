@@ -786,6 +786,7 @@ class CfgComponents:
         return comp
 
     def clean(self):
+
         """Clear all components from the list."""
         self.components = []
 
