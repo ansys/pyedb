@@ -27,36 +27,34 @@ from enum import Enum
 import logging
 import os
 import re
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyedb.grpc.edb import Edb
 import warnings
 
 from ansys.edb.core.definition.debye_model import DebyeModel as CoreDebyeModel
-from ansys.edb.core.definition.djordjecvic_sarkar_model import (
-    DjordjecvicSarkarModel as CoreDjordjecvicSarkarModel,
-)
-from ansys.edb.core.definition.material_def import (
-    MaterialDef as CoreMaterialDef,
-    MaterialProperty as CoreMaterialProperty,
-)
+from ansys.edb.core.definition.djordjecvic_sarkar_model import DjordjecvicSarkarModel as CoreDjordjecvicSarkarModel
+from ansys.edb.core.definition.material_def import MaterialDef as CoreMaterialDef
+from ansys.edb.core.definition.material_def import MaterialProperty as CoreMaterialProperty
 from ansys.edb.core.definition.material_property_thermal_modifier import (
     MaterialPropertyThermalModifier as CoreMaterialPropertyThermalModifier,
 )
-from ansys.edb.core.definition.multipole_debye_model import (
-    MultipoleDebyeModel as CoreMultipoleDebyeModel,
-)
+from ansys.edb.core.definition.multipole_debye_model import MultipoleDebyeModel as CoreMultipoleDebyeModel
 from ansys.edb.core.utility.material_property_thermal_modifier_params import (
     AdvancedQuadraticParams as CoreAdvancedQuadraticParams,
+)
+from ansys.edb.core.utility.material_property_thermal_modifier_params import (
     BasicQuadraticParams as CoreBasicQuadraticParams,
 )
-from pydantic import BaseModel, confloat
+from pydantic import BaseModel
+from pydantic import confloat
 
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_property
 
 logger = logging.getLogger(__name__)
 
@@ -121,22 +119,22 @@ class MaterialPropertyId(str, Enum):
 class MaterialProperties(BaseModel):
     """Store material properties."""
 
-    conductivity: Optional[PositiveFloat] = 0.0
-    dielectric_loss_tangent: Optional[PositiveFloat] = 0.0
-    magnetic_loss_tangent: Optional[PositiveFloat] = 0.0
-    mass_density: Optional[PositiveFloat] = 0.0
-    permittivity: Optional[PositiveFloat] = 0.0
-    permeability: Optional[PositiveFloat] = 0.0
-    poisson_ratio: Optional[PositiveFloat] = 0.0
-    specific_heat: Optional[PositiveFloat] = 0.0
-    thermal_conductivity: Optional[PositiveFloat] = 0.0
-    youngs_modulus: Optional[PositiveFloat] = 0.0
-    thermal_expansion_coefficient: Optional[PositiveFloat] = 0.0
-    dc_conductivity: Optional[PositiveFloat] = 0.0
-    dc_permittivity: Optional[PositiveFloat] = 0.0
-    dielectric_model_frequency: Optional[PositiveFloat] = 0.0
-    loss_tangent_at_frequency: Optional[PositiveFloat] = 0.0
-    permittivity_at_frequency: Optional[PositiveFloat] = 0.0
+    conductivity: PositiveFloat | None = 0.0
+    dielectric_loss_tangent: PositiveFloat | None = 0.0
+    magnetic_loss_tangent: PositiveFloat | None = 0.0
+    mass_density: PositiveFloat | None = 0.0
+    permittivity: PositiveFloat | None = 0.0
+    permeability: PositiveFloat | None = 0.0
+    poisson_ratio: PositiveFloat | None = 0.0
+    specific_heat: PositiveFloat | None = 0.0
+    thermal_conductivity: PositiveFloat | None = 0.0
+    youngs_modulus: PositiveFloat | None = 0.0
+    thermal_expansion_coefficient: PositiveFloat | None = 0.0
+    dc_conductivity: PositiveFloat | None = 0.0
+    dc_permittivity: PositiveFloat | None = 0.0
+    dielectric_model_frequency: PositiveFloat | None = 0.0
+    loss_tangent_at_frequency: PositiveFloat | None = 0.0
+    permittivity_at_frequency: PositiveFloat | None = 0.0
 
 
 class Material:
@@ -210,7 +208,7 @@ class Material:
             ``0.0`` when no dielectric model is assigned.
 
         """
-        # Todo missing wrapper classes for dielctric model classes.
+        # TODO missing wrapper classes for dielctric model classes.
         if self.core.dielectric_material_model.is_null:
             return 0.0
         elif self.core.dielectric_material_model.type.name.lower() == "debye":
@@ -1363,7 +1361,7 @@ class Materials(object):
         self.__edb.logger.error(f"Material {material_name} does not exist in syslib AMAT file.")
         return res
 
-    def update_materials_from_sys_library(self, update_all: bool = True, material_name: Union[str, list] = None):
+    def update_materials_from_sys_library(self, update_all: bool = True, material_name: str | list = None):
         """Update material properties from syslib AMAT file."""
         amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
         materials_dict = self.read_materials(amat_file)

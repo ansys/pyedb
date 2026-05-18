@@ -22,8 +22,8 @@
 
 from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import (
     HFSSPIGeneralSettings as CoreHFSSPIGeneralSettings,
-    HFSSPIModelType as CoreHFSSPIModelType,
 )
+from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import HFSSPIModelType as CoreHFSSPIModelType
 
 _mapping_model_type = {
     "pcb": CoreHFSSPIModelType.PCB,

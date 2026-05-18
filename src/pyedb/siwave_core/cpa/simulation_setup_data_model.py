@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Dict, List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class SolverOptions(BaseModel):
@@ -98,8 +98,8 @@ class ChannelSetup(BaseModel):
 
     die_name: str = ""
     pin_grouping_mode: str = "perpin"
-    channel_component_exposure: Dict[str, bool] = Field(default_factory=dict)
-    vrm_setup: List[Vrm] = Field(default_factory=list)
+    channel_component_exposure: dict[str, bool] = Field(default_factory=dict)
+    vrm_setup: list[Vrm] = Field(default_factory=list)
 
 
 class SIwaveCpaSetup(BaseModel):
@@ -126,10 +126,10 @@ class SIwaveCpaSetup(BaseModel):
     return_path_net_for_loop_parameters: bool = True
     channel_setup: ChannelSetup = Field(default_factory=ChannelSetup)
     solver_options: SolverOptions = Field(default_factory=SolverOptions)
-    nets_to_process: List[str] = Field(default_factory=list)
+    nets_to_process: list[str] = Field(default_factory=list)
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "SIwaveCpaSetup":
+    def from_dict(cls, data: dict) -> "SIwaveCpaSetup":
         """Convert dictionary to SIwaveCpaSetup object.
 
         Args:
@@ -145,7 +145,7 @@ class SIwaveCpaSetup(BaseModel):
             data["solver_options"] = SolverOptions(**data["solver_options"])
         return cls(**data)
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert SIwaveCpaSetup object to dictionary.
 
         Returns

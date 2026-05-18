@@ -72,7 +72,7 @@ import datetime
 import itertools
 import os
 from queue import Queue
-from typing import Any, Set
+from typing import Any
 import warnings
 
 from pydantic import BaseModel
@@ -799,7 +799,7 @@ class Drc:
 
         # === SINGLE-THREADED: Precompute index intersections for each primitive id ===
         # intersections_map[prim_id] = set(intersecting_prim_ids)
-        intersections_map: dict[int, Set[int]] = {}
+        intersections_map: dict[int, set[int]] = {}
 
         idx = self.idx_primitives  # Rtree index (not thread-safe)
         if not chunked_precompute:
@@ -910,7 +910,7 @@ class Drc:
         padstacks_definitions = self.edb.padstacks.definitions
         via_data = []
         for via in self.edb.layout.padstack_instances:
-            if not via.padstack_definition in padstacks_definitions:
+            if via.padstack_definition not in padstacks_definitions:
                 continue
             via_def = padstacks_definitions[via.padstack_definition]
 

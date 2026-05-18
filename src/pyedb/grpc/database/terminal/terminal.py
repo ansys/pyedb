@@ -24,17 +24,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pyedb.generic.constants import BoundaryTypeMapper, SourceTermMapper, TerminalTypeMapper
+from pyedb.generic.constants import BoundaryTypeMapper
+from pyedb.generic.constants import SourceTermMapper
+from pyedb.generic.constants import TerminalTypeMapper
 from pyedb.grpc.database.inner.conn_obj import ConnObj
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
-from ansys.edb.core.terminal.terminal import (
-    BoundaryType as CoreBoundaryType,
-    TerminalType as CoreTerminalType,
-)
+from ansys.edb.core.terminal.terminal import BoundaryType as CoreBoundaryType
+from ansys.edb.core.terminal.terminal import TerminalType as CoreTerminalType
 
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp

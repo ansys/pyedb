@@ -28,7 +28,7 @@ from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.terminal import Terminal
 
 if TYPE_CHECKING:
-    from pyedb.grpc.database.hierarchy.component import Component
+    pass
 
 
 class EdgeTerminal(Terminal):

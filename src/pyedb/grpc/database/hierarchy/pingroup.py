@@ -28,7 +28,6 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from typing import Union
 
 from ansys.edb.core.hierarchy.pin_group import PinGroup as CorePinGroup
 from ansys.edb.core.terminal.terminal import BoundaryType as CoreBoundaryType
@@ -174,7 +173,7 @@ class PinGroup:
         return self.net.name
 
     @property
-    def terminal(self) -> Union[PinGroupTerminal, None]:
+    def terminal(self) -> PinGroupTerminal | None:
         """Terminal."""
         term = self.core.pin_group_terminal
         if not term.is_null:

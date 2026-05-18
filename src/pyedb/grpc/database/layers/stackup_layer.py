@@ -20,16 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import absolute_import, annotations
+from __future__ import absolute_import
+from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from ansys.edb.core.layer.layer import LayerType as CoreLayerType
-from ansys.edb.core.layer.stackup_layer import (
-    EtchNetClass as CoreEtchNetClass,
-    RoughnessRegion as CoreRoughnessRegion,
-    StackupLayer as CoreStackupLayer,
-)
+from ansys.edb.core.layer.stackup_layer import EtchNetClass as CoreEtchNetClass
+from ansys.edb.core.layer.stackup_layer import RoughnessRegion as CoreRoughnessRegion
+from ansys.edb.core.layer.stackup_layer import StackupLayer as CoreStackupLayer
 from ansys.edb.core.utility.value import Value as CoreValue
 
 if TYPE_CHECKING:
@@ -78,8 +77,8 @@ class StackupLayer:
         layout: Layout,
         name: str,
         layer_type: str = "signal",
-        thickness: Union[str, float] = "17um",
-        elevation: Union[str, float] = 0.0,
+        thickness: str | float = "17um",
+        elevation: str | float = 0.0,
         material: str = "copper",
     ) -> StackupLayer:
         layer = CoreStackupLayer.create(
@@ -210,7 +209,7 @@ class StackupLayer:
             self.core.lower_elevation = self._pedb._value_setter(value)
 
     @property
-    def fill_material(self) -> Union[str, None]:
+    def fill_material(self) -> str | None:
         """The layer's fill material.
 
         Returns
@@ -346,7 +345,7 @@ class StackupLayer:
         return 0.0
 
     @property
-    def dielectric_fill(self) -> Union[str, None]:
+    def dielectric_fill(self) -> str | None:
         """Material name of the layer dielectric fill.
 
         Returns

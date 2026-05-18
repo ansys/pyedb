@@ -23,12 +23,10 @@
 import math
 
 from pyedb.dotnet.database.cell.primitive.primitive import Primitive
-from pyedb.dotnet.database.dotnet.primitive import (
-    BondwireDotNet,
-    CircleDotNet,
-    RectangleDotNet,
-    TextDotNet,
-)
+from pyedb.dotnet.database.dotnet.primitive import BondwireDotNet
+from pyedb.dotnet.database.dotnet.primitive import CircleDotNet
+from pyedb.dotnet.database.dotnet.primitive import RectangleDotNet
+from pyedb.dotnet.database.dotnet.primitive import TextDotNet
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.geometry_operators import GeometryOperators
 

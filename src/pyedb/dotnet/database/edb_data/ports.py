@@ -22,9 +22,7 @@
 
 from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
-from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 
 

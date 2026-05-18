@@ -23,10 +23,12 @@
 from collections import OrderedDict
 import math
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+from typing import Any
 import warnings
 
-from pyedb.dotnet.database.edb_data.ports import CoaxPort, WavePort
+from pyedb.dotnet.database.edb_data.ports import CoaxPort
+from pyedb.dotnet.database.edb_data.ports import WavePort
 from pyedb.dotnet.database.utilities.layer_utils import clear_is_owner
 
 if TYPE_CHECKING:
@@ -35,20 +37,20 @@ if TYPE_CHECKING:
 
 
 from pyedb.dotnet.clr_module import String
-from pyedb.dotnet.database.cell.primitive.primitive import Connectable, Primitive
+from pyedb.dotnet.database.cell.primitive.primitive import Connectable
+from pyedb.dotnet.database.cell.primitive.primitive import Primitive
 from pyedb.dotnet.database.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
-from pyedb.dotnet.database.general import (
-    PadGeometryTpe,
-    convert_py_list_to_net_list,
-    pascal_to_snake,
-    snake_to_pascal,
-)
+from pyedb.dotnet.database.general import PadGeometryTpe
+from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.dotnet.database.general import pascal_to_snake
+from pyedb.dotnet.database.general import snake_to_pascal
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.data_handlers import float_units
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_property
 
 
 class EDBPadProperties(object):
@@ -1498,9 +1500,7 @@ class EDBPadstackInstance(Connectable):
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
-            from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import (
-                PadstackInstanceTerminal,
-            )
+            from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 
             term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         if not term.is_null:
@@ -1543,9 +1543,7 @@ class EDBPadstackInstance(Connectable):
     @property
     def terminal(self) -> "PadstackInstanceTerminal | None":
         """Terminal."""
-        from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import (
-            PadstackInstanceTerminal,
-        )
+        from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term if not term.is_null else None
@@ -1562,9 +1560,7 @@ class EDBPadstackInstance(Connectable):
             self._pedb.logger.warning(f"Terminal already exists on padstack {self.name}.")
             return existing_terminal
 
-        from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import (
-            PadstackInstanceTerminal,
-        )
+        from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 
         term = PadstackInstanceTerminal.create(self._pedb, self, name=name)
         return term

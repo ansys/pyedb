@@ -25,11 +25,9 @@
 import math
 import os
 
-import ansys.edb.core
 import pytest
 
 from pyedb.generic.settings import settings
-from tests.conftest import GRPC, config, use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]

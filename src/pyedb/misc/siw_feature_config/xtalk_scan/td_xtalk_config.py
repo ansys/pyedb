@@ -22,7 +22,8 @@
 
 from pyedb.generic.general_methods import ET
 from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
-from pyedb.misc.siw_feature_config.xtalk_scan.pins import DriverPin, ReceiverPin
+from pyedb.misc.siw_feature_config.xtalk_scan.pins import DriverPin
+from pyedb.misc.siw_feature_config.xtalk_scan.pins import ReceiverPin
 
 
 class CrossTalkTime:

@@ -28,10 +28,8 @@
 
 from __future__ import annotations
 
-from ansys.edb.core.utility.layer_map import (
-    LayerMap as CoreLayerMap,
-    LayerMapUniqueDirection as CoreLayerMapUniqueDirection,
-)
+from ansys.edb.core.utility.layer_map import LayerMap as CoreLayerMap
+from ansys.edb.core.utility.layer_map import LayerMapUniqueDirection as CoreLayerMapUniqueDirection
 
 
 class LayerMap:

@@ -20,10 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-    BasisFunctionOrder as CoreBasisFunctionOrder,
-    SolverType as CoreSolverType,
-)
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import BasisFunctionOrder as CoreBasisFunctionOrder
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import SolverType as CoreSolverType
 
 
 class HFSSSettingsOptions:

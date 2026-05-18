@@ -23,7 +23,8 @@
 from __future__ import annotations
 
 import pyedb.siwave_core.cpa.simulation_setup_data_model
-from pyedb.siwave_core.cpa.simulation_setup_data_model import SIwaveCpaSetup, Vrm
+from pyedb.siwave_core.cpa.simulation_setup_data_model import SIwaveCpaSetup
+from pyedb.siwave_core.cpa.simulation_setup_data_model import Vrm
 from pyedb.siwave_core.product_properties import SIwaveProperties
 
 
@@ -94,10 +95,10 @@ class ChannelSetup:
     def pin_grouping_mode(self, value):
         mapping = {"perpin": -1, "ploc": 0, "usediepingroups": 1}
         if isinstance(value, str):
-            if not value in mapping:
+            if value not in mapping:
                 raise f"value {value} not supported, must be {list(mapping.keys())}"
             value = mapping[value]
-        if not value in [-1, 0, 1]:
+        if value not in [-1, 0, 1]:
             raise f"wrong value {value}"
         self._pedb.active_cell.SetProductProperty(
             self._pedb._edb.ProductId.SIWave,

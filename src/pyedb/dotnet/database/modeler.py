@@ -29,13 +29,19 @@ import warnings
 
 from pyedb.dotnet.clr_module import Tuple
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
-from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, PathDotNet, RectangleDotNet
-from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon, Primitive, cast
+from pyedb.dotnet.database.dotnet.primitive import CircleDotNet
+from pyedb.dotnet.database.dotnet.primitive import PathDotNet
+from pyedb.dotnet.database.dotnet.primitive import RectangleDotNet
+from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon
+from pyedb.dotnet.database.edb_data.primitives_data import Primitive
+from pyedb.dotnet.database.edb_data.primitives_data import cast
 from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.point_data import PointData
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
-from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
+from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_property
 
 
 class Modeler:
@@ -1085,7 +1091,7 @@ class Modeler:
                 pins_by_id = [pins_by_id]
             for p in pins_by_id:
                 edb_pin = self._pedb.layout.find_object_by_id(p)
-                if edb_pin and not p in pins:
+                if edb_pin and p not in pins:
                     pins[p] = edb_pin._edb_object
         if not pins_by_aedt_name:
             pins_by_aedt_name = []
@@ -1612,7 +1618,7 @@ class Modeler:
         :meth:`create_rectangle` : Create a rectangular primitive
         :meth:`create_polygon` : Create a polygonal primitive
         """
-        if not solder_mask_material in self._pedb.materials:
+        if solder_mask_material not in self._pedb.materials:
             solder_mask_material = "SolderMask"
             self._pedb.materials.add_dielectric(permittivity=4, name=solder_mask_material)
             self._pedb.logger.warning(f"No Material name provided or found for {solder_mask_material}.")

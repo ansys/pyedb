@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import List
 
 try:
     from ezdxf import readfile
@@ -83,7 +82,7 @@ def create_polygon_from_dxf(edb: Edb, dxf_path: str, layer_name: str) -> Primiti
     return edb.modeler.create_polygon(points_2D, layer_name=layer_name)
 
 
-def swap_polygon_with_dxf(edb: Edb, dxf_path: str, layer_name: str, point_dxf: List[str], point_aedt: List[str]):
+def swap_polygon_with_dxf(edb: Edb, dxf_path: str, layer_name: str, point_dxf: list[str], point_aedt: list[str]):
     """
     Replace an existing polygon on a given layer with a new polygon
     imported from a DXF file, aligning the two geometries via reference
@@ -172,7 +171,7 @@ def swap_polygon_with_dxf(edb: Edb, dxf_path: str, layer_name: str, point_dxf: L
     edb.modeler.clear_cache()
 
 
-def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str, point_aedt: List[str]):
+def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str, point_aedt: list[str]):
     """
     Replace an existing polygon on a given layer with a new polygon
     imported from a DXF file, aligning the two geometries via reference

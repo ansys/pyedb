@@ -20,7 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class GroisseRoughnessModel(BaseModel):

@@ -20,11 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.primitive.bondwire import (
-    Bondwire as CoreBondWire,
-    BondwireCrossSectionType as CoreBondwireCrossSectionType,
-    BondwireType as CoreBondWireType,
-)
+from ansys.edb.core.primitive.bondwire import Bondwire as CoreBondWire
+from ansys.edb.core.primitive.bondwire import BondwireCrossSectionType as CoreBondwireCrossSectionType
+from ansys.edb.core.primitive.bondwire import BondwireType as CoreBondWireType
 
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value

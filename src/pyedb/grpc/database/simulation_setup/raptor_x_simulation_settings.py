@@ -26,12 +26,8 @@ if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
         RaptorXSimulationSettings as CoreRaptorXSimulationSettings,
     )
-from pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings import (
-    RaptorXAdvancedSettings,
-)
-from pyedb.grpc.database.simulation_setup.raptor_x_general_settings import (
-    RaptorXGeneralSettings,
-)
+from pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings import RaptorXAdvancedSettings
+from pyedb.grpc.database.simulation_setup.raptor_x_general_settings import RaptorXGeneralSettings
 from pyedb.misc.decorators import deprecated_property
 
 

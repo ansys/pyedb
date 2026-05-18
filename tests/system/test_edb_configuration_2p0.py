@@ -706,7 +706,7 @@ class TestClass(BaseTestClass):
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                if not p in skipped_edb_value_conversion:
+                if p not in skipped_edb_value_conversion:
                     assert float(edbapp.value(value)) == float(edbapp.value(target_mat[p]))
                 else:
                     assert str(value) == str(target_mat[p])

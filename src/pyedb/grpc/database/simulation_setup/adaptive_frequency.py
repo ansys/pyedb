@@ -23,9 +23,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.adaptive_solutions import (
-        AdaptiveFrequency as CoreAdaptiveFrequency,
-    )
+    from ansys.edb.core.simulation_setup.adaptive_solutions import AdaptiveFrequency as CoreAdaptiveFrequency
 from ansys.edb.core.utility.value import Value as CoreValue
 
 

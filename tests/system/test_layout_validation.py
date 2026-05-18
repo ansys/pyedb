@@ -23,7 +23,6 @@
 
 import pytest
 
-from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]

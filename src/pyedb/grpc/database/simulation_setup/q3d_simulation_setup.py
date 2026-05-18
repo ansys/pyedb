@@ -29,7 +29,6 @@ from ansys.edb.core.simulation_setup.q3d_simulation_setup import Q3DSimulationSe
 
 from pyedb.grpc.database.simulation_setup.q3d_simulation_settings import Q3DSimulationSettings
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
-from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 
 class Q3DSimulationSetup(SimulationSetup):

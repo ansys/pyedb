@@ -23,7 +23,7 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
@@ -60,7 +60,7 @@ class Polygon(Primitive):
         return Layer(self.core.layer)
 
     @layer.setter
-    def layer(self, value: Union[str, Layer]):
+    def layer(self, value: str | Layer):
         """Set layer of the polygon.
 
         Parameters
@@ -102,7 +102,7 @@ class Polygon(Primitive):
         return self.polygon_data.has_self_intersections()
 
     @classmethod
-    def create(cls, layout: Layout, layer: Union[str, Layer], net: Union[str, "Net"] = None, polygon_data=None):
+    def create(cls, layout: Layout, layer: str | Layer, net: str | "Net" = None, polygon_data=None):
         """
         Create a polygon in the specified layout, layer, and net using the provided polygon data.
 

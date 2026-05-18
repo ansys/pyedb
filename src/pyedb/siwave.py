@@ -37,12 +37,13 @@ import shutil
 import sys
 import tempfile
 import time
-from typing import Optional, Union
 import warnings
 
 from pyedb import Edb
 from pyedb.dotnet.clr_module import _clr
-from pyedb.generic.general_methods import _pythonver, generate_unique_name, is_windows
+from pyedb.generic.general_methods import _pythonver
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import is_windows
 from pyedb.generic.settings import settings
 from pyedb.misc.misc import list_installed_ansysem
 from pyedb.siwave_core.icepak import Icepak
@@ -334,7 +335,7 @@ class Siwave(object):  # pragma no cover
             self.oproject.Save()
         return True
 
-    def save(self, file_path: Optional[Union[str, Path]]):
+    def save(self, file_path: str | Path | None):
         """Save the project.
 
         Parameters

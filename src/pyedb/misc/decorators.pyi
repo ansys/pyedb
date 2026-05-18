@@ -24,7 +24,9 @@
 # that static analysis tools (mypy, pyright, IDEs) treat them identically to the
 # standard @typing_extensions.deprecated decorator.
 
-from typing import Any, Callable, TypeVar
+from typing import Any
+from typing import Callable
+from typing import TypeVar
 
 _T = TypeVar("_T")
 _F = TypeVar("_F", bound=Callable[..., Any])

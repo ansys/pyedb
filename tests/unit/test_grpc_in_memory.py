@@ -25,7 +25,8 @@ from types import SimpleNamespace
 import pytest
 
 from pyedb.generic.settings import settings
-from pyedb.grpc import edb_init as edb_init_module, rpc_session as rpc_session_module
+from pyedb.grpc import edb_init as edb_init_module
+from pyedb.grpc import rpc_session as rpc_session_module
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.grpc.rpc_session import RpcSession
 from tests.conftest import config

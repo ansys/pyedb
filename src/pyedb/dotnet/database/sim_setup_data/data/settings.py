@@ -20,9 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data import (
-    AdaptiveFrequencyData,
-)
+from pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data import AdaptiveFrequencyData
 from pyedb.misc.decorators import deprecated_property
 
 

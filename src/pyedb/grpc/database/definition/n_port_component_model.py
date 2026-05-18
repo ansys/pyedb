@@ -21,9 +21,7 @@
 # SOFTWARE.
 
 
-from ansys.edb.core.definition.component_model import (
-    NPortComponentModel as CoreNPortComponentModel,
-)
+from ansys.edb.core.definition.component_model import NPortComponentModel as CoreNPortComponentModel
 
 
 class NPortComponentModel:

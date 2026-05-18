@@ -21,11 +21,11 @@
 # SOFTWARE.
 
 
-from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
-    RaptorXSimulationSetup,
-)
-from pyedb.dotnet.database.utilities.hfss_simulation_setup import HFSSPISimulationSetup, HfssSimulationSetup
-from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup, SIwaveSimulationSetup
+from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import RaptorXSimulationSetup
+from pyedb.dotnet.database.utilities.hfss_simulation_setup import HFSSPISimulationSetup
+from pyedb.dotnet.database.utilities.hfss_simulation_setup import HfssSimulationSetup
+from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup
+from pyedb.dotnet.database.utilities.siwave_simulation_setup import SIwaveSimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
 
 

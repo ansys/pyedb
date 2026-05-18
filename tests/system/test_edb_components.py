@@ -27,7 +27,10 @@ import os
 
 import pytest
 
-from tests.conftest import config, local_path, test_subfolder, use_grpc
+from tests.conftest import config
+from tests.conftest import local_path
+from tests.conftest import test_subfolder
+from tests.conftest import use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -219,7 +222,7 @@ class TestClass(BaseTestClass):
                 modelname="GRM32ER72A225KA35_25C_0V",
             )
         except ValueError as e:
-            assert str(e) == f"Component C100000 not found in the layout."
+            assert str(e) == "Component C100000 not found in the layout."
         edb.close(terminate_rpc_session=False)
 
     def test_modeler_parametrize_layout(self):

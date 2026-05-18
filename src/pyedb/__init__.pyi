@@ -20,11 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Literal, overload
+from typing import Any
+from typing import Literal
+from typing import overload
 
 from .dotnet.edb import Edb as _DotnetEdb
 from .grpc.edb import Edb as _GrpcEdb
-from .siwave import Siwave
 
 @overload
 def Edb(

@@ -29,7 +29,8 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.net.extended_net import ExtendedNet as CoreExtendedNet
 
-from pyedb.generic.constants import decompose_variable_value, unit_converter
+from pyedb.generic.constants import decompose_variable_value
+from pyedb.generic.constants import unit_converter
 
 
 class ExtendedNets:

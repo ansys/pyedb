@@ -10,14 +10,12 @@ import shutil
 import sys
 import warnings
 
-from ansys_sphinx_theme import (
-    ansys_favicon,
-    ansys_logo_white,
-    ansys_logo_white_cropped,
-    get_version_match,
-    latex,
-    watermark,
-)
+from ansys_sphinx_theme import ansys_favicon
+from ansys_sphinx_theme import ansys_logo_white
+from ansys_sphinx_theme import ansys_logo_white_cropped
+from ansys_sphinx_theme import get_version_match
+from ansys_sphinx_theme import latex
+from ansys_sphinx_theme import watermark
 from docutils import nodes
 from docutils.parsers.rst import Directive
 from sphinx import addnodes
@@ -33,7 +31,8 @@ from sphinx.util import logging
 LaTeXBuilder.supported_image_types = ["image/png", "image/pdf", "image/svg+xml", "image/webp"]
 
 from docutils.nodes import Element
-from sphinx.writers.latex import CR, LaTeXTranslator
+from sphinx.writers.latex import CR
+from sphinx.writers.latex import LaTeXTranslator
 
 
 def visit_desc_content(self, node: Element) -> None:
@@ -81,7 +80,6 @@ def directory_size(directory_path):
 
 def remove_doctree(app, exception):
     """Remove the .doctree directory created during the documentation build."""
-
     # Keep the doctree to avoid creating it twice. This is typically helpful in CI/CD
     # where we want to build both HTML and PDF pages.
     if bool(int(os.getenv("SPHINXBUILD_KEEP_DOCTREEDIR", "0"))):
@@ -90,7 +88,7 @@ def remove_doctree(app, exception):
         size = directory_size(app.doctreedir)
         logger.info(f"Removing doctree {app.doctreedir} ({size} MB).")
         shutil.rmtree(app.doctreedir, ignore_errors=True)
-        logger.info(f"Doctree removed.")
+        logger.info("Doctree removed.")
 
 
 def adjust_image_path(app, docname, source):

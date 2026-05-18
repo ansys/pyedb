@@ -28,21 +28,19 @@ import math
 import os
 from pathlib import Path
 import re
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING
+from typing import Any
 
-from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
-from ansys.edb.core.definition.solder_ball_property import (
-    SolderballShape as CoreSolderballShape,
-)
+from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
+from ansys.edb.core.definition.die_property import DieType as CoreDieType
+from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
 from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
 from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSPICEModel
 from ansys.edb.core.hierarchy.structure3d import Structure3D as CoreStructure3D
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
-from pyedb.component_libraries.ansys_components import (
-    ComponentLib,
-    ComponentPart,
-)
+from pyedb.component_libraries.ansys_components import ComponentLib
+from pyedb.component_libraries.ansys_components import ComponentPart
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.component_def import ComponentDef
@@ -53,7 +51,8 @@ from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.hierarchy.structure_3d import Structure3D
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecate_argument_name, deprecated
+from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecated
 
 if TYPE_CHECKING:
     from pyedb.grpc.edb import Edb as _Edb  # pragma: no cover
@@ -111,7 +110,7 @@ class Components(object):
     >>> edb.components
     """
 
-    def __getitem__(self, name: str) -> Optional[Union[Component, ComponentDef]]:
+    def __getitem__(self, name: str) -> Component | ComponentDef | None:
         """Get a component or component definition by name.
 
         Parameters
@@ -134,13 +133,13 @@ class Components(object):
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
         # Initialize internal maps before calling refresh to avoid "attribute defined outside __init__" warnings.
-        self._cmp: Dict[str, Component] = {}
-        self._res: Dict[str, Component] = {}
-        self._ind: Dict[str, Component] = {}
-        self._cap: Dict[str, Component] = {}
-        self._ics: Dict[str, Component] = {}
-        self._ios: Dict[str, Component] = {}
-        self._others: Dict[str, Component] = {}
+        self._cmp: dict[str, Component] = {}
+        self._res: dict[str, Component] = {}
+        self._ind: dict[str, Component] = {}
+        self._cap: dict[str, Component] = {}
+        self._ics: dict[str, Component] = {}
+        self._ios: dict[str, Component] = {}
+        self._others: dict[str, Component] = {}
         self._structures_3d = {}
         self._pins = {}
         self._comps_by_part = {}
@@ -204,7 +203,7 @@ class Components(object):
         return self._pedb.active_db
 
     @property
-    def instances(self) -> Dict[str, Component]:
+    def instances(self) -> dict[str, Component]:
         """Dictionary of all component instances in the layout.
 
         Returns
@@ -219,7 +218,7 @@ class Components(object):
         return self._cmp
 
     @property
-    def definitions(self) -> Dict[str, ComponentDef]:
+    def definitions(self) -> dict[str, ComponentDef]:
         """Dictionary of all component definitions.
 
         Returns
@@ -234,7 +233,7 @@ class Components(object):
         return self._pedb.definitions.components
 
     @property
-    def nport_comp_definition(self) -> Dict[str, ComponentDef]:
+    def nport_comp_definition(self) -> dict[str, ComponentDef]:
         """Dictionary of N-port component definitions.
 
         Returns
@@ -327,12 +326,12 @@ class Components(object):
                         model = comp.s_param_model
                         data["Definitions"][part_name]["Model_name"] = model.name
                         data["Definitions"][part_name]["Reference_net"] = model.reference_net
-                        if not model.name in data["SParameterModel"]:
+                        if model.name not in data["SParameterModel"]:
                             data["SParameterModel"][model.name] = model.file_path
                     elif comp.model_type == "SPICEModel":
                         model = comp.spice_model
                         data["Definitions"][part_name]["Model_name"] = model.name
-                        if not model.name in data["SPICEModel"]:
+                        if model.name not in data["SPICEModel"]:
                             data["SPICEModel"][model.name] = model.file_path
                     else:
                         model = comp.netlist_model
@@ -390,7 +389,7 @@ class Components(object):
         return True
 
     @property
-    def resistors(self) -> Dict[str, Component]:
+    def resistors(self) -> dict[str, Component]:
         """Dictionary of resistor components.
 
         Returns
@@ -405,7 +404,7 @@ class Components(object):
         return self._res
 
     @property
-    def capacitors(self) -> Dict[str, Component]:
+    def capacitors(self) -> dict[str, Component]:
         """Dictionary of capacitor components.
 
         Returns
@@ -420,7 +419,7 @@ class Components(object):
         return self._cap
 
     @property
-    def inductors(self) -> Dict[str, Component]:
+    def inductors(self) -> dict[str, Component]:
         """Dictionary of inductor components.
 
         Returns
@@ -435,7 +434,7 @@ class Components(object):
         return self._ind
 
     @property
-    def ICs(self) -> Dict[str, Component]:
+    def ICs(self) -> dict[str, Component]:
         """Dictionary of integrated circuit components.
 
         Returns
@@ -450,7 +449,7 @@ class Components(object):
         return self._ics
 
     @property
-    def IOs(self) -> Dict[str, Component]:
+    def IOs(self) -> dict[str, Component]:
         """Dictionary of I/O components.
 
         Returns
@@ -465,7 +464,7 @@ class Components(object):
         return self._ios
 
     @property
-    def structures_3d(self) -> Dict[str, Structure3D]:
+    def structures_3d(self) -> dict[str, Structure3D]:
         """Dictionary of structures 3D components.
 
         Returns
@@ -478,7 +477,7 @@ class Components(object):
         return self._structures_3d
 
     @property
-    def Others(self) -> Dict[str, Component]:
+    def Others(self) -> dict[str, Component]:
         """Dictionary of other components.
 
         Returns
@@ -493,7 +492,7 @@ class Components(object):
         return self._others
 
     @property
-    def components_by_partname(self) -> Dict[str, List[Component]]:
+    def components_by_partname(self) -> dict[str, list[Component]]:
         """Dictionary of components grouped by part name.
 
         Returns
@@ -535,10 +534,10 @@ class Components(object):
     @deprecate_argument_name({"pinName": "pin_name"})
     def get_pin_from_component(
         self,
-        component: Union[str, Component],
-        net_name: Optional[Union[str, List[str]]] = None,
-        pin_name: Optional[str] = None,
-    ) -> List[Any]:
+        component: str | Component,
+        net_name: str | list[str] | None = None,
+        pin_name: str | None = None,
+    ) -> list[Any]:
         """Get pins from a component with optional filtering.
 
         Parameters
@@ -632,7 +631,7 @@ class Components(object):
         hosting_component_pin1: str,
         hosting_component_pin2: str,
         flipped: bool = False,
-    ) -> Tuple[bool, List[float], float, float]:
+    ) -> tuple[bool, list[float], float, float]:
         """Get placement vector between two components.
 
         Parameters
@@ -715,7 +714,7 @@ class Components(object):
         self._logger.warning("Failed to compute vector.")
         return False, [0, 0], 0, 0
 
-    def get_solder_ball_height(self, cmp: Union[str, Component]) -> float:
+    def get_solder_ball_height(self, cmp: str | Component) -> float:
         """Get solder ball height of a component.
 
         Parameters
@@ -754,15 +753,15 @@ class Components(object):
         comp_lib.path = comp_lib_path
         for cmp_type in comp_types:
             folder = os.path.join(comp_lib_path, cmp_type)
-            vendors: Dict[str, Any] = {f.name: "" for f in os.scandir(folder) if f.is_dir()}
+            vendors: dict[str, Any] = {f.name: "" for f in os.scandir(folder) if f.is_dir()}
             for vendor in list(vendors.keys()):
                 # series may be a mapping of serie_name -> dict of ComponentPart entries.
-                series: Dict[str, Any] = {}
+                series: dict[str, Any] = {}
                 for serie_entry in os.scandir(os.path.join(folder, vendor)):
                     if not serie_entry.is_dir():
                         continue
                     serie_name = serie_entry.name
-                    _serie: Dict[str, ComponentPart] = {}
+                    _serie: dict[str, ComponentPart] = {}
                     index_file = os.path.join(folder, vendor, serie_name, "index.txt")
                     sbin_file = os.path.join(folder, vendor, serie_name, "sdata.bin")
                     if os.path.isfile(index_file):
@@ -823,7 +822,7 @@ class Components(object):
         else:
             return False
 
-    def _get_component_definition(self, name, pins) -> Union[ComponentDef, None]:
+    def _get_component_definition(self, name, pins) -> ComponentDef | None:
         """Get or create component definition.
 
         Parameters
@@ -840,7 +839,8 @@ class Components(object):
         """
         component_definition = ComponentDef.find(self._pedb, name)
         if not component_definition:
-            from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
+            from ansys.edb.core.layout.cell import Cell as GrpcCell
+            from ansys.edb.core.layout.cell import CellType as GrpcCellType
 
             foot_print_cell = GrpcCell.create(self._pedb.active_db, GrpcCellType.FOOTPRINT_CELL, name)
             component_definition = ComponentDef.create(self._pedb, name, fp=foot_print_cell)
@@ -861,16 +861,16 @@ class Components(object):
 
     def create(
         self,
-        pins: List[Any],
-        component_name: Optional[str] = None,
-        placement_layer: Optional[str] = None,
-        component_part_name: Optional[str] = None,
+        pins: list[Any],
+        component_name: str | None = None,
+        placement_layer: str | None = None,
+        component_part_name: str | None = None,
         is_rlc: bool = False,
-        r_value: Optional[float] = None,
-        c_value: Optional[float] = None,
-        l_value: Optional[float] = None,
+        r_value: float | None = None,
+        c_value: float | None = None,
+        l_value: float | None = None,
         is_parallel: bool = False,
-    ) -> Union[Component, bool]:
+    ) -> Component | bool:
         """Create a new component.
 
         Parameters
@@ -903,9 +903,7 @@ class Components(object):
         --------
         >>> new_comp = edbapp.components.create(pins, "R1")
         """
-        from ansys.edb.core.hierarchy.component_group import (
-            ComponentGroup as CoreComponentGroup,
-        )
+        from ansys.edb.core.hierarchy.component_group import ComponentGroup as CoreComponentGroup
 
         if not pins:
             raise ValueError("Pins must be a list of PadstackInstance objects.")
@@ -1006,8 +1004,8 @@ class Components(object):
         self,
         componentname: str,
         model_type: str = "Spice",
-        modelpath: Optional[str] = None,
-        modelname: Optional[str] = None,
+        modelpath: str | None = None,
+        modelname: str | None = None,
     ) -> bool:
         """Set component model.
 
@@ -1060,12 +1058,8 @@ class Components(object):
 
         elif model_type == "Touchstone":  # pragma: no cover
             n_port_model_name = modelname
-            from ansys.edb.core.definition.component_model import (
-                NPortComponentModel as GrpcNPortComponentModel,
-            )
-            from ansys.edb.core.hierarchy.sparameter_model import (
-                SParameterModel as GrpcSParameterModel,
-            )
+            from ansys.edb.core.definition.component_model import NPortComponentModel as GrpcNPortComponentModel
+            from ansys.edb.core.hierarchy.sparameter_model import SParameterModel as GrpcSParameterModel
 
             # prefer component_definition attribute; fall back to component_def for older EDB versions
             comp_def = getattr(component, "component_definition", getattr(component, "component_def", None))
@@ -1084,7 +1078,7 @@ class Components(object):
             component.component_property.model = s_parameter_mod
         return True
 
-    def create_pingroup_from_pins(self, pins: List[Any], group_name: Optional[str] = None) -> Union[PinGroup, bool]:
+    def create_pingroup_from_pins(self, pins: list[Any], group_name: str | None = None) -> PinGroup | bool:
         """Create pin group from pins.
 
         Parameters
@@ -1135,7 +1129,7 @@ class Components(object):
             pin_group.net = pins[0].net
             return pin_group
 
-    def delete_single_pin_rlc(self, deactivate_only: bool = False) -> List[str]:
+    def delete_single_pin_rlc(self, deactivate_only: bool = False) -> list[str]:
         """Delete or deactivate single-pin RLC components.
 
         Parameters
@@ -1242,11 +1236,11 @@ class Components(object):
 
     def set_solder_ball(
         self,
-        component: Union[str, Component] = "",
-        sball_diam: Optional[float] = None,
-        sball_height: Optional[float] = None,
+        component: str | Component = "",
+        sball_diam: float | None = None,
+        sball_height: float | None = None,
         shape: str = "Cylinder",
-        sball_mid_diam: Optional[float] = None,
+        sball_mid_diam: float | None = None,
         chip_orientation: str = "chip_down",
         auto_reference_size: bool = True,
         reference_size_x: float = 0,
@@ -1340,7 +1334,7 @@ class Components(object):
 
         solder_ball_prop.shape = sball_shape
         if material_name:
-            if not material_name in self._pedb.materials:
+            if material_name not in self._pedb.materials:
                 self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
             solder_ball_prop.material_name = material_name
         cmp_property.solder_ball_property = solder_ball_prop
@@ -1362,9 +1356,9 @@ class Components(object):
     def set_component_rlc(
         self,
         componentname: str,
-        res_value: Optional[float] = None,
-        ind_value: Optional[float] = None,
-        cap_value: Optional[float] = None,
+        res_value: float | None = None,
+        ind_value: float | None = None,
+        cap_value: float | None = None,
         isparallel: bool = False,
     ) -> bool:
         """Set RLC values for a component.
@@ -1563,7 +1557,7 @@ class Components(object):
                         pinlist = list(self.instances[refdes].pins.values())
                         if not pinlist:
                             continue
-                        if not part_name in self.definitions:
+                        if part_name not in self.definitions:
                             ComponentDef.create(self._pedb, part_name, None)
                         p_layer = comp.placement_layer
                         refdes_temp = comp.refdes + "_temp"
@@ -1677,8 +1671,8 @@ class Components(object):
         return pin.aedt_name
 
     def get_pins(
-        self, reference_designator: str, net_name: Optional[str] = None, pin_name: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, reference_designator: str, net_name: str | None = None, pin_name: str | None = None
+    ) -> dict[str, Any]:
         """Get pins of a component.
 
         Parameters
@@ -1710,7 +1704,7 @@ class Components(object):
 
         return pins
 
-    def get_pin_position(self, pin: Any) -> List[float]:
+    def get_pin_position(self, pin: Any) -> list[float]:
         """Get pin position.
 
         Parameters
@@ -1739,7 +1733,7 @@ class Components(object):
             # legacy support for older pyedb-core versions where transform_point returns a list
             return [Value(transformed_pt_pos[0]), Value(transformed_pt_pos[1])]
 
-    def get_pins_name_from_net(self, net_name: str, pin_list: Optional[List[Any]] = None) -> List[str]:
+    def get_pins_name_from_net(self, net_name: str, pin_list: list[Any] | None = None) -> list[str]:
         """Get pin names from net.
 
         Parameters
@@ -1770,7 +1764,7 @@ class Components(object):
                     pin_names.append(self.get_aedt_pin_name(pin))
         return pin_names
 
-    def get_nets_from_pin_list(self, pins: List[Any]) -> List[str]:
+    def get_nets_from_pin_list(self, pins: list[Any]) -> list[str]:
         """Get nets from pin list.
 
         Parameters
@@ -1789,7 +1783,7 @@ class Components(object):
         """
         return list(set([pin.net.name for pin in pins]))
 
-    def get_component_net_connection_info(self, refdes: str) -> Dict[str, List[str]]:
+    def get_component_net_connection_info(self, refdes: str) -> dict[str, list[str]]:
         """Get net connection info for a component.
 
         Parameters
@@ -1817,7 +1811,7 @@ class Components(object):
                     data["net_name"].append(net_name)
         return data
 
-    def get_rats(self) -> List[Dict[str, List[str]]]:
+    def get_rats(self) -> list[dict[str, list[str]]]:
         """Get RATS (Reference Designator, Pin, Net) information.
 
         Returns
@@ -1835,7 +1829,7 @@ class Components(object):
             df_list.append(df)
         return df_list
 
-    def get_through_resistor_list(self, threshold: float = 1) -> List[str]:
+    def get_through_resistor_list(self, threshold: float = 1) -> list[str]:
         """Get through resistors below threshold.
 
         Parameters
@@ -1866,7 +1860,7 @@ class Components(object):
         return through_comp_list
 
     def short_component_pins(
-        self, component_name: str, pins_to_short: Optional[List[str]] = None, width: float = 1e-3
+        self, component_name: str, pins_to_short: list[str] | None = None, width: float = 1e-3
     ) -> bool:
         """Short component pins with traces.
 
@@ -2006,8 +2000,8 @@ class Components(object):
         return True
 
     def create_pin_group(
-        self, reference_designator: str, pin_numbers: Union[str, List[str]], group_name: Optional[str] = None
-    ) -> Union[Tuple[str, PinGroup], bool]:
+        self, reference_designator: str, pin_numbers: str | list[str], group_name: str | None = None
+    ) -> tuple[str, PinGroup] | bool:
         """Create pin group on a component.
 
         Parameters
@@ -2053,8 +2047,8 @@ class Components(object):
         return False
 
     def create_pin_group_on_net(
-        self, reference_designator: str, net_name: str, group_name: Optional[str] = None
-    ) -> Union[PinGroup, Tuple[str, PinGroup], bool]:
+        self, reference_designator: str, net_name: str, group_name: str | None = None
+    ) -> PinGroup | tuple[str, PinGroup] | bool:
         """Create pin group by net name.
 
         Parameters
@@ -2081,9 +2075,9 @@ class Components(object):
         return self.create_pin_group(reference_designator, pins, group_name)
 
     def deactivate_rlc_component(
-        self, component: Optional[str] = None, create_circuit_port: bool = False, pec_boundary: bool = False
+        self, component: str | None = None, create_circuit_port: bool = False, pec_boundary: bool = False
     ) -> bool:
-        """Deactivate RLC component with a possibility to convert it to a circuit port.
+        r"""Deactivate RLC component with a possibility to convert it to a circuit port.
 
         Parameters
         ----------
@@ -2130,7 +2124,7 @@ class Components(object):
         )
 
     def add_port_on_rlc_component(
-        self, component: Optional[Union[str, Component]] = None, circuit_ports: bool = True, pec_boundary: bool = False
+        self, component: str | Component | None = None, circuit_ports: bool = True, pec_boundary: bool = False
     ) -> bool:
         """Deactivate RLC component and replace it with a circuit port.
         The circuit port supports only two-pin components.
@@ -2165,7 +2159,7 @@ class Components(object):
             component=component, circuit_ports=circuit_ports, pec_boundary=pec_boundary
         )
 
-    def replace_rlc_by_gap_boundaries(self, component: Optional[Union[str, Component]] = None) -> bool:
+    def replace_rlc_by_gap_boundaries(self, component: str | Component | None = None) -> bool:
         """Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
         Only 2 pins RLC components are supported in this command.
 
@@ -2202,7 +2196,7 @@ class Components(object):
         return self._pedb.excitation_manager.add_rlc_boundary(component.refdes, False)
 
     @deprecated("use excitation_manager.add_rlc_boundary instead")
-    def add_rlc_boundary(self, component: Optional[Union[str, Component]] = None, circuit_type: bool = True) -> bool:
+    def add_rlc_boundary(self, component: str | Component | None = None, circuit_type: bool = True) -> bool:
         """Add RLC gap boundary on component and replace it with a circuit port.
         The circuit port supports only 2-pin components.
 

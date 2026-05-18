@@ -28,7 +28,8 @@ import sys
 
 import numpy as np
 
-from pyedb.generic.constants import SWEEPDRAFT, scale_units
+from pyedb.generic.constants import SWEEPDRAFT
+from pyedb.generic.constants import scale_units
 
 
 class GeometryOperators(object):

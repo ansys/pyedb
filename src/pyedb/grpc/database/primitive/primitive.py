@@ -23,7 +23,8 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+from typing import Any
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net

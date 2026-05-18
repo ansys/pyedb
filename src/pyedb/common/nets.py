@@ -28,14 +28,13 @@ from pyedb.generic.constants import CSS4_COLORS
 
 try:
     from shapely import affinity
-    from shapely.geometry import (
-        LinearRing,
-        MultiLineString,
-        MultiPolygon,
-        Point,
-        Polygon,
-    )
-    from shapely.plotting import plot_line, plot_polygon
+    from shapely.geometry import LinearRing
+    from shapely.geometry import MultiLineString
+    from shapely.geometry import MultiPolygon
+    from shapely.geometry import Point
+    from shapely.geometry import Polygon
+    from shapely.plotting import plot_line
+    from shapely.plotting import plot_polygon
 except ImportError:
     warnings.warn(
         "Shapely library is required for plotting"

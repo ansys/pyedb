@@ -22,9 +22,8 @@
 
 """Shared helpers, base classes, and variable models for configuration builders."""
 
-from typing import Optional, Union
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class CfgBase:
@@ -81,8 +80,8 @@ class CfgVar(BaseModel):
     """Represent one design or project variable entry."""
 
     name: str
-    value: Union[int, float, str]
-    description: Optional[str] = ""
+    value: int | float | str
+    description: str | None = ""
 
 
 class CfgVariables(BaseModel):

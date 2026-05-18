@@ -33,7 +33,8 @@ import time
 import ansys.edb.core.database as database
 
 from pyedb import __version__
-from pyedb.generic.general_methods import env_path, env_value
+from pyedb.generic.general_methods import env_path
+from pyedb.generic.general_methods import env_value
 from pyedb.generic.settings import settings
 from pyedb.grpc.rpc_session import RpcSession
 
@@ -236,7 +237,7 @@ class EdbInit(object):
                 os.rename(filename, filename + "_")
                 os.rename(filename + "_", filename)
                 return True
-            except OSError as e:
+            except OSError:
                 return False
         else:
             return False

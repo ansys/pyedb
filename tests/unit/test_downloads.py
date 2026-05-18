@@ -22,13 +22,11 @@
 
 from pathlib import Path
 
-from pyedb.misc.downloads import (
-    download_aedb,
-    download_edb_merge_utility,
-    download_file,
-    download_touchstone,
-    download_via_wizard,
-)
+from pyedb.misc.downloads import download_aedb
+from pyedb.misc.downloads import download_edb_merge_utility
+from pyedb.misc.downloads import download_file
+from pyedb.misc.downloads import download_touchstone
+from pyedb.misc.downloads import download_via_wizard
 
 
 def test_download_aedb():

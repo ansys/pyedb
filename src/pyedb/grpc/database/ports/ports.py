@@ -22,9 +22,7 @@
 
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
-from pyedb.grpc.database.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
+from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 from pyedb.grpc.database.utility.value import Value
 
 

@@ -26,7 +26,8 @@ import math
 import re
 import secrets
 import string
-from typing import Any, Iterable
+from typing import Any
+from typing import Iterable
 
 from pyedb.generic.general_methods import settings
 
@@ -331,7 +332,7 @@ def float_units(val_str: str, units: str = "") -> float:  # pragma: no cover
     float
          The value of the float with the appropriate units.
     """
-    if not units in UNIT_VAL:
+    if units not in UNIT_VAL:
         raise Exception("Specified unit string " + units + " not known.")
 
     loc = re.search("[a-zA-Z]", val_str)

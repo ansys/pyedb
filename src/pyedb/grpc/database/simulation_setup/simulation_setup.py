@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from pyedb.misc.decorators import deprecated
 
@@ -190,8 +190,6 @@ class SimulationSetup(SimulationSetupDeprecated):
         This function creates SweepData entries from the provided frequency_set and
         appends them to the existing core.sweep_data.
         """
-        from pyedb.grpc.database.simulation_setup.sweep_data import _mapping_distribution
-
         sw_data = None
         for sweep_item in frequency_set:
             # detect distribution token and map to internal code
@@ -232,7 +230,7 @@ class SimulationSetup(SimulationSetupDeprecated):
         self.core.sweep_data = self.core.sweep_data + [sw_data.core]
         return sw_data
 
-    def _add_single_sweep(self, sweep: SweepData) -> Union[SweepData, None]:
+    def _add_single_sweep(self, sweep: SweepData) -> SweepData | None:
         """Insert a single sweep into core.sweep_data preserving existing sweeps.
 
         Returns the newly added SweepData on success, None otherwise.

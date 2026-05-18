@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 import re
-from typing import Any, List, Optional, Union
+from typing import Any
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.net.net_class import NetClass as CoreNetClass
@@ -37,7 +37,7 @@ class LayoutValidation:
         self._pedb = pedb
         self._layout_instance = self._pedb.layout_instance
 
-    def dc_shorts(self, net_list: Optional[Union[str, List[str]]] = None, fix: bool = False) -> List[List[str]]:
+    def dc_shorts(self, net_list: str | list[str] | None = None, fix: bool = False) -> list[list[str]]:
         """Find DC shorts on layout.
 
         Parameters
@@ -128,12 +128,12 @@ class LayoutValidation:
 
     def disjoint_nets(
         self,
-        net_list: Optional[Union[str, List[str]]] = None,
+        net_list: str | list[str] | None = None,
         keep_only_main_net: bool = False,
         clean_disjoints_less_than: float = 0.0,
         order_by_area: bool = False,
         keep_disjoint_pins: bool = False,
-    ) -> List[str]:
+    ) -> list[str]:
         """Find and fix disjoint nets from a given netlist.
 
         Parameters
@@ -170,7 +170,7 @@ class LayoutValidation:
         """
         timer_start = self._pedb.logger.reset_timer()
 
-        def area_calc(elem: List[int]) -> float:
+        def area_calc(elem: list[int]) -> float:
             """Calculate total area for a group of element ids.
 
             The layout groups are stored as lists of element ids; resolve to
@@ -216,7 +216,7 @@ class LayoutValidation:
         disjoints_objects = []
         self._pedb.logger.reset_timer()
         for net in net_list:
-            net_groups: List[List[int]] = []
+            net_groups: list[list[int]] = []
             obj_dict: dict[int, Any] = {}
             for i in _objects_list.get(net, []):
                 obj_dict[i.id] = i
@@ -290,7 +290,7 @@ class LayoutValidation:
 
         return new_nets
 
-    def fix_self_intersections(self, net_list: Optional[Union[str, List[str]]] = None) -> bool:
+    def fix_self_intersections(self, net_list: str | list[str] | None = None) -> bool:
         """Find and fix self intersections from a given netlist.
 
         Parameters
@@ -354,7 +354,7 @@ class LayoutValidation:
         self._pedb.logger.info("Found {} illegal net names.".format(len(renamed_nets)))
         return
 
-    def illegal_rlc_values(self, fix: bool = False) -> List[str]:
+    def illegal_rlc_values(self, fix: bool = False) -> list[str]:
         """Find and fix RLC illegal values.
 
         Examples

@@ -20,9 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.utility.heat_sink import (
-    HeatSinkFinOrientation as CoreHeatSinkFinOrientation,
-)
+from ansys.edb.core.utility.heat_sink import HeatSinkFinOrientation as CoreHeatSinkFinOrientation
 
 
 class HeatSink:

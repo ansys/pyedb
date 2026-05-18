@@ -27,9 +27,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.pingroup import PinGroup
     from pyedb.grpc.database.net.net import Net
-from ansys.edb.core.terminal.pin_group_terminal import (
-    PinGroupTerminal as CorePinGroupTerminal,
-)
+from ansys.edb.core.terminal.pin_group_terminal import PinGroupTerminal as CorePinGroupTerminal
 from ansys.edb.core.terminal.terminal import BoundaryType as CoreBoundaryType
 
 boundary_type_mapping = {

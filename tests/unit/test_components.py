@@ -24,11 +24,13 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
-from pyedb.configuration.cfg_components import CfgComponent, CfgComponents
+from pyedb.configuration.cfg_components import CfgComponent
+from pyedb.configuration.cfg_components import CfgComponents
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
 
@@ -327,7 +329,7 @@ class TestCfgComponentSolderBallGrpc:
             c._set_solder_ball_properties_to_edb()
 
     def test_no_solder_ball_properties_shape_none_raises(self):
-        """shape key missing entirely should raise ValueError (grpc path)."""
+        """Shape key missing entirely should raise ValueError (grpc path)."""
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
         c = CfgComponent(

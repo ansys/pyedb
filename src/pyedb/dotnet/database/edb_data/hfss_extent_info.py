@@ -22,7 +22,8 @@
 
 from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.database.edb_data.primitives_data import cast
-from pyedb.dotnet.database.general import convert_pytuple_to_nettuple, pascal_to_snake
+from pyedb.dotnet.database.general import convert_pytuple_to_nettuple
+from pyedb.dotnet.database.general import pascal_to_snake
 from pyedb.dotnet.database.utilities.value import Value
 
 

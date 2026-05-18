@@ -21,19 +21,13 @@
 # SOFTWARE.
 import warnings
 
-from pyedb.dotnet.database.general import (
-    convert_pydict_to_netdict,
-)
+from pyedb.dotnet.database.general import convert_pydict_to_netdict
 from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
-from pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings import (
-    SiwaveDCIRSettings,
-)
+from pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings import SiwaveDCIRSettings
 from pyedb.dotnet.database.sim_setup_data.data.siwave import SIwaveSParameterSettings
-from pyedb.dotnet.database.sim_setup_data.io.siwave import (
-    AdvancedSettings,
-    DCAdvancedSettings,
-    DCSettings,
-)
+from pyedb.dotnet.database.sim_setup_data.io.siwave import AdvancedSettings
+from pyedb.dotnet.database.sim_setup_data.io.siwave import DCAdvancedSettings
+from pyedb.dotnet.database.sim_setup_data.io.siwave import DCSettings
 from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import is_linux
 from pyedb.generic.settings import settings
@@ -332,7 +326,7 @@ class SIwaveSimulationSetup(SimulationSetup):
         self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
 
     @property
-    def get_sim_setup_info(self):  # todo remove after refactoring
+    def get_sim_setup_info(self):  # TODO remove after refactoring
         """Get simulation information from the setup."""
         sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kSIwave", name=self._edb_object.GetName())
         clone_edb_sim_setup_info(source=self._edb_object, target=sim_setup_info._edb_object)
@@ -519,7 +513,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
 
     @property
-    def get_sim_setup_info(self):  # todo remove after refactoring
+    def get_sim_setup_info(self):  # TODO remove after refactoring
         """Get simulation information from the setup."""
         self._pedb.logger.warning("Use new property :func:`sim_setup_info` instead.")
         sim_setup_info = SimSetupInfo(

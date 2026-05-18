@@ -27,12 +27,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 
-from ansys.edb.core.simulation_setup.simulation_setup import (
-    Distribution as CoreDistribution,
-    FreqSweepType as CoreSweepType,
-    FrequencyData as CoreFrequencyData,
-    SweepData as CoreSweepData,
-)
+from ansys.edb.core.simulation_setup.simulation_setup import Distribution as CoreDistribution
+from ansys.edb.core.simulation_setup.simulation_setup import FreqSweepType as CoreSweepType
+from ansys.edb.core.simulation_setup.simulation_setup import FrequencyData as CoreFrequencyData
+from ansys.edb.core.simulation_setup.simulation_setup import SweepData as CoreSweepData
 
 _mapping_distribution = {
     "lin": CoreDistribution.LIN,

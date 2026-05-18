@@ -21,14 +21,13 @@
 # SOFTWARE.
 
 
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
+from typing import Union
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
-from ansys.edb.core.primitive.rectangle import (
-    Rectangle as CoreRectangle,
-    RectangleRepresentationType as CoreRectangleRepresentationType,
-)
+from ansys.edb.core.primitive.rectangle import Rectangle as CoreRectangle
+from ansys.edb.core.primitive.rectangle import RectangleRepresentationType as CoreRectangleRepresentationType
 
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.primitive.primitive import Primitive
@@ -63,7 +62,7 @@ class Rectangle(Primitive):
 
     @representation_type.setter
     def representation_type(self, value):
-        if not value in self._mapping_representation_type:
+        if value not in self._mapping_representation_type:
             self.core.representation_type = CoreRectangleRepresentationType.INVALID_RECT_TYPE
         else:
             self.core.representation_type = self._mapping_representation_type[value]
@@ -72,7 +71,7 @@ class Rectangle(Primitive):
     def create(
         cls,
         layout,
-        layer: Union[str, Layer] = None,
+        layer: str | Layer = None,
         net: Union[str, "Net"] = None,
         rep_type: str = "center_width_height",
         param1: float = None,

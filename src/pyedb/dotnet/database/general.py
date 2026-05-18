@@ -31,7 +31,9 @@ from enum import Enum
 import logging
 import re
 
-from pyedb.dotnet.clr_module import Dictionary, List, Tuple
+from pyedb.dotnet.clr_module import Dictionary
+from pyedb.dotnet.clr_module import List
+from pyedb.dotnet.clr_module import Tuple
 
 logger = logging.getLogger(__name__)
 

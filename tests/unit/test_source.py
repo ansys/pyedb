@@ -23,10 +23,8 @@
 import pytest
 
 from pyedb.dotnet.database.edb_data.sources import SourceBuilder
-from pyedb.grpc.database.inner.layout_obj import (
-    HorizontalWavePortProperty,
-    parse_horizontal_wave_port_string,
-)
+from pyedb.grpc.database.inner.layout_obj import HorizontalWavePortProperty
+from pyedb.grpc.database.inner.layout_obj import parse_horizontal_wave_port_string
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 

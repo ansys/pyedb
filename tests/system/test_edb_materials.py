@@ -31,7 +31,8 @@ from pyedb.configuration.cfg_stackup import MaterialProperties
 # PERMEABILITY_DEFAULT_VALUE is 1 in both dotnet and grpc implementations
 PERMEABILITY_DEFAULT_VALUE = 1
 
-from tests.conftest import GRPC, config, local_path
+from tests.conftest import config
+from tests.conftest import local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 from tests.system.base_test_class import BaseTestClass

@@ -23,7 +23,6 @@
 from __future__ import annotations
 
 import math
-from typing import Union
 
 from pyedb.libraries.common import Substrate
 
@@ -83,8 +82,8 @@ class RectangularPatch:
     def __init__(
         self,
         edb_cell=None,
-        target_frequency: Union[str, float] = "2.4Ghz",
-        length_feeding_line: Union[str, float] = 0,
+        target_frequency: str | float = "2.4Ghz",
+        length_feeding_line: str | float = 0,
         layer: str = "TOP_METAL",
         bottom_layer: str = "BOT_METAL",
         add_port: bool = True,
@@ -259,8 +258,8 @@ class CircularPatch:
     def __init__(
         self,
         edb_cell=None,
-        target_frequency: Union[str, float] = "2.4GHz",
-        length_feeding_line: Union[str, float] = 0,
+        target_frequency: str | float = "2.4GHz",
+        length_feeding_line: str | float = 0,
         layer: str = "TOP_METAL",
         bottom_layer: str = "BOT_METAL",
         add_port: bool = True,
@@ -430,8 +429,8 @@ class TriangularPatch:
     def __init__(
         self,
         edb_cell=None,
-        target_frequency: Union[str, float] = "2.4GHz",
-        length_feeding_line: Union[str, float] = 0,
+        target_frequency: str | float = "2.4GHz",
+        length_feeding_line: str | float = 0,
         layer: str = "TOP_METAL",
         bottom_layer: str = "BOT_METAL",
         add_port: bool = True,

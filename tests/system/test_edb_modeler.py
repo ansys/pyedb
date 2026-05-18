@@ -23,13 +23,13 @@
 """Tests related to Edb modeler"""
 
 import os
-from pathlib import Path
 import platform
 
 import pytest
 
 from pyedb.generic.settings import settings
-from tests.conftest import config, local_path, test_subfolder
+from tests.conftest import config
+from tests.conftest import local_path
 from tests.system.base_test_class import BaseTestClass
 
 

@@ -23,20 +23,18 @@ from __future__ import annotations
 
 import math
 import re
-from typing import Literal, Union, overload
+from typing import Literal
+from typing import overload
 import warnings
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from ansys.edb.core.hierarchy.pin_group import PinGroup as CorePinGroup
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as CoreMeshClosure, Structure3D as CoreStructure3D
-from ansys.edb.core.primitive.padstack_instance import (
-    PadstackInstance as CorePadstackInstance,
-)
-from ansys.edb.core.terminal.pin_group_terminal import (
-    PinGroupTerminal as CorePinGroupTerminal,
-)
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as CoreMeshClosure
+from ansys.edb.core.hierarchy.structure3d import Structure3D as CoreStructure3D
+from ansys.edb.core.primitive.padstack_instance import PadstackInstance as CorePadstackInstance
+from ansys.edb.core.terminal.pin_group_terminal import PinGroupTerminal as CorePinGroupTerminal
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
@@ -45,9 +43,7 @@ from pyedb.grpc.database.inner import conn_obj
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.modeler import Circle
 from pyedb.grpc.database.net.net import Net
-from pyedb.grpc.database.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
+from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 from pyedb.grpc.database.utility.layer_map import LayerMap
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated
@@ -82,7 +78,7 @@ class PadstackInstance(conn_obj.ConnObj):
         cls,
         layout,
         padstack_definition: str,
-        net: Union[Net, str],
+        net: Net | str,
         position_x: float,
         position_y: float,
         rotation: float,
@@ -318,9 +314,7 @@ class PadstackInstance(conn_obj.ConnObj):
         PadstackInstanceTerminal>`
             PadstackInstanceTerminal object.
         """
-        from pyedb.grpc.database.terminal.padstack_instance_terminal import (
-            PadstackInstanceTerminal,
-        )
+        from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 
         term = self.core.get_padstack_instance_terminal()
         if not term.is_null:
@@ -1308,7 +1302,7 @@ class PadstackInstance(conn_obj.ConnObj):
                 drill_to_layer, offset, diameter = self.core.get_back_drill_by_layer(from_bottom)
                 return drill_to_layer.name, Value(offset), Value(diameter)
         else:
-            # Todo include_fill_material is not merged in core yet.
+            # TODO include_fill_material is not merged in core yet.
             # params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
             params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
             if include_fill_material:

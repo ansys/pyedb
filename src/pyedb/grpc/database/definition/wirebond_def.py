@@ -20,11 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.definition.bondwire_def import (
-    ApdBondwireDef as CoreApdBondwireDef,
-    Jedec4BondwireDef as CoreJedec4BondwireDef,
-    Jedec5BondwireDef as CoreJedec5BondwireDef,
-)
+from ansys.edb.core.definition.bondwire_def import ApdBondwireDef as CoreApdBondwireDef
+from ansys.edb.core.definition.bondwire_def import Jedec4BondwireDef as CoreJedec4BondwireDef
+from ansys.edb.core.definition.bondwire_def import Jedec5BondwireDef as CoreJedec5BondwireDef
 
 
 class BondwireDef:

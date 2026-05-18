@@ -24,7 +24,9 @@ import re
 
 from pyedb.dotnet.database.cell.connectable import Connectable
 from pyedb.dotnet.database.edb_data.primitives_data import cast
-from pyedb.generic.constants import BoundaryTypeMapper, SourceTermMapper, TerminalTypeMapper
+from pyedb.generic.constants import BoundaryTypeMapper
+from pyedb.generic.constants import SourceTermMapper
+from pyedb.generic.constants import TerminalTypeMapper
 from pyedb.misc.decorators import deprecated_property
 
 

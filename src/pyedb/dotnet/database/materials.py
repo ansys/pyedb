@@ -26,21 +26,19 @@ import difflib
 import logging
 import os
 import re
-from typing import Union
 import warnings
 
 from pydantic import confloat
 
 from pyedb import Edb
-from pyedb.dotnet.database.definition.definition_obj import (
-    ATTRIBUTES,
-    DC_ATTRIBUTES,
-    PERMEABILITY_DEFAULT_VALUE,
-    MaterialDef,
-)
+from pyedb.dotnet.database.definition.definition_obj import ATTRIBUTES
+from pyedb.dotnet.database.definition.definition_obj import DC_ATTRIBUTES
+from pyedb.dotnet.database.definition.definition_obj import PERMEABILITY_DEFAULT_VALUE
+from pyedb.dotnet.database.definition.definition_obj import MaterialDef
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
-from pyedb.misc.decorators import deprecate_argument_name, deprecated
+from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecated
 
 logger = logging.getLogger(__name__)
 
@@ -584,7 +582,7 @@ class Materials(object):
             raise FileNotFoundError(f"File path {amat_file} does not exist.")
         materials_dict = self.read_materials(amat_file)
         for material_name, material_properties in materials_dict.items():
-            if not material_name in self:
+            if material_name not in self:
                 if "tangent_delta" in material_properties:
                     material_properties["dielectric_loss_tangent"] = material_properties["tangent_delta"]
                     del material_properties["tangent_delta"]
@@ -724,7 +722,7 @@ class Materials(object):
         self.__edb.logger.error(f"Material {material_name} does not exist in syslib AMAT file.")
         return res
 
-    def update_materials_from_sys_library(self, update_all: bool = True, material_name: Union[str, list] = None):
+    def update_materials_from_sys_library(self, update_all: bool = True, material_name: str | list = None):
         """Update material properties from syslib AMAT file."""
         amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
         materials_dict = self.read_materials(amat_file)

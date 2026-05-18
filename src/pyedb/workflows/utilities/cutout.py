@@ -26,7 +26,8 @@ import os
 import shutil
 import time
 
-from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType, PolygonData as CorePolygonData
+from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 
 def _get_convert_py_list_to_net_list():
@@ -576,7 +577,7 @@ class GrpcCutout:
             db2.copy_cells(_dbCells)  # Copies cutout cell/design to db2 project
             if len(list(db2.top_circuit_cells)) > 0:
                 for net in db2.top_circuit_cells[0].layout.nets:
-                    if not net.name in included_nets_list:
+                    if net.name not in included_nets_list:
                         net.delete()
                 _success = db2.save()
             for c in self._edb._db.top_circuit_cells:
@@ -1396,7 +1397,7 @@ class DotNetCutout:
             db2.CopyCells(_dbCells)  # Copies cutout cell/design to db2 project
             if len(list(db2.CircuitCells)) > 0:
                 for net in list(list(db2.CircuitCells)[0].GetLayout().Nets):
-                    if not net.GetName() in included_nets_list:
+                    if net.GetName() not in included_nets_list:
                         net.Delete()
                 _success = db2.Save()
             for c in list(self._edb._db.TopCircuitCells):

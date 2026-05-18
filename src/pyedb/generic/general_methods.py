@@ -39,14 +39,18 @@ import string
 import sys
 import tempfile
 import time
-from typing import IO, TYPE_CHECKING, Any
-import xml.etree.ElementTree as ET  # nosec B405
+from typing import IO
+from typing import TYPE_CHECKING
+from typing import Any
 
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
 
 # Backwards-compatible re-exports (decorators were moved to pyedb.misc.decorators)
-from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_class, execution_timer
+from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_class
+from pyedb.misc.decorators import execution_timer
 
 if TYPE_CHECKING:
     import pandas as pd

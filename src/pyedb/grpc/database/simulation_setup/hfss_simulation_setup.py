@@ -25,15 +25,10 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyedb.grpc.edb import Edb
-from typing import Union
 
 from ansys.edb.core.simulation_setup.adaptive_solutions import AdaptiveFrequency as CoreAdaptiveFrequency
-from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-    AdaptType as CoreAdaptType,
-)
-from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
-    HfssSimulationSetup as CoreHfssSimulationSetup,
-)
+from ansys.edb.core.simulation_setup.hfss_simulation_settings import AdaptType as CoreAdaptType
+from ansys.edb.core.simulation_setup.hfss_simulation_setup import HfssSimulationSetup as CoreHfssSimulationSetup
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_general_settings import HFSSGeneralSettings
@@ -52,7 +47,7 @@ class HfssSimulationSetup(SimulationSetup):
         self.core = core
         self._pedb = pedb
         self._name = name
-        self._mesh_operations: list[Union[LengthMeshOperation, SkinDepthMeshOperation]] = []
+        self._mesh_operations: list[LengthMeshOperation | SkinDepthMeshOperation] = []
 
     @classmethod
     def create(cls, edb: "Edb", name: str = None):
@@ -75,12 +70,10 @@ class HfssSimulationSetup(SimulationSetup):
         return cls(pedb=edb, core=core, name=name)
 
     @property
-    def mesh_operations(self) -> list[Union[LengthMeshOperation, SkinDepthMeshOperation]]:
+    def mesh_operations(self) -> list[LengthMeshOperation | SkinDepthMeshOperation]:
         """List of HFSS mesh operations."""
-        from ansys.edb.core.simulation_setup.mesh_operation import (
-            LengthMeshOperation as GrpcLengthMeshOperation,
-            SkinDepthMeshOperation as GrpcSkinDepthMeshOperation,
-        )
+        from ansys.edb.core.simulation_setup.mesh_operation import LengthMeshOperation as GrpcLengthMeshOperation
+        from ansys.edb.core.simulation_setup.mesh_operation import SkinDepthMeshOperation as GrpcSkinDepthMeshOperation
 
         self._mesh_operations = []
         for mesh_operation in self.core.mesh_operations:
@@ -91,7 +84,7 @@ class HfssSimulationSetup(SimulationSetup):
         return self._mesh_operations
 
     @mesh_operations.setter
-    def mesh_operations(self, mesh_operations: list[Union[LengthMeshOperation, SkinDepthMeshOperation]]):
+    def mesh_operations(self, mesh_operations: list[LengthMeshOperation | SkinDepthMeshOperation]):
         self.core.mesh_operations = [mesh_operation.core for mesh_operation in mesh_operations]
 
     @property
@@ -347,9 +340,7 @@ class HfssSimulationSetup(SimulationSetup):
         :class:`LengthMeshOperation <ansys.edb.core.simulation_setup.mesh_operation.LengthMeshOperation>`
 
         """
-        from ansys.edb.core.simulation_setup.mesh_operation import (
-            LengthMeshOperation as GrpcLengthMeshOperation,
-        )
+        from ansys.edb.core.simulation_setup.mesh_operation import LengthMeshOperation as GrpcLengthMeshOperation
 
         if not name:
             name = generate_unique_name("skin")
@@ -426,9 +417,7 @@ class HfssSimulationSetup(SimulationSetup):
                     layers = [layers]
                 for layer in layers:
                     net_layer_op.append((net, layer, True))
-        from ansys.edb.core.simulation_setup.mesh_operation import (
-            SkinDepthMeshOperation as GrpcSkinDepthMeshOperation,
-        )
+        from ansys.edb.core.simulation_setup.mesh_operation import SkinDepthMeshOperation as GrpcSkinDepthMeshOperation
 
         mesh_operation = GrpcSkinDepthMeshOperation(
             name=name,

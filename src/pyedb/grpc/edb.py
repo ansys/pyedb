@@ -70,7 +70,10 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import Optional
+from typing import Union
 
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
 from typing_extensions import deprecated
@@ -78,7 +81,8 @@ from typing_extensions import deprecated
 from pyedb.grpc.database.design_options import EdbDesignOptions
 from pyedb.grpc.database.geometry.point_3d_data import Point3DData
 from pyedb.grpc.database.variables import Variable
-from pyedb.misc.decorators import deprecated as runtime_deprecated, deprecated_property as runtime_deprecated_property
+from pyedb.misc.decorators import deprecated as runtime_deprecated
+from pyedb.misc.decorators import deprecated_property as runtime_deprecated_property
 
 if TYPE_CHECKING:
     from pyedb import Edb
@@ -88,21 +92,17 @@ if TYPE_CHECKING:
 from zipfile import ZipFile as Zpf
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
-from ansys.edb.core.hierarchy.layout_component import (
-    LayoutComponent as CoreLayoutComponent,
-)
+from ansys.edb.core.hierarchy.layout_component import LayoutComponent as CoreLayoutComponent
 import ansys.edb.core.layout.cell
 from ansys.edb.core.layout.cell import DesignMode as CoreDesignMode
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.generic.constants import unit_converter
 from pyedb.generic.control_file import ControlFile
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    get_string_version,
-    is_linux,
-    is_windows,
-)
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import get_string_version
+from pyedb.generic.general_methods import is_linux
+from pyedb.generic.general_methods import is_windows
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
@@ -115,31 +115,25 @@ from pyedb.grpc.database.modeler import Modeler
 from pyedb.grpc.database.net.differential_pair import DifferentialPairs
 from pyedb.grpc.database.net.extended_net import ExtendedNets
 from pyedb.grpc.database.padstacks import Padstacks
-from pyedb.grpc.database.ports.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
+from pyedb.grpc.database.ports.ports import BundleWavePort
+from pyedb.grpc.database.ports.ports import CircuitPort
+from pyedb.grpc.database.ports.ports import CoaxPort
+from pyedb.grpc.database.ports.ports import GapPort
+from pyedb.grpc.database.ports.ports import WavePort
 from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.rectangle import Rectangle
-from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
-    HfssSimulationSetup,
-)
-from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import (
-    RaptorXSimulationSetup,
-)
-from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import (
-    SIWaveDCIRSimulationSetup,
-)
-from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import (
-    SiwaveSimulationSetup,
-)
+from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
+from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import RaptorXSimulationSetup
+from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
+from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
 from pyedb.grpc.database.simulation_setups import SimulationSetups
 from pyedb.grpc.database.siwave import Siwave
 from pyedb.grpc.database.source_excitations import SourceExcitation
 from pyedb.grpc.database.stackup import Stackup
-from pyedb.grpc.database.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
+from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
@@ -149,7 +143,8 @@ from pyedb.workflows.utilities.cutout import Cutout
 os.environ["no_proxy"] = "localhost,127.0.0.1"
 
 if TYPE_CHECKING:
-    from pyedb.grpc.database.nets import NetClasses, Nets
+    from pyedb.grpc.database.nets import NetClasses
+    from pyedb.grpc.database.nets import Nets
 
 
 class Edb(EdbInit):
@@ -212,7 +207,7 @@ class Edb(EdbInit):
     @deprecate_argument_name({"edbversion": "version"})
     def __init__(
         self,
-        edbpath: Union[str, Path] = None,
+        edbpath: str | Path = None,
         cellname: str = None,
         isreadonly: bool = False,
         version: str = None,
@@ -432,7 +427,7 @@ class Edb(EdbInit):
             return "{0}{1}".format(value, units)
 
     @staticmethod
-    def _get_terminal_net_name(terminal) -> Optional[str]:
+    def _get_terminal_net_name(terminal) -> str | None:
         """Normalize various terminal objects to a net name string.
 
         This helper centralizes the common nested getattr pattern used across the
@@ -485,7 +480,7 @@ class Edb(EdbInit):
             return self.value(val)  # Convert strings with units or variables to Value objects
 
     @property
-    def cell_names(self) -> List[str]:
+    def cell_names(self) -> list[str]:
         """List of all cell names in the database.
 
         Returns
@@ -496,7 +491,7 @@ class Edb(EdbInit):
         return [cell.name for cell in self.active_db.top_circuit_cells]
 
     @property
-    def design_variables(self) -> Dict[str, Variable]:
+    def design_variables(self) -> dict[str, Variable]:
         """All design variables in active cell.
 
         Returns
@@ -507,7 +502,7 @@ class Edb(EdbInit):
         return {i: Variable(self.active_cell, i) for i in self.active_cell.get_all_variable_names()}
 
     @property
-    def project_variables(self) -> Dict[str, Variable]:
+    def project_variables(self) -> dict[str, Variable]:
         """All project variables in database.
 
         Returns
@@ -529,7 +524,7 @@ class Edb(EdbInit):
         return LayoutValidation(self)
 
     @property
-    def variables(self) -> Dict[str, Variable]:
+    def variables(self) -> dict[str, Variable]:
         """All variables (project + design) in database.
 
         Returns
@@ -545,7 +540,7 @@ class Edb(EdbInit):
         return all_vars
 
     @property
-    def terminals(self) -> Dict[str, Terminal]:
+    def terminals(self) -> dict[str, Terminal]:
         """Terminals in active layout.
 
         Returns
@@ -558,7 +553,7 @@ class Edb(EdbInit):
     @property
     @deprecated("Use ports property instead.", category=None)
     @runtime_deprecated_property("use ports property instead.")
-    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+    def excitations(self) -> dict[str, BundleWavePort | GapPort | CircuitPort | CoaxPort | WavePort]:
         """Get all ports.
 
         .. deprecated:: 0.71.0
@@ -576,7 +571,7 @@ class Edb(EdbInit):
         return self.ports
 
     @property
-    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+    def ports(self) -> dict[str, BundleWavePort | GapPort | CircuitPort | CoaxPort | WavePort]:
         """Get all ports.
 
         Returns
@@ -593,9 +588,7 @@ class Edb(EdbInit):
         from pyedb.grpc.database.ports.ports import WavePort
         from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
         from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
-        from pyedb.grpc.database.terminal.padstack_instance_terminal import (
-            PadstackInstanceTerminal,
-        )
+        from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 
         for t in terminals:
             if t.is_circuit_port:
@@ -615,7 +608,7 @@ class Edb(EdbInit):
         return ports
 
     @property
-    def excitations_nets(self) -> List[str]:
+    def excitations_nets(self) -> list[str]:
         """Nets with excitations defined.
 
         Returns
@@ -633,7 +626,7 @@ class Edb(EdbInit):
         )
 
     @property
-    def sources(self) -> Dict[str, Terminal]:
+    def sources(self) -> dict[str, Terminal]:
         """All layout sources.
 
         Returns
@@ -649,7 +642,7 @@ class Edb(EdbInit):
         }
 
     @property
-    def voltage_regulator_modules(self) -> Dict[str, "VoltageRegulator"]:
+    def voltage_regulator_modules(self) -> dict[str, "VoltageRegulator"]:
         """Voltage regulator modules in design.
 
         Returns
@@ -673,7 +666,7 @@ class Edb(EdbInit):
         return _vrms
 
     @property
-    def probes(self) -> Dict[str, Terminal]:
+    def probes(self) -> dict[str, Terminal]:
         """All layout probes.
 
         Returns
@@ -739,7 +732,8 @@ class Edb(EdbInit):
         bool
             True if successful, False otherwise.
         """
-        from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
+        from ansys.edb.core.layout.cell import Cell as GrpcCell
+        from ansys.edb.core.layout.cell import CellType as GrpcCellType
 
         self.standalone = self.standalone
         n_try = 10
@@ -1152,7 +1146,7 @@ class Edb(EdbInit):
     @property
     @deprecated("Use excitation_manager property instead.", category=None)
     @runtime_deprecated_property("use excitation_manager property instead.")
-    def source_excitation(self) -> Optional[SourceExcitation]:
+    def source_excitation(self) -> SourceExcitation | None:
         """Source excitation management.
 
         .. deprecated:: 0.70
@@ -2124,7 +2118,7 @@ class Edb(EdbInit):
         self.logger.info(f"Variable {variable_name} doesn't exists.")
         return False
 
-    def get_all_variable_names(self) -> List[str]:
+    def get_all_variable_names(self) -> list[str]:
         """Method added for compatibility with grpc.
 
         Returns
@@ -2272,7 +2266,7 @@ class Edb(EdbInit):
         bool
             True if all port references are connected.
         """
-        all_sources: List[Any] = [
+        all_sources: list[Any] = [
             i for i in self.ports.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))
         ]
         all_sources.extend(list(self.sources.values()))
@@ -2589,7 +2583,7 @@ class Edb(EdbInit):
                 >>> # Self-contained example showing end-to-end usage
                 >>> edb_file = "path_to_zone_aedb.aedb"
                 >>> edb = Edb(edb_file)
-                >>> edb_zones = edb.copy_zones(r"C:\Temp\test")
+                >>> edb_zones = edb.copy_zones(r"C:\\Temp\test")
                 >>> common_reference_net = "GND"
                 >>> defined_ports, terminals_info = edb.cutout_multizone_layout(edb_zones, common_reference_net)
                 >>> project_connexions = Edb._get_connected_ports_from_multizone_cutout(terminals_info)
@@ -3194,7 +3188,7 @@ class Edb(EdbInit):
                 )
                 if not _temp_circle:
                     self.logger.error(
-                        f"Failed to create circle for terminal during create_model_for_arbitrary_wave_ports"
+                        "Failed to create circle for terminal during create_model_for_arbitrary_wave_ports"
                     )
         cloned_edb.save_as(output_edb)
         cloned_edb.close(terminate_rpc_session=False)
@@ -3389,7 +3383,7 @@ class Edb(EdbInit):
             show_progress=show_progress,
         )
 
-    def copy_cell_from_edb(self, edb_path: Union[Path, str]):
+    def copy_cell_from_edb(self, edb_path: Path | str):
         """Copy Cells from another Edb Database into this Database."""
         edb2 = Edb(edbpath=edb_path, edbversion=self.version)
         try:

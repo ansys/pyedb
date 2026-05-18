@@ -91,7 +91,7 @@ class PadstackInstanceTerminal(Terminal):
         )
         terminal = PadstackInstanceTerminal(edb, terminal)
         if terminal.is_null:
-            msg = f"Failed to create terminal. "
+            msg = "Failed to create terminal. "
             if name in edb.terminals:
                 msg += f"Terminal {name} already exists."
             raise Exception(msg)

@@ -20,18 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import json
 from unittest.mock import MagicMock
 
 import pytest
 
-from pyedb.configuration.cfg_components import (
-    CfgComponent,
-    CfgComponents,
-    CfgPinPairModel,
-    _height_from_diameter,
-    _smallest_pin_pad_size,
-)
+from pyedb.configuration.cfg_components import CfgComponent
+from pyedb.configuration.cfg_components import CfgComponents
+from pyedb.configuration.cfg_components import CfgPinPairModel
+from pyedb.configuration.cfg_components import _height_from_diameter
+from pyedb.configuration.cfg_components import _smallest_pin_pad_size
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 

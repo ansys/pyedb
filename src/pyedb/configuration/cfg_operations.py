@@ -20,9 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, List, Optional, Union
+from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 # from pyedb.configuration.cfg_common import CfgBase
 
@@ -36,26 +37,26 @@ class CfgAutoIdentifyNets(BaseModel):
 
 class CfgCutout(BaseModel):
     auto_identify_nets: CfgAutoIdentifyNets | None = CfgAutoIdentifyNets()
-    signal_nets: Optional[List[str]] = Field(
+    signal_nets: list[str] | None = Field(
         default=None,
         alias="signal_list",
     )
-    reference_nets: Optional[List[str]] = Field(
+    reference_nets: list[str] | None = Field(
         default=None,
         alias="reference_list",
     )
-    extent_type: Optional[str] = "ConvexHull"
-    expansion_size: Optional[Union[float, str]] = 0.002
-    number_of_threads: Optional[int] = 1
-    custom_extent: Optional[Any] = None
+    extent_type: str | None = "ConvexHull"
+    expansion_size: float | str | None = 0.002
+    number_of_threads: int | None = 1
+    custom_extent: Any | None = None
     custom_extent_units: str = Field(default="meter")
-    expansion_factor: Optional[float] = 0
+    expansion_factor: float | None = 0
 
     model_config = dict(populate_by_name=True)
 
 
 class CfgOperations(BaseModel):
-    cutout: Optional[CfgCutout] = None
+    cutout: CfgCutout | None = None
     generate_auto_hfss_regions: bool = False
 
     def add_cutout(self, **kwargs):

@@ -95,7 +95,7 @@ class SiwaveSolve(object):
         try:
             subprocess.run(command, check=True)  # nosec
         except subprocess.CalledProcessError as e:  # nosec
-            raise RuntimeError(f"An error occurred when launching the solver. Please check input paths") from e
+            raise RuntimeError("An error occurred when launching the solver. Please check input paths") from e
 
     def solve(self, num_of_cores=4):
         """Solve using siwave_ng.exe

@@ -24,9 +24,7 @@ import os
 from typing import TYPE_CHECKING
 
 from ansys.edb.core.definition.component_def import ComponentDef as CoreComponentDef
-from ansys.edb.core.definition.component_model import (
-    NPortComponentModel as CoreNPortComponentModel,
-)
+from ansys.edb.core.definition.component_model import NPortComponentModel as CoreNPortComponentModel
 
 from pyedb.grpc.database.definition.component_model import ComponentModel
 from pyedb.grpc.database.definition.component_pin import ComponentPin

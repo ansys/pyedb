@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 import logging
-from typing import List
 
 from pyedb.dotnet.database.cell.connectable import Connectable
 
@@ -42,7 +41,7 @@ class HierarchyObj(Connectable):
         return self._edb_object.GetComponentDef().GetName()
 
     @property
-    def location(self) -> List[float] | None:
+    def location(self) -> list[float] | None:
         """Return XY coordinates if available.
 
         Returns

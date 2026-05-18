@@ -25,7 +25,6 @@ This module contains the array building feature from unit cell.
 """
 
 import itertools
-from typing import Optional, Union
 import warnings
 
 from pyedb import Edb
@@ -40,8 +39,8 @@ def create_array_from_unit_cell(
     edb: Edb,
     x_number: int = 2,
     y_number: int = 2,
-    offset_x: Optional[Union[int, float, str]] = None,
-    offset_y: Optional[Union[int, float, str]] = None,
+    offset_x: int | float | str | None = None,
+    offset_y: int | float | str | None = None,
 ) -> bool:
     """
     Create a 2-D rectangular array from the current EDB unit cell.
@@ -111,8 +110,8 @@ def __create_array_from_unit_cell_impl(
     adapter: "_BaseAdapter",
     x_number: int,
     y_number: int,
-    offset_x: Optional[Union[int, float]],
-    offset_y: Optional[Union[int, float]],
+    offset_x: int | float | None,
+    offset_y: int | float | None,
 ) -> bool:
     """
     Inner worker that performs the actual replication.

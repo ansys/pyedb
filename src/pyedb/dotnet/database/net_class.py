@@ -24,11 +24,9 @@ from __future__ import absolute_import  # noreorder
 
 import re
 
-from pyedb.dotnet.database.edb_data.nets_data import (
-    EDBDifferentialPairData,
-    EDBExtendedNetData,
-    EDBNetClassData,
-)
+from pyedb.dotnet.database.edb_data.nets_data import EDBDifferentialPairData
+from pyedb.dotnet.database.edb_data.nets_data import EDBExtendedNetData
+from pyedb.dotnet.database.edb_data.nets_data import EDBNetClassData
 
 
 class EdbCommon:

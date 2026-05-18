@@ -21,7 +21,10 @@
 # SOFTWARE.
 
 import builtins
-from unittest.mock import MagicMock, PropertyMock, mock_open, patch
+from unittest.mock import MagicMock
+from unittest.mock import PropertyMock
+from unittest.mock import mock_open
+from unittest.mock import patch
 
 import pytest
 

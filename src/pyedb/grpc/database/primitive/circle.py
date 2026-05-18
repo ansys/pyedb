@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
+from typing import Union
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
@@ -44,7 +45,7 @@ class Circle(Primitive):
     def create(
         cls,
         layout,
-        layer: Union[str, Layer] = None,
+        layer: str | Layer = None,
         net: Union[str, "Net", None] = None,
         center_x: float = None,
         center_y: float = None,

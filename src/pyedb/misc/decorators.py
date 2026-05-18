@@ -24,7 +24,8 @@ from __future__ import annotations
 
 import functools
 import time
-from typing import Any, TypeVar
+from typing import Any
+from typing import TypeVar
 import warnings
 
 from pyedb.generic.settings import settings

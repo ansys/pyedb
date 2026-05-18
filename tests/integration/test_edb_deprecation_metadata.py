@@ -25,8 +25,11 @@ from pathlib import Path
 
 import pytest
 
-from pyedb.generic.filesystem import Scratch, my_location, search_files
-from pyedb.generic.general_methods import PropsManager, get_filename_without_extension
+from pyedb.generic.filesystem import Scratch
+from pyedb.generic.filesystem import my_location
+from pyedb.generic.filesystem import search_files
+from pyedb.generic.general_methods import PropsManager
+from pyedb.generic.general_methods import get_filename_without_extension
 
 pytestmark = [pytest.mark.integration, pytest.mark.no_licence]
 

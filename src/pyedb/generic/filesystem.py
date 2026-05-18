@@ -28,7 +28,8 @@ import string
 from types import TracebackType
 
 from pyedb.generic.settings import settings
-from pyedb.misc.decorators import deprecated, deprecated_class
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_class
 
 
 @deprecated("Please use pathlib.Path.glob for file searching.")

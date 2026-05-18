@@ -20,11 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.utility.hfss_extent_info import (
-    HFSSExtentInfoType as CoreHfssExtentInfoType,
-    OpenRegionType as CoreOpenRegionType,
-)
-from ansys.edb.core.utility.value import Value as CoreValue
+from ansys.edb.core.utility.hfss_extent_info import HFSSExtentInfoType as CoreHfssExtentInfoType
+from ansys.edb.core.utility.hfss_extent_info import OpenRegionType as CoreOpenRegionType
 
 
 class HfssExtentInfo:

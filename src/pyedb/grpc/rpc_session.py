@@ -26,16 +26,17 @@ import socket
 import sys
 import time
 
-from ansys.edb.core.session import MOD as _SESSION_MOD, launch_session
-from ansys.edb.core.utility.io_manager import (
-    IOMangementType,
-    end_managing,
-    start_managing,
-)
+from ansys.edb.core.session import MOD as _SESSION_MOD
+from ansys.edb.core.session import launch_session
+from ansys.edb.core.utility.io_manager import IOMangementType
+from ansys.edb.core.utility.io_manager import end_managing
+from ansys.edb.core.utility.io_manager import start_managing
 import psutil
 
 from pyedb import __version__
-from pyedb.generic.general_methods import env_path, env_value, is_linux
+from pyedb.generic.general_methods import env_path
+from pyedb.generic.general_methods import env_value
+from pyedb.generic.general_methods import is_linux
 from pyedb.generic.settings import settings
 from pyedb.misc.misc import list_installed_ansysem
 

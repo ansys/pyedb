@@ -25,7 +25,6 @@ import json
 from pathlib import Path
 import re
 import tempfile
-from typing import Union
 
 import numpy as np
 
@@ -105,7 +104,7 @@ class Trace:
         flip_dx,
         flip_dy,
         end_cap_style,
-        port: Union[dict, None],
+        port: dict | None,
     ):
         self.p_via = p_via
         self.variables = []
@@ -204,7 +203,7 @@ class GroundVia:
         dy,
         flip_dx,
         flip_dy,
-        connection_trace: Union[dict, Trace],
+        connection_trace: dict | Trace,
         with_solder_ball,
         backdrill_parameters,
         conductor_layers: list,
@@ -279,9 +278,7 @@ class GroundVia:
 
 
 class Via(GroundVia):
-    def __init__(
-        self, anti_pad_diameter, fanout_trace: list[Union[dict, Trace]], stitching_vias: Union[dict, None], **kwargs
-    ):
+    def __init__(self, anti_pad_diameter, fanout_trace: list[dict | Trace], stitching_vias: dict | None, **kwargs):
         super().__init__(**kwargs)
 
         self.anti_pad_diameter = create_variable(self, "anti_pad_diameter", anti_pad_diameter)
@@ -350,7 +347,7 @@ class Signal:
         self,
         p_board,
         signal_name,
-        name_suffix: Union[None, str],
+        name_suffix: None | str,
         base_x,
         base_y,
         stacked_vias,

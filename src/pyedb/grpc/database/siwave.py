@@ -26,10 +26,17 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 """
 
 import os
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import cast
 
-from pyedb.grpc.database.ports.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.grpc.database.ports.ports import BundleWavePort
+from pyedb.grpc.database.ports.ports import CircuitPort
+from pyedb.grpc.database.ports.ports import CoaxPort
+from pyedb.grpc.database.ports.ports import GapPort
+from pyedb.grpc.database.ports.ports import WavePort
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_property
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
@@ -88,7 +95,7 @@ class Siwave(object):
 
     @property
     @deprecated_property("use ports property instead")
-    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+    def excitations(self) -> dict[str, BundleWavePort | GapPort | CircuitPort | CoaxPort | WavePort]:
         """Get all ports.
 
         .. deprecated:: pyedb 0.70.0
@@ -106,7 +113,7 @@ class Siwave(object):
         return self.ports
 
     @property
-    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+    def ports(self) -> dict[str, BundleWavePort | GapPort | CircuitPort | CoaxPort | WavePort]:
         """Get all ports.
 
         Returns
@@ -121,7 +128,7 @@ class Siwave(object):
         return self._pedb.ports
 
     @property
-    def sources(self) -> Dict[str, Any]:
+    def sources(self) -> dict[str, Any]:
         """All sources in the layout.
 
         Examples
@@ -133,7 +140,7 @@ class Siwave(object):
         return self._pedb.sources
 
     @property
-    def probes(self) -> Dict[str, Any]:
+    def probes(self) -> dict[str, Any]:
         """All probes in the layout.
 
         Examples
@@ -145,7 +152,7 @@ class Siwave(object):
         return self._pedb.probes
 
     @property
-    def pin_groups(self) -> Dict[str, Any]:
+    def pin_groups(self) -> dict[str, Any]:
         """All layout pin groups.
 
         Returns
@@ -576,9 +583,9 @@ class Siwave(object):
         self,
         accuracy_level: int = 1,
         distribution: str = "linear",
-        start_freq: Union[str, float] = 1,
-        stop_freq: Union[str, float] = 1e9,
-        step_freq: Union[str, float, int] = 1e6,
+        start_freq: str | float = 1,
+        stop_freq: str | float = 1e9,
+        step_freq: str | float | int = 1e6,
         discrete_sweep: bool = False,
     ) -> "SiwaveSimulationSetup":
         """Add a SIwave AC analysis to EDB.
@@ -634,7 +641,7 @@ class Siwave(object):
         setup.settings.accuracy_level = accuracy_level
         return setup
 
-    def add_siwave_dc_analysis(self, name: Optional[str] = None) -> Any:
+    def add_siwave_dc_analysis(self, name: str | None = None) -> Any:
         """Add a Siwave DC analysis in EDB.
 
         .. note::

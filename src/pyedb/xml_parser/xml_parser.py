@@ -23,9 +23,9 @@
 """XML parser module for handling EDB XML configuration files."""
 
 from pathlib import Path
-from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 import xmltodict
 
 from pyedb.xml_parser.xml_stackup import XmlStackup
@@ -43,7 +43,7 @@ class XmlNet(BaseModel):
     """
 
     name: str = Field(alias="@Name")
-    pins_become_ports: Optional[bool] = Field(None, alias="@PinsBecomePorts")
+    pins_become_ports: bool | None = Field(None, alias="@PinsBecomePorts")
 
     model_config = dict(populate_by_name=True)
 
@@ -59,8 +59,8 @@ class XmlImportOptions(BaseModel):
         Whether to flatten the design hierarchy during import. The default is ``None``.
     """
 
-    enable_default_component_values: Optional[bool] = Field(None, alias="EnableDefaultComponentValues")
-    flatten: Optional[bool] = Field(None, alias="Flatten")
+    enable_default_component_values: bool | None = Field(None, alias="EnableDefaultComponentValues")
+    flatten: bool | None = Field(None, alias="Flatten")
 
     model_config = dict(populate_by_name=True)
 
@@ -90,10 +90,10 @@ class XmlParser(BaseModel):
     >>> parser.to_xml_file("output.xml")
     """
 
-    stackup: Optional[XmlStackup] = Field(default=None, alias="Stackup")
-    import_options: Optional[XmlImportOptions] = Field(default=None, alias="ImportOptions")
-    nets: Optional[dict] = Field(default=None, alias="Nets")
-    schema_version: Optional[str] = Field(default=None, alias="schemaVersion")
+    stackup: XmlStackup | None = Field(default=None, alias="Stackup")
+    import_options: XmlImportOptions | None = Field(default=None, alias="ImportOptions")
+    nets: dict | None = Field(default=None, alias="Nets")
+    schema_version: str | None = Field(default=None, alias="schemaVersion")
 
     model_config = dict(populate_by_name=True)
 

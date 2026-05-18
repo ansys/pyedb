@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 from pyedb.dotnet.database.cell.hierarchy.model import Model
-from pyedb.dotnet.database.general import convert_netdict_to_pydict, convert_pydict_to_netdict
+from pyedb.dotnet.database.general import convert_netdict_to_pydict
+from pyedb.dotnet.database.general import convert_pydict_to_netdict
 
 
 class SPICEModel(Model):

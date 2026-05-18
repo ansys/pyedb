@@ -25,7 +25,6 @@ This module contains the ``EdbHfss`` class.
 """
 
 import math
-from typing import Dict, Union
 
 from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
@@ -33,19 +32,16 @@ from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import Padst
 from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.edb_data.hfss_extent_info import HfssExtentInfo
-from pyedb.dotnet.database.edb_data.ports import (
-    BundleWavePort,
-    CircuitPort,
-    CoaxPort,
-    ExcitationSources,
-    GapPort,
-    WavePort,
-)
-from pyedb.dotnet.database.general import (
-    convert_py_list_to_net_list,
-)
+from pyedb.dotnet.database.edb_data.ports import BundleWavePort
+from pyedb.dotnet.database.edb_data.ports import CircuitPort
+from pyedb.dotnet.database.edb_data.ports import CoaxPort
+from pyedb.dotnet.database.edb_data.ports import ExcitationSources
+from pyedb.dotnet.database.edb_data.ports import GapPort
+from pyedb.dotnet.database.edb_data.ports import WavePort
+from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.generic.geometry_operators import GeometryOperators
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_property
 
 
 class EdbHfss(object):
@@ -98,7 +94,7 @@ class EdbHfss(object):
 
     @property
     @deprecated_property("use ports property instead")
-    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+    def excitations(self) -> dict[str, BundleWavePort | GapPort | CircuitPort | CoaxPort | WavePort]:
         """Get all ports.
 
         .. deprecated:: 0.71.0
@@ -116,7 +112,7 @@ class EdbHfss(object):
         return self.ports
 
     @property
-    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+    def ports(self) -> dict[str, BundleWavePort | GapPort | CircuitPort | CoaxPort | WavePort]:
         """Get all ports.
 
         Returns
@@ -131,14 +127,14 @@ class EdbHfss(object):
         return self._pedb.ports
 
     @property
-    def sources(self) -> Dict[str, ExcitationSources]:
+    def sources(self) -> dict[str, ExcitationSources]:
         """Get all sources."""
         return self._pedb.sources
 
     @property
     def probes(
         self,
-    ) -> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
+    ) -> dict[str, PinGroupTerminal | PointTerminal | BundleTerminal | PadstackInstanceTerminal | EdgeTerminal]:
         """Get all probes."""
         return self._pedb.probes
 

@@ -24,7 +24,8 @@
 
 import re as _re
 
-from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
+from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
+from ansys.edb.core.definition.die_property import DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
 from pydantic import BaseModel
 

@@ -33,7 +33,6 @@ if TYPE_CHECKING:
 
 
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_settings import RaptorXSimulationSettings
-from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 
 class RaptorXSimulationSetup(SimulationSetup):

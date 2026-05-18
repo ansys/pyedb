@@ -24,8 +24,11 @@ import warnings
 
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.definition.package_def import PackageDef
-from pyedb.dotnet.database.definition.wirebond_def import ApdBondwireDef, Jedec4BondwireDef, Jedec5BondwireDef
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.dotnet.database.definition.wirebond_def import ApdBondwireDef
+from pyedb.dotnet.database.definition.wirebond_def import Jedec4BondwireDef
+from pyedb.dotnet.database.definition.wirebond_def import Jedec5BondwireDef
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_property
 
 
 class Definitions:

@@ -26,15 +26,12 @@ This module contains the `EdbPadstacks` class.
 
 from collections import defaultdict
 import math
-from typing import Dict, List, Optional, Union
 
 import numpy as np
 
 from pyedb.dotnet.clr_module import Array
-from pyedb.dotnet.database.edb_data.padstacks_data import (
-    EDBPadstack,
-    EDBPadstackInstance,
-)
+from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstack
+from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.general_methods import generate_unique_name
@@ -194,7 +191,7 @@ class EdbPadstacks(object):
         return self._definitions
 
     @property
-    def instances(self) -> Dict[int, EDBPadstackInstance]:
+    def instances(self) -> dict[int, EDBPadstackInstance]:
         """Dictionary  of all padstack instances (vias and pins).
 
         Returns
@@ -407,13 +404,13 @@ class EdbPadstacks(object):
     def create_dielectric_filled_backdrills(
         self,
         layer: str,
-        diameter: Union[float, str],
+        diameter: float | str,
         material: str,
         permittivity: float,
-        padstack_instances: Optional[List[EDBPadstackInstance]] = None,
-        padstack_definition: Optional[Union[str, List[str]]] = None,
-        dielectric_loss_tangent: Optional[float] = None,
-        nets: Optional[Union[str, List[str]]] = None,
+        padstack_instances: list[EDBPadstackInstance] | None = None,
+        padstack_definition: str | list[str] | None = None,
+        dielectric_loss_tangent: float | None = None,
+        nets: str | list[str] | None = None,
     ) -> bool:
         r"""Create dielectric-filled back-drills for through-hole vias.
 
@@ -549,7 +546,7 @@ class EdbPadstacks(object):
                     padsatck_def_name = inst.padstack_definition
                     padstack_def_layers = inst.layer_range_names
                     if layer in padstack_def_layers and len(padstack_def_layers) >= 3:
-                        if not padsatck_def_name in _padstack_instances:
+                        if padsatck_def_name not in _padstack_instances:
                             _padstack_instances[padsatck_def_name] = [inst]
                         else:
                             _padstack_instances[padsatck_def_name].append(inst)
@@ -561,7 +558,7 @@ class EdbPadstacks(object):
                         )
         if not material:
             raise ValueError("`material` must be specified")
-        if not material in self._pedb.materials:
+        if material not in self._pedb.materials:
             if not dielectric_loss_tangent:
                 dielectric_loss_tangent = 0.0
             self._pedb.materials.add_dielectric_material(
@@ -883,9 +880,7 @@ class EdbPadstacks(object):
         for padstack_def in list(self.definitions.values()):
             if padstack_def.hole_plating_ratio <= minimum_value_to_replace:
                 padstack_def.hole_plating_ratio = default_plating_ratio
-                self._logger.info(
-                    "Padstack definition with zero plating ratio, defaulting to 20%".format(padstack_def.name)
-                )
+                self._logger.info("Padstack definition with zero plating ratio, defaulting to 20%")
         return True
 
     def get_via_instance_from_net(self, net_list=None):
@@ -1896,8 +1891,8 @@ class EdbPadstacks(object):
 
     @staticmethod
     def dbscan(
-        padstack: Dict[int, List[float]], max_distance: float = 1e-3, min_samples: int = 5
-    ) -> Dict[int, List[str]]:
+        padstack: dict[int, list[float]], max_distance: float = 1e-3, min_samples: int = 5
+    ) -> dict[int, list[str]]:
         """
         Density based spatial clustering for padstack instances
 
@@ -1963,8 +1958,8 @@ class EdbPadstacks(object):
         return dict(clusters)
 
     def reduce_via_by_density(
-        self, padstacks: List[int], cell_size_x: float = 1e-3, cell_size_y: float = 1e-3, delete: bool = False
-    ) -> tuple[List[int], List[List[List[float]]]]:
+        self, padstacks: list[int], cell_size_x: float = 1e-3, cell_size_y: float = 1e-3, delete: bool = False
+    ) -> tuple[list[int], list[list[list[float]]]]:
         """
         Reduce the number of vias by density. Keep only one via which is closest to the center of the cell. The cells
         are automatically populated based on the input vias.

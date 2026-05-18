@@ -26,9 +26,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import absolute_import, annotations
+from __future__ import absolute_import
+from __future__ import annotations
 
-from ansys.edb.core.layer.layer import Layer as GrpcLayer, LayerType as CoreLayerType
+from ansys.edb.core.layer.layer import Layer as GrpcLayer
+from ansys.edb.core.layer.layer import LayerType as CoreLayerType
 
 layer_type_mapping = {
     "conducting": CoreLayerType.CONDUCTING_LAYER,

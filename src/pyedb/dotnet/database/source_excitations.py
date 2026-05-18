@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 import time
-from typing import Set
 
 from pyedb.dotnet.database.cell.primitive.primitive import Primitive
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
@@ -31,16 +30,19 @@ from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.database.edb_data.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
-from pyedb.dotnet.database.edb_data.sources import (
-    CircuitPortBuilder,
-    CurrentSourceBuilder,
-    ResistorSourceBuilder,
-    SourceType,
-    VoltageSourceBuilder,
-)
+from pyedb.dotnet.database.edb_data.ports import BundleWavePort
+from pyedb.dotnet.database.edb_data.ports import CircuitPort
+from pyedb.dotnet.database.edb_data.ports import CoaxPort
+from pyedb.dotnet.database.edb_data.ports import GapPort
+from pyedb.dotnet.database.edb_data.ports import WavePort
+from pyedb.dotnet.database.edb_data.sources import CircuitPortBuilder
+from pyedb.dotnet.database.edb_data.sources import CurrentSourceBuilder
+from pyedb.dotnet.database.edb_data.sources import ResistorSourceBuilder
+from pyedb.dotnet.database.edb_data.sources import SourceType
+from pyedb.dotnet.database.edb_data.sources import VoltageSourceBuilder
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
+from pyedb.generic.general_methods import _retry_ntimes
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.misc.decorators import deprecated
 
@@ -538,7 +540,7 @@ class SourceExcitation:
         """
         coax = []
         if delete_existing_terminal:
-            self._pedb.logger.warning(f"flag delete_existing_terminal is set to True but is only supported with grpc.")
+            self._pedb.logger.warning("flag delete_existing_terminal is set to True but is only supported with grpc.")
         if not isinstance(ref_des_list, list):
             ref_des_list = [ref_des_list]
         if not isinstance(net_list, list):
@@ -877,7 +879,7 @@ class SourceExcitation:
             pos_pingroup_terminal.SetReferenceTerminal(neg_pingroup_terminal)
             try:
                 pos_pingroup_terminal.SetName(source.name)
-            except Exception as e:
+            except Exception:
                 name = generate_unique_name(source.name)
                 pos_pingroup_terminal.SetName(name)
                 self._pedb.logger.warning("%s already exists. Renaming to %s", source.name, name)
@@ -2149,7 +2151,7 @@ class SourceExcitation:
                                 self._pedb.logger.error("Skipping port creation no reference pin found.")
         return True
 
-    def _normalize_net_list(self, net_list) -> Set[str]:
+    def _normalize_net_list(self, net_list) -> set[str]:
         if not isinstance(net_list, list):
             net_list = [net_list]
         nets = set()
@@ -2182,7 +2184,7 @@ class SourceExcitation:
         -------
         Edb pin group terminal.
         """
-        if not "Cell.Hierarchy.PinGroup" in str(pingroup):
+        if "Cell.Hierarchy.PinGroup" not in str(pingroup):
             pingroup = pingroup._edb_object
         pin = list(pingroup.GetPins())[0]
         if term_name is None:

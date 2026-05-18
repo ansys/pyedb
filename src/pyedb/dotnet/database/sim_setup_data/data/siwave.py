@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.generic.constants import DCBehaviorMapper, SParamExtrapolationMapper, SparamInterpolationMapper
+from pyedb.generic.constants import DCBehaviorMapper
+from pyedb.generic.constants import SParamExtrapolationMapper
+from pyedb.generic.constants import SparamInterpolationMapper
 
 
 class SIwaveSParameterSettings:

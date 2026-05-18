@@ -22,17 +22,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.ports.ports import WavePort
 from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as CoreBundleTerminal
-from ansys.edb.core.terminal.terminal import (
-    HfssPIType as CoreHfssPIType,
-    SourceTermToGroundType as CoreSourceTermToGroundType,
-)
+from ansys.edb.core.terminal.terminal import HfssPIType as CoreHfssPIType
+from ansys.edb.core.terminal.terminal import SourceTermToGroundType as CoreSourceTermToGroundType
 
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.rlc import Rlc
@@ -55,7 +53,7 @@ class BundleTerminal(Terminal):
         self.core = core
 
     @classmethod
-    def create(cls, pedb, name: str, terminals: list[Union[Terminal, WavePort, str]]) -> BundleTerminal:
+    def create(cls, pedb, name: str, terminals: list[Terminal | WavePort | str]) -> BundleTerminal:
         """Create a bundle terminal.
 
         Parameters

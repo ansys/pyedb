@@ -19,9 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import Any, List, Optional, Union
+from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class CfgMaterialPropertyThermalModifier(BaseModel):
@@ -39,47 +40,47 @@ class CfgMaterialPropertyThermalModifier(BaseModel):
 class MaterialProperties(BaseModel):
     """Store material properties."""
 
-    conductivity: Optional[Union[str, float]] = None
-    dielectric_loss_tangent: Optional[Union[str, float]] = None
-    magnetic_loss_tangent: Optional[Union[str, float]] = None
-    mass_density: Optional[Union[str, float]] = None
-    permittivity: Optional[Union[str, float]] = None
-    permeability: Optional[Union[str, float]] = None
-    poisson_ratio: Optional[Union[str, float]] = None
-    specific_heat: Optional[Union[str, float]] = None
-    thermal_conductivity: Optional[Union[str, float]] = None
-    youngs_modulus: Optional[Union[str, float]] = None
-    thermal_expansion_coefficient: Optional[Union[str, float]] = None
-    dc_conductivity: Optional[Union[str, float]] = None
-    dc_permittivity: Optional[Union[str, float]] = None
-    dielectric_model_frequency: Optional[Union[str, float]] = None
-    loss_tangent_at_frequency: Optional[Union[str, float]] = None
-    permittivity_at_frequency: Optional[Union[str, float]] = None
+    conductivity: str | float | None = None
+    dielectric_loss_tangent: str | float | None = None
+    magnetic_loss_tangent: str | float | None = None
+    mass_density: str | float | None = None
+    permittivity: str | float | None = None
+    permeability: str | float | None = None
+    poisson_ratio: str | float | None = None
+    specific_heat: str | float | None = None
+    thermal_conductivity: str | float | None = None
+    youngs_modulus: str | float | None = None
+    thermal_expansion_coefficient: str | float | None = None
+    dc_conductivity: str | float | None = None
+    dc_permittivity: str | float | None = None
+    dielectric_model_frequency: str | float | None = None
+    loss_tangent_at_frequency: str | float | None = None
+    permittivity_at_frequency: str | float | None = None
 
 
 class CfgMaterial(MaterialProperties):
-    name: Optional[str] = None
-    thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
+    name: str | None = None
+    thermal_modifiers: list[CfgMaterialPropertyThermalModifier] | None = None
 
     model_config = {"extra": "forbid"}
 
 
 class CfgHurayRoughnessModel(BaseModel):
     model: str = "huray"
-    nodule_radius: Optional[str | float | int] = None  # e.g., '0.1um'
-    surface_ratio: Optional[str | float | int] = None  # e.g., '1'
+    nodule_radius: str | float | int | None = None  # e.g., '0.1um'
+    surface_ratio: str | float | int | None = None  # e.g., '1'
     model_config = {"extra": "forbid"}
 
 
 class CfgGroisseRoughnessModel(BaseModel):
     model: str = "groisse"
-    roughness: Optional[str | float | int] = None
+    roughness: str | float | int | None = None
 
     model_config = {"extra": "forbid"}
 
 
 class CfgRoughnessModel(BaseModel):
-    enabled: Optional[bool] = False
+    enabled: bool | None = False
     top: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
     bottom: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
     side: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
@@ -88,27 +89,27 @@ class CfgRoughnessModel(BaseModel):
 
 
 class EtchingModel(BaseModel):
-    factor: Optional[Union[float, str]] = 0.5
-    etch_power_ground_nets: Optional[bool] = False
-    enabled: Optional[bool] = False
+    factor: float | str | None = 0.5
+    etch_power_ground_nets: bool | None = False
+    enabled: bool | None = False
 
 
 class CfgLayer(BaseModel):
-    name: Optional[str] = None
-    type: Optional[str] = "signal"
-    material: Optional[str] = None
-    fill_material: Optional[str] = None
-    thickness: Optional[Union[float, str]] = None
-    roughness: Optional[CfgRoughnessModel] = None
-    etching: Optional[EtchingModel] = None
+    name: str | None = None
+    type: str | None = "signal"
+    material: str | None = None
+    fill_material: str | None = None
+    thickness: float | str | None = None
+    roughness: CfgRoughnessModel | None = None
+    etching: EtchingModel | None = None
     color: tuple | None = None
 
     model_config = {"extra": "forbid"}
 
 
 class CfgStackup(BaseModel):
-    materials: List[CfgMaterial] = Field(default_factory=list)
-    layers: List[CfgLayer] = Field(default_factory=list)
+    materials: list[CfgMaterial] = Field(default_factory=list)
+    layers: list[CfgLayer] = Field(default_factory=list)
 
     def add_material(
         self,

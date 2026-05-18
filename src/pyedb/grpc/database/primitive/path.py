@@ -20,17 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import math
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
+from typing import Union
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
-from ansys.edb.core.primitive.path import (
-    Path as CorePath,
-    PathCornerType as CorePathCornerType,
-    PathEndCapType as CorePathEndCapType,
-)
+from ansys.edb.core.primitive.path import Path as CorePath
+from ansys.edb.core.primitive.path import PathCornerType as CorePathCornerType
+from ansys.edb.core.primitive.path import PathEndCapType as CorePathEndCapType
 
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.primitive.primitive import Primitive
@@ -90,13 +89,13 @@ class Path(Primitive):
     def create(
         cls,
         layout,
-        layer: Union[str, Layer] = None,
+        layer: str | Layer = None,
         net: Union[str, "Net"] = None,
         width: float = 100e-6,
-        end_cap1: Union[str, CorePathEndCapType] = "flat",
-        end_cap2: Union[str, CorePathEndCapType] = "flat",
-        corner_style: Union[str, CorePathCornerType] = "sharp",
-        points: Union[list, CorePolygonData] = None,
+        end_cap1: str | CorePathEndCapType = "flat",
+        end_cap2: str | CorePathEndCapType = "flat",
+        corner_style: str | CorePathCornerType = "sharp",
+        points: list | CorePolygonData = None,
     ):
         """
         Create a path in the specified layout, layer, and net with the given parameters.

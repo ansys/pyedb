@@ -21,16 +21,14 @@
 # SOFTWARE.
 
 from time import time
-from typing import Union
 
 from ansys.edb.core.primitive.padstack_instance import PadstackInstance as CorePadstackInstance
-from ansys.edb.core.utility.layer_map import (
-    LayerMap as CoreLayerMap,
-    LayerMapUniqueDirection as CoreLayerMapUniqueDirection,
-)
+from ansys.edb.core.utility.layer_map import LayerMap as CoreLayerMap
+from ansys.edb.core.utility.layer_map import LayerMapUniqueDirection as CoreLayerMapUniqueDirection
 
 from pyedb import Edb
-from pyedb.workflows.utilities.helpers import finish_progress, print_progress
+from pyedb.workflows.utilities.helpers import finish_progress
+from pyedb.workflows.utilities.helpers import print_progress
 
 layer_mapping = {
     "two_way": CoreLayerMapUniqueDirection.TWOWAY_UNIQUE,
@@ -261,7 +259,7 @@ def __add_components(hosting_edb, merged_edb, components_dict, prefix):
 
 def physical_merge(
     hosting_edb,
-    merged_edb: Union[str, Edb],
+    merged_edb: str | Edb,
     on_top=True,
     vector=(0.0, 0.0),
     prefix="merged_",

@@ -22,7 +22,8 @@
 
 from __future__ import absolute_import
 
-from pyedb.dotnet.database.cell.roughness_model import GroisseRoughnessModel, HurrayRoughnessModel
+from pyedb.dotnet.database.cell.roughness_model import GroisseRoughnessModel
+from pyedb.dotnet.database.cell.roughness_model import HurrayRoughnessModel
 
 
 def _clear_is_owner(obj):

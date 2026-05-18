@@ -24,7 +24,8 @@
 
 import os
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import ansys.edb.core
 import pytest
@@ -116,7 +117,6 @@ class TestClass(BaseTestClass):
 
     def test_siwave_create_current_source(self):
         """Create a current source."""
-
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.excitation_manager.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0)
         pins = edbapp.components.get_pin_from_component("U1")
@@ -363,7 +363,6 @@ class TestClass(BaseTestClass):
         assert gap_port.source_phase == 0.0
         assert gap_port.impedance
         # temp
-        from ansys.edb.core.database import ProductIdType
 
         assert not gap_port.deembed
         gap_port.name = "gap_port"
@@ -1026,7 +1025,7 @@ class TestClass(BaseTestClass):
             adv_settings.net_settings_options = {"VDD": ["mesh_vias", "via_diameter"]}
             assert adv_settings.net_settings_options == {"VDD": ["mesh_vias", "via_diameter"]}
         else:
-            # Todo
+            # TODO
             pass
             # adv_settings.net_settings_options = [["VDD", "mesh_vias"], ["VDD", "via_diameter"]]
             # assert adv_settings.net_settings_options == {"VDD": ["mesh_vias", "via_diameter"]}

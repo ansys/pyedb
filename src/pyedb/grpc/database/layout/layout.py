@@ -26,7 +26,8 @@ This module contains these classes: `EdbLayout` and `Shape`.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+from typing import Any
 
 if TYPE_CHECKING:
     from ansys.edb.core.layout.layout import Layout as CoreLayout
@@ -41,7 +42,6 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.primitive import Primitive
     from pyedb.grpc.database.primitive.rectangle import Rectangle
 
-from typing import List, Union
 
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.primitive.primitive import Primitive as _CorePrimitive
@@ -81,7 +81,8 @@ from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
 from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.database.terminal.point_terminal import PointTerminal
-from pyedb.misc.decorators import deprecate_argument_name, deprecated
+from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecated
 
 _PRIMITIVE_TYPE_MAP = {
     "Path": ("pyedb.grpc.database.primitive.path", "Path"),
@@ -704,12 +705,12 @@ class Layout(PrimitivesQuery):
 
     def find_padstack_instances(
         self,
-        aedt_name: Union[str, List[str]] = None,
-        component_name: Union[str, List[str]] = None,
-        component_pin_name: Union[str, List[str]] = None,
-        net_name: Union[str, List[str]] = None,
-        instance_id: Union[int, List[int]] = None,
-    ) -> List:
+        aedt_name: str | list[str] = None,
+        component_name: str | list[str] = None,
+        component_pin_name: str | list[str] = None,
+        net_name: str | list[str] = None,
+        instance_id: int | list[int] = None,
+    ) -> list:
         """
         Finds padstack instances matching the specified criteria.
 

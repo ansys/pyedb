@@ -20,18 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import List, Literal, Optional, Union
+from typing import Literal
 
 from pyedb.configuration.cfg_common import CfgBaseModel
 
 
 class CfgTerminal(CfgBaseModel):
     name: str
-    impedance: Union[float, int, str]
+    impedance: float | int | str
     is_circuit_port: bool
-    reference_terminal: Optional[str] = None
-    amplitude: Optional[Union[float, int, str]] = 1
-    phase: Optional[Union[float, int, str]] = 0
+    reference_terminal: str | None = None
+    amplitude: float | int | str | None = 1
+    phase: float | int | str | None = 0
     terminal_to_ground: Literal["kNoGround", "kNegative", "kPositive", "no_ground", "negative", "positive"] | None = (
         "kNoGround"
     )
@@ -60,8 +60,8 @@ class CfgTerminal(CfgBaseModel):
 class CfgPadstackInstanceTerminal(CfgTerminal):
     terminal_type: str = "padstack_instance"
     padstack_instance: str
-    padstack_instance_id: Optional[int] = None
-    layer: Optional[Union[str, None]] = None
+    padstack_instance_id: int | None = None
+    layer: str | None | None = None
 
 
 class CfgPinGroupTerminal(CfgTerminal):
@@ -72,8 +72,8 @@ class CfgPinGroupTerminal(CfgTerminal):
 
 class CfgPointTerminal(CfgTerminal):
     terminal_type: str = "point"
-    x: Union[float, int, str]
-    y: Union[float, int, str]
+    x: float | int | str
+    y: float | int | str
     layer: str
     net: str
 
@@ -82,28 +82,31 @@ class CfgEdgeTerminal(CfgTerminal):
     terminal_type: str = "edge"
     name: str
     primitive: str
-    point_on_edge_x: Union[float, int, str]
-    point_on_edge_y: Union[float, int, str]
-    horizontal_extent_factor: Union[int, str]
-    vertical_extent_factor: Union[int, str]
-    pec_launch_width: Union[int, str]
+    point_on_edge_x: float | int | str
+    point_on_edge_y: float | int | str
+    horizontal_extent_factor: int | str
+    vertical_extent_factor: int | str
+    pec_launch_width: int | str
 
 
 class CfgBundleTerminal(CfgBaseModel):
     terminal_type: str = "bundle"
-    terminals: List[str]
+    terminals: list[str]
     name: str
 
 
 class CfgTerminals(CfgBaseModel):
-    terminals: List[
-        Union[
-            CfgPadstackInstanceTerminal, CfgPinGroupTerminal, CfgPointTerminal, CfgEdgeTerminal, CfgBundleTerminal, dict
-        ]
+    terminals: list[
+        CfgPadstackInstanceTerminal
+        | CfgPinGroupTerminal
+        | CfgPointTerminal
+        | CfgEdgeTerminal
+        | CfgBundleTerminal
+        | dict
     ]
 
     @classmethod
-    def create(cls, terminals: List[dict]):
+    def create(cls, terminals: list[dict]):
         manager = cls(terminals=[])
         for i in terminals:
             terminal_type = i.pop("terminal_type")

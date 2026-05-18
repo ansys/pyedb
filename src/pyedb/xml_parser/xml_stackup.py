@@ -22,9 +22,11 @@
 
 """XML stackup module for handling EDB stackup configurations."""
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
+from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 if TYPE_CHECKING:
     from pyedb.configuration.cfg_data import CfgStackup

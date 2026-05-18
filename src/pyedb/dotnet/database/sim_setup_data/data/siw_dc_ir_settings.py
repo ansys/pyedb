@@ -20,9 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.database.general import (
-    convert_pydict_to_netdict,
-)
+from pyedb.dotnet.database.general import convert_pydict_to_netdict
 from pyedb.misc.decorators import deprecated_property
 
 

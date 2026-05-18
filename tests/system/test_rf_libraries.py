@@ -24,26 +24,20 @@
 
 import os
 
-import ansys.edb.core
 import pytest
 
 from pyedb.libraries.common import MicroStripTechnologyStackup
-from pyedb.libraries.rf_libraries.base_functions import (
-    CPW,
-    DifferentialTLine,
-    HatchGround,
-    InterdigitalCapacitor,
-    MicroStripLine,
-    RadialStub,
-    RatRace,
-    SpiralInductor,
-)
-from pyedb.libraries.rf_libraries.planar_antennas import (
-    CircularPatch,
-    RectangularPatch,
-    TriangularPatch,
-)
-from tests.conftest import config, use_grpc
+from pyedb.libraries.rf_libraries.base_functions import CPW
+from pyedb.libraries.rf_libraries.base_functions import DifferentialTLine
+from pyedb.libraries.rf_libraries.base_functions import HatchGround
+from pyedb.libraries.rf_libraries.base_functions import InterdigitalCapacitor
+from pyedb.libraries.rf_libraries.base_functions import MicroStripLine
+from pyedb.libraries.rf_libraries.base_functions import RadialStub
+from pyedb.libraries.rf_libraries.base_functions import RatRace
+from pyedb.libraries.rf_libraries.base_functions import SpiralInductor
+from pyedb.libraries.rf_libraries.planar_antennas import CircularPatch
+from pyedb.libraries.rf_libraries.planar_antennas import RectangularPatch
+from pyedb.libraries.rf_libraries.planar_antennas import TriangularPatch
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]

@@ -28,9 +28,7 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 import re
 
-from ansys.edb.core.net.differential_pair import (
-    DifferentialPair as CoreDifferentialPair,
-)
+from ansys.edb.core.net.differential_pair import DifferentialPair as CoreDifferentialPair
 
 
 class DifferentialPairs:

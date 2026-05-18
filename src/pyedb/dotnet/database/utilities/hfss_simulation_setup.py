@@ -21,20 +21,16 @@
 # SOFTWARE.
 
 
-from pyedb.dotnet.database.sim_setup_data.data.mesh_operation import (
-    LengthMeshOperation,
-    SkinDepthMeshOperation,
-)
-from pyedb.dotnet.database.sim_setup_data.data.settings import (
-    AdaptiveSettings,
-    AdvancedMeshSettings,
-    CurveApproxSettings,
-    DcrSettings,
-    DefeatureSettings,
-    HfssPortSettings,
-    HfssSolverSettings,
-    ViaSettings,
-)
+from pyedb.dotnet.database.sim_setup_data.data.mesh_operation import LengthMeshOperation
+from pyedb.dotnet.database.sim_setup_data.data.mesh_operation import SkinDepthMeshOperation
+from pyedb.dotnet.database.sim_setup_data.data.settings import AdaptiveSettings
+from pyedb.dotnet.database.sim_setup_data.data.settings import AdvancedMeshSettings
+from pyedb.dotnet.database.sim_setup_data.data.settings import CurveApproxSettings
+from pyedb.dotnet.database.sim_setup_data.data.settings import DcrSettings
+from pyedb.dotnet.database.sim_setup_data.data.settings import DefeatureSettings
+from pyedb.dotnet.database.sim_setup_data.data.settings import HfssPortSettings
+from pyedb.dotnet.database.sim_setup_data.data.settings import HfssSolverSettings
+from pyedb.dotnet.database.sim_setup_data.data.settings import ViaSettings
 from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
 from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import generate_unique_name

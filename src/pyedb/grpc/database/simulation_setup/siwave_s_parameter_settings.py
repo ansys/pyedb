@@ -26,11 +26,9 @@ if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
         SIWaveSParameterSettings as CoreSIWaveSParameterSettings,
     )
-from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
-    SParamDCBehavior as CoreSParamDCBehavior,
-    SParamExtrapolation as CoreSParamExtrapolation,
-    SParamInterpolation as CoreSParamInterpolation,
-)
+from ansys.edb.core.simulation_setup.siwave_simulation_settings import SParamDCBehavior as CoreSParamDCBehavior
+from ansys.edb.core.simulation_setup.siwave_simulation_settings import SParamExtrapolation as CoreSParamExtrapolation
+from ansys.edb.core.simulation_setup.siwave_simulation_settings import SParamInterpolation as CoreSParamInterpolation
 
 _mapping_dc_behavior = {
     "zero": CoreSParamDCBehavior.ZERO_DC,

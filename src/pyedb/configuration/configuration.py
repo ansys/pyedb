@@ -30,7 +30,10 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.generic.constants import FAdaptTypeMapper, MeshOperationTypeMapper, SourceTermMapper, TerminalTypeMapper
+from pyedb.generic.constants import FAdaptTypeMapper
+from pyedb.generic.constants import MeshOperationTypeMapper
+from pyedb.generic.constants import SourceTermMapper
+from pyedb.generic.constants import TerminalTypeMapper
 from pyedb.generic.settings import settings
 from pyedb.misc.decorators import execution_timer
 
@@ -638,7 +641,7 @@ class Configuration:
         if len(self._pedb.stackup.signal_layers) == 0:
             self.__create_stackup()
         elif not len(input_signal_layers) == len(self._pedb.stackup.signal_layers):
-            raise Exception(f"Input signal layer count do not match.")
+            raise Exception("Input signal layer count do not match.")
         else:
             self.__update_stackup()
 

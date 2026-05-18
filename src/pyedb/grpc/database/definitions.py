@@ -20,14 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Dict, List, Optional, Union
-import warnings
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.package_def import PackageDef
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_property
 
 
 class Definitions:
@@ -36,7 +35,7 @@ class Definitions:
 
     @property
     @deprecated_property("use components property instead")
-    def component_defs(self) -> Dict[str, ComponentDef]:
+    def component_defs(self) -> dict[str, ComponentDef]:
         """Component definitions.
 
         .. deprecated:: 0.66.0
@@ -91,7 +90,7 @@ class Definitions:
 
     @property
     @deprecated_property("use packages property instead")
-    def package_defs(self) -> Dict[str, PackageDef]:
+    def package_defs(self) -> dict[str, PackageDef]:
         """Package definitions.
 
         .. deprecated:: 0.66.0
@@ -101,7 +100,7 @@ class Definitions:
         return self.packages
 
     @property
-    def components(self) -> Dict[str, ComponentDef]:
+    def components(self) -> dict[str, ComponentDef]:
         """Component definitions
 
         Examples
@@ -126,7 +125,7 @@ class Definitions:
         return self.packages
 
     @property
-    def packages(self) -> Dict[str, PackageDef]:
+    def packages(self) -> dict[str, PackageDef]:
         """Package definitions.
 
         Examples
@@ -186,8 +185,8 @@ class Definitions:
 
     @deprecated("use add_package() method instead")
     def add_package_def(
-        self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
-    ) -> Union[PackageDef, bool]:
+        self, name: str, component_part_name: str | None = None, boundary_points: list[list[float]] | None = None
+    ) -> PackageDef | bool:
         """Add a package definition.
 
         .. deprecated:: 0.66.0
@@ -198,8 +197,8 @@ class Definitions:
         return self.add_package(name, component_part_name=component_part_name, boundary_points=boundary_points)
 
     def add_package(
-        self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
-    ) -> Union[PackageDef, bool]:
+        self, name: str, component_part_name: str | None = None, boundary_points: list[list[float]] | None = None
+    ) -> PackageDef | bool:
         """Add a package definition.
 
         Parameters
@@ -231,7 +230,7 @@ class Definitions:
         >>> if custom_pkg:
         ...     print(f"Custom package boundary: {custom_pkg.exterior_boundary}")
         """
-        if not name in self.packages:
+        if name not in self.packages:
             package_def = PackageDef.create(self._pedb, name)
             if component_part_name in self.components:
                 definition = self.components[component_part_name]

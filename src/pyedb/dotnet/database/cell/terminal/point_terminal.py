@@ -60,7 +60,7 @@ class PointTerminal(Terminal):
         )
         terminal = PointTerminal(self._pedb, terminal)
         if terminal.is_null:
-            msg = f"Failed to create terminal. "
+            msg = "Failed to create terminal. "
             if name in self._pedb.terminals:
                 msg += f"Terminal {name} already exists."
             raise Exception(msg)

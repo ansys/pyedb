@@ -24,9 +24,7 @@ from enum import Enum
 import os
 
 from pyedb.generic.general_methods import ET
-from pyedb.misc.siw_feature_config.xtalk_scan.fd_xtalk_scan_config import (
-    CrosstalkFrequency,
-)
+from pyedb.misc.siw_feature_config.xtalk_scan.fd_xtalk_scan_config import CrosstalkFrequency
 from pyedb.misc.siw_feature_config.xtalk_scan.impedance_scan_config import ImpedanceScan
 from pyedb.misc.siw_feature_config.xtalk_scan.td_xtalk_config import CrossTalkTime
 
@@ -107,7 +105,7 @@ class SiwaveScanConfig:
         if not self.file_path:
             self._pedb.logger.error("No xml file path provided, please provide absolute valid one.")
             return False
-        self._pedb.logger.info(f"Parsing xml file")
+        self._pedb.logger.info("Parsing xml file")
         scan_config = ET.Element("SiwaveScanConfig")
         scan_config.set("xmlns", "http://webstds.ipc.org/2581")
         scan_config.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
@@ -122,6 +120,6 @@ class SiwaveScanConfig:
         except AttributeError:
             pass
         tree = ET.ElementTree(scan_config)
-        self._pedb.logger.info(f"Writing xml file")
+        self._pedb.logger.info("Writing xml file")
         tree.write(self.file_path)
         return True if os.path.exists(self.file_path) else False

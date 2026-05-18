@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any, Literal, overload
+from typing import Any
+from typing import Literal
+from typing import overload
 
 from pyedb import siwave as _siwave
 from pyedb.dotnet.edb import Edb as _DotnetEdb

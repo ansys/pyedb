@@ -28,7 +28,7 @@ from dataclasses import dataclass
 import math
 from pathlib import Path
 import re
-from typing import Any, Optional
+from typing import Any
 
 
 def _to_hz(text: str) -> float:
@@ -257,7 +257,7 @@ class AdaptivePass:
     tetrahedra: int
     matrix_size: int
     memory_mb: float
-    delta_s: Optional[float]
+    delta_s: float | None
     converged: bool
     elapsed_sec: int
 
@@ -469,8 +469,8 @@ class AdaptiveBlockParser(BlockParser):
         0
         """
         passes: list[AdaptivePass] = []
-        current: Optional[AdaptivePass] = None
-        last_converge_pass: Optional[int] = None
+        current: AdaptivePass | None = None
+        last_converge_pass: int | None = None
         adaptive_converged_line_found = False
 
         for lineno, line in enumerate(self.lines, 1):
@@ -542,7 +542,7 @@ class SweepBlockParser(BlockParser):
     101
     """
 
-    def parse(self) -> Optional[Sweep]:
+    def parse(self) -> Sweep | None:
         """Return sweep information or None if no sweep block exists.
 
         Returns
@@ -679,7 +679,7 @@ class ParsedLog:
     project: ProjectInfo
     init_mesh: InitMesh
     adaptive: list[AdaptivePass]
-    sweep: Optional[Sweep]
+    sweep: Sweep | None
 
     def to_dict(self) -> dict:
         """Deep-convert the entire object to JSON-serializable primitives.

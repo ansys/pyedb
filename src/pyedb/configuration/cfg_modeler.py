@@ -20,24 +20,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from copy import deepcopy as copy
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from dataclasses import dataclass
+from dataclasses import field
+from typing import Any
+from typing import TypedDict
 
 from pyedb.configuration.cfg_components import CfgComponent
-from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstackInstance
+from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition
+from pyedb.configuration.cfg_padstacks import CfgPadstackInstance
 
 
 @dataclass
 class CfgTrace:
     name: str
     layer: str
-    path: List[List[Union[float, str]]]
+    path: list[list[float | str]]
     width: str
     net_name: str
     start_cap_style: str
     end_cap_style: str
     corner_style: str
-    incremental_path: List[List[Union[float, str]]]
+    incremental_path: list[list[float | str]]
 
 
 @dataclass
@@ -48,34 +51,34 @@ class CfgPlane:
     type: str = "rectangle"
 
     # rectangle
-    lower_left_point: List[Union[float, str]] = field(default_factory=list)
-    upper_right_point: List[Union[float, str]] = field(default_factory=list)
-    corner_radius: Union[float, str] = 0
-    rotation: Union[float, str] = 0
-    voids: List[Any] = field(default_factory=list)
+    lower_left_point: list[float | str] = field(default_factory=list)
+    upper_right_point: list[float | str] = field(default_factory=list)
+    corner_radius: float | str = 0
+    rotation: float | str = 0
+    voids: list[Any] = field(default_factory=list)
 
     # polygon
-    points: List[List[float]] = field(default_factory=list)
+    points: list[list[float]] = field(default_factory=list)
 
     # circle
-    radius: Union[float, str] = 0
-    position: List[float] = field(default_factory=lambda: [0, 0])
+    radius: float | str = 0
+    position: list[float] = field(default_factory=lambda: [0, 0])
 
 
 class PrimitivesToDeleteDict(TypedDict, total=False):
-    layer_name: List[str]
-    name: List[str]
-    net_name: List[str]
+    layer_name: list[str]
+    name: list[str]
+    net_name: list[str]
 
 
 @dataclass
 class CfgModeler:
     """Manage configuration general settings."""
 
-    traces: List[CfgTrace] = field(default_factory=list)
-    planes: List[CfgPlane] = field(default_factory=list)
+    traces: list[CfgTrace] = field(default_factory=list)
+    planes: list[CfgPlane] = field(default_factory=list)
 
-    def __init__(self, pedb, data: Dict):
+    def __init__(self, pedb, data: dict):
         self._pedb = pedb
         self.traces = []
         self.planes = []
@@ -110,8 +113,8 @@ class CfgModeler:
         start_cap_style: str = "round",
         end_cap_style: str = "round",
         corner_style: str = "sharp",
-        path: Optional[Any] = None,
-        incremental_path: Optional[Any] = None,
+        path: Any | None = None,
+        incremental_path: Any | None = None,
     ):
         """Add a trace from a dictionary of parameters."""
         trace_obj = CfgTrace(
@@ -133,11 +136,11 @@ class CfgModeler:
         layer: str,
         name: str = "",
         net_name: str = "",
-        lower_left_point: List[float] = "",
-        upper_right_point: List[float] = "",
+        lower_left_point: list[float] = "",
+        upper_right_point: list[float] = "",
         corner_radius: float = 0,
         rotation: float = 0,
-        voids: Optional[List[Any]] = "",
+        voids: list[Any] | None = "",
     ):
         plane_obj = CfgPlane(
             name=name,
@@ -160,9 +163,9 @@ class CfgModeler:
         net_name: str = "",
         corner_radius: float = 0,
         rotation: float = 0,
-        voids: Optional[List[Any]] = "",
-        radius: Union[float, str] = 0,
-        position: List[Union[float, str]] = "",
+        voids: list[Any] | None = "",
+        radius: float | str = 0,
+        position: list[float | str] = "",
     ):
         plane_obj = CfgPlane(
             name=name,
@@ -185,8 +188,8 @@ class CfgModeler:
         net_name: str = "",
         corner_radius: float = 0,
         rotation: float = 0,
-        voids: Optional[List[Any]] = "",
-        points: List[List[float]] = "",
+        voids: list[Any] | None = "",
+        points: list[list[float]] = "",
     ):
         plane_obj = CfgPlane(
             name=name,

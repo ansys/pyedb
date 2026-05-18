@@ -26,17 +26,17 @@ This module contains the `Padstacks` class.
 
 from collections import defaultdict
 import math
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
-import warnings
+from typing import TYPE_CHECKING
+from typing import Any
+from typing import Optional
+from typing import Union
 
-from ansys.edb.core.definition.padstack_def_data import (
-    PadGeometryType as CorePadGeometryType,
-    PadstackDefData as CorePadstackDefData,
-    PadstackHoleRange as CorePadstackHoleRange,
-    PadType as CorePadType,
-    SolderballPlacement as CoreSolderballPlacement,
-    SolderballShape as CoreSolderballShape,
-)
+from ansys.edb.core.definition.padstack_def_data import PadGeometryType as CorePadGeometryType
+from ansys.edb.core.definition.padstack_def_data import PadstackDefData as CorePadstackDefData
+from ansys.edb.core.definition.padstack_def_data import PadstackHoleRange as CorePadstackHoleRange
+from ansys.edb.core.definition.padstack_def_data import PadType as CorePadType
+from ansys.edb.core.definition.padstack_def_data import SolderballPlacement as CoreSolderballPlacement
+from ansys.edb.core.definition.padstack_def_data import SolderballShape as CoreSolderballShape
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
 import numpy as np
@@ -46,7 +46,9 @@ from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
+from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_property
 
 if TYPE_CHECKING:
     import rtree
@@ -109,7 +111,7 @@ class Padstacks(object):
 
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
-        self.__definitions: Dict[str, Any] = {}
+        self.__definitions: dict[str, Any] = {}
         self._instances_by_name = {}
         self._instances_by_net = {}
 
@@ -188,7 +190,7 @@ class Padstacks(object):
         return GEOMETRY_MAP.get(val, val)
 
     @property
-    def definitions(self) -> Dict[str, PadstackDef]:
+    def definitions(self) -> dict[str, PadstackDef]:
         """Padstack definitions.
 
         Returns
@@ -215,7 +217,7 @@ class Padstacks(object):
         return self.__definitions
 
     @property
-    def instances(self) -> Dict[int, PadstackInstance]:
+    def instances(self) -> dict[int, PadstackInstance]:
         """All padstack instances (vias and pins) in the layout.
 
         Returns
@@ -234,7 +236,7 @@ class Padstacks(object):
         return {i.id: i for i in self._pedb.layout.padstack_instances}
 
     @property
-    def instances_by_net(self) -> Dict[Any, PadstackInstance]:
+    def instances_by_net(self) -> dict[Any, PadstackInstance]:
         if not self._instances_by_net:
             for instance in self._pedb.layout.padstack_instances:
                 net_name = instance.net_name
@@ -243,7 +245,7 @@ class Padstacks(object):
         return self._instances_by_net
 
     @property
-    def instances_by_name(self) -> Dict[str, PadstackInstance]:
+    def instances_by_name(self) -> dict[str, PadstackInstance]:
         """All padstack instances (vias and pins) indexed by name.
 
         Returns
@@ -266,7 +268,7 @@ class Padstacks(object):
                     self._instances_by_net[name] = pds
         return self._instances_by_net
 
-    def find_instance_by_id(self, value: int) -> Optional[PadstackInstance]:
+    def find_instance_by_id(self, value: int) -> PadstackInstance | None:
         """Find a padstack instance by database ID.
 
         Parameters
@@ -290,7 +292,7 @@ class Padstacks(object):
         return next(i for i in self._pedb.layout.padstack_instances if i.id == value)
 
     @property
-    def pins(self) -> Dict[int, PadstackInstance]:
+    def pins(self) -> dict[int, PadstackInstance]:
         """All pin instances belonging to components.
 
         Returns
@@ -313,7 +315,7 @@ class Padstacks(object):
         return pins
 
     @property
-    def vias(self) -> Dict[int, PadstackInstance]:
+    def vias(self) -> dict[int, PadstackInstance]:
         """All via instances not belonging to components.
 
         Returns
@@ -335,7 +337,7 @@ class Padstacks(object):
 
     @property
     @deprecated_property("use pin_groups property instead.")
-    def pingroups(self) -> List[Any]:
+    def pingroups(self) -> list[Any]:
         """All Layout Pin groups.
 
         . deprecated:: pyedb 0.28.0
@@ -362,13 +364,13 @@ class Padstacks(object):
     def create_dielectric_filled_backdrills(
         self,
         layer: str,
-        diameter: Union[float, str],
+        diameter: float | str,
         material: str,
         permittivity: float,
-        padstack_instances: Optional[List[PadstackInstance]] = None,
-        padstack_definition: Optional[Union[str, List[str]]] = None,
-        dielectric_loss_tangent: Optional[float] = None,
-        nets: Optional[Union[str, List[str]]] = None,
+        padstack_instances: list[PadstackInstance] | None = None,
+        padstack_definition: str | list[str] | None = None,
+        dielectric_loss_tangent: float | None = None,
+        nets: str | list[str] | None = None,
     ) -> bool:
         r"""Create dielectric-filled back-drills for through-hole vias.
 
@@ -514,7 +516,7 @@ class Padstacks(object):
                         )
         if not material:
             raise ValueError("`material` must be specified")
-        if not material in self._pedb.materials:
+        if material not in self._pedb.materials:
             if not dielectric_loss_tangent:
                 dielectric_loss_tangent = 0.0
             self._pedb.materials.add_dielectric_material(
@@ -546,12 +548,12 @@ class Padstacks(object):
 
     def create_circular_padstack(
         self,
-        padstackname: Optional[str] = None,
+        padstackname: str | None = None,
         holediam: str = "300um",
         paddiam: str = "400um",
         antipaddiam: str = "600um",
-        startlayer: Optional[str] = None,
-        endlayer: Optional[str] = None,
+        startlayer: str | None = None,
+        endlayer: str | None = None,
     ) -> str:
         """Create a circular padstack.
 
@@ -665,7 +667,7 @@ class Padstacks(object):
             inst.core.delete()
         self._instances = None
 
-    def delete_padstack_instances(self, net_names: Union[str, List[str]]) -> bool:
+    def delete_padstack_instances(self, net_names: str | list[str]) -> bool:
         """Delete padstack instances by net names.
 
         Parameters
@@ -782,8 +784,8 @@ class Padstacks(object):
         self._pedb.excitation_manager.create_coax_port(padstackinstance, use_dot_separator=use_dot_separator, name=name)
 
     def get_pin_from_component_and_net(
-        self, refdes: Optional[str] = None, netname: Optional[str] = None
-    ) -> List[PadstackInstance]:
+        self, refdes: str | None = None, netname: str | None = None
+    ) -> list[PadstackInstance]:
         """Retrieve pins by component reference designator and net name.
 
         Parameters
@@ -854,7 +856,7 @@ class Padstacks(object):
 
     def get_pad_parameters(
         self, pin: PadstackInstance, layername: str, pad_type: str = "regular_pad"
-    ) -> Tuple[str, Union[List[float], List[List[float]]], float, float, float]:
+    ) -> tuple[str, list[float] | list[list[float]], float, float, float]:
         """Get pad parameters for a pin on a specific layer.
 
         Parameters
@@ -898,9 +900,7 @@ class Padstacks(object):
             rotation = Value(padparams[4])
             return geometry_type.name, parameters, offset_x, offset_y, rotation
         elif len(padparams) == 4:  # polygon based
-            from ansys.edb.core.geometry.polygon_data import (
-                PolygonData as GrpcPolygonData,
-            )
+            from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
 
             if isinstance(padparams[0], GrpcPolygonData):
                 points = [[Value(pt.x), Value(pt.y)] for pt in padparams[0].points]
@@ -913,7 +913,7 @@ class Padstacks(object):
         # Fallback: ensure a consistent return type for all code paths
         return "unknown", [0.0], 0.0, 0.0, 0.0
 
-    def set_all_antipad_value(self, value: Union[float, str]) -> bool:
+    def set_all_antipad_value(self, value: float | str) -> bool:
         """Set anti-pad value for all padstack definitions.
 
         Parameters
@@ -1001,12 +1001,10 @@ class Padstacks(object):
                 continue  # padstack definition has no data (e.g. PlanarEMVia)
             if ratio <= minimum_value_to_replace:
                 padstack_def.hole_plating_ratio = default_plating_ratio
-                self._logger.info(
-                    "Padstack definition with zero plating ratio, defaulting to 20%".format(padstack_def.name)
-                )
+                self._logger.info("Padstack definition with zero plating ratio, defaulting to 20%")
         return True
 
-    def get_via_instance_from_net(self, net_list: Optional[Union[str, List[str]]] = None) -> List[PadstackInstance]:
+    def get_via_instance_from_net(self, net_list: str | list[str] | None = None) -> list[PadstackInstance]:
         """Get via instances by net names.
 
         Parameters
@@ -1070,7 +1068,7 @@ class Padstacks(object):
 
     def create(
         self,
-        padstackname: Optional[str] = None,
+        padstackname: str | None = None,
         holediam: str = "300um",
         paddiam: str = "400um",
         antipaddiam: str = "600um",
@@ -1086,11 +1084,11 @@ class Padstacks(object):
         pad_offset_x: str = "0.0",
         pad_offset_y: str = "0.0",
         pad_rotation: str = "0.0",
-        pad_polygon: Optional[Any] = None,
-        antipad_polygon: Optional[Any] = None,
-        polygon_hole: Optional[Any] = None,
-        start_layer: Optional[str] = None,
-        stop_layer: Optional[str] = None,
+        pad_polygon: Any | None = None,
+        antipad_polygon: Any | None = None,
+        polygon_hole: Any | None = None,
+        start_layer: str | None = None,
+        stop_layer: str | None = None,
         add_default_layer: bool = False,
         anti_pad_x_size: str = "600um",
         anti_pad_y_size: str = "600um",
@@ -1294,7 +1292,7 @@ class Padstacks(object):
         self._logger.info(f"Padstack {padstackname} successfully created.")
         return padstackname
 
-    def _get_pin_layer_range(self, pin: PadstackInstance) -> Union[Tuple[str, str], bool]:
+    def _get_pin_layer_range(self, pin: PadstackInstance) -> tuple[str, str] | bool:
         layers = pin.get_layer_range()
         if layers:
             return layers[0], layers[1]
@@ -1325,14 +1323,14 @@ class Padstacks(object):
     @deprecate_argument_name({"fromlayer": "from_layer", "tolayer": "to_layer", "solderlayer": "solder_ball_layer"})
     def place(
         self,
-        position: List[float],
+        position: list[float],
         definition_name: str | PadstackDef,
         net_name: str = "",
         via_name: str = "",
         rotation: float = 0.0,
-        from_layer: Optional[str] = None,
-        to_layer: Optional[str] = None,
-        solder_ball_layer: Optional[str] = None,
+        from_layer: str | None = None,
+        to_layer: str | None = None,
+        solder_ball_layer: str | None = None,
         is_pin: bool = False,
         layer_map: str = "two_way",
     ) -> PadstackInstance:
@@ -1419,7 +1417,7 @@ class Padstacks(object):
         else:
             raise RuntimeError("Place padstack failed")
 
-    def remove_pads_from_padstack(self, padstack_name: str, layer_name: Optional[str] = None):
+    def remove_pads_from_padstack(self, padstack_name: str, layer_name: str | None = None):
         """Remove pads from a padstack definition on specified layers.
 
         Parameters
@@ -1459,14 +1457,14 @@ class Padstacks(object):
     def set_pad_property(
         self,
         padstack_name: str,
-        layer_name: Optional[str] = None,
+        layer_name: str | None = None,
         pad_shape: str = "Circle",
-        pad_params: Union[float, List[float]] = 0,
+        pad_params: float | list[float] = 0,
         pad_x_offset: float = 0,
         pad_y_offset: float = 0,
         pad_rotation: float = 0,
         antipad_shape: str = "Circle",
-        antipad_params: Union[float, List[float]] = 0,
+        antipad_params: float | list[float] = 0,
         antipad_x_offset: float = 0,
         antipad_y_offset: float = 0,
         antipad_rotation: float = 0,
@@ -1556,13 +1554,13 @@ class Padstacks(object):
 
     def get_instances(
         self,
-        name: Optional[str] = None,
-        pid: Optional[int] = None,
-        definition_name: Optional[str] = None,
-        net_name: Optional[Union[str, List[str]]] = None,
-        component_reference_designator: Optional[str] = None,
-        component_pin: Optional[str] = None,
-    ) -> List[PadstackInstance]:
+        name: str | None = None,
+        pid: int | None = None,
+        definition_name: str | None = None,
+        net_name: str | list[str] | None = None,
+        component_reference_designator: str | None = None,
+        component_pin: str | None = None,
+    ) -> list[PadstackInstance]:
         """Get padstack instances by search criteria.
 
         Parameters
@@ -1618,13 +1616,13 @@ class Padstacks(object):
 
     def get_reference_pins(
         self,
-        positive_pin: Union[int, str, PadstackInstance],
+        positive_pin: int | str | PadstackInstance,
         reference_net: str = "gnd",
         search_radius: float = 5e-3,
         max_limit: int = 0,
         component_only: bool = True,
         pinlist_position: dict = None,
-    ) -> List[PadstackInstance]:
+    ) -> list[PadstackInstance]:
         """Find reference pins near a specified pin.
 
         Parameters
@@ -1675,7 +1673,7 @@ class Padstacks(object):
             pinlist = [pin[1] for pin in sorted(pin_dict.items())[:max_limit]]
         return pinlist
 
-    def get_padstack_instances_rtree_index(self, nets: Optional[Union[str, List[str]]] = None) -> "rtree.index.Index":
+    def get_padstack_instances_rtree_index(self, nets: str | list[str] | None = None) -> "rtree.index.Index":
         """Returns padstack instances Rtree index.
 
         Parameters
@@ -1710,10 +1708,10 @@ class Padstacks(object):
 
     def get_padstack_instances_id_intersecting_polygon(
         self,
-        points: List[Tuple[float, float]],
-        nets: Optional[Union[str, List[str]]] = None,
-        padstack_instances_index: Optional[Union[Dict[int, Tuple[float, float]], "rtree.index.Index"]] = None,
-    ) -> List[int]:
+        points: list[tuple[float, float]],
+        nets: str | list[str] | None = None,
+        padstack_instances_index: Union[dict[int, tuple[float, float]], "rtree.index.Index"] | None = None,
+    ) -> list[int]:
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
 
         Parameters
@@ -1776,10 +1774,10 @@ class Padstacks(object):
 
     def get_padstack_instances_intersecting_bounding_box(
         self,
-        bounding_box: List[float],
-        nets: Optional[Union[str, List[str]]] = None,
+        bounding_box: list[float],
+        nets: str | list[str] | None = None,
         padstack_instances_index: Optional["rtree.index.Index"] = None,
-    ) -> List[int]:
+    ) -> list[int]:
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
 
         Parameters
@@ -1814,9 +1812,9 @@ class Padstacks(object):
         net_name: str = "GND",
         distance_threshold: float = 5e-3,
         minimum_via_number: int = 6,
-        selected_angles: Optional[List[float]] = None,
-        padstack_instances_id: Optional[List[int]] = None,
-    ) -> List[str]:
+        selected_angles: list[float] | None = None,
+        padstack_instances_id: list[int] | None = None,
+    ) -> list[str]:
         """Replace padstack instances along lines into a single polygon.
 
         Detect all pad-stack instances that are placed along lines and replace them by a single polygon based one
@@ -1917,11 +1915,11 @@ class Padstacks(object):
 
     def merge_via(
         self,
-        contour_boxes: List[List[float]],
-        net_filter: Optional[Union[str, List[str]]] = None,
-        start_layer: Optional[str] = None,
-        stop_layer: Optional[str] = None,
-    ) -> List[PadstackInstance]:
+        contour_boxes: list[list[float]],
+        net_filter: str | list[str] | None = None,
+        start_layer: str | None = None,
+        stop_layer: str | None = None,
+    ) -> list[PadstackInstance]:
         """Evaluate pad-stack instances included on the provided point list and replace all by single instance.
 
         Parameters
@@ -1961,7 +1959,7 @@ class Padstacks(object):
                 points=[tuple(pt) for pt in contour_box], padstack_instances_index=instances_index
             )
             if net_filter:
-                instances = [id for id in instances if not instances_dict[id].net.name in net_filter]
+                instances = [id for id in instances if instances_dict[id].net.name not in net_filter]
             net = instances_dict[instances[0]].net.name
             instances_pts = np.array([instances_dict[inst].position for inst in instances])
             convex_hull_contour = ConvexHull(instances_pts)
@@ -1994,7 +1992,7 @@ class Padstacks(object):
         return merged_vias
 
     def reduce_via_in_bounding_box(
-        self, bounding_box: List[float], x_samples: int, y_samples: int, nets: Optional[Union[str, List[str]]] = None
+        self, bounding_box: list[float], x_samples: int, y_samples: int, nets: str | list[str] | None = None
     ) -> bool:
         """
         Reduce the number of vias intersecting bounding box and nets by x and y samples.
@@ -2048,8 +2046,8 @@ class Padstacks(object):
 
     @staticmethod
     def dbscan(
-        padstack: Dict[int, List[float]], max_distance: float = 1e-3, min_samples: int = 5
-    ) -> Dict[int, List[int]]:
+        padstack: dict[int, list[float]], max_distance: float = 1e-3, min_samples: int = 5
+    ) -> dict[int, list[int]]:
         """
         Density based spatial clustering for padstack instances
 
@@ -2108,15 +2106,15 @@ class Padstacks(object):
                 cluster_id += 1
 
         # group point IDs by label
-        clusters: Dict[int, List[int]] = defaultdict(list)
+        clusters: dict[int, list[int]] = defaultdict(list)
         for i, label in enumerate(labels):
             clusters[int(label)].append(padstack_ids[i])
 
         return dict(clusters)
 
     def reduce_via_by_density(
-        self, padstacks: List[int], cell_size_x: float = 1e-3, cell_size_y: float = 1e-3, delete: bool = False
-    ) -> tuple[List[int], List[List[List[float]]]]:
+        self, padstacks: list[int], cell_size_x: float = 1e-3, cell_size_y: float = 1e-3, delete: bool = False
+    ) -> tuple[list[int], list[list[list[float]]]]:
         """Reduce the number of vias by density.
 
         Keeps only one via closest to the center of each grid cell. The cells

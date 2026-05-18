@@ -23,27 +23,19 @@
 import logging
 from pathlib import Path
 import re
-from typing import List, Optional, Union
 
-from ansys.edb.core.definition.component_model import (
-    NPortComponentModel as CoreNPortComponentModel,
-)
-from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
-from ansys.edb.core.definition.solder_ball_property import SolderBallProperty as CoreSolderBallProperty, SolderballShape
+from ansys.edb.core.definition.component_model import NPortComponentModel as CoreNPortComponentModel
+from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
+from ansys.edb.core.definition.die_property import DieType as CoreDieType
+from ansys.edb.core.definition.solder_ball_property import SolderballShape
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
 from ansys.edb.core.hierarchy.netlist_model import NetlistModel as CoreNetlistModel
 from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
-from ansys.edb.core.hierarchy.sparameter_model import (
-    SParameterModel as CoreSParameterModel,
-)
+from ansys.edb.core.hierarchy.sparameter_model import SParameterModel as CoreSParameterModel
 from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSPICEModel
-from ansys.edb.core.primitive.padstack_instance import (
-    PadstackInstance as CorePadstackInstance,
-)
-from ansys.edb.core.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal as CorePadstackInstanceTerminal,
-)
+from ansys.edb.core.primitive.padstack_instance import PadstackInstance as CorePadstackInstance
+from ansys.edb.core.terminal.padstack_instance_terminal import PadstackInstanceTerminal as CorePadstackInstanceTerminal
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 import numpy as np
 
@@ -53,9 +45,7 @@ from pyedb.grpc.database.hierarchy.s_parameter_model import SparamModel
 from pyedb.grpc.database.hierarchy.spice_model import SpiceModel
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from pyedb.grpc.database.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal,
-)
+from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
 
@@ -136,7 +126,7 @@ class Component:
         self._package_def = None
 
     @property
-    def pin_pairs(self) -> List[tuple[str, str]] | None:
+    def pin_pairs(self) -> list[tuple[str, str]] | None:
         """Pinpairs of the model."""
         if "PinPairModel" in str(self.model):
             return self.model.pin_pairs
@@ -382,9 +372,7 @@ class Component:
         from pyedb.grpc.database.definition.package_def import PackageDef
 
         if value not in self._pedb.definitions.packages:
-            from ansys.edb.core.definition.package_def import (
-                PackageDef as GrpcPackageDef,
-            )
+            from ansys.edb.core.definition.package_def import PackageDef as GrpcPackageDef
 
             self._package_def = GrpcPackageDef.create(self._pedb.db, name=value)
             self._package_def.exterior_boundary = CorePolygonData(points=self.bounding_box)
@@ -621,7 +609,7 @@ class Component:
                 self.core.component_property = cmp_property
 
     @property
-    def solder_ball_diameter(self) -> Union[tuple[float, float], None]:
+    def solder_ball_diameter(self) -> tuple[float, float] | None:
         """Solder ball diameter.
 
         Returns
@@ -718,7 +706,7 @@ class Component:
             return _model_type
 
     @property
-    def rlc_values(self) -> Union[List[list[float]], List[float]]:
+    def rlc_values(self) -> list[list[float]] | list[float]:
         """Get component rlc values.
 
         Returns
@@ -1322,9 +1310,9 @@ class Component:
     def assign_spice_model(
         self,
         file_path: str,
-        name: Optional[str] = None,
-        sub_circuit_name: Optional[str] = None,
-        terminal_pairs: Optional[list] = None,
+        name: str | None = None,
+        sub_circuit_name: str | None = None,
+        terminal_pairs: list | None = None,
     ) -> SpiceModel | bool:
         """Assign Spice model to this component.
 
@@ -1459,9 +1447,7 @@ class Component:
         >>>comp_def.add_n_port_model("c:GRM32_DC0V_25degC_series.s2p", "GRM32_DC0V_25degC_series")
         >>>edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
         """
-        from ansys.edb.core.definition.component_model import (
-            ComponentModel as GrpcComponentModel,
-        )
+        from ansys.edb.core.definition.component_model import ComponentModel as GrpcComponentModel
 
         model = GrpcComponentModel.find_by_name(self.core.component_def, name)
         if not model.is_null:

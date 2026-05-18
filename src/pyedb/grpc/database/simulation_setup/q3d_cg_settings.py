@@ -25,10 +25,8 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DCGSettings as CoreQ3DCGSettings
-from ansys.edb.core.simulation_setup.q3d_simulation_settings import (
-    Q3DSolutionOrder as CoreQ3DSolutionOrder,
-    SolverType as CoreSolverType,
-)
+from ansys.edb.core.simulation_setup.q3d_simulation_settings import Q3DSolutionOrder as CoreQ3DSolutionOrder
+from ansys.edb.core.simulation_setup.q3d_simulation_settings import SolverType as CoreSolverType
 
 _mapping_solution_order = {
     "normal": CoreQ3DSolutionOrder.NORMAL,
@@ -169,7 +167,7 @@ class Q3DCGSettings:
 
     @solution_order.setter
     def solution_order(self, value: str):
-        if not (value in _mapping_solution_order.keys()):
+        if value not in _mapping_solution_order.keys():
             raise ValueError(
                 f"Invalid solution order: {value}. Valid options are: {list(_mapping_solution_order.keys())}"
             )
@@ -189,6 +187,6 @@ class Q3DCGSettings:
 
     @solver_type.setter
     def solver_type(self, value: str):
-        if not (value in _mapping_solver_type.keys()):
+        if value not in _mapping_solver_type.keys():
             raise ValueError(f"Invalid solver type: {value}. Valid options are: {list(_mapping_solver_type.keys())}")
         self.core.solver_type = _mapping_solver_type[value]

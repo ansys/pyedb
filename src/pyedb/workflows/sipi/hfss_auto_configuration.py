@@ -51,7 +51,8 @@ Create configuration with specific net groups:
 from __future__ import annotations
 
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 import os
 from pathlib import Path
 import re
@@ -819,7 +820,7 @@ class HFSSAutoConfiguration:
             raise ValueError("No reference net defined.")
         # step 1: cutout
         self._pedb.logger.info(f"Creating project {self.target_edb_path}")
-        self._pedb.logger.info(f"step 1: cutout")
+        self._pedb.logger.info("step 1: cutout")
         clipped_nets = self.power_nets
         clipped_nets.append(self.reference_net)
         self._pedb.cutout(
@@ -829,7 +830,7 @@ class HFSSAutoConfiguration:
             expansion_size=self.cutout_expansion,
         )
         # step 2: create Ports
-        self._pedb.logger.info(f"step 2: creating ports")
+        self._pedb.logger.info("step 2: creating ports")
         if not self.components:
             self._pedb.logger.info("No components provided, searching component instances")
             self.__get_components_using_signal_nets()
@@ -839,7 +840,7 @@ class HFSSAutoConfiguration:
             if self.solder_balls:
                 for solder_ball in self.solder_balls:
                     comp = solder_ball.ref_des
-                    if not comp in self.components:
+                    if comp not in self.components:
                         self._pedb.logger.warning(f"Component {comp} not found in the design, skipping")
                         continue
                     self._pedb.excitation_manager.create_port_on_component(
@@ -871,7 +872,7 @@ class HFSSAutoConfiguration:
 
         self._pedb.logger.info(f"Ports created: {len(self._pedb.hfss.ports)}")
         # step 3: create simulation setup
-        self._pedb.logger.info(f"step 3: creating simulation setup")
+        self._pedb.logger.info("step 3: creating simulation setup")
         setup = self._pedb.hfss.add_setup("Setup1")
         setup.adaptive_settings.max_passes = self.simulation_setup.maximum_pass_number
         if not self.grpc:

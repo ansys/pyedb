@@ -23,7 +23,6 @@
 import logging
 from pathlib import Path
 import re
-from typing import Optional
 
 import numpy as np
 
@@ -1024,9 +1023,9 @@ class EDBComponent(Group):
     def assign_spice_model(
         self,
         file_path: str,
-        name: Optional[str] = None,
-        sub_circuit_name: Optional[str] = None,
-        terminal_pairs: Optional[list] = None,
+        name: str | None = None,
+        sub_circuit_name: str | None = None,
+        terminal_pairs: list | None = None,
     ):
         """Assign Spice model to this component.
 

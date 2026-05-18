@@ -20,19 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings import (
-    HFSSAdvancedMeshingSettings,
-)
-from pyedb.grpc.database.simulation_setup.hfss_advanced_settings import (
-    HFSSAdvancedSettings,
-)
+from pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings import HFSSAdvancedMeshingSettings
+from pyedb.grpc.database.simulation_setup.hfss_advanced_settings import HFSSAdvancedSettings
 from pyedb.grpc.database.simulation_setup.hfss_dcr_settings import HFSSDCRSettings
-from pyedb.grpc.database.simulation_setup.hfss_general_settings import (
-    HFSSGeneralSettings,
-)
-from pyedb.grpc.database.simulation_setup.hfss_settings_options import (
-    HFSSSettingsOptions,
-)
+from pyedb.grpc.database.simulation_setup.hfss_general_settings import HFSSGeneralSettings
+from pyedb.grpc.database.simulation_setup.hfss_settings_options import HFSSSettingsOptions
 from pyedb.grpc.database.simulation_setup.hfss_solver_settings import HFSSSolverSettings
 from pyedb.misc.decorators import deprecated_property
 

@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from dataclasses import dataclass
-from typing import Tuple, Union
 
 
 @dataclass
@@ -54,10 +53,7 @@ class Substrate:
     er: float = 4.4  # relative permittivity
     tan_d: float = 0  # loss tangent
     name: str = "SUB"
-    size: Tuple[float, float] = (0.001, 0.001)  # width, length in metres
-
-
-from typing import Union
+    size: tuple[float, float] = (0.001, 0.001)  # width, length in metres
 
 
 # ------------------------------------------------------------------
@@ -225,7 +221,7 @@ class Layer:
     5e-05
     """
 
-    def __init__(self, pedb, name: str, material: Union[Conductor, Dielectric] = None, thickness: float = 1e-6):
+    def __init__(self, pedb, name: str, material: Conductor | Dielectric = None, thickness: float = 1e-6):
         self._pedb = pedb
         self.name: str = name
         self.thickness: float = thickness
@@ -255,12 +251,12 @@ class Layer:
         self._pedb.stackup.layers[self.name].thickness = value
 
     @property
-    def material(self) -> Union[Conductor, Dielectric]:
+    def material(self) -> Conductor | Dielectric:
         """Material assigned to this layer."""
         return self._material
 
     @material.setter
-    def material(self, material: Union[Conductor, Dielectric]):
+    def material(self, material: Conductor | Dielectric):
         self._material = material
         self._pedb.stackup.layers[self.name].material = material.name
 

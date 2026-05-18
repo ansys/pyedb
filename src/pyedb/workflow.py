@@ -36,7 +36,7 @@ class Workflow:
     def __init__(self, pedb):
         self._pedb = pedb
 
-    def export_bill_of_materials(self, file_path: Union[str, Path]):
+    def export_bill_of_materials(self, file_path: str | Path):
         """Export bill of materials to a csv file.
 
         Parameters

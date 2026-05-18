@@ -25,11 +25,14 @@ import os
 import re
 import subprocess  # nosec B404
 import sys
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from defusedxml.ElementTree import parse as defused_parse
 
-from pyedb.generic.general_methods import ET, env_path, env_value, is_linux
+from pyedb.generic.general_methods import ET
+from pyedb.generic.general_methods import env_path
+from pyedb.generic.general_methods import env_value
+from pyedb.generic.general_methods import is_linux
 from pyedb.generic.settings import settings
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.misc import list_installed_ansysem
@@ -301,7 +304,7 @@ class ControlFileVia(ControlFileLayer):
 
     """
 
-    def __init__(self, name: str, properties: Dict[str, Any]) -> None:
+    def __init__(self, name: str, properties: dict[str, Any]) -> None:
         super().__init__(name, properties)
         self.create_via_group: bool = False
         self.check_containment: bool = True
@@ -896,7 +899,7 @@ class ControlFileComponent:
         name: str,
         z0: float,
         pospin: str,
-        refpin: Optional[str] = None,
+        refpin: str | None = None,
         pos_type: str = "pin",
         ref_type: str = "pin",
     ) -> None:
@@ -1206,7 +1209,7 @@ class ControlFileMeshOp:
         self.name: str = name
         self.region: str = region
         self.type: str = type
-        self.nets_layers: Dict[str, str] = nets_layers
+        self.nets_layers: dict[str, str] = nets_layers
         self.num_max_elem: int = 1000
         self.restrict_elem: bool = False
         self.restrict_length: bool = True

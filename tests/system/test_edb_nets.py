@@ -22,13 +22,9 @@
 
 """Tests related to Edb nets"""
 
-import os
-
 import pytest
 
-from pyedb.generic.general_methods import is_windows
-from tests import conftest
-from tests.conftest import config, local_path, test_subfolder, use_grpc
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]

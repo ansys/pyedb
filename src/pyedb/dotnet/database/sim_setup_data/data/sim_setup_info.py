@@ -105,14 +105,14 @@ class SimSetupInfo:
     def simulation_settings(self):
         if self.sim_setup_type == "kHFSS":
             return self._edb_object.SimulationSettings
-            # todo refactor HFSS
+            # TODO refactor HFSS
             # return HFSSSimulationSettings(self._pedb, self.sim_setup, self._edb_object.SimulationSettings)
         elif self.sim_setup_type == "kHFSSPI":
             return HFSSPISimulationSettings(self._pedb, self.sim_setup, self._edb_object.SimulationSettings)
-        elif self.sim_setup_type == "kSIwave":  # todo refactor
+        elif self.sim_setup_type == "kSIwave":  # TODO refactor
             return self._edb_object.SimulationSettings
 
-        elif self.sim_setup_type == "kSIwaveDCIR":  # todo refactor
+        elif self.sim_setup_type == "kSIwaveDCIR":  # TODO refactor
             return self._edb_object.SimulationSettings
 
     @property

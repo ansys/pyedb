@@ -31,7 +31,7 @@ Examples
 Basic usage for parsing a SIwave log file:
 
 >>> from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
->>> parser = SiwaveLogParser(r"C:\path\to\siwave.log")
+>>> parser = SiwaveLogParser(r"C:\\path\to\\siwave.log")
 >>> log = parser.parse()
 >>> log.summary()
 >>> log.to_json("siwave.json")
@@ -46,7 +46,8 @@ Check simulation completion status:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from datetime import datetime
 import json
 from pathlib import Path

@@ -24,21 +24,19 @@ from __future__ import annotations
 
 import math
 from typing import TYPE_CHECKING
-import warnings
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from ansys.edb.core.definition.padstack_def import PadstackDef as CorePadstackDef
-from ansys.edb.core.definition.padstack_def_data import (
-    PadGeometryType as CorePadGeometryType,
-    PadstackHoleRange as CorePadstackHoleRange,
-    PadType as CorePadType,
-    SolderballPlacement,
-    SolderballShape,
-)
+from ansys.edb.core.definition.padstack_def_data import PadGeometryType as CorePadGeometryType
+from ansys.edb.core.definition.padstack_def_data import PadstackHoleRange as CorePadstackHoleRange
+from ansys.edb.core.definition.padstack_def_data import PadType as CorePadType
+from ansys.edb.core.definition.padstack_def_data import SolderballPlacement
+from ansys.edb.core.definition.padstack_def_data import SolderballShape
 import ansys.edb.core.geometry.polygon_data
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as CoreMeshClosure, Structure3D as CoreStructure3D
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as CoreMeshClosure
+from ansys.edb.core.hierarchy.structure3d import Structure3D as CoreStructure3D
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.primitive.circle import Circle

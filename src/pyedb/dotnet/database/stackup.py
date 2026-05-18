@@ -36,16 +36,16 @@ import warnings
 
 import numpy as np
 
-from pyedb.dotnet.database.edb_data.layer_data import (
-    LayerEdbClass,
-    StackupLayerEdbClass,
-    layer_cast,
-)
+from pyedb.dotnet.database.edb_data.layer_data import LayerEdbClass
+from pyedb.dotnet.database.edb_data.layer_data import StackupLayerEdbClass
+from pyedb.dotnet.database.edb_data.layer_data import layer_cast
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.utilities.layer_utils import clear_is_owner
-from pyedb.generic.general_methods import ET, generate_unique_name
+from pyedb.generic.general_methods import ET
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
-from pyedb.misc.decorators import deprecate_argument_name, deprecated_property
+from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecated_property
 
 logger = logging.getLogger(__name__)
 
@@ -1805,7 +1805,7 @@ class Stackup(LayerCollection):
 
     def _import_dict(self, json_dict, rename=False):
         """Import stackup from a dictionary."""
-        if not "materials" in json_dict:
+        if "materials" not in json_dict:
             self._logger.info("Configuration file does not have material definition. Using aedb and syslib materials.")
         else:
             mats = json_dict["materials"]
@@ -1970,7 +1970,7 @@ class Stackup(LayerCollection):
         df = pd.read_csv(file_path, index_col=0)
 
         for name in self.layers.keys():  # pragma: no cover
-            if not name in df.index:
+            if name not in df.index:
                 logger.error("{} doesn't exist in csv".format(name))
                 return False
 
@@ -2202,7 +2202,7 @@ class Stackup(LayerCollection):
     def _add_materials_from_dictionary(self, material_dict):
         materials = self.self._pedb.materials.materials
         for name, material_properties in material_dict.items():
-            if not name in materials:
+            if name not in materials:
                 if "Conductivity" in material_properties:
                     materials.add_conductor_material(name, material_properties["Conductivity"])
                 else:

@@ -28,28 +28,25 @@ import math
 import os
 from pathlib import Path
 import re
-from typing import List, Set, Union
 import warnings
 
-from pyedb.component_libraries.ansys_components import (
-    ComponentLib,
-    ComponentPart,
-    Series,
-)
+from pyedb.component_libraries.ansys_components import ComponentLib
+from pyedb.component_libraries.ansys_components import ComponentPart
+from pyedb.component_libraries.ansys_components import Series
 from pyedb.dotnet.clr_module import String
-from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent, _clear_dotnet_owner
+from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+from pyedb.dotnet.database.cell.hierarchy.component import _clear_dotnet_owner
 from pyedb.dotnet.database.cell.hierarchy.structure_3d import Structure3D
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.database.edb_data.sources import SourceBuilder, SourceType
+from pyedb.dotnet.database.edb_data.sources import SourceBuilder
+from pyedb.dotnet.database.edb_data.sources import SourceType
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.padstack import EdbPadstacks
 from pyedb.edb_logger import EdbLogger
-from pyedb.generic.general_methods import (
-    _retry_ntimes,
-    generate_unique_name,
-)
+from pyedb.generic.general_methods import _retry_ntimes
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.misc.decorators import deprecated
 
@@ -253,12 +250,12 @@ class Components(object):
                         model = comp.s_param_model
                         data["Definitions"][part_name]["Model_name"] = model.name
                         data["Definitions"][part_name]["Reference_net"] = model.reference_net
-                        if not model.name in data["SParameterModel"]:
+                        if model.name not in data["SParameterModel"]:
                             data["SParameterModel"][model.name] = model.file_path_str
                     elif comp.model_type == "SPICEModel":
                         model = comp.spice_model
                         data["Definitions"][part_name]["Model_name"] = model.name
-                        if not model.name in data["SPICEModel"]:
+                        if model.name not in data["SPICEModel"]:
                             data["SPICEModel"][model.name] = model.file_path_str
                     else:
                         model = comp.netlist_model
@@ -758,11 +755,11 @@ class Components(object):
         )
 
     def _get_pins_for_ports(
-        self, pins: Union[int, str, EDBPadstackInstance, List[Union[int, str, EDBPadstackInstance]]], comp: EDBComponent
+        self, pins: int | str | EDBPadstackInstance | list[int | str | EDBPadstackInstance], comp: EDBComponent
     ) -> list[EDBPadstackInstance]:
         if not pins:
             raise ValueError("No pins provided for port creation.")
-        elif not isinstance(pins, List):
+        elif not isinstance(pins, list):
             pins = [pins]
         result = []
         for pin in pins:
@@ -869,7 +866,7 @@ class Components(object):
 
         nets = self._normalize_net_list(net_list)
 
-        if not isinstance(reference_net, List):
+        if not isinstance(reference_net, list):
             reference_net = [reference_net]
         ref_nets = self._normalize_net_list(reference_net)
         nets_to_remove = ref_nets.intersection(nets)
@@ -1017,8 +1014,8 @@ class Components(object):
                                 self._logger.error("Skipping port creation no reference pin found.")
         return True
 
-    def _normalize_net_list(self, net_list) -> Set[str]:
-        if not isinstance(net_list, List):
+    def _normalize_net_list(self, net_list) -> set[str]:
+        if not isinstance(net_list, list):
             net_list = [net_list]
         nets = set()
         for net in net_list:
@@ -1131,7 +1128,7 @@ class Components(object):
         return self.add_rlc_boundary(component.refdes, False)
 
     def deactivate_rlc_component(self, component=None, create_circuit_port=False, pec_boundary=False):
-        """Deactivate RLC component with a possibility to convert it to a circuit port.
+        r"""Deactivate RLC component with a possibility to convert it to a circuit port.
 
         Parameters
         ----------
@@ -1348,7 +1345,7 @@ class Components(object):
         -------
         Edb pin group terminal.
         """
-        if not "Cell.Hierarchy.PinGroup" in str(pingroup):
+        if "Cell.Hierarchy.PinGroup" not in str(pingroup):
             pingroup = pingroup._edb_object
         pin = list(pingroup.GetPins())[0]
         if term_name is None:
@@ -1928,7 +1925,7 @@ class Components(object):
         solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
         solder_ball_prop.SetShape(sball_shape)
         if material_name:
-            if not material_name in self._pedb.materials:
+            if material_name not in self._pedb.materials:
                 self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
             solder_ball_prop.SetMaterialName(material_name)
 
@@ -2142,7 +2139,7 @@ class Components(object):
                         pass
                     else:
                         pinlist = self.get_pin_from_component(refdes)
-                        if not part_name in self.definitions:
+                        if part_name not in self.definitions:
                             footprint_cell = self.definitions[comp.partname]._edb_object.GetFootprintCell()
                             comp_def = self._edb.Definition.ComponentDef.Create(self._db, part_name, footprint_cell)
                             for pin in pinlist:

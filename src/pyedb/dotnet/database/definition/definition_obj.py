@@ -20,16 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Optional, Union
 import warnings
 
-from pydantic import BaseModel, confloat
+from pydantic import BaseModel
+from pydantic import confloat
 
-from pyedb.dotnet.database.definition.dielectric_material_model import (
-    DebyeModel,
-    DjordjecvicSarkarModel,
-    MultipoleDebyeModel,
-)
+from pyedb.dotnet.database.definition.dielectric_material_model import DebyeModel
+from pyedb.dotnet.database.definition.dielectric_material_model import DjordjecvicSarkarModel
+from pyedb.dotnet.database.definition.dielectric_material_model import MultipoleDebyeModel
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
 from pyedb.misc.decorators import deprecated_property
 
@@ -78,22 +76,22 @@ class DefinitionObj(ObjBase):
 class MaterialProperties(BaseModel):
     """Store material properties."""
 
-    conductivity: Optional[PositiveFloat] = 0.0
-    dielectric_loss_tangent: Optional[PositiveFloat] = 0.0
-    magnetic_loss_tangent: Optional[PositiveFloat] = 0.0
-    mass_density: Optional[PositiveFloat] = 0.0
-    permittivity: Optional[PositiveFloat] = 0.0
-    permeability: Optional[PositiveFloat] = 0.0
-    poisson_ratio: Optional[PositiveFloat] = 0.0
-    specific_heat: Optional[PositiveFloat] = 0.0
-    thermal_conductivity: Optional[PositiveFloat] = 0.0
-    youngs_modulus: Optional[PositiveFloat] = 0.0
-    thermal_expansion_coefficient: Optional[PositiveFloat] = 0.0
-    dc_conductivity: Optional[PositiveFloat] = 0.0
-    dc_permittivity: Optional[PositiveFloat] = 0.0
-    dielectric_model_frequency: Optional[PositiveFloat] = 0.0
-    loss_tangent_at_frequency: Optional[PositiveFloat] = 0.0
-    permittivity_at_frequency: Optional[PositiveFloat] = 0.0
+    conductivity: PositiveFloat | None = 0.0
+    dielectric_loss_tangent: PositiveFloat | None = 0.0
+    magnetic_loss_tangent: PositiveFloat | None = 0.0
+    mass_density: PositiveFloat | None = 0.0
+    permittivity: PositiveFloat | None = 0.0
+    permeability: PositiveFloat | None = 0.0
+    poisson_ratio: PositiveFloat | None = 0.0
+    specific_heat: PositiveFloat | None = 0.0
+    thermal_conductivity: PositiveFloat | None = 0.0
+    youngs_modulus: PositiveFloat | None = 0.0
+    thermal_expansion_coefficient: PositiveFloat | None = 0.0
+    dc_conductivity: PositiveFloat | None = 0.0
+    dc_permittivity: PositiveFloat | None = 0.0
+    dielectric_model_frequency: PositiveFloat | None = 0.0
+    loss_tangent_at_frequency: PositiveFloat | None = 0.0
+    permittivity_at_frequency: PositiveFloat | None = 0.0
 
 
 class DeprecatedMaterial:
@@ -145,7 +143,7 @@ class DeprecatedMaterial:
         return res
 
     @dc_conductivity.setter
-    def dc_conductivity(self, value: Union[int, float]):
+    def dc_conductivity(self, value: int | float):
         """Set material dielectric conductivity."""
         if self.dc_model and value:
             self.dc_model.SetDCConductivity(value)
@@ -161,7 +159,7 @@ class DeprecatedMaterial:
         return res
 
     @dc_permittivity.setter
-    def dc_permittivity(self, value: Union[int, float]):
+    def dc_permittivity(self, value: int | float):
         """Set material dielectric relative permittivity"""
         if self.dc_model and value:
             self.dc_model.SetDCRelativePermitivity(value)
@@ -177,12 +175,12 @@ class DeprecatedMaterial:
         return res
 
     @dielectric_model_frequency.setter
-    def dielectric_model_frequency(self, value: Union[int, float]):
+    def dielectric_model_frequency(self, value: int | float):
         """Get material frequency in GHz."""
         if self.dc_model:
             self.dc_model.SetFrequency(value)
         else:
-            self.__edb.logger.error(f"Material frequency cannot be updated in material without DC model.")
+            self.__edb.logger.error("Material frequency cannot be updated in material without DC model.")
 
     @property
     def loss_tangent_at_frequency(self):
@@ -199,7 +197,7 @@ class DeprecatedMaterial:
             edb_value = self._pedb.value(value)
             self.dc_model.SetLossTangentAtFrequency(edb_value.core)
         else:
-            self.__edb.logger.error(f"Loss tangent at frequency cannot be updated in material without DC model.")
+            self.__edb.logger.error("Loss tangent at frequency cannot be updated in material without DC model.")
 
     @property
     def permittivity_at_frequency(self):
@@ -210,12 +208,12 @@ class DeprecatedMaterial:
         return res
 
     @permittivity_at_frequency.setter
-    def permittivity_at_frequency(self, value: Union[int, float]):
+    def permittivity_at_frequency(self, value: int | float):
         """Set material relative permittivity at frequency."""
         if self.dc_model:
             self.dc_model.SetRelativePermitivityAtFrequency(value)
         else:
-            self.__edb.logger.error(f"Permittivity at frequency cannot be updated in material without DC model.")
+            self.__edb.logger.error("Permittivity at frequency cannot be updated in material without DC model.")
 
     def to_dict(self):
         """Convert material into dictionary."""

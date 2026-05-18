@@ -28,7 +28,8 @@ from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.utility.value import Value as CoreValue
 
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.siwave_core.cpa.simulation_setup_data_model import SIwaveCpaSetup, Vrm
+from pyedb.siwave_core.cpa.simulation_setup_data_model import SIwaveCpaSetup
+from pyedb.siwave_core.cpa.simulation_setup_data_model import Vrm
 from pyedb.siwave_core.product_properties import SIwaveProperties
 
 
@@ -132,10 +133,10 @@ class ChannelSetup:
         """
         mapping = {"perpin": -1, "ploc": 0, "usediepingroups": 1}
         if isinstance(value, str):
-            if not value in mapping:
+            if value not in mapping:
                 raise ValueError(f"value {value} not supported, must be {list(mapping.keys())}")
             value = mapping[value]
-        if not value in [-1, 0, 1]:
+        if value not in [-1, 0, 1]:
             raise ValueError(f"wrong value {value}")
         self._pedb.active_cell.set_product_property(
             CoreProductIdType.SIWAVE, SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE, self.die_name + ":" + str(value)

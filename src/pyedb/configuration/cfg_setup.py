@@ -19,9 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import List, Literal, Optional, Union
+from typing import Literal
 
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices
+from pydantic import Field
 
 from pyedb.configuration.cfg_common import CfgBaseModel
 
@@ -114,7 +115,7 @@ class CfgHFSSSetup(CfgSetupAC):
             description="List of frequencies for multi-frequency adaptation.",
         )
 
-        def add_adaptive_frequency(self, frequency: Union[float, str], max_passes: int, max_delta: Union[float, str]):
+        def add_adaptive_frequency(self, frequency: float | str, max_passes: int, max_delta: float | str):
             adapt_freq = CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency(
                 adaptive_frequency=frequency,
                 max_passes=max_passes,
@@ -143,13 +144,13 @@ class CfgHFSSSetup(CfgSetupAC):
     adapt_type: Literal["broadband", "single", "multi_frequencies"] = Field(
         "single", description="Adaptation type, e.g., broadband, single, multi_frequencies."
     )
-    single_frequency_adaptive_solution: Optional[CfgSingleFrequencyAdaptiveSolution] = Field(
+    single_frequency_adaptive_solution: CfgSingleFrequencyAdaptiveSolution | None = Field(
         default_factory=CfgSingleFrequencyAdaptiveSolution
     )
-    broadband_adaptive_solution: Optional[CfgBroadbandAdaptiveSolution] = Field(
+    broadband_adaptive_solution: CfgBroadbandAdaptiveSolution | None = Field(
         default_factory=CfgBroadbandAdaptiveSolution
     )
-    multi_frequency_adaptive_solution: Optional[CfgMultiFrequencyAdaptiveSolution] = Field(
+    multi_frequency_adaptive_solution: CfgMultiFrequencyAdaptiveSolution | None = Field(
         default_factory=CfgMultiFrequencyAdaptiveSolution
     )
     # adapt_frequencies: list[CfgAdaptFrequency] = Field(default_factory=list, description="List of frequencies for
@@ -163,12 +164,12 @@ class CfgHFSSSetup(CfgSetupAC):
 
 
 class CfgSetups(CfgBaseModel):
-    setups: List[Union[CfgHFSSSetup, CfgSIwaveACSetup, CfgSIwaveDCSetup]] = Field(
+    setups: list[CfgHFSSSetup | CfgSIwaveACSetup | CfgSIwaveDCSetup] = Field(
         default_factory=list, description="List of simulation setups."
     )
 
     @classmethod
-    def create(cls, setups: List[dict]):
+    def create(cls, setups: list[dict]):
         manager = cls()
         for stp in setups:
             setup_type = stp.get("type", "hfss").lower()

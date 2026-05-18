@@ -22,12 +22,10 @@
 
 from typing import TYPE_CHECKING
 
-from pyedb.dotnet.database.dotnet.database import (
-    DifferentialPairDotNet,
-    ExtendedNetDotNet,
-    NetClassDotNet,
-    NetDotNet,
-)
+from pyedb.dotnet.database.dotnet.database import DifferentialPairDotNet
+from pyedb.dotnet.database.dotnet.database import ExtendedNetDotNet
+from pyedb.dotnet.database.dotnet.database import NetClassDotNet
+from pyedb.dotnet.database.dotnet.database import NetDotNet
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 
 if TYPE_CHECKING:
@@ -90,7 +88,7 @@ class EDBNetsData(NetDotNet):
         for p in self.padstack_instances:
             comp = p.component
             if comp:
-                if not comp.refdes in comps:
+                if comp.refdes not in comps:
                     comps[comp.refdes] = comp
         return comps
 

@@ -22,12 +22,13 @@
 
 
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
 from pyedb import Edb
-from tests.conftest import GRPC, desktop_version
+from tests.conftest import GRPC
+from tests.conftest import desktop_version
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 

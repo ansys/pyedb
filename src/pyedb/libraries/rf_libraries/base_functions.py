@@ -23,7 +23,8 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING
+from typing import Optional
 
 if TYPE_CHECKING:
     from pyedb import Edb
@@ -82,11 +83,11 @@ class HatchGround:
     def __init__(
         self,
         edb_cell: Optional = None,
-        pitch: Union[str, float] = 17.07e-3,
-        width: Union[str, float] = 5.0e-3,
-        fill_target: Union[str, float] = 50.0,
-        ground_width: Union[str, float] = 100e-3,
-        ground_length: Union[str, float] = 100e-3,
+        pitch: str | float = 17.07e-3,
+        width: str | float = 5.0e-3,
+        fill_target: str | float = 50.0,
+        ground_width: str | float = 100e-3,
+        ground_length: str | float = 100e-3,
         layer_gnd: str = "GND",
         angle: float = 0.0,
     ):
@@ -132,7 +133,7 @@ class HatchGround:
             x += self.pitch
 
         # ---------- punch square gaps --------
-        gaps: List[List[Tuple[float, float]]] = []
+        gaps: list[list[tuple[float, float]]] = []
         x = 0.0
         while x < rectified_size:
             y = 0.0
@@ -223,9 +224,9 @@ class Meander:
     def __init__(
         self,
         edb_cell,
-        pitch: Union[str, float] = 1e-3,
-        trace_width: Union[str, float] = 0.3e-3,
-        amplitude: Union[str, float] = 5e-3,
+        pitch: str | float = 1e-3,
+        trace_width: str | float = 0.3e-3,
+        amplitude: str | float = 5e-3,
         num_turns: int = 8,
         layer: str = "TOP",
         net: str = "SIG",
@@ -344,8 +345,8 @@ class MIMCapacitor:
     def __init__(
         self,
         edb_cell,
-        area: Union[str, float] = 0.1e-6,
-        gap: Union[str, float] = 1e-6,
+        area: str | float = 0.1e-6,
+        gap: str | float = 1e-6,
         layer_top: str = "M1",
         layer_bottom: str = "M2",
         net: str = "RF",
@@ -438,19 +439,19 @@ class SpiralInductor:
     def __init__(
         self,
         edb_cell: Optional = None,
-        turns: Union[int, float] = 4.5,
-        trace_width: Union[str, float] = 20e-6,
-        spacing: Union[str, float] = 12e-6,
-        inner_diameter: Union[str, float] = 60e-6,
+        turns: int | float = 4.5,
+        trace_width: str | float = 20e-6,
+        spacing: str | float = 12e-6,
+        inner_diameter: str | float = 60e-6,
         layer: str = "M1",
         bridge_layer: str = "M2",
         via_layer: str = "M3",
         net: str = "IN",
-        inductor_center: Tuple[Union[str, float], Union[str, float]] = (0, 0),  # centre of spiral
-        via_size: Union[str, float] = 25e-6,  # via metal pad
-        bridge_width: Union[str, float] = 12e-6,  # under-pass trace width
-        bridge_clearance: Union[str, float] = 6e-6,  # dielectric gap under bridge
-        bridge_length: Union[str, float] = 200e-6,  # how far the bridge extends
+        inductor_center: tuple[str | float, str | float] = (0, 0),  # centre of spiral
+        via_size: str | float = 25e-6,  # via metal pad
+        bridge_width: str | float = 12e-6,  # under-pass trace width
+        bridge_clearance: str | float = 6e-6,  # dielectric gap under bridge
+        bridge_length: str | float = 200e-6,  # how far the bridge extends
         ground_layer: str = "GND",
     ):
         self._edb = edb_cell
@@ -609,9 +610,9 @@ class CPW:
     def __init__(
         self,
         edb_cell: Optional = None,
-        length: Union[str, float] = 1e-3,
-        width: Union[str, float] = 0.3e-3,
-        gap: Union[str, float] = 0.1e-3,
+        length: str | float = 1e-3,
+        width: str | float = 0.3e-3,
+        gap: str | float = 0.1e-3,
         layer: str = "TOP",
         ground_net: str = "GND",
         ground_width: float = 0.1e-3,
@@ -720,9 +721,9 @@ class RadialStub:
     def __init__(
         self,
         edb_cell,
-        radius: Union[str, float] = 500e-6,
-        angle_deg: Union[str, float] = 60,
-        width: Union[str, float] = 0.2e-3,
+        radius: str | float = 500e-6,
+        angle_deg: str | float = 60,
+        width: str | float = 0.2e-3,
         layer: str = "TOP",
         net: str = "RF",
     ):
@@ -819,12 +820,12 @@ class RatRace:
     def __init__(
         self,
         edb_cell: Optional = None,
-        z0: Union[float, str] = 50,
-        freq: Union[float, str] = 10e9,
+        z0: float | str = 50,
+        freq: float | str = 10e9,
         layer: str = "TOP",
-        bottom_layer: Optional[str] = None,
+        bottom_layer: str | None = None,
         net: str = "RR",
-        width: Union[float, str] = 0.2e-3,
+        width: float | str = 0.2e-3,
         nr_segments: int = 32,
     ):
         self._edb = edb_cell
@@ -868,11 +869,11 @@ class RatRace:
     # ------------------------------------------------------------------
     def _arc_points(
         self,
-        centre: Tuple[float, float],
+        centre: tuple[float, float],
         radius: float,
         start_angle: float,  # rad
         delta_angle: float,  # rad
-    ) -> List[Tuple[float, float]]:
+    ) -> list[tuple[float, float]]:
         """Return a list of (x,y) for a discretised arc."""
         points = []
         step = delta_angle / self.nr_segments
@@ -883,7 +884,7 @@ class RatRace:
             points.append((x, y))
         return points
 
-    def _port_stub(self, start: Tuple[float, float], length: float, angle: float):
+    def _port_stub(self, start: tuple[float, float], length: float, angle: float):
         """Return a two-point list for a straight stub."""
         dx = length * math.cos(angle)
         dy = length * math.sin(angle)
@@ -1015,11 +1016,11 @@ class InterdigitalCapacitor:
         self,
         edb_cell: Optional = None,
         fingers: int = 8,
-        finger_length: Union[float, str] = "0.9mm",
-        finger_width: Union[float, str] = "0.08mm",
-        gap: Union[float, str] = "0.04mm",
-        comb_gap: Union[float, str] = "0.06mm",
-        bus_width: Union[float, str] = "0.25mm",
+        finger_length: float | str = "0.9mm",
+        finger_width: float | str = "0.08mm",
+        gap: float | str = "0.04mm",
+        comb_gap: float | str = "0.06mm",
+        bus_width: float | str = "0.25mm",
         layer: str = "TOP",
         net_a: str = "PORT1",
         net_b: str = "PORT2",
@@ -1154,12 +1155,12 @@ class DifferentialTLine:
     def __init__(
         self,
         edb: Edb,
-        length: Union[float, str] = 10e-3,
-        width: Union[float, str] = 0.20e-3,
-        spacing: Union[float, str] = 0.20e-3,
-        x0: Union[float, str] = 0.0,
-        y0: Union[float, str] = 0.0,
-        angle: Union[float, str] = 0.0,
+        length: float | str = 10e-3,
+        width: float | str = 0.20e-3,
+        spacing: float | str = 0.20e-3,
+        x0: float | str = 0.0,
+        y0: float | str = 0.0,
+        angle: float | str = 0.0,
         layer: str = "TOP",
         net_p: str = "P",
         net_n: str = "N",
@@ -1196,7 +1197,7 @@ class DifferentialTLine:
         z0_single = 60.0
         return 2 * z0_single * (1 - 0.48 * math.exp(-0.96 * s / w))
 
-    def create(self) -> List[float]:
+    def create(self) -> list[float]:
         """
         Create the two traces using only parameter strings so the
         geometry stays fully editable in AEDT.
@@ -1261,12 +1262,12 @@ class MicroStripLine:
         edb_cell,
         layer: str,
         net: str,
-        x0: Union[float, str] = 0.0,
-        y0: Union[float, str] = 0.0,
-        length: Union[float, str] = "1mm",
-        width: Union[float, str] = "0.2mm",
-        angle: Union[float, str] = 0.0,
-        freq: Optional[Union[float, str]] = None,
+        x0: float | str = 0.0,
+        y0: float | str = 0.0,
+        length: float | str = "1mm",
+        width: float | str = "0.2mm",
+        angle: float | str = 0.0,
+        freq: float | str | None = None,
     ):
         self._edb = edb_cell
         self.layer = layer
@@ -1289,7 +1290,7 @@ class MicroStripLine:
         return self._width
 
     @width.setter
-    def width(self, value: Union[float, str]):
+    def width(self, value: float | str):
         """Set the trace width and update the EDB variable."""
         self._width = self._edb.value(value)
         self._edb["w"] = self._width
@@ -1300,7 +1301,7 @@ class MicroStripLine:
         return self._length
 
     @length.setter
-    def length(self, value: Union[float, str]):
+    def length(self, value: float | str):
         """Set the trace length and update the EDB variable."""
         self._length = self._edb.value(value)
         self._edb["l"] = self._length
@@ -1358,7 +1359,7 @@ class MicroStripLine:
         return round(z0, 2)
 
     @property
-    def electrical_length(self) -> Optional[float]:
+    def electrical_length(self) -> float | None:
         """
         Electrical length in degrees at self.freq.
         Returns None if freq is None.
@@ -1372,7 +1373,7 @@ class MicroStripLine:
     # ------------------------------------------------------------------
     # Geometry creation
     # ------------------------------------------------------------------
-    def create(self) -> List[float]:
+    def create(self) -> list[float]:
         """Create the trace and return its EDB object."""
         angle_rad = math.radians(self.angle)
         trace = self._edb.modeler.create_trace(

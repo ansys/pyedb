@@ -23,7 +23,8 @@
 """Database."""
 
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+from typing import Any
 
 if TYPE_CHECKING:
     from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet

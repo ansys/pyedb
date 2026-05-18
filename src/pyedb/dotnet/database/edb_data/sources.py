@@ -20,11 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import List, Tuple, Union
+from typing import Union
 
-from pyedb.generic.constants import NodeType, SourceType
+from pyedb.generic.constants import NodeType
+from pyedb.generic.constants import SourceType
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_property
 
 
 class Node(object):
@@ -288,7 +290,7 @@ class PinGroup(object):
             pins = self._pedb.layout.find_padstack_instances(instance_id=edb_pin_ids)
             return {i.name: i for i in pins}
 
-    def remove_pins(self, pins: Union[str, List[str]]):
+    def remove_pins(self, pins: str | list[str]):
         """Remove pins from the pin group.
 
         Parameters
@@ -297,7 +299,7 @@ class PinGroup(object):
             List of padstack instance names.
 
         """
-        _pins = pins if isinstance(pins, Union[list, Tuple]) else [pins]
+        _pins = pins if isinstance(pins, Union[list, tuple]) else [pins]
 
         pin_objs = [j for i, j in self.pins.items() if i in _pins]
         for p in pin_objs:
@@ -337,9 +339,7 @@ class PinGroup(object):
     @property
     def terminal(self):
         """Terminal."""
-        from pyedb.dotnet.database.cell.terminal.pingroup_terminal import (
-            PinGroupTerminal,
-        )
+        from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
 
         term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
         return term if not term.is_null else None
@@ -379,9 +379,7 @@ class PinGroup(object):
 
         if not name:
             name = generate_unique_name(self.name)
-        from pyedb.dotnet.database.cell.terminal.pingroup_terminal import (
-            PinGroupTerminal,
-        )
+        from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
 
         term = PinGroupTerminal(self._pedb, self._edb_object)
         term = term.create(name, self.net_name, self.name)

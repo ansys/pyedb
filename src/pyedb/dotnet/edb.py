@@ -36,8 +36,7 @@ import subprocess  # nosec B404
 import sys
 import time
 import traceback
-from typing import Any, Dict, List, Union
-import warnings
+from typing import Any
 from zipfile import ZipFile as zpf
 
 from typing_extensions import deprecated
@@ -55,61 +54,53 @@ from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.database.edb_data.ports import (
-    BundleWavePort,
-    CircuitPort,
-    CoaxPort,
-    ExcitationSources,
-    GapPort,
-    WavePort,
-)
-from pyedb.dotnet.database.edb_data.primitives_data import EdbCircle, EdbPolygon, EdbRectangle
-from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
-    RaptorXSimulationSetup,
-)
+from pyedb.dotnet.database.edb_data.ports import BundleWavePort
+from pyedb.dotnet.database.edb_data.ports import CircuitPort
+from pyedb.dotnet.database.edb_data.ports import CoaxPort
+from pyedb.dotnet.database.edb_data.ports import ExcitationSources
+from pyedb.dotnet.database.edb_data.ports import GapPort
+from pyedb.dotnet.database.edb_data.ports import WavePort
+from pyedb.dotnet.database.edb_data.primitives_data import EdbCircle
+from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon
+from pyedb.dotnet.database.edb_data.primitives_data import EdbRectangle
+from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import RaptorXSimulationSetup
 from pyedb.dotnet.database.edb_data.variables import Variable
-from pyedb.dotnet.database.general import (
-    LayoutObjType,
-    Primitives,
-    convert_py_list_to_net_list,
-)
+from pyedb.dotnet.database.general import LayoutObjType
+from pyedb.dotnet.database.general import Primitives
+from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.hfss import EdbHfss
 from pyedb.dotnet.database.layout_validation import LayoutValidation
 from pyedb.dotnet.database.materials import Materials
 from pyedb.dotnet.database.modeler import Modeler
-from pyedb.dotnet.database.net_class import (
-    EdbDifferentialPairs,
-    EdbExtendedNets,
-    EdbNetClasses,
-)
+from pyedb.dotnet.database.net_class import EdbDifferentialPairs
+from pyedb.dotnet.database.net_class import EdbExtendedNets
+from pyedb.dotnet.database.net_class import EdbNetClasses
 from pyedb.dotnet.database.nets import EdbNets
 from pyedb.dotnet.database.padstack import EdbPadstacks
 from pyedb.dotnet.database.simulation_setups import SimulationSetups
 from pyedb.dotnet.database.siwave import EdbSiwave
 from pyedb.dotnet.database.source_excitations import SourceExcitation
 from pyedb.dotnet.database.stackup import Stackup
-from pyedb.dotnet.database.utilities.hfss_simulation_setup import (
-    HFSSPISimulationSetup,
-    HfssSimulationSetup,
-)
-from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
-    SiwaveDCSimulationSetup,
-    SIwaveSimulationSetup,
-)
+from pyedb.dotnet.database.utilities.hfss_simulation_setup import HFSSPISimulationSetup
+from pyedb.dotnet.database.utilities.hfss_simulation_setup import HfssSimulationSetup
+from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup
+from pyedb.dotnet.database.utilities.siwave_simulation_setup import SIwaveSimulationSetup
 from pyedb.dotnet.database.utilities.value import Value
 from pyedb.edb_logger import EdbLogger
-from pyedb.generic.constants import AEDT_UNITS, SolverType, decompose_variable_value, unit_converter
-from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
+from pyedb.generic.constants import AEDT_UNITS
+from pyedb.generic.constants import decompose_variable_value
+from pyedb.generic.constants import unit_converter
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import is_linux
+from pyedb.generic.general_methods import is_windows
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
-from pyedb.misc.decorators import (
-    deprecate_argument_name,
-    deprecated as runtime_deprecated,
-    deprecated_property as runtime_deprecated_property,
-    execution_timer,
-)
+from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecated as runtime_deprecated
+from pyedb.misc.decorators import deprecated_property as runtime_deprecated_property
+from pyedb.misc.decorators import execution_timer
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflows.utilities.cutout import Cutout
 
@@ -223,7 +214,7 @@ class Edb:
     @execution_timer("EDB initialization")
     def __init__(
         self,
-        edbpath: Union[str, Path] = None,
+        edbpath: str | Path = None,
         cellname: str = None,
         isreadonly: bool = False,
         isaedtowned: bool = False,
@@ -389,7 +380,8 @@ class Edb:
         import ctypes
 
         from pyedb import __version__
-        from pyedb.dotnet.clr_module import _clr, edb_initialized
+        from pyedb.dotnet.clr_module import _clr
+        from pyedb.dotnet.clr_module import edb_initialized
 
         if not edb_initialized:  # pragma: no cover
             raise RuntimeWarning("Failed to initialize Dlls.")
@@ -482,7 +474,7 @@ class Edb:
         try:
             val_ = val if isinstance(val, self._edb.Utility.Value) else self.edb_value(val)
             return Value(self, val_)
-        except Exception as e:
+        except Exception:
             return val
 
     @property
@@ -491,7 +483,7 @@ class Edb:
         return False
 
     @property
-    def cell_names(self) -> List[str]:
+    def cell_names(self) -> list[str]:
         """Cell name container.
 
         Returns
@@ -504,7 +496,7 @@ class Edb:
         return names
 
     @property
-    def design_variables(self) -> Dict[str, Variable]:
+    def design_variables(self) -> dict[str, Variable]:
         """Get all edb design variables.
 
         Returns
@@ -532,7 +524,7 @@ class Edb:
         return self.base_path
 
     @property
-    def project_variables(self) -> Dict[str, Variable]:
+    def project_variables(self) -> dict[str, Variable]:
         """Get all project variables.
 
         Returns
@@ -556,7 +548,7 @@ class Edb:
         return LayoutValidation(self)
 
     @property
-    def variables(self) -> Dict[str, Variable]:
+    def variables(self) -> dict[str, Variable]:
         """Get all Edb variables.
 
         Returns
@@ -572,7 +564,7 @@ class Edb:
         return all_vars
 
     @property
-    def terminals(self) -> Dict[str, Terminal]:
+    def terminals(self) -> dict[str, Terminal]:
         """Get terminals belonging to active layout.
 
         Returns
@@ -585,7 +577,7 @@ class Edb:
     @property
     @deprecated("Use ports property instead.", category=None)
     @runtime_deprecated_property("use ports property instead.")
-    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+    def excitations(self) -> dict[str, BundleWavePort | GapPort | CircuitPort | CoaxPort | WavePort]:
         """Get all ports.
 
         .. deprecated:: 0.70.0
@@ -600,7 +592,7 @@ class Edb:
         return self.ports
 
     @property
-    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+    def ports(self) -> dict[str, BundleWavePort | GapPort | CircuitPort | CoaxPort | WavePort]:
         """Get all ports.
 
         Returns
@@ -635,21 +627,21 @@ class Edb:
         return ports
 
     @property
-    def excitations_nets(self) -> List[str]:
+    def excitations_nets(self) -> list[str]:
         """Get all excitations net names."""
         names = list(set([i.net.name for i in self.layout.terminals]))
         names = [i for i in names if i]
         return names
 
     @property
-    def sources(self) -> Dict[str, ExcitationSources]:
+    def sources(self) -> dict[str, ExcitationSources]:
         """Get all layout sources."""
         terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [3, 4, 7]]
         terms = [term for term in terms if not term._edb_object.IsReferenceTerminal()]
         return {ter.name: ExcitationSources(self, ter._edb_object) for ter in terms}
 
     @property
-    def voltage_regulator_modules(self) -> Dict[str, VoltageRegulator]:
+    def voltage_regulator_modules(self) -> dict[str, VoltageRegulator]:
         """Get all voltage regulator modules"""
         vrms = self.layout.voltage_regulators
         _vrms = {}
@@ -660,7 +652,7 @@ class Edb:
     @property
     def probes(
         self,
-    ) -> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
+    ) -> dict[str, PinGroupTerminal | PointTerminal | BundleTerminal | PadstackInstanceTerminal | EdgeTerminal]:
         """Get all layout probes."""
         temp = {}
         for name, val in self.terminals.items():
@@ -1284,7 +1276,7 @@ class Edb:
 
     def get_connected_objects(
         self, layout_object_instance
-    ) -> List[Union[EDBPadstackInstance, Path, EdbRectangle, EdbCircle, EdbPolygon]]:
+    ) -> list[EDBPadstackInstance | Path | EdbRectangle | EdbCircle | EdbPolygon]:
         """Get connected objects.
 
         Returns
@@ -1300,9 +1292,7 @@ class Edb:
         ):
             obj_type = i.GetObjType().ToString()
             if obj_type == LayoutObjType.PadstackInstance.name:
-                from pyedb.dotnet.database.edb_data.padstacks_data import (
-                    EDBPadstackInstance,
-                )
+                from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 
                 temp.append(EDBPadstackInstance(i, self))
             elif obj_type == LayoutObjType.Primitive.name:
@@ -1312,9 +1302,7 @@ class Edb:
 
                     temp.append(Path(self, i))
                 elif prim_type == Primitives.Rectangle.name:
-                    from pyedb.dotnet.database.edb_data.primitives_data import (
-                        EdbRectangle,
-                    )
+                    from pyedb.dotnet.database.edb_data.primitives_data import EdbRectangle
 
                     temp.append(EdbRectangle(i, self))
                 elif prim_type == Primitives.Circle.name:
@@ -1322,9 +1310,7 @@ class Edb:
 
                     temp.append(EdbCircle(i, self))
                 elif prim_type == Primitives.Polygon.name:
-                    from pyedb.dotnet.database.edb_data.primitives_data import (
-                        EdbPolygon,
-                    )
+                    from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon
 
                     temp.append(EdbPolygon(i, self))
                 else:
@@ -1449,7 +1435,7 @@ class Edb:
                 os.rename(filename, filename + "_")
                 os.rename(filename + "_", filename)
                 return True
-            except OSError as e:
+            except OSError:
                 return False
         else:
             return False
@@ -2130,7 +2116,7 @@ class Edb:
             db2.CopyCells(_dbCells)  # Copies cutout cell/design to db2 project
             if len(list(db2.CircuitCells)) > 0:
                 for net in list(list(db2.CircuitCells)[0].GetLayout().Nets):
-                    if not net.GetName() in included_nets_list:
+                    if net.GetName() not in included_nets_list:
                         net.Delete()
                 _success = db2.Save()
             for c in list(self._db.TopCircuitCells):
@@ -3245,9 +3231,7 @@ class Edb:
         except:
             cpa_setup_name = ""
         if cpa_setup_name:
-            from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import (
-                SIWaveCPASimulationSetup,
-            )
+            from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import SIWaveCPASimulationSetup
 
             setups[cpa_setup_name] = SIWaveCPASimulationSetup(self, cpa_setup_name)
         return setups
@@ -4058,12 +4042,12 @@ class Edb:
         used_padstack_defs = []
         padstack_instances_index = rtree.index.Index()
         for padstack_inst in self.padstacks.instances.values():
-            if not reference_layer in [padstack_inst.start_layer, padstack_inst.stop_layer]:
+            if reference_layer not in [padstack_inst.start_layer, padstack_inst.stop_layer]:
                 padstack_inst.delete()
             else:
                 if padstack_inst.net_name in signal_nets:
                     padstack_instances_index.insert(padstack_inst.id, padstack_inst.position)
-                    if not padstack_inst.padstack_definition in used_padstack_defs:
+                    if padstack_inst.padstack_definition not in used_padstack_defs:
                         used_padstack_defs.append(padstack_inst.padstack_definition)
 
         polys = [
@@ -4148,7 +4132,7 @@ class Edb:
                 )
                 if not _temp_circle:
                     raise RuntimeWarning(
-                        f"Failed to create circle for terminal during create_model_for_arbitrary_wave_ports"
+                        "Failed to create circle for terminal during create_model_for_arbitrary_wave_ports"
                     )
         cloned_edb.save_as(output_edb)
         cloned_edb.close()

@@ -25,18 +25,19 @@ This module contains the ``EdbHfss`` class.
 """
 
 import math
-from typing import Dict, Optional, Union
-import warnings
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 from pyedb.generic.geometry_operators import GeometryOperators
-from pyedb.grpc.database.ports.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
-from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
-    HfssSimulationSetup,
-)
+from pyedb.grpc.database.ports.ports import BundleWavePort
+from pyedb.grpc.database.ports.ports import CircuitPort
+from pyedb.grpc.database.ports.ports import CoaxPort
+from pyedb.grpc.database.ports.ports import GapPort
+from pyedb.grpc.database.ports.ports import WavePort
+from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
 from pyedb.grpc.database.utility.hfss_extent_info import HfssExtentInfo
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated_property
 
 
 class Hfss:
@@ -134,7 +135,7 @@ class Hfss:
 
     @property
     @deprecated_property("use ports property instead")
-    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+    def excitations(self) -> dict[str, BundleWavePort | GapPort | CircuitPort | CoaxPort | WavePort]:
         """Get all ports.
 
         .. deprecated:: 0.71.0
@@ -152,7 +153,7 @@ class Hfss:
         return self.ports
 
     @property
-    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+    def ports(self) -> dict[str, BundleWavePort | GapPort | CircuitPort | CoaxPort | WavePort]:
         """Get all ports.
 
         Returns
@@ -356,7 +357,7 @@ class Hfss:
         stop_freq=None,
         step_freq=None,
         discrete_sweep=False,
-    ) -> Optional[HfssSimulationSetup]:
+    ) -> HfssSimulationSetup | None:
         """
         .. deprecated pyedb 0.67.0
 

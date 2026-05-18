@@ -22,10 +22,8 @@
 
 from typing import Union
 
-from ansys.edb.core.definition.component_model import (
-    ComponentModel as CoreComponentModel,
-    NPortComponentModel as CoreNPortComponentModel,
-)
+from ansys.edb.core.definition.component_model import ComponentModel as CoreComponentModel
+from ansys.edb.core.definition.component_model import NPortComponentModel as CoreNPortComponentModel
 
 
 class ComponentModel:

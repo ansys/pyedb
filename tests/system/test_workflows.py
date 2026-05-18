@@ -102,7 +102,8 @@ class TestClass(BaseTestClass):
         assert rules.copper_balance[0].max_percent == 15
 
     def test_drc_rules_from_file(self):
-        from pyedb.workflows.drc.drc import Drc, Rules
+        from pyedb.workflows.drc.drc import Drc
+        from pyedb.workflows.drc.drc import Rules
 
         RULES_DICT = {
             "min_line_width": [{"name": "MW", "value": "3.5mil"}],

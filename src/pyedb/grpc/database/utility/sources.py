@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 
-from pyedb.generic.constants import NodeType, SourceType
+from pyedb.generic.constants import NodeType
+from pyedb.generic.constants import SourceType
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 
 
