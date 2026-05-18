@@ -124,7 +124,6 @@ class EdbPadstacks(object):
         object
             EDB.PadType enumerator value.
         """
-
         if val == 0:
             return self._edb.Definition.PadType.RegularPad
         elif val == 1:
@@ -338,7 +337,6 @@ class EdbPadstacks(object):
         str
             Name of the padstack if the operation is successful.
         """
-
         PadStack = self._edb.Definition.PadstackDef.Create(self._layout.cell.GetDatabase(), padstackname)
         new_PadStackData = self._edb.Definition.PadstackDefData.Create()
         list_values = convert_py_list_to_net_list(
@@ -607,7 +605,6 @@ class EdbPadstacks(object):
 
         References
         ----------
-
         >>> Edb.padstacks.delete_padstack_instances(net_names=["GND"])
         """
         if not isinstance(net_names, list):  # pragma: no cover
@@ -778,7 +775,6 @@ class EdbPadstacks(object):
         tuple
             Tuple of (GeometryType, ParameterList, OffsetX, OffsetY, Rot).
         """
-
         if "PadstackDef" in str(type(pin)):
             padparams = pin.GetData().GetPadParametersValue(layername, self.int_to_pad_type(pad_type))
         else:
@@ -1432,12 +1428,12 @@ class EdbPadstacks(object):
             The net name to be used for filtering padstack instances.
         component_pin: str, optional
             Pin Number of the component.
+
         Returns
         -------
         list
             List of :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`.
         """
-
         instances_by_id = self.instances
         if pid:
             return instances_by_id[pid]
@@ -1847,7 +1843,7 @@ class EdbPadstacks(object):
 
     def reduce_via_in_bounding_box(self, bounding_box, x_samples, y_samples, nets=None):
         """
-        reduce the number of vias intersecting bounding box and nets by x and y samples.
+        Reduce the number of vias intersecting bounding box and nets by x and y samples.
 
         Parameters
         ----------
@@ -1864,7 +1860,6 @@ class EdbPadstacks(object):
         bool
             ``True`` when succeeded ``False`` when failed. <
         """
-
         padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
         if not padstacks_inbox:
             self._logger.info("no padstack in bounding box")
@@ -1904,7 +1899,7 @@ class EdbPadstacks(object):
         padstack: Dict[int, List[float]], max_distance: float = 1e-3, min_samples: int = 5
     ) -> Dict[int, List[str]]:
         """
-        density based spatial clustering for padstack instances
+        Density based spatial clustering for padstack instances
 
         Parameters
         ----------
@@ -1922,7 +1917,6 @@ class EdbPadstacks(object):
         dict
             clusters {cluster label: [padstack ids]} <
         """
-
         padstack_ids = list(padstack.keys())
         xy_array = np.array([padstack[pid] for pid in padstack_ids])
         n = len(padstack_ids)

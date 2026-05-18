@@ -129,7 +129,6 @@ class SimulationSetup(SimulationSetupDeprecated, ABC):
         list[SweepData]
             List of sweep data objects.
         """
-
         return [SweepData(self._pedb, core=sweep, simsetup=self) for sweep in self.core.sweep_data]
 
     @sweep_data.setter

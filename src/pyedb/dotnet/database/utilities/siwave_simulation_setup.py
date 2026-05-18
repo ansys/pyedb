@@ -334,7 +334,6 @@ class SIwaveSimulationSetup(SimulationSetup):
     @property
     def get_sim_setup_info(self):  # todo remove after refactoring
         """Get simulation information from the setup."""
-
         sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kSIwave", name=self._edb_object.GetName())
         clone_edb_sim_setup_info(source=self._edb_object, target=sim_setup_info._edb_object)
         return sim_setup_info
@@ -443,6 +442,7 @@ class SIwaveSimulationSetup(SimulationSetup):
             List of frequency points. The default is ``None``.
         sweep_type : str, optional
             Sweep type. The default is ``"interpolation"``. Options are ``"discrete"``,"discrete"``.
+
         Returns
         -------
 
@@ -599,7 +599,8 @@ class SiwaveDCSimulationSetup(SimulationSetup):
 
 class SIWaveGeneralSettings:
     """Class to manage global settings for the Siwave simulation setup module.
-    Added to be compliant with ansys-edbe-core settings structure."""
+    Added to be compliant with ansys-edbe-core settings structure.
+    """
 
     def __init__(self, parent):
         self._parent = parent

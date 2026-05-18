@@ -135,6 +135,7 @@ class Value(float, CoreValue):
 
     def __pow__(self, other):
         """Power of the value.
+
         Returns
         -------
         Value object

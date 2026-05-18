@@ -2130,7 +2130,8 @@ class Stackup(LayerCollection):
     def _get(self):
         """Get stackup information from layout.
 
-        Returns:
+        Returns
+        -------
         tuple: (dict, dict, dict)
             layers, materials, roughness_models
         """
@@ -2327,7 +2328,6 @@ class Stackup(LayerCollection):
         >>> edb = Edb()
         >>> edb.stackup.load("stackup.xml")
         """
-
         if isinstance(file_path, dict):
             return self._import_dict(file_path)
         elif file_path.endswith(".csv"):
@@ -2376,7 +2376,6 @@ class Stackup(LayerCollection):
         -------
         :class:`matplotlib.plt`
         """
-
         from pyedb.generic.constants import CSS4_COLORS
         from pyedb.generic.plot import plot_matplotlib
 
@@ -2826,7 +2825,6 @@ class Stackup(LayerCollection):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-
         self._edb_object.ImportFromControlFile(file_path)
         flag = self._pedb.layout._edb_object.SetLayerCollection(self._edb_object)
         self.refresh_layer_collection()
