@@ -32,7 +32,8 @@ from pyedb.configuration.cfg_common import CfgBase
 
 
 def _smallest_pin_pad_size(comp) -> float | None:
-    """Return the smallest pin pad dimension (metres) for *comp*, or ``None``.
+    """
+    Return the smallest pin pad dimension (metres) for *comp*, or ``None``.
 
     Only pins that expose a valid ``bounding_box`` attribute returning a
     non-degenerate ``((x1, y1), (x2, y2))`` tuple are considered.  Pins
@@ -54,7 +55,8 @@ def _smallest_pin_pad_size(comp) -> float | None:
 
 
 def _height_from_diameter(diameter: str) -> str:
-    """Return ``2/3 * diameter`` as a unit string, e.g. ``"100um"``.
+    """
+    Return ``2/3 * diameter`` as a unit string, e.g. ``"100um"``.
 
     Raises ``ValueError`` if *diameter* cannot be parsed.
     """
@@ -97,6 +99,7 @@ _NO_DIE_TYPES = ("no_die", "none", None)
 
 
 class CfgPinPairModel(BaseModel):
+
     """Represent one pin-pair RLC model entry."""
 
     first_pin: str
@@ -111,9 +114,11 @@ class CfgPinPairModel(BaseModel):
 
 
 class CfgComponent(CfgBase):
+
     """Fluent builder for a single component entry."""
 
     def __init__(self, _pedb=None, pedb_object=None, **kwargs):
+        """Initialize a CfgComponent instance."""
         if (
             pedb_object is None
             and not hasattr(_pedb, "components")
@@ -413,7 +418,8 @@ class CfgComponent(CfgBase):
         inductance_enabled: bool = False,
         capacitance_enabled: bool = False,
     ):
-        """Append a pin-pair RLC model between two component pins.
+        """
+        Append a pin-pair RLC model between two component pins.
 
         Parameters
         ----------
@@ -441,6 +447,7 @@ class CfgComponent(CfgBase):
         --------
         >>> r1 = cfg.components.add("R1", part_type="resistor")
         >>> r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
+
         """
         self.pin_pair_model.append(
             CfgPinPairModel(
@@ -457,7 +464,8 @@ class CfgComponent(CfgBase):
         )
 
     def set_s_parameter_model(self, model_name: str, model_path: str, reference_net: str):
-        """Assign a Touchstone S-parameter model to this component.
+        """
+        Assign a Touchstone S-parameter model to this component.
 
         Parameters
         ----------
@@ -471,11 +479,13 @@ class CfgComponent(CfgBase):
         Examples
         --------
         >>> u1.set_s_parameter_model("cap_100nF", "/snp/cap.s2p", "GND")
+
         """
         self.s_parameter_model = {"model_name": model_name, "model_path": model_path, "reference_net": reference_net}
 
     def set_spice_model(self, model_name: str, model_path: str, sub_circuit: str = "", terminal_pairs=None):
-        """Assign a SPICE subcircuit model to this component.
+        """
+        Assign a SPICE subcircuit model to this component.
 
         Parameters
         ----------
@@ -491,6 +501,7 @@ class CfgComponent(CfgBase):
         Examples
         --------
         >>> u1.set_spice_model("ic_spice", "/spice/ic.sp", sub_circuit="IC_TOP")
+
         """
         self.spice_model = {
             "model_name": model_name,
@@ -500,17 +511,20 @@ class CfgComponent(CfgBase):
         }
 
     def set_netlist_model(self, netlist: str):
-        """Assign a raw netlist model to this component.
+        """
+        Assign a raw netlist model to this component.
 
         Parameters
         ----------
         netlist : str
             SPICE-compatible netlist string.
+
         """
         self.netlist_model = {"netlist": netlist}
 
     def set_ic_die_properties(self, die_type: str = "no_die", orientation: str = "chip_up", height=None):
-        """Configure IC die and orientation properties.
+        """
+        Configure IC die and orientation properties.
 
         Parameters
         ----------
@@ -525,6 +539,7 @@ class CfgComponent(CfgBase):
         Examples
         --------
         >>> u1.set_ic_die_properties("flip_chip", orientation="chip_down")
+
         """
         data = {"type": die_type}
         if die_type != "no_die":
@@ -544,7 +559,8 @@ class CfgComponent(CfgBase):
         orientation: str = "chip_down",
         reference_designator: str = None,
     ):
-        """Configure solder-ball geometry for this component.
+        """
+        Configure solder-ball geometry for this component.
 
         Parameters
         ----------
@@ -576,6 +592,7 @@ class CfgComponent(CfgBase):
         --------
         >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
         >>> u1.set_solder_ball_properties()  # auto-sizes from pin pads
+
         """
         refdes = reference_designator or self.reference_designator
         if diameter is None:
@@ -606,7 +623,8 @@ class CfgComponent(CfgBase):
         reference_size_x: str = "0",
         reference_size_y: str = "0",
     ):
-        """Configure port reference geometry for this IC component.
+        """
+        Configure port reference geometry for this IC component.
 
         Parameters
         ----------
@@ -624,6 +642,7 @@ class CfgComponent(CfgBase):
         Examples
         --------
         >>> u1.set_port_properties(reference_height="50um")
+
         """
         self.port_properties = {
             "reference_height": reference_height,
@@ -668,9 +687,11 @@ class CfgComponent(CfgBase):
 
 
 class CfgComponents:
+
     """Fluent builder for the ``components`` configuration list."""
 
     def __init__(self, pedb=None, components_data=None):
+        """Initialize a CfgComponents instance."""
         self._pedb = pedb
         if components_data:
             self.components = [
@@ -685,7 +706,8 @@ class CfgComponents:
             self.components = []
 
     def get(self, reference_designator: str) -> "CfgComponent":
-        """Return a :class:`CfgComponent` for an *existing* EDB component.
+        """
+        Return a :class:`CfgComponent` for an *existing* EDB component.
 
         The component is looked up by *reference_designator* in the live EDB
         session and its current properties (type, model, die, solder-ball,
@@ -718,6 +740,7 @@ class CfgComponents:
         >>> u1 = cfg.components.get("U1")
         >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
         >>> edb.configuration.run(cfg)
+
         """
         # Return cached entry if already present
         cached = next((c for c in self.components if c.reference_designator == reference_designator), None)
@@ -746,7 +769,8 @@ class CfgComponents:
         definition=None,
         placement_layer=None,
     ):
-        """Add a component configuration entry.
+        """
+        Add a component configuration entry.
 
         Parameters
         ----------
@@ -772,6 +796,7 @@ class CfgComponents:
         --------
         >>> r1 = cfg.components.add("R1", part_type="resistor", enabled=True)
         >>> r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
+
         """
         comp = CfgComponent(
             self._pedb,
