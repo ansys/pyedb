@@ -75,7 +75,8 @@ class HfssExtentInfo:
     def air_box_horizontal_extent(self):
         """Size of horizontal extent for the air box.
 
-        Returns:
+        Returns
+        -------
         dotnet.database.edb_data.edbvalue.EdbValue
         """
         return self._edb_hfss_extent_info.AirBoxHorizontalExtent.Item1
@@ -381,7 +382,8 @@ class HfssExtentInfo:
     def export_config(self):
         """Export HFSS extent information.
 
-        Returns:
+        Returns
+        -------
         dict
             Parameters of the HFSS extent information.
         """

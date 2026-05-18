@@ -85,7 +85,6 @@ class LayoutStatistics(object):
             Stack up total thickness value.
 
         """
-
         return self._stackup_thickness
 
     @stackup_thickness.setter

@@ -73,7 +73,6 @@ def installed_versions() -> dict[str, str]:
     {'2024.1': 'C:/Program Files/AnsysEM/v241/Win64', '2023.2': 'C:/Program Files/AnsysEM/v232/Win64'}
 
     """
-
     return_dict = {}
     version_list = list_installed_ansysem()
     for version_env_var in version_list:

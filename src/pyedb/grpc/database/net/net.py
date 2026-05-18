@@ -140,7 +140,6 @@ class Net:
             - :class:`Rectangle <pyedb.grpc.database.primitive.rectangle.Rectangle>`
             - :class:`Bondwire <pyedb.grpc.database.primitive.bondwire.Bondwire>`
         """
-
         primitives = self.core.primitives
         if not len(self.__primitives) == len(primitives):
             for primitive in primitives:
@@ -195,6 +194,7 @@ class Net:
     @classmethod
     def create(cls, layout, name: str):
         """Create a new net in the EDB database.
+
         Parameters
         ----------
         layout : :class:`pyedb.grpc.database.layout.layout.Layout`

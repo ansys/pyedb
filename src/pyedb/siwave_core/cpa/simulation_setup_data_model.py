@@ -28,7 +28,8 @@ from pydantic import BaseModel, Field
 class SolverOptions(BaseModel):
     """Configuration options for the SI-Wave solver.
 
-    Attributes:
+    Attributes
+    ----------
         extraction_mode (str): Mode of extraction, defaults to "si"
         custom_refinement (bool): Enable custom refinement settings, defaults to False
         extraction_frequency (str): Frequency for extraction, defaults to "10Ghz"
@@ -70,7 +71,8 @@ class SolverOptions(BaseModel):
 class Vrm(BaseModel):
     """Voltage Regulator Module configuration.
 
-    Attributes:
+    Attributes
+    ----------
         name (str): Name of the VRM, defaults to empty string
         voltage (float): Voltage value, defaults to 0.0
         power_net (str): Power net identifier, defaults to empty string
@@ -86,7 +88,8 @@ class Vrm(BaseModel):
 class ChannelSetup(BaseModel):
     """Channel configuration setup.
 
-    Attributes:
+    Attributes
+    ----------
         die_name (str): Name of the die, defaults to empty string
         pin_grouping_mode (str): Mode for pin grouping, defaults to "perpin"
         channel_component_exposure (Dict[str, bool]): Component exposure settings
@@ -102,7 +105,8 @@ class ChannelSetup(BaseModel):
 class SIwaveCpaSetup(BaseModel):
     """Main configuration class for SI-Wave CPA (Channel Parameter Analyzer) setup.
 
-    Attributes:
+    Attributes
+    ----------
         name (str): Name of the setup, defaults to empty string
         mode (str): Operation mode, defaults to "channel"
         model_type (str): Type of model, defaults to "rlcg"
@@ -131,7 +135,8 @@ class SIwaveCpaSetup(BaseModel):
         Args:
             data (Dict): Dictionary containing SIwaveCpaSetup configuration
 
-        Returns:
+        Returns
+        -------
             SIwaveCpaSetup: New instance created from the dictionary
         """
         if "channel_setup" in data:
@@ -143,7 +148,8 @@ class SIwaveCpaSetup(BaseModel):
     def to_dict(self) -> Dict:
         """Convert SIwaveCpaSetup object to dictionary.
 
-        Returns:
+        Returns
+        -------
             Dict: Dictionary representation of the SIwaveCpaSetup instance
         """
         data = self.model_dump()

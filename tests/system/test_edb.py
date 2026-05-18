@@ -109,7 +109,7 @@ class TestClass(BaseTestClass):
         setup = edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
         setup.settings.add_source_terminal_to_ground("Vsource_U1_USB3_D_P_U1_GND", 1)
         if edbapp.grpc:
-            assert "Vsource_U1_USB3_D_P_U1_GND" in setup.settings.dc.source_terms_to_ground
+            assert "Vsource_U1_USB3_D_P_U1_GND" in setup.settings.source_terms_to_ground
         else:
             assert "Vsource_U1_USB3_D_P_U1_GND" in setup.settings.dc_ir.source_terms_to_ground
         edbapp.close(terminate_rpc_session=False)
@@ -177,14 +177,14 @@ class TestClass(BaseTestClass):
         syz_setup = edbapp.siwave.add_siwave_syz_analysis(start_freq="1GHz", stop_freq="10GHz", step_freq="10MHz")
         syz_setup.use_custom_settings = False
         assert not syz_setup.use_custom_settings
-        syz_setup.advanced_settings.min_void_area = "4mm2"
-        assert syz_setup.advanced_settings.min_void_area == 4e-06
-        syz_setup.advanced_settings.mesh_automatic = True
-        assert syz_setup.advanced_settings.mesh_automatic
-        syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh = "0.5mm2"
-        assert syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh == "0.5mm2"
-        syz_setup.dc_settings.use_dc_custom_settings = False
-        assert not syz_setup.dc_settings.use_dc_custom_settings
+        syz_setup.settings.advanced.min_void_area = "4mm2"
+        assert syz_setup.settings.advanced.min_void_area == 4e-06
+        syz_setup.mesh_automatic = True
+        assert syz_setup.mesh_automatic
+        syz_setup.dc_min_plane_area_to_mesh = "0.5mm2"
+        assert syz_setup.dc_min_plane_area_to_mesh == "0.5mm2"
+        syz_setup.settings.dc.use_dc_custom_settings = False
+        assert not syz_setup.settings.dc.use_dc_custom_settings
         syz_sweep = syz_setup.add_sweep()
         syz_sweep.enforce_causality = False
         assert not syz_sweep.enforce_causality
@@ -842,31 +842,12 @@ class TestClass(BaseTestClass):
         assert dc.compute_inductance
         dc.contact_radius = "1mm"
         assert dc.contact_radius == "1mm"
-        dc.dc_report_config_file = "custom_dc_report.cfg"
-        assert dc.dc_report_config_file == "custom_dc_report.cfg"
-        dc.dc_slider_pos = 2
-        assert dc.dc_slider_pos == 2
-        dc.export_dc_thermal_data = True
-        assert dc.export_dc_thermal_data
-        dc.full_dc_report_path = "full_dc_report.txt"
-        assert dc.full_dc_report_path == "full_dc_report.txt"
-        dc.icepak_temp_file = "icepak_temp_file.txt"
-        assert dc.icepak_temp_file == "icepak_temp_file.txt"
-        dc.import_thermal_data = True
-        assert dc.import_thermal_data
-        dc.per_pin_res_path = "per_pin_res.txt"
-        assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.dc_slider_position = 2
+        assert dc.dc_slider_position == 2
         dc.plot_jv = False
         assert not dc.plot_jv
-        dc.source_terms_to_ground = {"gnd": 1}
-        assert dc.source_terms_to_ground == {"gnd": 1}
-
         dc.use_dc_custom_settings = True
         assert dc.use_dc_custom_settings
-        dc.use_loop_res_for_per_pin = True
-        assert dc.use_loop_res_for_per_pin
-        dc.via_report_path = "via_report.txt"
-        assert dc.via_report_path == "via_report.txt"
 
         # DC advanced
         dc_adv = setup.settings.dc_advanced
@@ -899,14 +880,14 @@ class TestClass(BaseTestClass):
 
         # General
         general = setup.settings.general
-        general.pi_slider_pos = 0
-        assert general.pi_slider_pos == 0
-        general.si_slider_pos = 2
-        assert general.si_slider_pos == 2
+        general.pi_slider_position = 0
+        assert general.pi_slider_position == 0
+        general.si_slider_position = 2
+        assert general.si_slider_position == 2
         general.use_custom_settings = True
         assert general.use_custom_settings
-        general.user_si_settings = False
-        assert not general.user_si_settings
+        general.use_si_settings = False
+        assert not general.use_si_settings
 
         # S-parameters
         sp = setup.settings.s_parameter
@@ -929,7 +910,7 @@ class TestClass(BaseTestClass):
         setup.name = "test_siwave_dcir_setup"
         assert setup.name == "test_siwave_dcir_setup"
 
-        # setting.advanced
+        # DC settings (includes DCIR-specific properties via SIWaveDCIRDCSettings)
         dc = setup.settings.dc
         dc.compute_inductance = True
         assert dc.compute_inductance
@@ -937,10 +918,8 @@ class TestClass(BaseTestClass):
         assert dc.contact_radius == "1mm"
         dc.dc_report_config_file = "custom_dc_report.cfg"
         assert dc.dc_report_config_file == "custom_dc_report.cfg"
-        dc.dc_report_config_file = "custom_dc_report.cfg"
-        assert dc.dc_report_config_file == "custom_dc_report.cfg"
-        dc.dc_slider_pos = 2
-        assert dc.dc_slider_pos == 2
+        dc.dc_slider_position = 2
+        assert dc.dc_slider_position == 2
         dc.export_dc_thermal_data = True
         assert dc.export_dc_thermal_data
         dc.full_dc_report_path = "full_dc_report.txt"
@@ -951,9 +930,12 @@ class TestClass(BaseTestClass):
         assert dc.import_thermal_data
         dc.per_pin_res_path = "per_pin_res.txt"
         assert dc.per_pin_res_path == "per_pin_res.txt"
+        dc.per_pin_use_pin_format = True
+        assert dc.per_pin_use_pin_format
         dc.plot_jv = False
         assert not dc.plot_jv
         dc.source_terms_to_ground = {"gnd": 1}
+        assert dc.source_terms_to_ground == {"gnd": 1}
         dc.use_dc_custom_settings = True
         assert dc.use_dc_custom_settings
         dc.use_loop_res_for_per_pin = True
@@ -990,16 +972,18 @@ class TestClass(BaseTestClass):
         dc_adv.refine_vias = True
         assert dc_adv.refine_vias
 
-        # general
+        # general (for DCIR setups, general proxies to DC settings for backward compat)
         general = setup.settings.general
-        general.pi_slider_pos = 0
-        assert general.pi_slider_pos == 0
-        general.si_slider_pos = 2
-        assert general.si_slider_pos == 2
-        general.use_custom_settings = True
-        assert general.use_custom_settings
-        general.user_si_settings = False
-        assert not general.user_si_settings
+        general.compute_inductance = True
+        assert general.compute_inductance
+        general.contact_radius = "0.5mm"
+        assert general.contact_radius == "0.5mm"
+        general.dc_slider_position = 1
+        assert general.dc_slider_position == 1
+        general.plot_jv = True
+        assert general.plot_jv
+        general.use_dc_custom_settings = False
+        assert not general.use_dc_custom_settings
         edbapp.close(terminate_rpc_session=False)
 
     def test_raptor_x_simulation_setups_consolidation(self):
@@ -1201,12 +1185,22 @@ class TestClass(BaseTestClass):
     def test_siwave_simulation_setup_dotnet_compatibility(self):
         edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")
-        setup.set_dc_slider = 1
-        settings = setup.settings
 
-        # -------------------------
-        # Apply settings (SETTERS)
-        # -------------------------
+        settings = setup.settings
+        if not config["use_grpc"]:
+            assert hasattr(settings, "dc_report_show_active_devices")
+            assert hasattr(settings, "dc_report_config_file")
+            assert hasattr(settings, "enabled")
+            assert hasattr(settings, "icepak_temp_file")
+            assert hasattr(settings, "import_thermal_data")
+            assert hasattr(settings, "per_pin_res_path")
+            assert hasattr(settings, "per_pin_use_pin_format")
+            assert hasattr(settings, "via_report_path")
+            assert hasattr(settings, "use_loop_res_for_per_pin")
+            assert hasattr(settings, "export_dc_thermal_data")
+            assert hasattr(settings, "full_dc_report_path")
+            assert hasattr(settings, "use_loop_res_for_per_pin")
+            assert hasattr(settings, "add_source_terminal_to_ground")
 
         settings.dc_report_show_active_devices = True
         settings.dc_report_config_file = "custom_dc_report.cfg"
@@ -1221,93 +1215,122 @@ class TestClass(BaseTestClass):
         settings.export_dc_thermal_data = True
         settings.full_dc_report_path = "full_dc_report.txt"
         settings.use_loop_res_for_per_pin = True
-        # settings.add_source_terminal_to_ground("test", 1)
+        settings.add_source_terminal_to_ground("test", 1)
+
+        if config["use_grpc"]:
+            setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        else:
+            setup_2 = setup
+        assert setup_2.settings.use_loop_res_for_per_pin
+        assert setup_2.settings.dc_report_show_active_devices
+        assert setup_2.settings.dc_report_config_file == "custom_dc_report.cfg"
+        assert setup_2.settings.enabled
+        assert setup_2.settings.icepak_temp_file == "icepak_temp_file.txt"
+        assert setup_2.settings.import_thermal_data
+        assert setup_2.settings.per_pin_res_path == "per_pin_res.txt"
+        assert setup_2.settings.per_pin_use_pin_format
+        assert setup_2.settings.via_report_path == "via_report.txt"
+        assert setup_2.settings.export_dc_thermal_data
+        assert setup_2.settings.full_dc_report_path == "full_dc_report.txt"
+        assert settings.source_terms_to_ground["test"] == 1
 
         # DC settings
         dc = settings.dc
+        if not config["use_grpc"]:
+            assert hasattr(dc, "compute_inductance")
+            assert hasattr(dc, "contact_radius")
+            assert hasattr(dc, "dc_slider_position")
+            assert hasattr(dc, "plot_jv")
         dc.compute_inductance = True
         dc.contact_radius = "1mm"
-        dc.dc_slider_pos = 0
+        dc.dc_slider_position = 0
         dc.plot_jv = False
-        dc.use_dc_customer_settings = False
+
+        if config["use_grpc"]:
+            setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        else:
+            setup_2 = setup
+        assert setup_2.settings.dc.compute_inductance
+        assert setup_2.settings.dc.contact_radius == "1mm"
+        assert setup_2.settings.dc.dc_slider_position == 0
+        assert not setup_2.settings.dc.plot_jv
 
         # DC advanced settings
         dc_adv = settings.dc_advanced
+        if not config["use_grpc"]:
+            assert hasattr(dc_adv, "dc_min_plane_area_to_mesh")
+            assert hasattr(dc_adv, "dc_min_void_area_to_mesh")
+            assert hasattr(dc_adv, "energy_error")
+            assert hasattr(dc_adv, "max_init_mesh_edge_length")
+            assert hasattr(dc_adv, "max_num_passes")
+            assert hasattr(dc_adv, "mesh_bondwires")
+            assert hasattr(dc_adv, "mesh_vias")
+            assert hasattr(dc_adv, "min_num_passes")
+            assert hasattr(dc_adv, "num_bondwire_sides")
+            assert hasattr(dc_adv, "num_via_sides")
+            assert hasattr(dc_adv, "percent_local_refinement")
+            assert hasattr(dc_adv, "refine_bondwires")
+            assert hasattr(dc_adv, "refine_vias")
         dc_adv.dc_min_plane_area_to_mesh = "0.30mm2"
         dc_adv.dc_min_void_area_to_mesh = "0.02mm2"
         dc_adv.energy_error = 1.5
         dc_adv.max_init_mesh_edge_length = "2.0mm"
         dc_adv.max_num_passes = 10
-        dc_adv.mesh_bws = False
+        dc_adv.mesh_bondwires = False
         dc_adv.mesh_vias = False
         dc_adv.min_num_passes = 5
-        dc_adv.num_bw_sides = 12
+        dc_adv.num_bondwire_sides = 12
         dc_adv.num_via_sides = 12
         dc_adv.percent_local_refinement = 30
-        dc_adv.refine_bws = True
+        dc_adv.refine_bondwires = True
         dc_adv.refine_vias = True
 
-        # General settings
-        general = settings.general
-        general.compute_inductance = True
-        general.contact_radius = "1mm"
-        general.dc_slider_pos = 0
-        general.plot_jv = False
-        general.use_dc_custom_settings = False
+        if config["use_grpc"]:
+            setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        else:
+            setup_2 = setup
 
-        # -------------------------
-        # Validate settings (ASSERTS)
-        # -------------------------
-
-        setup = edbapp.setups["setup_1"]
-        settings = setup.settings
-
-        # assert settings.source_terms_to_ground["test"]
-        assert settings.use_loop_res_for_per_pin
-        assert settings.dc_report_show_active_devices
-        assert settings.dc_report_config_file == "custom_dc_report.cfg"
-        assert settings.enabled
-        assert settings.icepak_temp_file == "icepak_temp_file.txt"
-        assert settings.import_thermal_data
-        assert settings.per_pin_res_path == "per_pin_res.txt"
-        assert settings.per_pin_use_pin_format
-        assert settings.via_report_path == "via_report.txt"
-        assert settings.export_dc_thermal_data
-        assert settings.full_dc_report_path == "full_dc_report.txt"
-
-        # DC assertions
-        assert dc.compute_inductance
-        assert dc.contact_radius == "1mm"
-        assert dc.dc_slider_pos == 0
-        assert not dc.plot_jv
-        assert not dc.use_dc_customer_settings
-
-        # DC advanced assertions
-        assert dc_adv.dc_min_plane_area_to_mesh == "0.30mm2"
+        assert setup_2.settings.dc_advanced.dc_min_plane_area_to_mesh == "0.30mm2"
         assert dc_adv.dc_min_void_area_to_mesh == "0.02mm2"
         assert dc_adv.energy_error == 1.5
         assert dc_adv.max_init_mesh_edge_length == "2.0mm"
         assert dc_adv.max_num_passes == 10
-        assert not dc_adv.mesh_bws
+        assert not dc_adv.mesh_bondwires
         assert not dc_adv.mesh_vias
         assert dc_adv.min_num_passes == 5
-        assert dc_adv.num_bw_sides == 12
+        assert dc_adv.num_bondwire_sides == 12
         assert dc_adv.num_via_sides == 12
         assert dc_adv.percent_local_refinement == 30
-        assert dc_adv.refine_bws
+        assert dc_adv.refine_bondwires
         assert dc_adv.refine_vias
 
-        # General assertions
-        assert general.compute_inductance
-        assert general.contact_radius == "1mm"
-        assert general.dc_slider_pos == 0
-        assert not general.plot_jv
-        assert not general.use_dc_custom_settings
+        # General settings (backward compat — proxies to DC settings for DCIR setups)
+        general = settings.general
+        general.pi_slider_position = 0
+        general.si_slider_position = 0
+        general.use_custom_settings = False
+        general.use_si_settings = False
+
+        # -------------------------
+        # Validate settings (ASSERTS)
+        # -------------------------
+        if config["use_grpc"]:
+            setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        else:
+            setup_2 = setup
+        # General assertions (backward compat)
+        assert setup_2.settings.general.pi_slider_position == 0
+        assert setup_2.settings.general.si_slider_position == 0
+        assert not setup_2.settings.general.use_custom_settings
+        assert not setup_2.settings.general.use_si_settings
 
         # test syz setup
 
-        setup2 = edbapp.simulation_setups.create_siwave_setup("setup_2")
-        assert "pi_slider_position", "si_slider_position" in setup2.get_configurations().items()
+        if config["use_grpc"]:
+            setup_2 = edbapp.simulation_setups.setups["setup_1"]
+        else:
+            setup_2 = setup
+        assert "pi_slider_position", "si_slider_position" in setup_2.get_configurations().items()
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(

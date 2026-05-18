@@ -24,6 +24,9 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
+        SIWaveDCIRSimulationSettings as CoreSIWaveDCIRSettings,
+    )
     from ansys.edb.core.simulation_setup.siwave_simulation_settings import SIWaveDCSettings as CoreSIWaveDCSettings
 
 
@@ -83,11 +86,11 @@ class SIWaveDCSettings:
             DC slider position.
 
         """
-        return self.core.dc.dc_slider_pos
+        return self.core.dc_slider_pos
 
     @dc_slider_position.setter
     def dc_slider_position(self, value: int):
-        self.core.dc.dc_slider_pos = value
+        self.core.dc_slider_pos = value
 
     @property
     def plot_jv(self) -> bool:
@@ -121,178 +124,110 @@ class SIWaveDCSettings:
     def use_dc_custom_settings(self, value: bool):
         self.core.use_dc_custom_settings = value
 
-    @property
-    def export_dc_thermal_data(self) -> bool:
-        """Export DC thermal data flag.
 
-        Returns
-        -------
-        bool
-            True if export DC thermal data is enabled, False otherwise.
+class SIWaveDCIRDCSettings(SIWaveDCSettings):
+    """SIWave DC settings for DCIR setups — extends base DC settings with DCIR-specific properties
+    accessible via the parent DCIR settings core."""
 
-        """
-        return self.core.export_dc_thermal_data
-
-    @export_dc_thermal_data.setter
-    def export_dc_thermal_data(self, value: bool):
-        self.core.export_dc_thermal_data = value
-
-    @property
-    def import_thermal_data(self) -> bool:
-        """Import thermal data flag.
-
-        Returns
-        -------
-        bool
-            True if import thermal data is enabled, False otherwise.
-
-        """
-        return self.core.import_thermal_data
-
-    @import_thermal_data.setter
-    def import_thermal_data(self, value: bool):
-        self.core.import_thermal_data = value
-
-    @property
-    def dc_report_show_active_devices(self) -> bool:
-        """DC report show active devices flag.
-
-        Returns
-        -------
-        bool
-            True if DC report show active devices is enabled, False otherwise.
-
-        """
-        return self.core.dc_report_show_active_devices
-
-    @dc_report_show_active_devices.setter
-    def dc_report_show_active_devices(self, value: bool):
-        self.core.dc_report_show_active_devices = value
-
-    @property
-    def per_pin_use_pin_format(self) -> bool:
-        """Per pin use pin format flag.
-
-        Returns
-        -------
-        bool
-            True if per pin use pin format is enabled, False otherwise.
-
-        """
-        return self.core.per_pin_use_pin_format
-
-    @per_pin_use_pin_format.setter
-    def per_pin_use_pin_format(self, value: bool):
-        self.core.per_pin_use_pin_format = value
-
-    @property
-    def use_loop_res_for_per_pin(self) -> bool:
-        """Use loop resistance for per pin flag.
-
-        Returns
-        -------
-        bool
-            True if use loop resistance for per pin is enabled, False otherwise.
-
-        """
-        return self.core.use_loop_res_for_per_pin
-
-    @use_loop_res_for_per_pin.setter
-    def use_loop_res_for_per_pin(self, value: bool):
-        self.core.use_loop_res_for_per_pin = value
+    def __init__(self, pedb, dc_core: "CoreSIWaveDCSettings", dcir_core: "CoreSIWaveDCIRSettings"):
+        super().__init__(pedb, dc_core)
+        self._dcir_core = dcir_core
 
     @property
     def dc_report_config_file(self) -> str:
-        """DC report configuration file.
-
-        Returns
-        -------
-        str
-            DC report configuration file.
-
-        """
-        return self.core.dc_report_config_file
+        """DC report configuration file path."""
+        return self._dcir_core.dc_report_config_file
 
     @dc_report_config_file.setter
     def dc_report_config_file(self, value: str):
-        self.core.dc_report_config_file = value
+        self._dcir_core.dc_report_config_file = value
+
+    @property
+    def dc_report_show_active_devices(self) -> bool:
+        """Whether to show active devices in the DC report."""
+        return self._dcir_core.dc_report_show_active_devices
+
+    @dc_report_show_active_devices.setter
+    def dc_report_show_active_devices(self, value: bool):
+        self._dcir_core.dc_report_show_active_devices = value
+
+    @property
+    def export_dc_thermal_data(self) -> bool:
+        """Whether to export DC thermal data."""
+        return self._dcir_core.export_dc_thermal_data
+
+    @export_dc_thermal_data.setter
+    def export_dc_thermal_data(self, value: bool):
+        self._dcir_core.export_dc_thermal_data = value
 
     @property
     def full_dc_report_path(self) -> str:
-        """Full DC report path.
-
-        Returns
-        -------
-        str
-            Full DC report path.
-
-        """
-        return self.core.full_dc_report_path
+        """Full DC report path."""
+        return self._dcir_core.full_dc_report_path
 
     @full_dc_report_path.setter
     def full_dc_report_path(self, value: str):
-        self.core.full_dc_report_path = value
+        self._dcir_core.full_dc_report_path = value
 
     @property
     def icepak_temp_file(self) -> str:
-        """Icepak temperature file.
-
-        Returns
-        -------
-        str
-            Icepak temperature file.
-
-        """
-        return self.core.icepak_temp_file
+        """Icepak temperature file path."""
+        return self._dcir_core.icepak_temp_file
 
     @icepak_temp_file.setter
     def icepak_temp_file(self, value: str):
-        self.core.icepak_temp_file = value
+        self._dcir_core.icepak_temp_file = value
 
     @property
-    def per_pin_res_path(self) -> bool:
-        """Per pin resistance path.
+    def import_thermal_data(self) -> bool:
+        """Whether to import thermal data."""
+        return self._dcir_core.import_thermal_data
 
-        Returns
-        -------
-        bool
-            True if per pin resistance path is enabled, False otherwise.
+    @import_thermal_data.setter
+    def import_thermal_data(self, value: bool):
+        self._dcir_core.import_thermal_data = value
 
-        """
-        return self.core.per_pin_res_path
+    @property
+    def per_pin_res_path(self) -> str:
+        """Per-pin resistance file path."""
+        return self._dcir_core.per_pin_res_path
 
     @per_pin_res_path.setter
-    def per_pin_res_path(self, value: bool):
-        self.core.per_pin_res_path = value
+    def per_pin_res_path(self, value: str):
+        self._dcir_core.per_pin_res_path = value
+
+    @property
+    def per_pin_use_pin_format(self) -> bool:
+        """Whether to use pin format for per-pin resistance."""
+        return self._dcir_core.per_pin_use_pin_format
+
+    @per_pin_use_pin_format.setter
+    def per_pin_use_pin_format(self, value: bool):
+        self._dcir_core.per_pin_use_pin_format = value
+
+    @property
+    def source_terms_to_ground(self) -> dict:
+        """Source terms to ground mapping."""
+        return self._dcir_core.source_terms_to_ground
+
+    @source_terms_to_ground.setter
+    def source_terms_to_ground(self, value: dict):
+        self._dcir_core.source_terms_to_ground = value
+
+    @property
+    def use_loop_res_for_per_pin(self) -> bool:
+        """Whether to use loop resistance for per-pin resistance."""
+        return self._dcir_core.use_loop_res_for_per_pin
+
+    @use_loop_res_for_per_pin.setter
+    def use_loop_res_for_per_pin(self, value: bool):
+        self._dcir_core.use_loop_res_for_per_pin = value
 
     @property
     def via_report_path(self) -> str:
-        """Via report path.
-
-        Returns
-        -------
-        str
-            Via report path.
-
-        """
-        return self.core.via_report_path
+        """Via report file path."""
+        return self._dcir_core.via_report_path
 
     @via_report_path.setter
     def via_report_path(self, value: str):
-        self.core.via_report_path = value
-
-    @property
-    def source_terms_to_ground(self) -> dict[str, int]:
-        """Source terms to ground mapping.
-
-        Returns
-        -------
-        dict[str, int]
-            Source terms to ground mapping.
-
-        """
-        return self.core.source_terms_to_ground
-
-    @source_terms_to_ground.setter
-    def source_terms_to_ground(self, value: dict[str, int]):
-        self.core.source_terms_to_ground = value
+        self._dcir_core.via_report_path = value
