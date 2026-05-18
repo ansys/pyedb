@@ -221,7 +221,6 @@ class Rectangle(Primitive):
         rotation : :class:`Value <ansys.edb.utility.Value>`
             Rotation.
         """
-
         return self.core.set_parameters(
             self._mapping_representation_type[rep_type],
             Value(param1),
@@ -248,7 +247,7 @@ class Rectangle(Primitive):
         """Set corner radius.
 
         Parameters
-        -------
+        ----------
         float
             Corner radius.
         """
@@ -352,8 +351,8 @@ class Rectangle(Primitive):
     def duplicate_across_layers(self, layers) -> bool:
         """Duplicate across layer a primitive object.
 
-        Parameters:
-
+        Parameters
+        ----------
         layers: list or str
             list of str, with layer names
 

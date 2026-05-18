@@ -98,7 +98,6 @@ class Configuration:
 
         Parameters
         ----------
-
         config_file : str, dict
             Full path to configure file in JSON or TOML format. Dictionary is also supported.
         append : bool, optional
@@ -607,7 +606,6 @@ class Configuration:
 
     def get_materials(self):
         """Retrieve materials from the current design."""
-
         self.cfg_data.stackup.materials = []
         for name, mat in self._pedb.materials.materials.items():
             self.cfg_data.stackup.add_material(**mat.to_dict())

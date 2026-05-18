@@ -123,7 +123,6 @@ class BundleTerminal(Terminal):
         -------
         :class:`Component <pyedb.grpc.database.hierarchy.component.Component`
         """
-
         return Component(self._pedb, self.core.component)
 
     @property
@@ -134,7 +133,6 @@ class BundleTerminal(Terminal):
         -------
         :class:`Net <pyedb.grpc.database.net.net.Net>`
         """
-
         return Net(self._pedb, self.core.net)
 
     @property
