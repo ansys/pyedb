@@ -37,13 +37,13 @@ class CfgTrace(CfgBaseModel):
 
     name: str
     layer: str
-    path: list[list[float | str]] = Field(default_factory=list)
+    path: list[list[float | int | str]] = Field(default_factory=list)
     width: str
     net_name: str = ""
     start_cap_style: str = "round"
     end_cap_style: str = "round"
     corner_style: str = "sharp"
-    incremental_path: list[list[float | str]] = Field(default_factory=list)
+    incremental_path: list[list[float | int | str]] = Field(default_factory=list)
 
 
 class CfgPlane(CfgBaseModel):
@@ -57,18 +57,18 @@ class CfgPlane(CfgBaseModel):
     type: str = "rectangle"
 
     # rectangle
-    lower_left_point: list[float | str] = Field(default_factory=list)
-    upper_right_point: list[float | str] = Field(default_factory=list)
-    corner_radius: float | str = 0
-    rotation: float | str = 0
+    lower_left_point: list[float | int | str] = Field(default_factory=list)
+    upper_right_point: list[float | int | str] = Field(default_factory=list)
+    corner_radius: float | int | str = 0
+    rotation: float | int | str = 0
     voids: list = Field(default_factory=list)
 
     # polygon
-    points: list[list[float | str]] = Field(default_factory=list)
+    points: list[list[float | int | str]] = Field(default_factory=list)
 
     # circle
-    radius: float | str = 0
-    position: list[float | str] = Field(default_factory=lambda: [0, 0])
+    radius: float | int | str = 0
+    position: list[float | int | str] = Field(default_factory=lambda: [0, 0])
 
 
 class CfgModeler:
@@ -104,8 +104,8 @@ class CfgModeler:
         start_cap_style: str = "round",
         end_cap_style: str = "round",
         corner_style: str = "sharp",
-        path: Optional[list[list[float | str]]] = None,
-        incremental_path: Optional[list[list[float | str]]] = None,
+        path: Optional[list[list[float | int | str]]] = None,
+        incremental_path: Optional[list[list[float | int | str]]] = None,
     ):
         """Add a trace to the modeler configuration.
 
@@ -193,10 +193,10 @@ class CfgModeler:
         layer: str,
         name: str = "",
         net_name: str = "",
-        lower_left_point: Optional[list[float]] = None,
-        upper_right_point: Optional[list[float]] = None,
+        lower_left_point: Optional[list[float | int]] = None,
+        upper_right_point: Optional[list[float | int]] = None,
         corner_radius: float = 0,
-        rotation: float = 0,
+        rotation: float | int = 0,
         voids: Optional[list] = None,
     ):
         """Add a rectangular copper plane.
@@ -252,11 +252,11 @@ class CfgModeler:
         layer: str,
         name: str = "",
         net_name: str = "",
-        corner_radius: float = 0,
-        rotation: float = 0,
+        corner_radius: float | int = 0,
+        rotation: float | int = 0,
         voids: Optional[list] = None,
-        radius: float | str = 0,
-        position: Optional[list[float | str]] = None,
+        radius: float | int | str = 0,
+        position: Optional[list[float | int | str]] = None,
     ):
         """Add a circular copper plane.
 
@@ -301,10 +301,10 @@ class CfgModeler:
         layer: str,
         name: str = "",
         net_name: str = "",
-        corner_radius: float = 0,
-        rotation: float = 0,
+        corner_radius: float | int = 0,
+        rotation: float | int = 0,
         voids: Optional[list] = None,
-        points: Optional[list[list[float]]] = None,
+        points: Optional[list[list[float | int]]] = None,
     ):
         """Add a polygon copper plane.
 
