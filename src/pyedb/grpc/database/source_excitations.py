@@ -260,7 +260,13 @@ class SourceExcitationInternal:
         if isinstance(point_on_edge, tuple):
             point_on_edge = CorePointData(point_on_edge)
         elif isinstance(point_on_edge, list):
-            point_on_edge = [CorePointData(self._pedb.value(point)) for point in point_on_edge]
+            # Check if it's a single point [x, y] or a list of points [[x1, y1], [x2, y2], ...]
+            if point_on_edge and isinstance(point_on_edge[0], (list, tuple)):
+                # List of points
+                point_on_edge = [CorePointData(self._pedb.value(point)) for point in point_on_edge]
+            else:
+                # Single point [x, y]
+                point_on_edge = CorePointData([self._pedb.value(point_on_edge[0]), self._pedb.value(point_on_edge[1])])
         primitive_lookup_id = prim_id.edb_uid if isinstance(prim_id, Primitive) else prim_id
         try:
             prim = self._pedb.layout.find_object_by_id(primitive_lookup_id)
