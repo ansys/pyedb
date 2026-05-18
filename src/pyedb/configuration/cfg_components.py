@@ -143,6 +143,7 @@ class CfgComponent(CfgBase):
         self.netlist_model = kwargs.get("netlist_model", {})
 
     def retrieve_model_properties_from_edb(self):
+        """Retrieve model properties from the EDB design."""
         c_p = self.pyedb_obj
         model_type = c_p.model_type
 
@@ -364,6 +365,7 @@ class CfgComponent(CfgBase):
         }
 
     def set_parameters_to_edb(self):
+        """Set component parameters to the EDB design."""
         obj = self.pyedb_obj
         if obj is None:
             return
@@ -382,6 +384,7 @@ class CfgComponent(CfgBase):
             self._set_port_properties_to_edb()
 
     def retrieve_parameters_from_edb(self):
+        """Retrieve component parameters from the EDB design."""
         obj = self.pyedb_obj
         if obj is None:
             return
@@ -783,9 +786,11 @@ class CfgComponents:
         return comp
 
     def clean(self):
+        """Clear all components from the list."""
         self.components = []
 
     def apply(self):
+        """Apply all component settings to the EDB design."""
         for comp in self.components:
             comp.set_parameters_to_edb()
 
