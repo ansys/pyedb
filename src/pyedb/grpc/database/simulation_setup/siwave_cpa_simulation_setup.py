@@ -36,7 +36,8 @@ class ChannelSetup:
     """
     Represents the setup configuration for a channel in SIwave CPA simulations.
 
-    Attributes:
+    Attributes
+    ----------
         die_name (str): The name of the die associated with the channel setup.
         pin_grouping_mode (str): The mode for pin grouping. Options are "perpin", "ploc", or "usediepingroups".
         channel_component_exposure (dict): A dictionary mapping component names to their exposure status (True/False).
@@ -81,7 +82,8 @@ class ChannelSetup:
         """
         Gets the die name from the database.
 
-        Returns:
+        Returns
+        -------
             str: The die name.
         """
         return self._pedb.active_cell.get_product_property(
@@ -105,7 +107,8 @@ class ChannelSetup:
         """
         Gets the pin grouping mode from the database.
 
-        Returns:
+        Returns
+        -------
             str: The pin grouping mode ("perpin", "ploc", or "usediepingroups").
         """
         mode_mapping = {-1: "perpin", 0: "ploc", 1: "usediepingroups"}
@@ -123,7 +126,8 @@ class ChannelSetup:
             value (str or int): The pin grouping mode ("perpin", "ploc", or "usediepingroups") or its
             corresponding integer value.
 
-        Raises:
+        Raises
+        ------
             ValueError: If the provided value is not supported.
         """
         mapping = {"perpin": -1, "ploc": 0, "usediepingroups": 1}
@@ -142,7 +146,8 @@ class ChannelSetup:
         """
         Gets the channel component exposure configuration from the database.
 
-        Returns:
+        Returns
+        -------
             dict: A dictionary mapping component names to their exposure status (True/False).
         """
         cmp_exposure = self._pedb.active_cell.get_product_property(
@@ -162,7 +167,8 @@ class ChannelSetup:
         Args:
             value (dict): A dictionary mapping component names to their exposure status (True/False).
 
-        Raises:
+        Raises
+        ------
             ValueError: If the input is not a dictionary.
         """
         if not isinstance(value, dict):
@@ -181,10 +187,12 @@ class ChannelSetup:
         """
         Gets the VRM (Voltage Regulator Module) setup from the database.
 
-        Returns:
+        Returns
+        -------
             list: A list of Vrm objects representing the VRM setup.
 
-        Raises:
+        Raises
+        ------
             ValueError: If the VRM format is invalid.
         """
         vrm = self._pedb.active_cell.get_product_property(
@@ -213,7 +221,8 @@ class ChannelSetup:
         Args:
             value (list): A list of Vrm objects representing the VRM setup.
 
-        Raises:
+        Raises
+        ------
             ValueError: If the input is not a list.
         """
         from pyedb.siwave_core.cpa.simulation_setup_data_model import Vrm
@@ -241,7 +250,8 @@ class SolverOptions:
     """
     Represents solver options configuration for SIwave CPA simulations.
 
-    Attributes:
+    Attributes
+    ----------
         extraction_mode (str): Extraction mode ('si' or 'pi')
         custom_refinement (bool): Whether to use custom refinement settings
         extraction_frequency (str): Frequency for extraction (e.g. '10Ghz')
@@ -318,7 +328,8 @@ class SolverOptions:
                 - cg_percent_refinement_per_pass (float): CG refinement percentage per pass.
                 - return_path_net_for_loop_parameters (bool): Whether to use return path net for loop parameters.
 
-        Raises:
+        Raises
+        ------
             AttributeError: If the `solver_options` object does not have the expected attributes.
         """
         self.extraction_mode = solver_options.extraction_mode
@@ -343,7 +354,8 @@ class SolverOptions:
         """
         Gets the extraction mode from the database.
 
-        Returns:
+        Returns
+        -------
             str: The extraction mode. Returns "si" if the mode is set to "1", otherwise "pi".
         """
         mode = self._pedb.active_cell.get_product_property(
@@ -369,7 +381,8 @@ class SolverOptions:
         """
         Gets the custom refinement setting from the database.
 
-        Returns:
+        Returns
+        -------
             bool: True if custom refinement is enabled, False otherwise.
         """
         refine = self._pedb.active_cell.get_product_property(
@@ -395,7 +408,8 @@ class SolverOptions:
         """
         Gets the extraction frequency from the database.
 
-        Returns:
+        Returns
+        -------
             str: The extraction frequency value as a string.
         """
         return self._pedb.active_cell.get_product_property(
@@ -414,7 +428,8 @@ class SolverOptions:
         """
         Gets the compute capacitance setting from the database.
 
-        Returns:
+        Returns
+        -------
             bool: True if capacitance computation is enabled, False otherwise.
         """
         compute = self._pedb.active_cell.get_product_property(
@@ -440,7 +455,8 @@ class SolverOptions:
         """
         Gets the compute DC parameters setting from the database.
 
-        Returns:
+        Returns
+        -------
             bool: True if DC parameters computation is enabled, False otherwise.
         """
         compute = self._pedb.active_cell.get_product_property(
@@ -466,7 +482,8 @@ class SolverOptions:
         """
         Gets the compute DC RL parameters setting from the database.
 
-        Returns:
+        Returns
+        -------
             bool: True if DC RL parameters computation is enabled, False otherwise.
         """
         _res = self._pedb.active_cell.get_product_property(
@@ -492,7 +509,8 @@ class SolverOptions:
         """
         Gets the compute DC CG parameters setting from the database.
 
-        Returns:
+        Returns
+        -------
             bool: True if DC CG parameters computation is enabled, False otherwise.
         """
         _res = self._pedb.active_cell.get_product_property(
@@ -518,7 +536,8 @@ class SolverOptions:
         """
         Gets the compute AC RL parameters setting from the database.
 
-        Returns:
+        Returns
+        -------
             bool: True if AC RL parameters computation is enabled, False otherwise.
         """
         _res = self._pedb.active_cell.get_product_property(
@@ -544,7 +563,8 @@ class SolverOptions:
         """
         Gets the ground power nets for SI analysis setting from the database.
 
-        Returns:
+        Returns
+        -------
             bool: True if grounding power nets for SI analysis is enabled, False otherwise.
         """
         _res = self._pedb.active_cell.get_product_property(
@@ -570,7 +590,8 @@ class SolverOptions:
         """
         Gets the small hole diameter setting from the database.
 
-        Returns:
+        Returns
+        -------
             float|str: The small hole diameter as a float, or 'auto' if the value is set to -1.
         """
         _res = self._pedb.active_cell.get_product_property(
@@ -597,7 +618,8 @@ class SolverOptions:
         """
         Gets the model type setting from the database.
 
-        Returns:
+        Returns
+        -------
             str: The model type. Returns "rlcg" if the model type is set to "0", otherwise "esd_r".
         """
         return self._pedb.active_cell.get_product_property(
@@ -615,7 +637,8 @@ class SolverOptions:
         """
         Gets the maximum number of passes for CG adaptive refinement from the database.
 
-        Returns:
+        Returns
+        -------
             int: The maximum number of passes for CG adaptive refinement.
         """
         return int(
@@ -635,7 +658,8 @@ class SolverOptions:
         """
         Gets the target error percentage for CG adaptive refinement from the database.
 
-        Returns:
+        Returns
+        -------
             float: The target error percentage for CG adaptive refinement.
         """
         return float(
@@ -655,7 +679,8 @@ class SolverOptions:
         """
         Gets the percentage of CG refinement per pass from the database.
 
-        Returns:
+        Returns
+        -------
             float: The percentage of CG refinement per pass.
         """
         return float(
@@ -677,7 +702,8 @@ class SolverOptions:
         """
         Gets the maximum number of passes for RL adaptive refinement from the database.
 
-        Returns:
+        Returns
+        -------
             int: The maximum number of passes for RL adaptive refinement.
         """
         return int(
@@ -699,7 +725,8 @@ class SolverOptions:
         """
         Gets the target error percentage for RL adaptive refinement from the database.
 
-        Returns:
+        Returns
+        -------
             float: The target error percentage for RL adaptive refinement.
         """
         return float(
@@ -719,7 +746,8 @@ class SolverOptions:
         """
         Gets the percentage of RL refinement per pass from the database.
 
-        Returns:
+        Returns
+        -------
             float: The percentage of RL refinement per pass.
         """
         return float(
@@ -741,7 +769,8 @@ class SolverOptions:
         """
         Gets the return path net setting for loop parameters from the database.
 
-        Returns:
+        Returns
+        -------
             bool: True if the return path net is enabled for loop parameters, False otherwise.
         """
         _res = self._pedb.active_cell.get_product_property(
@@ -767,7 +796,8 @@ class SIWaveCPASimulationSetup:
     """
     Represents the setup configuration for SIwave CPA simulations.
 
-    Attributes:
+    Attributes
+    ----------
         _pedb: The database object representing the active cell.
         _channel_setup (ChannelSetup): The channel setup configuration.
         _solver_options (SolverOptions): The solver options configuration.
@@ -813,8 +843,8 @@ class SIWaveCPASimulationSetup:
     def create(cls, edb: "Edb", name=None, siwave_cpa_setup_class=None) -> "SIWaveCPASimulationSetup":
         """Creates a new SIWaveCPASimulationSetup instance.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         edb (pyedb.Edb): The EDB object representing the active design.
         name (str, optional): The name of the simulation setup. If not provided, a unique name will be generated.
         siwave_cpa_setup_class (SIwaveCpaSetup, optional): An optional configuration object to initialize the setup.
@@ -855,7 +885,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the name of the simulation setup.
 
-        Returns:
+        Returns
+        -------
             str: The name of the simulation setup.
         """
         return self._pedb.active_cell.get_product_property(
@@ -871,7 +902,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the mode of the simulation setup.
 
-        Returns:
+        Returns
+        -------
             str: The mode of the simulation setup ("channel" or "no_channel").
         """
         cpa_mode = self._pedb.active_cell.get_product_property(
@@ -897,7 +929,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the model type of the simulation setup.
 
-        Returns:
+        Returns
+        -------
             str: The model type ("rlcg" or "esd_r").
         """
         mod_type = self._pedb.active_cell.get_product_property(
@@ -920,7 +953,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the Q3D solver usage setting.
 
-        Returns:
+        Returns
+        -------
             bool: True if the Q3D solver is used, False otherwise.
         """
         return bool(
@@ -947,7 +981,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the net processing mode.
 
-        Returns:
+        Returns
+        -------
             str: The net processing mode.
         """
         return self._pedb.active_cell.get_product_property(
@@ -965,7 +1000,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the channel setup configuration.
 
-        Returns:
+        Returns
+        -------
             ChannelSetup: The channel setup configuration.
         """
         return self._channel_setup
@@ -980,7 +1016,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the solver options configuration.
 
-        Returns:
+        Returns
+        -------
             SolverOptions: The solver options configuration.
         """
         return self._solver_options
@@ -995,7 +1032,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the list of nets to process.
 
-        Returns:
+        Returns
+        -------
             list: A list of nets to process.
         """
         nets = self._pedb.active_cell.get_product_property(

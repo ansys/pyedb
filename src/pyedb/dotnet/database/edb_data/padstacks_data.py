@@ -110,7 +110,6 @@ class EDBPadProperties(object):
         int
             Type of the geometry.
         """
-
         padparams = self._edb_padstack.GetData().GetPadParametersValue(
             self.layer_name, self.int_to_pad_type(self.pad_type)
         )
@@ -183,7 +182,6 @@ class EDBPadProperties(object):
         -------
         PolygonData
         """
-
         flag, edb_object, _, _, _ = self._edb_padstack.GetData().GetPolygonalPadParameters(
             self.layer_name, self.int_to_pad_type(self.pad_type)
         )
@@ -251,7 +249,6 @@ class EDBPadProperties(object):
         >>> pad.shape = "Bullet"
         >>> pad.pad_parameters{"XSize": "0.5mm", "YSize": "0.5mm"}
         """
-
         if isinstance(value, dict):
             value = {k: v.tostring if isinstance(v, EdbValue) else v for k, v in value.items()}
             if self.shape == PadGeometryTpe.Circle.name:
@@ -289,7 +286,6 @@ class EDBPadProperties(object):
         str
             Offset for the X axis.
         """
-
         pad_values = self._edb_padstack.GetData().GetPadParametersValue(
             self.layer_name, self.int_to_pad_type(self.pad_type)
         )
@@ -308,7 +304,6 @@ class EDBPadProperties(object):
         str
             Offset for the Y axis.
         """
-
         pad_values = self._edb_padstack.GetData().GetPadParametersValue(
             self.layer_name, self.int_to_pad_type(self.pad_type)
         )
@@ -327,7 +322,6 @@ class EDBPadProperties(object):
         str
             Value for the rotation.
         """
-
         pad_values = self._edb_padstack.GetData().GetPadParametersValue(
             self.layer_name, self.int_to_pad_type(self.pad_type)
         )
@@ -591,7 +585,6 @@ class EDBPadstack(object):
     @property
     def hole_params(self):
         """Via Hole parameters values."""
-
         viaData = self.edb_padstack.GetData()
         self._hole_params = viaData.GetHoleParametersValue()
         return self._hole_params
@@ -877,7 +870,6 @@ class EDBPadstack(object):
         -------
             ``True`` when successful, ``False`` when failed.
         """
-
         if len(self.hole_properties) == 0:
             self._ppadstack._pedb.logger.error("Microvias cannot be applied on vias using hole shape polygon")
             return False
@@ -1126,12 +1118,14 @@ class EDBPadstack(object):
 
     def _update_layer_names(self, old_name, updated_name) -> bool:
         """Update padstack definition layer name when layer name is edited with the layer name setter.
+
         Parameters
         ----------
         old_name
             old name : str
         updated_name
             new name : str
+
         Returns
         -------
         bool
@@ -1249,7 +1243,6 @@ class EDBPadstack(object):
             ]
         }
         """
-
         pdef_data = self._padstack_def_data
         pad_type_list = [
             self._ppadstack._pedb._edb.Definition.PadType.RegularPad,
@@ -1516,6 +1509,7 @@ class EDBPadstackInstance(Connectable):
     @property
     def side_number(self) -> int:
         """Return the number of sides meshed of the padstack instance.
+
         Returns
         -------
         int
@@ -1563,7 +1557,6 @@ class EDBPadstackInstance(Connectable):
 
     def create_terminal(self, name=None) -> "PadstackInstanceTerminal":
         """Create a padstack instance terminal"""
-
         existing_terminal = self.terminal
         if existing_terminal is not None:
             self._pedb.logger.warning(f"Terminal already exists on padstack {self.name}.")
@@ -2204,13 +2197,11 @@ class EDBPadstackInstance(Connectable):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
 
         """
-
         val = String("")
         _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.core.ProductId.Designer, 11, val)
         aedt_name = str(name).strip("'")
@@ -2375,7 +2366,6 @@ class EDBPadstackInstance(Connectable):
         >>> padstack_inst = list_of_padstack_instances[0]
         >>> padstack_inst.create_rectangle_in_pad("TOP")
         """
-
         padstack_center = self.position
         rotation = self.rotation  # in radians
         padstack_name = self.padstack_definition

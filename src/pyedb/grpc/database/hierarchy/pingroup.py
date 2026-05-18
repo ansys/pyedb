@@ -108,7 +108,6 @@ class PinGroup:
         :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
             Pin group component.
         """
-
         return Component(self._pedb, self.core.component)
 
     @component.setter

@@ -27,7 +27,7 @@ from ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup import (
 
 import pyedb
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
-from pyedb.grpc.database.simulation_setup.siwave_dcir_settings import SIWaveDCIRSettings
+from pyedb.grpc.database.simulation_setup.siwave_dcir_settings import SIWaveDCIRSimulationSettings
 from pyedb.misc.decorators import deprecated_property
 
 
@@ -61,20 +61,7 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
         return cls(edb, core_setup)
 
     @property
-    @deprecated_property("use settings property instead.")
-    def dc_ir_settings(self):
-        """SIWave DCIR simulation settings.
-
-        .. deprecated:: 0.77.3
-           Use :attr:`settings.dc
-        <pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup.settings.dc>`
-        instead.
-
-        """
-        return self.settings
-
-    @property
-    def settings(self) -> SIWaveDCIRSettings:
+    def settings(self) -> SIWaveDCIRSimulationSettings:
         """SIWave DCIR simulation settings.
 
         Returns
@@ -83,16 +70,4 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
             The SIWave DCIR simulation settings object.
 
         """
-        return SIWaveDCIRSettings(self._pedb, self.core.settings)
-
-    @property
-    def dc_settings(self) -> SIWaveDCIRSettings:
-        """SIWave DCIR simulation settings.
-
-        Returns
-        -------
-        SIWaveDCIRSettings
-            The SIWave DCIR simulation settings object.
-
-        """
-        return self.settings.dc
+        return SIWaveDCIRSimulationSettings(self._pedb, self.core.settings)

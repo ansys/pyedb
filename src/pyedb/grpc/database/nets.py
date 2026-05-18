@@ -41,8 +41,8 @@ from pyedb.misc.utilities import compute_arc_points
 class Nets(CommonNets):
     """Manages EDB methods for nets management accessible from ``Edb.nets`` property.
 
-        Examples
-        --------
+    Examples
+    --------
     >>> from pyedb import Edb
 
     >>> # Initialize EDB session

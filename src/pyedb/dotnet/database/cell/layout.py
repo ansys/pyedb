@@ -371,6 +371,7 @@ class PrimitivesQuery:
         is_void : bool, optional
             When ``True``, return only void primitives. When ``False``, return only non-void primitives.
             When ``None`` (default), void state is not used as a filter.
+
         Returns
         -------
         list
@@ -493,7 +494,6 @@ class PrimitivesQuery:
 
         Examples
         --------
-
         >>> poly = database.modeler.get_polygons_by_layer("GND")
         >>> points = database.modeler.get_polygon_points(poly[0])
 
@@ -530,6 +530,7 @@ class PrimitivesQuery:
             Set filter on primitive type. Default is ``None``.
         is_void : bool, optional
             Set filter on is_void. When ``None``, both standard primitives and voids are returned.
+
         Returns
         -------
         List of filtered primitives
@@ -660,8 +661,8 @@ class Layout(ObjBase, PrimitivesQuery):
         """:obj:`list` of :class:`CellInstance <ansys.edb.hierarchy.CellInstances>` : List of the cell instances in \
                 this layout.
 
-                Read-Only.
-                """
+        Read-Only.
+        """
         return list(self._edb_object.CellInstances)
 
     @property
@@ -679,7 +680,6 @@ class Layout(ObjBase, PrimitivesQuery):
         Returns
         -------
         """
-
         return [EDBNetsData(net, self._pedb) for net in self._edb_object.Nets if net]
 
     @property
@@ -745,6 +745,7 @@ class Layout(ObjBase, PrimitivesQuery):
         ----------
         value : str
             Name of the component.
+
         Returns
         -------
 

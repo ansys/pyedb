@@ -292,7 +292,6 @@ class EdbSiwave(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -365,7 +364,6 @@ class EdbSiwave(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -406,7 +404,6 @@ class EdbSiwave(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -445,7 +442,6 @@ class EdbSiwave(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -498,7 +494,6 @@ class EdbSiwave(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.excitation_manager.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
@@ -553,7 +548,6 @@ class EdbSiwave(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.excitation_manager.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
@@ -609,7 +603,6 @@ class EdbSiwave(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.excitation_manager.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
@@ -649,12 +642,10 @@ class EdbSiwave(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.siwave.create_dc_terminal("U2A5", "V1P5_S3", "source_name")
         """
-
         dc_source = DCTerminal()
         dc_source.positive_node.net = net_name
         pos_node_cmp = self._pedb.components.get_component_by_name(component_name)
