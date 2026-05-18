@@ -78,6 +78,7 @@ class Value(float):
 
     def __pow__(self, value):
         """Power of the value.
+
         Returns
         -------
         Value object
@@ -86,6 +87,7 @@ class Value(float):
 
     def sqrt(self):
         """Square root of the value.
+
         Returns
         -------
         Value object
@@ -94,6 +96,7 @@ class Value(float):
 
     def log10(self):
         """Base-10 logarithm of the value.
+
         Returns
         -------
             Value object
@@ -102,6 +105,7 @@ class Value(float):
 
     def sin(self):
         """Sine of the value.
+
         Returns
         -------
             Value object
@@ -110,6 +114,7 @@ class Value(float):
 
     def cos(self):
         """Cosine of the value.
+
         Returns
         -------
             Value object
@@ -118,6 +123,7 @@ class Value(float):
 
     def asin(self):
         """Arcsine of the value.
+
         Returns
         -------
             Value object
@@ -126,6 +132,7 @@ class Value(float):
 
     def acos(self):
         """Arccosine of the value.
+
         Returns
         -------
             Value object
@@ -134,6 +141,7 @@ class Value(float):
 
     def tan(self):
         """Tangent of the value.
+
         Returns
         -------
             Value object
@@ -142,6 +150,7 @@ class Value(float):
 
     def atan(self):
         """Arctangent of the value.
+
         Returns
         -------
             Value object

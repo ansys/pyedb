@@ -99,7 +99,6 @@ class SimSetupInfo:
         "kQ3D": None,
         "kNumSetupTypes": None,
         """
-
         return self._edb_object.SimSetupType.ToString()
 
     @property

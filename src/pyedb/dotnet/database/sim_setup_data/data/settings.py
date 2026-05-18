@@ -950,7 +950,8 @@ class HfssSolverSettings(object):
         Returns
         -------
         int
-            Integer value according to the description."""
+            Integer value according to the description.
+        """
         mapping = {0: "zero", 1: "first", 2: "second", 3: "mixed"}
         return mapping[self._hfss_solver_settings.OrderBasis]
 

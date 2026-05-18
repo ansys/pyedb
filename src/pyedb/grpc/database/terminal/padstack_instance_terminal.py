@@ -43,6 +43,7 @@ class PadstackInstanceTerminal(Terminal):
     @classmethod
     def create(cls, layout, name, padstack_instance, layer, is_ref=False, net=None) -> "PadstackInstanceTerminal":
         """Create a padstack instance terminal.
+
         Parameters
         ----------
         layout : :class: <``Layout` pyedb.grpc.database.layout.layout.Layout>
@@ -55,6 +56,7 @@ class PadstackInstanceTerminal(Terminal):
             Layer name.
         is_ref : bool, optional
             Whether the terminal is a reference terminal. Default is False.
+
         Returns
         -------
         PadstackInstanceTerminal

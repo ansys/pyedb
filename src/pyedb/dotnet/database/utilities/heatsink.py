@@ -59,7 +59,7 @@ class HeatSink:
         """Set the base elevation of the fins.
 
         Parameters
-        -------
+        ----------
            value: float
         """
         self._edb_object.FinBaseHeight = self._pedb.edb_value(value)
@@ -79,7 +79,7 @@ class HeatSink:
         """Set the fin height.
 
         Parameters
-        -------
+        ----------
             value: float
         """
         self._edb_object.FinHeight = self._pedb.edb_value(value)
@@ -100,7 +100,7 @@ class HeatSink:
         """Set the fin orientation.
 
         Parameters
-        -------
+        ----------
             value: str
         """
         self._edb_object.FinOrientation = self._fin_orientation_type[value]
@@ -120,7 +120,7 @@ class HeatSink:
         """Set the fin spacing.
 
         Parameters
-        -------
+        ----------
             value: float
         """
         self._edb_object.FinSpacing = self._pedb.edb_value(value)
@@ -140,7 +140,7 @@ class HeatSink:
         """Set the fin thickness.
 
         Parameters
-         -------
+        ----------
             value: float
         """
         self._edb_object.FinThickness = self._pedb.edb_value(value)
