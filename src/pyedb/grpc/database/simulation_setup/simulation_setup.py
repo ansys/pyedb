@@ -20,8 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Union
 
+from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
+from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
 from pyedb.misc.decorators import deprecated
 
 if TYPE_CHECKING:
@@ -55,7 +58,7 @@ class SimulationSetupDeprecated:
         return self.sweeps
 
 
-class SimulationSetup(SimulationSetupDeprecated):
+class SimulationSetup(SimulationSetupDeprecated, ABC):
     def __init__(self, pedb, core: "CoreSimulationSetup"):
         """PyEDB Simulation Setup base class."""
         self.core = core
@@ -329,3 +332,46 @@ class SimulationSetup(SimulationSetupDeprecated):
             Simulation setup type.
         """
         return _mapping_simulation_types[self.core.type]
+
+    @property
+    @abstractmethod
+    def settings(self):
+        """Get the simulation settings.
+
+        Returns
+        -------
+        Settings
+            The simulation settings object specific to the simulation setup type.
+        """
+        ...
+
+
+class SimulationSettings(ABC):
+    def __init__(self, pedb, core):
+        """PyEDB SIWave simulation settings class."""
+        self.core = core
+        self._pedb = pedb
+
+    @property
+    def dc_advanced(self) -> SIWaveDCAdvancedSettings:
+        """DC advanced settings class.
+
+        Returns
+        -------
+        :class:`SIWaveDCAdvancedSettings <pyedb.grpc.database.simulation_setup.
+        siwave_dc_advanced.SIWaveDCAdvancedSettings>`
+
+        """
+        return SIWaveDCAdvancedSettings(self._pedb, self.core.dc_advanced)
+
+    @property
+    def advanced(self) -> SIWaveAdvancedSettings:
+        """Advanced settings class.
+
+        Returns
+        -------
+        :class:`SIWaveAdvancedSettings <pyedb.grpc.database.simulation_setup.
+        siwave_advanced_settings.SIWaveAdvancedSettings>`
+
+        """
+        return SIWaveAdvancedSettings(self._pedb, self.core.advanced)
