@@ -450,6 +450,9 @@ class TestClass(BaseTestClass):
         if edb.grpc:
             prim_1_id = [i.edb_uid for i in edb.layout.primitives if i.net.name == "trace_2"][0]
             assert edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+            #  test issue #2151 fix -> control that edge port is assignined at desired position when single point passed
+            edge = edb.ports["port_ver"].core.edges[0]
+            assert edge.point == (-0.066, -0.004)
         else:
             # This method is also available at same location in grpc but is deprecated.
             prim_1_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
