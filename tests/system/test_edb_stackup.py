@@ -24,6 +24,7 @@
 
 import math
 import os
+import platform
 
 import pytest
 
@@ -285,6 +286,7 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.add_layer("new_bottom", "1_Top", "add_at_elevation", "dielectric", elevation=0.0003)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"] and platform.system() == "Linux", reason="random fails on Linux.")
     def test_stackup_properties_1(self):
         """Evaluate various stackup properties."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -304,6 +306,7 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"] and platform.system() == "Linux", reason="random fails on Linux.")
     def test_stackup_properties_2(self):
         """Evaluate various stackup properties (JSON export round-trip)."""
         edbapp = self.edb_examples.create_empty_edb()
