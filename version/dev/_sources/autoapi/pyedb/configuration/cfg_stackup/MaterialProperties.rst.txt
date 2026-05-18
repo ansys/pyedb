@@ -1,0 +1,187 @@
+
+
+
+
+
+
+:class:`MaterialProperties`
+===========================
+
+
+.. py:class:: pyedb.configuration.cfg_stackup.MaterialProperties(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Store material properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MaterialProperties
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~conductivity`
+            - 
+          * - :py:attr:`~dielectric_loss_tangent`
+            - 
+          * - :py:attr:`~magnetic_loss_tangent`
+            - 
+          * - :py:attr:`~mass_density`
+            - 
+          * - :py:attr:`~permittivity`
+            - 
+          * - :py:attr:`~permeability`
+            - 
+          * - :py:attr:`~poisson_ratio`
+            - 
+          * - :py:attr:`~specific_heat`
+            - 
+          * - :py:attr:`~thermal_conductivity`
+            - 
+          * - :py:attr:`~youngs_modulus`
+            - 
+          * - :py:attr:`~thermal_expansion_coefficient`
+            - 
+          * - :py:attr:`~dc_conductivity`
+            - 
+          * - :py:attr:`~dc_permittivity`
+            - 
+          * - :py:attr:`~dielectric_model_frequency`
+            - 
+          * - :py:attr:`~loss_tangent_at_frequency`
+            - 
+          * - :py:attr:`~permittivity_at_frequency`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_stackup import MaterialProperties
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: conductivity
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: dielectric_loss_tangent
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: magnetic_loss_tangent
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: mass_density
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: permittivity
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: permeability
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: poisson_ratio
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: specific_heat
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: thermal_conductivity
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: youngs_modulus
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: thermal_expansion_coefficient
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: dc_conductivity
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: dc_permittivity
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: dielectric_model_frequency
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: loss_tangent_at_frequency
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+.. py:attribute:: permittivity_at_frequency
+   :type:  Optional[Union[str, float]]
+   :value: None
+
+
+
+
+
+

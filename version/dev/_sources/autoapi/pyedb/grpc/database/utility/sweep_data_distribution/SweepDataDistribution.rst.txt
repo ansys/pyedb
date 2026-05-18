@@ -1,0 +1,102 @@
+
+
+
+
+
+
+:class:`SweepDataDistribution`
+==============================
+
+
+.. py:class:: pyedb.grpc.database.utility.sweep_data_distribution.SweepDataDistribution
+
+
+
+.. py:currentmodule:: SweepDataDistribution
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_distribution`
+            - Return the Sweep data distribution.
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.sweep_data_distribution import SweepDataDistribution
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_distribution(sweep_type='linear', start='0Ghz', stop='10GHz', step='10MHz', count=10, decade_number=6, octave_number=5) -> str
+   :staticmethod:
+
+
+   
+   Return the Sweep data distribution.
+
+
+   :Parameters:
+
+       **sweep_type** : :class:`python:str`
+           Sweep type. Supported values : `"linear"`, `"linear_count"`, `"exponential"`, `"decade_count"`,
+           `"octave_count"`
+
+       **start** : :class:`python:str`, :class:`python:float`
+           Start frequency.
+
+       **stop** : :class:`python:str`, :class:`python:float`
+           Stop frequency
+
+       **step** : :class:`python:str`, :class:`python:float`
+           Step frequency
+
+       **count** : :class:`python:int`
+           Count number
+
+       **decade_number** : :class:`python:int`
+           Decade number
+
+       **octave_number** : :class:`python:int`
+           Octave number
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

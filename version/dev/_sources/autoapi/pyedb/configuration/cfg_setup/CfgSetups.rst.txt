@@ -1,0 +1,119 @@
+
+
+
+
+
+
+:class:`CfgSetups`
+==================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSetups(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CfgSetups
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - 
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_hfss_setup`
+            - 
+          * - :py:attr:`~add_siwave_ac_setup`
+            - 
+          * - :py:attr:`~add_siwave_dc_setup`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~setups`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgSetups
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: setups
+   :type:  List[Union[CfgHFSSSetup, CfgSIwaveACSetup, CfgSIwaveDCSetup]]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(setups: List[dict])
+   :classmethod:
+
+
+.. py:method:: add_hfss_setup(config: CfgHFSSSetup = None, **kwargs)
+
+.. py:method:: add_siwave_ac_setup(config: CfgSIwaveACSetup = None, **kwargs)
+
+.. py:method:: add_siwave_dc_setup(config: CfgSIwaveDCSetup = None, **kwargs)
+
+
+
+

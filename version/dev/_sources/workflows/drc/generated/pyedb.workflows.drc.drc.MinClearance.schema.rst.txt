@@ -1,0 +1,6 @@
+schema
+======
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinClearance.schema

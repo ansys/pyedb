@@ -1,0 +1,140 @@
+
+
+
+
+
+
+:class:`ProfileEntry`
+=====================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.ProfileEntry
+
+   
+   Performance profile entry showing task timing and resource usage.
+
+
+
+   :Attributes:
+
+       **timestamp** : :obj:`datetime`
+           When the task completed.
+
+       **task** : :class:`python:str`
+           Task or operation name.
+
+       **real_time** : :class:`python:str`, :obj:`optional`
+           Wall clock time in human-readable format. The default is ``None``.
+
+       **cpu_time** : :class:`python:str`, :obj:`optional`
+           CPU time consumed. The default is ``None``.
+
+       **memory** : :class:`python:str`, :obj:`optional`
+           Peak memory usage. The default is ``None``.
+
+       **extra** : :class:`python:dict` :obj:`of` :class:`python:str` :obj:`to` :class:`python:str`, :obj:`optional`
+           Additional metrics (e.g., number of elements). The default is an empty dict.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from datetime import datetime
+   >>> profile = ProfileEntry(
+   ...     timestamp=datetime(2025, 11, 10, 9, 30, 0),
+   ...     task="Mesh Generation",
+   ...     real_time="00:05:30",
+   ...     cpu_time="00:05:25",
+   ...     memory="2.5 GB",
+   ...     extra={"Number of elements": "50000"},
+   ... )
+   >>> profile.task
+   'Mesh Generation'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ProfileEntry
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~timestamp`
+            - 
+          * - :py:attr:`~task`
+            - 
+          * - :py:attr:`~real_time`
+            - 
+          * - :py:attr:`~cpu_time`
+            - 
+          * - :py:attr:`~memory`
+            - 
+          * - :py:attr:`~extra`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import ProfileEntry
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: timestamp
+   :type:  datetime.datetime
+
+.. py:attribute:: task
+   :type:  str
+
+.. py:attribute:: real_time
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: cpu_time
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: memory
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: extra
+   :type:  dict[str, str]
+
+
+
+
+

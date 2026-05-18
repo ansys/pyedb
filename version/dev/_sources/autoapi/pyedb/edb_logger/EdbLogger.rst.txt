@@ -1,0 +1,681 @@
+
+
+
+
+
+
+:class:`EdbLogger`
+==================
+
+
+.. py:class:: pyedb.edb_logger.EdbLogger(level=logging.DEBUG, filename=None, to_stdout=False, settings=None)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Specifies the logger to use for EDB logger.
+
+   This class allows you to add a handler to write messages to a file and to indicate
+   whether to write messages to the standard output (stdout).
+
+   :Parameters:
+
+       **level** : :class:`python:int`, :obj:`optional`
+           Logging level to filter the message severity allowed in the logger.
+           The default is ``logging.DEBUG``.
+
+       **filename** : :class:`python:str`, :obj:`optional`
+           Name of the file to write messages to. The default is ``None``.
+
+       **to_stdout** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to write log messages to stdout. The default is ``False``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EdbLogger
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_file_logger`
+            - Add a new file to the logger handlers list.
+          * - :py:attr:`~remove_file_logger`
+            - Remove a file from the logger handlers list.
+          * - :py:attr:`~remove_all_file_loggers`
+            - Remove all file loggers.
+          * - :py:attr:`~reset_timer`
+            - "Reset actual timer to  actual time or specified time.
+          * - :py:attr:`~add_error_message`
+            - Add a type 2 "Error" message to the message manager tree.
+          * - :py:attr:`~add_warning_message`
+            - Add a type 1 "Warning" message to the message manager tree.
+          * - :py:attr:`~add_info_message`
+            - Add a type 0 "Info" message to the active design level of the message manager tree.
+          * - :py:attr:`~add_debug_message`
+            - Parameterized message to the message manager.
+          * - :py:attr:`~add_message`
+            - Add a message to the message manager.
+          * - :py:attr:`~disable_stdout_log`
+            - Disable printing log messages to stdout.
+          * - :py:attr:`~enable_stdout_log`
+            - Enable printing log messages to stdout.
+          * - :py:attr:`~disable_log_on_file`
+            - Disable writing log messages to an output file.
+          * - :py:attr:`~enable_log_on_file`
+            - Enable writing log messages to an output file.
+          * - :py:attr:`~info`
+            - Write an info message to the global logger.
+          * - :py:attr:`~info_timer`
+            - Write an info message to the global logger with elapsed time.
+          * - :py:attr:`~warning`
+            - Write a warning message to the global logger.
+          * - :py:attr:`~error`
+            - Write an error message to the global logger.
+          * - :py:attr:`~debug`
+            - Write a debug message to the global logger.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~logger`
+            - EDB logger object.
+          * - :py:attr:`~glb`
+            - Global logger.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~log_file`
+            - 
+          * - :py:attr:`~settings`
+            - 
+          * - :py:attr:`~level`
+            - 
+          * - :py:attr:`~filename`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.edb_logger import EdbLogger
+
+Property detail
+---------------
+
+.. py:property:: logger
+
+   
+   EDB logger object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: glb
+
+   
+   Global logger.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: log_file
+   :value: ''
+
+
+.. py:attribute:: settings
+   :value: None
+
+
+.. py:attribute:: level
+   :value: 10
+
+
+.. py:attribute:: filename
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_file_logger(filename)
+
+   
+   Add a new file to the logger handlers list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_file_logger(project_name)
+
+   
+   Remove a file from the logger handlers list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_all_file_loggers()
+
+   
+   Remove all file loggers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: reset_timer(time_val=None)
+
+   
+   "Reset actual timer to  actual time or specified time.
+
+
+   :Parameters:
+
+       **time_val** : :class:`python:float`, :obj:`optional`
+           Value time to apply.
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_error_message(message_text)
+
+   
+   Add a type 2 "Error" message to the message manager tree.
+
+   Also add an error message to the logger if the handler is present.
+
+   :Parameters:
+
+       **message_text** : :class:`python:str`
+           Text to display as the error message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_warning_message(message_text)
+
+   
+   Add a type 1 "Warning" message to the message manager tree.
+
+   Also add a warning message to the logger if the handler is present.
+
+   :Parameters:
+
+       **message_text** : :class:`python:str`
+           Text to display as the warning message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Add a warning message to the EDB message manager.
+
+   >>> edb.logger.warning("Global warning message")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_info_message(message_text)
+
+   
+   Add a type 0 "Info" message to the active design level of the message manager tree.
+
+   Also add an info message to the logger if the handler is present.
+
+   :Parameters:
+
+       **message_text** : :class:`python:str`
+           Text to display as the info message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Add an info message at the global level.
+
+   >>> edb.logger.info("Global warning message")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_debug_message(message_text)
+
+   
+   Parameterized message to the message manager.
+
+
+   :Parameters:
+
+       **message_text** : :class:`python:str`
+           Text to display as the message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_message(message_type, message_text)
+
+   
+   Add a message to the message manager.
+
+
+   :Parameters:
+
+       **message_type** : :class:`python:int`
+           Type of the message. Options are:
+           * ``0`` : Info
+           * ``1`` : Warning
+           * ``2`` : Error
+           * ``3`` : Debug
+
+       **message_text** : :class:`python:str`
+           Text to display as the message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: disable_stdout_log()
+
+   
+   Disable printing log messages to stdout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: enable_stdout_log()
+
+   
+   Enable printing log messages to stdout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: disable_log_on_file()
+
+   
+   Disable writing log messages to an output file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: enable_log_on_file()
+
+   
+   Enable writing log messages to an output file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: info(msg, *args, **kwargs)
+
+   
+   Write an info message to the global logger.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: info_timer(msg, start_time=None, *args, **kwargs)
+
+   
+   Write an info message to the global logger with elapsed time.
+   Message will have an appendix of type Elapsed time: time.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: warning(msg, *args, **kwargs)
+
+   
+   Write a warning message to the global logger.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: error(msg, *args, **kwargs)
+
+   
+   Write an error message to the global logger.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: debug(msg, *args, **kwargs)
+
+   
+   Write a debug message to the global logger.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

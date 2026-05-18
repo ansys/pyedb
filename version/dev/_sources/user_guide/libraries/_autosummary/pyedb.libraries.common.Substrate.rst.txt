@@ -1,0 +1,26 @@
+﻿Substrate
+=========
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoclass:: Substrate
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Substrate.er
+      Substrate.h
+      Substrate.name
+      Substrate.size
+      Substrate.tan_d
+   
+   

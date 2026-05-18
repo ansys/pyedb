@@ -1,0 +1,162 @@
+
+
+
+
+
+
+:class:`CfgHFSSSetup`
+=====================
+
+.. toctree::
+   :hidden:
+
+    CfgSingleFrequencyAdaptiveSolution</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgSingleFrequencyAdaptiveSolution>
+    CfgBroadbandAdaptiveSolution</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgBroadbandAdaptiveSolution>
+    CfgAutoMeshOperation</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgAutoMeshOperation>
+    CfgMultiFrequencyAdaptiveSolution</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution>
+    CfgLengthMeshOperation</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgLengthMeshOperation>
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgHFSSSetup(/, **data: Any)
+
+   Bases: :py:obj:`CfgSetupAC`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgHFSSSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_length_mesh_operation`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~adapt_type`
+            - 
+          * - :py:attr:`~single_frequency_adaptive_solution`
+            - 
+          * - :py:attr:`~broadband_adaptive_solution`
+            - 
+          * - :py:attr:`~multi_frequency_adaptive_solution`
+            - 
+          * - :py:attr:`~auto_mesh_operation`
+            - 
+          * - :py:attr:`~mesh_operations`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgHFSSSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: type
+   :type:  str
+   :value: 'hfss'
+
+
+.. py:attribute:: adapt_type
+   :type:  Literal['broadband', 'single', 'multi_frequencies']
+   :value: None
+
+
+.. py:attribute:: single_frequency_adaptive_solution
+   :type:  Optional[CfgHFSSSetup.CfgSingleFrequencyAdaptiveSolution]
+   :value: None
+
+
+.. py:attribute:: broadband_adaptive_solution
+   :type:  Optional[CfgHFSSSetup.CfgBroadbandAdaptiveSolution]
+   :value: None
+
+
+.. py:attribute:: multi_frequency_adaptive_solution
+   :type:  Optional[CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution]
+   :value: None
+
+
+.. py:attribute:: auto_mesh_operation
+   :type:  CfgHFSSSetup.CfgAutoMeshOperation | None
+
+.. py:attribute:: mesh_operations
+   :type:  list[CfgHFSSSetup.CfgLengthMeshOperation] | None
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_length_mesh_operation(mesh_op: CfgLengthMeshOperation)
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgSingleFrequencyAdaptiveSolution
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgBroadbandAdaptiveSolution
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgAutoMeshOperation
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgLengthMeshOperation
+
+
+
+

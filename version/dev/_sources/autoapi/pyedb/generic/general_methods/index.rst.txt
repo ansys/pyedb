@@ -1,0 +1,108 @@
+
+
+
+
+
+
+The ``pyedb.generic.general_methods`` library
+=============================================
+
+.. py:module:: pyedb.generic.general_methods
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: general_methods
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~deprecate_argument_name`
+            - Decorator to deprecate certain argument names in favor of new ones.
+
+
+          * - :py:obj:`~execution_timer`
+            - 
+
+
+          * - :py:obj:`~installed_ansys_em_versions`
+            - Retrieve paths of installed ANSYS EM versions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+.. py:function:: installed_ansys_em_versions() -> dict[str, str]
+
+   
+   Retrieve paths of installed ANSYS EM versions.
+
+   Scan the environment variables and return a dict of the form
+   {version: installation_path} for every ANSYS EM release found.
+   Versions are ordered from the oldest to the latest (latest appears last).
+
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`python:str`]
+           Dictionary of the form {version: installation_path} for every ANSYS EM release found.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

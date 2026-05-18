@@ -1,0 +1,92 @@
+
+
+
+
+
+
+:class:`CfgBundleTerminal`
+==========================
+
+
+.. py:class:: pyedb.configuration.cfg_terminals.CfgBundleTerminal(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgBundleTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~terminal_type`
+            - 
+          * - :py:attr:`~terminals`
+            - 
+          * - :py:attr:`~name`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_terminals import CfgBundleTerminal
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: terminal_type
+   :type:  str
+   :value: 'bundle'
+
+
+.. py:attribute:: terminals
+   :type:  List[str]
+
+.. py:attribute:: name
+   :type:  str
+
+
+
+
+

@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``grpc`` package
+========================
+
+.. py:module:: pyedb.grpc
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: grpc
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database`
+            - 
+
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.edb`
+            - Provides the main interface for interacting with Ansys Electronics Desktop Database (EDB).
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> database</autoapi/pyedb/grpc/database/index>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> edb</autoapi/pyedb/grpc/edb/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

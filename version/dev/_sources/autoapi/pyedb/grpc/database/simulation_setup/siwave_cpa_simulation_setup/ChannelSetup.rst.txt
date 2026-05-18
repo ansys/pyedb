@@ -1,0 +1,205 @@
+
+
+
+
+
+
+:class:`ChannelSetup`
+=====================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup.ChannelSetup(pedb, cfg_channel_setup=None)
+
+   
+   Represents the setup configuration for a channel in SIwave CPA simulations.
+
+
+
+   :Attributes:
+
+       **die_name (str): The name of the die associated with the channel setup.**
+           ..
+
+       **pin_grouping_mode (str): The mode for pin grouping. Options are "perpin", "ploc", or "usediepingroups".**
+           ..
+
+       **channel_component_exposure (dict): A dictionary mapping component names to their exposure status (True/False).**
+           ..
+
+       **vrm (list): A list of VRM (Voltage Regulator Module) configurations.**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ChannelSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~die_name`
+            - Gets the die name from the database.
+          * - :py:attr:`~pin_grouping_mode`
+            - Gets the pin grouping mode from the database.
+          * - :py:attr:`~channel_component_exposure`
+            - Gets the channel component exposure configuration from the database.
+          * - :py:attr:`~vrm`
+            - Gets the VRM (Voltage Regulator Module) setup from the database.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import ChannelSetup
+
+Property detail
+---------------
+
+.. py:property:: die_name
+
+   
+   Gets the die name from the database.
+
+
+
+
+
+   :Returns:
+
+       str: :obj:`The` :obj:`die` name.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pin_grouping_mode
+
+   
+   Gets the pin grouping mode from the database.
+
+
+
+
+
+   :Returns:
+
+       str: :obj:`The` :obj:`pin` :obj:`grouping` :obj:`mode` ("perpin", "ploc", :obj:`or` "usediepingroups").
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: channel_component_exposure
+
+   
+   Gets the channel component exposure configuration from the database.
+
+
+
+
+
+   :Returns:
+
+       dict: :obj:`A` :obj:`dictionary` :obj:`mapping` :obj:`component` :obj:`names` :obj:`to` :obj:`their` :obj:`exposure` :obj:`status` (True/False).
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: vrm
+
+   
+   Gets the VRM (Voltage Regulator Module) setup from the database.
+
+
+
+
+
+   :Returns:
+
+       list: :obj:`A` :class:`python:list` :obj:`of` :obj:`Vrm` :obj:`objects` :obj:`representing` :obj:`the` :obj:`VRM` setup.
+           ..
+
+
+
+
+   :Raises:
+
+       ValueError: :obj:`If` :obj:`the` :obj:`VRM` :obj:`format` :obj:`is` invalid.
+           ..
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

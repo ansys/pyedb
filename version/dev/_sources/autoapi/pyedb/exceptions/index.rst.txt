@@ -1,0 +1,71 @@
+
+
+
+
+
+
+The ``exceptions.py`` module
+============================
+
+.. py:module:: pyedb.exceptions
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: exceptions
+.. tab-set::
+
+
+
+
+
+
+    .. tab-item:: Exceptions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.exceptions.MaterialModelException`
+            - Exception triggered when handling material model.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-lightning_bolt"></span> MaterialModelException</autoapi/pyedb/exceptions/MaterialModelException>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

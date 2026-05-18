@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`CfgTerminals`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_terminals.CfgTerminals(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CfgTerminals
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - 
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_padstack_instance_terminal`
+            - 
+          * - :py:attr:`~add_pin_group_terminal`
+            - 
+          * - :py:attr:`~add_point_terminal`
+            - 
+          * - :py:attr:`~add_edge_terminal`
+            - 
+          * - :py:attr:`~add_bundle_terminal`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~terminals`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_terminals import CfgTerminals
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: terminals
+   :type:  List[Union[CfgPadstackInstanceTerminal, CfgPinGroupTerminal, CfgPointTerminal, CfgEdgeTerminal, CfgBundleTerminal, dict]]
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(terminals: List[dict])
+   :classmethod:
+
+
+.. py:method:: add_padstack_instance_terminal(padstack_instance, name, impedance, is_circuit_port, boundary_type, hfss_type, reference_terminal=None, amplitude=1, phase=0, terminal_to_ground='kNoGround', padstack_instance_id=None, layer=None)
+
+.. py:method:: add_pin_group_terminal(pin_group, name, impedance, boundary_type, reference_terminal=None, amplitude=1, phase=0, terminal_to_ground='kNoGround')
+
+.. py:method:: add_point_terminal(x, y, layer, name, impedance, boundary_type, net, reference_terminal=None, amplitude=1, phase=0, terminal_to_ground='kNoGround')
+
+.. py:method:: add_edge_terminal(name, impedance, is_circuit_port, boundary_type, primitive, point_on_edge_x, point_on_edge_y, horizontal_extent_factor=6, vertical_extent_factor=8, pec_launch_width='0.02mm', reference_terminal=None, amplitude=1, phase=0, terminal_to_ground='kNoGround', hfss_type='Wave')
+
+.. py:method:: add_bundle_terminal(terminals, name)
+
+
+
+

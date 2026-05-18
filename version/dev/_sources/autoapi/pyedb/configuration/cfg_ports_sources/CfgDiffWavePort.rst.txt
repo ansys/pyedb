@@ -1,0 +1,94 @@
+
+
+
+
+
+
+:class:`CfgDiffWavePort`
+========================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgDiffWavePort(pedb, **kwargs)
+
+
+.. py:currentmodule:: CfgDiffWavePort
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_parameters_to_edb`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~horizontal_extent_factor`
+            - 
+          * - :py:attr:`~vertical_extent_factor`
+            - 
+          * - :py:attr:`~pec_launch_width`
+            - 
+          * - :py:attr:`~positive_port`
+            - 
+          * - :py:attr:`~negative_port`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgDiffWavePort
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: type
+
+.. py:attribute:: horizontal_extent_factor
+
+.. py:attribute:: vertical_extent_factor
+
+.. py:attribute:: pec_launch_width
+
+.. py:attribute:: positive_port
+
+.. py:attribute:: negative_port
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_parameters_to_edb()
+
+
+
+

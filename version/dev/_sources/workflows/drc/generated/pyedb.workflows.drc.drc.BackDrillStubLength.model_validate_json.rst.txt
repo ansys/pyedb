@@ -1,0 +1,6 @@
+model\_validate\_json
+=====================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: BackDrillStubLength.model_validate_json

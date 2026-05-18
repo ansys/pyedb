@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_package_definition`` library
+==========================================================
+
+.. py:module:: pyedb.configuration.cfg_package_definition
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_package_definition
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_package_definition.CfgPackage`
+            - Configuration package class.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_package_definition.CfgHeatSink`
+            - Configuration heat sink class.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_package_definition.CfgPackageDefinitions`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgPackage</autoapi/pyedb/configuration/cfg_package_definition/CfgPackage>
+    <span class="nf nf-cod-symbol_class"></span> CfgHeatSink</autoapi/pyedb/configuration/cfg_package_definition/CfgHeatSink>
+    <span class="nf nf-cod-symbol_class"></span> CfgPackageDefinitions</autoapi/pyedb/configuration/cfg_package_definition/CfgPackageDefinitions>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

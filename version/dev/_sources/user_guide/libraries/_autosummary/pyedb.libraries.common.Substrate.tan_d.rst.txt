@@ -1,0 +1,6 @@
+tan\_d
+======
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoattribute:: Substrate.tan_d

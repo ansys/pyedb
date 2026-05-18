@@ -1,0 +1,119 @@
+
+
+
+
+
+
+:class:`CfgSpiceModel`
+======================
+
+
+.. py:class:: pyedb.configuration.cfg_spice_models.CfgSpiceModel(pdata, path_lib, spice_dict)
+
+
+.. py:currentmodule:: CfgSpiceModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~apply`
+            - Apply Spice model on layout.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~path_libraries`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~component_definition`
+            - 
+          * - :py:attr:`~file_path`
+            - 
+          * - :py:attr:`~sub_circuit_name`
+            - 
+          * - :py:attr:`~apply_to_all`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~terminal_pairs`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_spice_models import CfgSpiceModel
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: path_libraries
+
+.. py:attribute:: name
+
+.. py:attribute:: component_definition
+
+.. py:attribute:: file_path
+
+.. py:attribute:: sub_circuit_name
+
+.. py:attribute:: apply_to_all
+
+.. py:attribute:: components
+
+.. py:attribute:: terminal_pairs
+
+
+
+Method detail
+-------------
+
+.. py:method:: apply()
+
+   
+   Apply Spice model on layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

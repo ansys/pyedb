@@ -1,0 +1,6 @@
+model\_validate\_strings
+========================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: DiffPairLengthMatch.model_validate_strings

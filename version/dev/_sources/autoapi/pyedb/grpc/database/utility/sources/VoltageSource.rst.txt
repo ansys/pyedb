@@ -1,0 +1,191 @@
+
+
+
+
+
+
+:class:`VoltageSource`
+======================
+
+
+.. py:class:: pyedb.grpc.database.utility.sources.VoltageSource
+
+   Bases: :py:obj:`Source`
+
+
+   
+   Manages a voltage source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: VoltageSource
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~magnitude`
+            - Magnitude of the voltage source.
+          * - :py:attr:`~phase`
+            - Phase of the voltage source.
+          * - :py:attr:`~impedance`
+            - Impedance of the voltage source.
+          * - :py:attr:`~source_type`
+            - Source type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.sources import VoltageSource
+
+Property detail
+---------------
+
+.. py:property:: magnitude
+
+   
+   Magnitude of the voltage source.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Voltage magnitude, e.g. ``"1V"``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+
+   
+   Phase of the voltage source.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Phase value, e.g. ``"0Deg"``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+
+   
+   Impedance of the voltage source.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Impedance value in ohms.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_type
+
+   
+   Source type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Source type value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+VAR\_PREFIX
+===========
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoattribute:: InterdigitalCapacitor.VAR_PREFIX

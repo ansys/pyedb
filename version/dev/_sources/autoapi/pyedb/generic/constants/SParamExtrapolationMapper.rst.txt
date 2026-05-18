@@ -1,0 +1,47 @@
+
+
+
+
+
+
+:class:`SParamExtrapolationMapper`
+==================================
+
+.. toctree::
+   :hidden:
+
+    GRPC</autoapi/pyedb/generic/constants/SParamExtrapolationMapper.GRPC>
+    DOTNET</autoapi/pyedb/generic/constants/SParamExtrapolationMapper.DOTNET>
+
+
+.. py:class:: pyedb.generic.constants.SParamExtrapolationMapper
+
+   Bases: :py:obj:`CommonMapper`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SParamExtrapolationMapper
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.generic.constants.SParamExtrapolationMapper.GRPC
+    pyedb.generic.constants.SParamExtrapolationMapper.DOTNET
+
+
+
+

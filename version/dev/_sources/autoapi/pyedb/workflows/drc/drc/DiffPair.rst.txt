@@ -1,0 +1,98 @@
+
+
+
+
+
+
+:class:`DiffPair`
+=================
+
+
+.. py:class:: pyedb.workflows.drc.drc.DiffPair(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Differential pair net definition.
+
+   Defines a single differential pair consisting of positive and negative nets.
+
+
+   :Attributes:
+
+       **positive** : :class:`python:str`
+           Positive net name in the differential pair.
+
+       **negative** : :class:`python:str`
+           Negative net name in the differential pair.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> pair = DiffPair(positive="USB_DP", negative="USB_DN")
+   >>> pair.positive
+   'USB_DP'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DiffPair
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~positive`
+            - 
+          * - :py:attr:`~negative`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.drc.drc import DiffPair
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: positive
+   :type:  str
+
+.. py:attribute:: negative
+   :type:  str
+
+
+
+
+

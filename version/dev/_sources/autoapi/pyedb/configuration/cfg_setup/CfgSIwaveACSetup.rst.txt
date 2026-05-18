@@ -1,0 +1,103 @@
+
+
+
+
+
+
+:class:`CfgSIwaveACSetup`
+=========================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSIwaveACSetup(/, **data: Any)
+
+   Bases: :py:obj:`CfgSetupAC`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgSIwaveACSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~use_si_settings`
+            - 
+          * - :py:attr:`~si_slider_position`
+            - 
+          * - :py:attr:`~pi_slider_position`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgSIwaveACSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: type
+   :type:  str
+   :value: 'siwave_ac'
+
+
+.. py:attribute:: use_si_settings
+   :type:  bool
+   :value: None
+
+
+.. py:attribute:: si_slider_position
+   :type:  int
+   :value: None
+
+
+.. py:attribute:: pi_slider_position
+   :type:  int
+   :value: None
+
+
+
+
+
+

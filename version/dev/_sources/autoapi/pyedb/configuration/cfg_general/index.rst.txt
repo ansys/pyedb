@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_general`` library
+===============================================
+
+.. py:module:: pyedb.configuration.cfg_general
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_general
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_general.CfgGeneral`
+            - Manage configuration general settings.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgGeneral</autoapi/pyedb/configuration/cfg_general/CfgGeneral>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

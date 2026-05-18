@@ -1,0 +1,47 @@
+
+
+
+
+
+
+:class:`MeshOperationTypeMapper`
+================================
+
+.. toctree::
+   :hidden:
+
+    GRPC</autoapi/pyedb/generic/constants/MeshOperationTypeMapper.GRPC>
+    DOTNET</autoapi/pyedb/generic/constants/MeshOperationTypeMapper.DOTNET>
+
+
+.. py:class:: pyedb.generic.constants.MeshOperationTypeMapper
+
+   Bases: :py:obj:`CommonMapper`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import MeshOperationTypeMapper
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.generic.constants.MeshOperationTypeMapper.GRPC
+    pyedb.generic.constants.MeshOperationTypeMapper.DOTNET
+
+
+
+

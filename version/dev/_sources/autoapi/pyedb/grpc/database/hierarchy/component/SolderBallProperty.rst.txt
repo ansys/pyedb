@@ -1,0 +1,308 @@
+
+
+
+
+
+
+:class:`SolderBallProperty`
+===========================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.component.SolderBallProperty(component)
+
+   
+   Wrapper around the gRPC :class:`SolderBallProperty` core object.
+
+
+   :Parameters:
+
+       **component** : :class:`Component`
+           Parent component instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SolderBallProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_diameter`
+            - Return ``(diameter, mid_diameter)`` as :class:`Value` objects.
+          * - :py:attr:`~set_diameter`
+            - Set solder ball diameter.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_null`
+            - Whether the solder ball property is null.
+          * - :py:attr:`~uses_solderball`
+            - Whether a solder ball is defined on this component.
+          * - :py:attr:`~shape`
+            - Solder ball shape.
+          * - :py:attr:`~height`
+            - Solder ball height.
+          * - :py:attr:`~material_name`
+            - Solder ball material name.
+          * - :py:attr:`~placement`
+            - Solder ball placement.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.component import SolderBallProperty
+
+Property detail
+---------------
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Whether the solder ball property is null.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: uses_solderball
+   :type: bool
+
+
+   
+   Whether a solder ball is defined on this component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: shape
+   :type: str
+
+
+   
+   Solder ball shape.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ``"cylinder"``, ``"spheroid"``, ``"none"`` or ``"unknown"``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: height
+   :type: float
+
+
+   
+   Solder ball height.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: material_name
+   :type: str
+
+
+   
+   Solder ball material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: placement
+
+   
+   Solder ball placement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_diameter() -> tuple
+
+   
+   Return ``(diameter, mid_diameter)`` as :class:`Value` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_diameter(diameter, mid_diameter=None)
+
+   
+   Set solder ball diameter.
+
+
+   :Parameters:
+
+       **diameter** : :class:`python:str` or :class:`python:float`
+           Top (or only) diameter.
+
+       **mid_diameter** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Mid diameter for spheroid shape.  Defaults to *diameter*.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

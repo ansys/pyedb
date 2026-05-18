@@ -1,0 +1,15 @@
+﻿Dielectric
+==========
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoclass:: Dielectric
+
+   
+
+   
+   
+
+   
+   
+   

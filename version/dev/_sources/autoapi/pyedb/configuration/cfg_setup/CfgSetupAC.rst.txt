@@ -1,0 +1,114 @@
+
+
+
+
+
+
+:class:`CfgSetupAC`
+===================
+
+.. toctree::
+   :hidden:
+
+    CfgFrequencySweep</autoapi/pyedb/configuration/cfg_setup/CfgSetupAC.CfgFrequencySweep>
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSetupAC(/, **data: Any)
+
+   Bases: :py:obj:`CfgSetupDC`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgSetupAC
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_frequency_sweep`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~freq_sweep`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgSetupAC
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: freq_sweep
+   :type:  list[CfgSetupAC.CfgFrequencySweep] | None
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_frequency_sweep(sweep: CfgFrequencySweep)
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.configuration.cfg_setup.CfgSetupAC.CfgFrequencySweep
+
+
+
+

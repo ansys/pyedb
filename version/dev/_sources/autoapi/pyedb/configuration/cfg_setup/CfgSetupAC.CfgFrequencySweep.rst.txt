@@ -1,0 +1,163 @@
+
+
+
+
+
+
+:class:`CfgFrequencySweep`
+==========================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSetupAC.CfgFrequencySweep(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgFrequencySweep
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_frequencies`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~frequencies`
+            - 
+          * - :py:attr:`~use_q3d_for_dc`
+            - 
+          * - :py:attr:`~compute_dc_point`
+            - 
+          * - :py:attr:`~enforce_causality`
+            - 
+          * - :py:attr:`~enforce_passivity`
+            - 
+          * - :py:attr:`~adv_dc_extrapolation`
+            - 
+          * - :py:attr:`~use_hfss_solver_regions`
+            - 
+          * - :py:attr:`~hfss_solver_region_setup_name`
+            - 
+          * - :py:attr:`~hfss_solver_region_sweep_name`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup.CfgSetupAC import CfgFrequencySweep
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: type
+   :type:  Literal['discrete', 'interpolation', 'interpolating']
+
+.. py:attribute:: frequencies
+   :type:  list[CfgFrequencies | str]
+   :value: None
+
+
+.. py:attribute:: use_q3d_for_dc
+   :type:  bool
+   :value: None
+
+
+.. py:attribute:: compute_dc_point
+   :type:  bool
+   :value: None
+
+
+.. py:attribute:: enforce_causality
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: enforce_passivity
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: adv_dc_extrapolation
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: use_hfss_solver_regions
+   :type:  bool
+   :value: None
+
+
+.. py:attribute:: hfss_solver_region_setup_name
+   :type:  str | None
+   :value: '<default>'
+
+
+.. py:attribute:: hfss_solver_region_sweep_name
+   :type:  str | None
+   :value: '<default>'
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_frequencies(freq: CfgFrequencies)
+
+
+
+
