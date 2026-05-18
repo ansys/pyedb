@@ -29,6 +29,7 @@ from pyedb.configuration.cfg_common import CfgBaseModel
 
 
 class CfgBoundaries(CfgBaseModel):
+
     """Represent open-region and extent settings."""
 
     class PaddingData(CfgBaseModel):
