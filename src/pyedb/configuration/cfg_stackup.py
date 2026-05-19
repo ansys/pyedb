@@ -542,7 +542,6 @@ class CfgStackup(BaseModel):
         material: Optional[str] = None,
         fill_material: Optional[str] = None,
         thickness: Optional[str | float | int] = None,
-        type: Optional[str] = None,
     ):
         """Append a layer definition.
 
@@ -559,8 +558,6 @@ class CfgStackup(BaseModel):
             Fill material for signal layers.
         thickness : str or float, optional
             Layer thickness, e.g. ``"35um"``.
-        type : str, optional
-            layer type.
 
         Returns
         -------

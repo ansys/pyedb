@@ -60,7 +60,7 @@ class TestCfgStackup:
     def test_add_layer_type_alias(self):
         """type= kwarg is accepted as alias for layer_type=."""
         s = CfgStackup()
-        s.add_layer(name="top", type="signal", material="copper", thickness="35um")
+        s.add_layer(name="top", layer_type="signal", material="copper", thickness="35um")
         assert s.layers[0].layer_type == "signal"
 
     def test_add_layer_explicit_fill_material(self):
