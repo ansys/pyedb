@@ -49,7 +49,6 @@ class HFSSSimulationSettings:
     def advanced(self) -> HFSSAdvancedSettings:
         """HFSS Advanced settings class.
 
-
         Returns
         -------
         :class:`HFSSAdvancedSettings <pyedb.grpc.database.simulation_setup.hfss_advanced_settings.HFSSAdvancedSettings>`

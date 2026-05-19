@@ -98,7 +98,6 @@ class Configuration:
 
         Parameters
         ----------
-
         config_file : str, dict
             Full path to configure file in JSON or TOML format. Dictionary is also supported.
         append : bool, optional
@@ -203,9 +202,9 @@ class Configuration:
                 edb_setup = self._pedb.create_siwave_dc_setup(
                     name=setup.name, dc_slider_position=setup.dc_slider_position
                 )
-                edb_setup.dc_settings.dc_slider_position = setup.dc_slider_position
+                edb_setup.settings.dc.dc_slider_position = setup.dc_slider_position
                 dc_ir_settings = setup.dc_ir_settings
-                edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
+                edb_setup.settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
             else:
                 if setup.type == "hfss":
                     edb_setup = self._pedb.simulation_setups.create(name=setup.name, solver="hfss")
@@ -313,8 +312,8 @@ class Configuration:
             if setup.type in ["siwave_dc", "siwave_dcir"]:
                 self.cfg_data.setups.add_siwave_dc_setup(
                     name=setup.name,
-                    dc_slider_position=setup.dc_settings.dc_slider_position,
-                    dc_ir_settings={"export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data},
+                    dc_slider_position=setup.settings.dc.dc_slider_position,
+                    dc_ir_settings={"export_dc_thermal_data": setup.settings.export_dc_thermal_data},
                 )
             else:
                 if setup.type == "hfss":
@@ -372,9 +371,9 @@ class Configuration:
                 elif setup.type in ["siwave", "siwave_ac"]:  # siwave ac
                     cfg_ac_setup = self.cfg_data.setups.add_siwave_ac_setup(
                         name=setup.name,
-                        use_si_settings=setup.use_si_settings,
-                        si_slider_position=setup.si_slider_position,
-                        pi_slider_position=setup.pi_slider_position,
+                        use_si_settings=setup.settings.general.use_si_settings,
+                        si_slider_position=setup.settings.general.si_slider_position,
+                        pi_slider_position=setup.settings.general.pi_slider_position,
                     )
                 else:
                     self._pedb.logger.warning(f"Unsupported setup type '{setup.type}'.")
@@ -607,7 +606,6 @@ class Configuration:
 
     def get_materials(self):
         """Retrieve materials from the current design."""
-
         self.cfg_data.stackup.materials = []
         for name, mat in self._pedb.materials.materials.items():
             self.cfg_data.stackup.add_material(**mat.to_dict())

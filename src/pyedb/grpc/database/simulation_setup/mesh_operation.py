@@ -116,6 +116,7 @@ class LengthMeshOperation(MeshOperation, LengthMeshOperationDeprecated):
         restrict_max_elements: bool = False,
     ) -> "LengthMeshOperation":
         """Create a Length Mesh Operation.
+
         Parameters
         ----------
         name : str
@@ -139,6 +140,7 @@ class LengthMeshOperation(MeshOperation, LengthMeshOperationDeprecated):
             The maximum number of elements for the mesh operation.
         restrict_max_elements : bool
             Whether to restrict the maximum number of elements.
+
         Returns
         -------
         LengthMeshOperation : LengthMeshOperation

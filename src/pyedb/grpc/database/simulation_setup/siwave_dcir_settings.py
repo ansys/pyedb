@@ -19,43 +19,25 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
-from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
+from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSettings
 from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
 from pyedb.grpc.database.simulation_setup.siwave_general_settings import SIWaveGeneralSettings
 from pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings import SIWaveSParameterSettings
 
 
-class SIWaveDCIRSettings:
-    def __init__(self, pedb, core):
-        self._pedb = pedb
-        self.core = core
-
-    @property
-    def advanced(self):
-        return SIWaveAdvancedSettings(self._pedb, self.core)
-
+class SIWaveDCIRSimulationSettings(SimulationSettings):
     @property
     def dc(self):
-        return SIWaveDCSettings(self._pedb, self.core)
-
-    @property
-    def dc_settings(self) -> SIWaveDCSettings:
-        """Setup dc settings."""
-        return self.dc
-
-    @property
-    def dc_advanced(self):
-        return SIWaveDCAdvancedSettings(self._pedb, self.core)
+        return SIWaveDCSettings(self._pedb, self.core.dc)
 
     @property
     def general(self):
-        return SIWaveGeneralSettings(self._pedb, self.core)
+        """General settings — for DCIR setups proxies to DC settings for backward compatibility."""
+        return SIWaveGeneralSettings(self._pedb, self.core.general)
 
     @property
     def s_parameter(self):
-        return SIWaveSParameterSettings(self._pedb, self.core)
+        return SIWaveSParameterSettings(self._pedb, self.core.s_parameter)
 
     @property
     def dc_report_config_file(self) -> str:

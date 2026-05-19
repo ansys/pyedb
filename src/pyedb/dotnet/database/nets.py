@@ -528,7 +528,6 @@ class EdbNets(CommonNets):
 
     def get_net_by_name(self, net_name):
         """Find a net by name."""
-
         edb_net = self._edb.Cell.Net.FindByName(self._active_layout, net_name)
         if not edb_net.IsNull():
             return self._pedb.pedb_class.database.edb_data.nets_data.EDBNetsData(edb_net, self._pedb)
@@ -548,7 +547,6 @@ class EdbNets(CommonNets):
 
         Examples
         --------
-
         >>> deleted_nets = database.nets.delete(["Net1", "Net2"])
         """
         if isinstance(netlist, str):
@@ -686,7 +684,6 @@ class EdbNets(CommonNets):
 
         Examples
         --------
-
         >>> renamed_nets = database.nets.find_and_fix_disjoint_nets(["GND", "Net2"])
         """
         return self._pedb.layout_validation.disjoint_nets(
