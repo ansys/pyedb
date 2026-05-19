@@ -27,7 +27,25 @@ from pydantic import BaseModel, PrivateAttr, field_validator
 
 
 class CfgGeneral(BaseModel):
-    """Fluent builder for the ``general`` section."""
+    """Fluent builder for the ``general`` section.
+    """
+
+    def __init__(self, pedb=None, data=None, **kwargs):
+        """Initialize ``CfgGeneral``.
+
+        Parameters
+        ----------
+        pedb : object, optional
+            PyEDB ``Edb`` instance used to push settings into the open design.
+        data : dict, optional
+            Mapping of field names to values.  Merged with any extra *kwargs*.
+        **kwargs : dict
+            Additional field values passed directly to the Pydantic model.
+        """
+        data = dict(data or {})
+        data.update(kwargs)
+        super().__init__(**data)
+        self._pedb = pedb
 
     model_config = {"arbitrary_types_allowed": True, "extra": "ignore"}
 
@@ -42,12 +60,6 @@ class CfgGeneral(BaseModel):
         return "" if v is None else str(v)
 
     _pedb: Any = PrivateAttr(default=None)
-
-    def __init__(self, pedb=None, data=None, **kwargs):
-        data = dict(data or {})
-        data.update(kwargs)
-        super().__init__(**data)
-        self._pedb = pedb
 
     def set_parameters_to_edb(self):
         """Write general design-option settings into the open EDB design."""
