@@ -27,9 +27,7 @@ from pydantic import BaseModel, PrivateAttr, field_validator
 
 
 class CfgGeneral(BaseModel):
-    """
-    Fluent builder for the ``general`` section.
-    """
+    """Fluent builder for the ``general`` section."""
 
     def __init__(self, pedb=None, data=None, **kwargs):
         """
