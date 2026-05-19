@@ -40,7 +40,7 @@ class CfgMaterialPropertyThermalModifier(BaseModel):
     advanced_quadratic_lower_limit: float | int = -273.15
     advanced_quadratic_upper_limit: float | int = 1000
     advanced_quadratic_auto_calculate: bool = True
-    advanced_quadratic_lower_constant: float| int = 1
+    advanced_quadratic_lower_constant: float | int = 1
     advanced_quadratic_upper_constant: float | int = 1
 
 
