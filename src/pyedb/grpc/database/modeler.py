@@ -93,7 +93,6 @@ class Modeler(object):
         TypeError
             If name is not str or int.
         """
-
         if isinstance(name, int):
             return self._pedb.layout.find_object_by_id(name)
         return self._pedb.layout.find_primitive(name=name)[0]
@@ -537,7 +536,6 @@ class Modeler(object):
         :class:`pyedb.grpc.database.edb_data.primitives_data.Path` or bool
             Path object if created, False otherwise.
         """
-
         primitive = self._create_path(
             points=path_list,
             layer_name=layer_name,
@@ -1148,7 +1146,6 @@ class Modeler(object):
         :class:`pyedb.grpc.database.edb_data.primitives_data.Bondwire` or bool
             Bondwire object if created, False otherwise.
         """
-
         from ansys.edb.core.hierarchy.cell_instance import (
             CellInstance as GrpcCellInstance,
         )
@@ -1323,7 +1320,6 @@ class Modeler(object):
         local_origin_y: float or str
             Local origin Y coordinate.
         """
-
         placement_layer = self._pedb.stackup.layers[placement_layer]
         if not place_on_bottom:
             cell_inst = self.insert_layout_instance_placement_3d(
@@ -1389,7 +1385,6 @@ class Modeler(object):
         local_origin_z: float or str
             Local origin Z coordinate.
         """
-
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
         from ansys.edb.core.hierarchy.cell_instance import CellInstance as GrpcCellInstance
         from ansys.edb.core.layout.cell import Cell, CellType
@@ -1581,7 +1576,6 @@ class Modeler(object):
         local_origin_z: float or str
             Local origin Z coordinate.
         """
-
         placement_layer = self._pedb.stackup.layers[placement_layer]
         if not place_on_bottom:
             cell_inst = self.insert_3d_component_placement_3d(
@@ -1662,7 +1656,6 @@ class Modeler(object):
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
             Created taper polygon object.
         """
-
         p0_x, p0_y = self._pedb.value(start_point[0]), self._pedb.value(start_point[1])
         p1_x, p1_y = self._pedb.value(end_point[0]), self._pedb.value(end_point[1])
         angle = ((p1_y - p0_y) / (p1_x - p0_x)).atan()
