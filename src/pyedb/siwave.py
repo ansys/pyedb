@@ -162,7 +162,6 @@ class Siwave(object):  # pragma no cover
     @property
     def version_keys(self):
         """Version keys for AEDT."""
-
         self._version_keys = []
         self._version_ids = {}
 
@@ -343,7 +342,6 @@ class Siwave(object):  # pragma no cover
         file_path : str, optional
             Full path to the project. The default is ``None``.
         """
-
         if file_path:
             file_path = parser_file_path(file_path)
             file_path = str(Path(file_path).with_suffix(".siw"))
@@ -481,7 +479,6 @@ class Siwave(object):  # pragma no cover
             ``True`` when successful, ``False`` when failed.
 
         """
-
         self.oproject.ScrExportDcPowerDataToIcepak(True)
         self._logger.info("Exporting Icepak project.")
         code = self.oproject.ScrExportIcepakProject(file_path, dc_simulation_name)
@@ -533,6 +530,7 @@ class Siwave(object):  # pragma no cover
         ----------
         file_path : Str
             Path to the EDB file.
+
         Returns
         -------
         bool

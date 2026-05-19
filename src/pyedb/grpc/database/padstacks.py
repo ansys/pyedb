@@ -163,7 +163,6 @@ class Padstacks(object):
         >>> pad_type = edb.padstacks.int_to_pad_type(0)  # Returns REGULAR_PAD
         >>> pad_type2 = edb.padstacks.int_to_pad_type(1)  # Returns ANTI_PAD
         """
-
         return PAD_TYPE_MAP.get(val, val)
 
     @staticmethod
@@ -586,7 +585,6 @@ class Padstacks(object):
         ...     padstackname="VIA1", holediam="200um", paddiam="400um", antipaddiam="600um"
         ... )
         """
-
         padstack_def = PadstackDef.create(self._pedb, padstackname)
 
         padstack_data = CorePadstackDefData.create()
@@ -1999,7 +1997,7 @@ class Padstacks(object):
         self, bounding_box: List[float], x_samples: int, y_samples: int, nets: Optional[Union[str, List[str]]] = None
     ) -> bool:
         """
-        reduce the number of vias intersecting bounding box and nets by x and y samples.
+        Reduce the number of vias intersecting bounding box and nets by x and y samples.
 
         Parameters
         ----------
@@ -2016,7 +2014,6 @@ class Padstacks(object):
         bool
             ``True`` when succeeded ``False`` when failed.
         """
-
         padstacks_inbox = self.get_padstack_instances_intersecting_bounding_box(bounding_box, nets)
         if not padstacks_inbox:
             return False
@@ -2054,7 +2051,7 @@ class Padstacks(object):
         padstack: Dict[int, List[float]], max_distance: float = 1e-3, min_samples: int = 5
     ) -> Dict[int, List[int]]:
         """
-        density based spatial clustering for padstack instances
+        Density based spatial clustering for padstack instances
 
         Parameters
         ----------
@@ -2072,7 +2069,6 @@ class Padstacks(object):
         dict
             clusters {cluster label: [padstack ids]} <
         """
-
         padstack_ids = list(padstack.keys())
         xy_array = np.array([padstack[pid] for pid in padstack_ids])
         n = len(padstack_ids)
