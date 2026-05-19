@@ -34,35 +34,35 @@ class CfgMaterialPropertyThermalModifier(BaseModel):
     """Represent one thermal modifier applied to a material property."""
 
     property_name: str
-    basic_quadratic_c1: float = 0
-    basic_quadratic_c2: float = 0
-    basic_quadratic_temperature_reference: float = 22
-    advanced_quadratic_lower_limit: float = -273.15
-    advanced_quadratic_upper_limit: float = 1000
+    basic_quadratic_c1: float | int = 0
+    basic_quadratic_c2: float | int = 0
+    basic_quadratic_temperature_reference: float | int = 22
+    advanced_quadratic_lower_limit: float | int = -273.15
+    advanced_quadratic_upper_limit: float | int = 1000
     advanced_quadratic_auto_calculate: bool = True
-    advanced_quadratic_lower_constant: float = 1
-    advanced_quadratic_upper_constant: float = 1
+    advanced_quadratic_lower_constant: float| int = 1
+    advanced_quadratic_upper_constant: float | int = 1
 
 
 class MaterialProperties(BaseModel):
     """Store material properties."""
 
-    conductivity: Optional[str | float] = None
-    dielectric_loss_tangent: Optional[str | float] = None
-    magnetic_loss_tangent: Optional[str | float] = None
-    mass_density: Optional[str | float] = None
-    permittivity: Optional[str | float] = None
-    permeability: Optional[str | float] = None
-    poisson_ratio: Optional[str | float] = None
-    specific_heat: Optional[str | float] = None
-    thermal_conductivity: Optional[str | float] = None
-    youngs_modulus: Optional[str | float] = None
-    thermal_expansion_coefficient: Optional[str | float] = None
-    dc_conductivity: Optional[str | float] = None
-    dc_permittivity: Optional[str | float] = None
-    dielectric_model_frequency: Optional[str | float] = None
-    loss_tangent_at_frequency: Optional[str | float] = None
-    permittivity_at_frequency: Optional[str | float] = None
+    conductivity: Optional[str | float | int] = None
+    dielectric_loss_tangent: Optional[str | float | int] = None
+    magnetic_loss_tangent: Optional[str | float | int] = None
+    mass_density: Optional[str | float | int] = None
+    permittivity: Optional[str | float | int] = None
+    permeability: Optional[str | float | int] = None
+    poisson_ratio: Optional[str | float | int] = None
+    specific_heat: Optional[str | float | int] = None
+    thermal_conductivity: Optional[str | float | int] = None
+    youngs_modulus: Optional[str | float | int] = None
+    thermal_expansion_coefficient: Optional[str | float | int] = None
+    dc_conductivity: Optional[str | float | int] = None
+    dc_permittivity: Optional[str | float | int] = None
+    dielectric_model_frequency: Optional[str | float | int] = None
+    loss_tangent_at_frequency: Optional[str | float | int] = None
+    permittivity_at_frequency: Optional[str | float | int] = None
 
 
 class CfgMaterial(MaterialProperties):
@@ -86,7 +86,6 @@ class CfgGroisseRoughnessModel(BaseModel):
 
     model: str = "groisse"
     roughness: Optional[str | float | int] = None
-
     model_config = {"extra": "forbid"}
 
 
@@ -97,14 +96,13 @@ class CfgRoughnessModel(BaseModel):
     top: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
     bottom: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
     side: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
-
     model_config = {"extra": "forbid"}
 
 
 class EtchingModel(BaseModel):
     """Represent trapezoidal etching settings for a conductor layer."""
 
-    factor: Optional[float | str] = 0.5
+    factor: Optional[float | int | str] = 0.5
     etch_power_ground_nets: Optional[bool] = False
     enabled: Optional[bool] = False
 
@@ -113,14 +111,14 @@ class CfgLayer(BaseModel):
     """Represent one signal or dielectric layer entry."""
 
     name: Optional[str] = None
-    layer_type: Optional[str] = Field(None, alias="type")
+    layer_type: Optional[str] = Field("signal", alias="type")
     material: Optional[str] = None
     fill_material: Optional[str] = None
-    thickness: Optional[float | str] = None
+    thickness: Optional[float | int | str] = None
     roughness: Optional[CfgRoughnessModel] = None
     etching: Optional[EtchingModel] = None
 
-    model_config = {"populate_by_name": True}
+    model_config = {"populate_by_name": True, "extra": "forbid"}
 
     @property
     def type(self) -> Optional[str]:
@@ -129,8 +127,8 @@ class CfgLayer(BaseModel):
 
     def set_huray_roughness(
         self,
-        nodule_radius: str | float,
-        surface_ratio: str | float,
+        nodule_radius: str | float | int,
+        surface_ratio: str | float | int,
         enabled: bool = True,
         top: bool = True,
         bottom: bool = True,
@@ -140,9 +138,9 @@ class CfgLayer(BaseModel):
 
         Parameters
         ----------
-        nodule_radius : str or float
+        nodule_radius : str , float, or int
             Huray nodule radius, e.g. ``"0.1um"``.
-        surface_ratio : str or float
+        surface_ratio : str , float, or int
             Huray surface ratio.
         enabled : bool, optional
             Enable roughness on this layer.  Default is ``True``.
@@ -173,7 +171,7 @@ class CfgLayer(BaseModel):
 
     def set_groisse_roughness(
         self,
-        roughness_value: str | float,
+        roughness_value: str | float | int,
         enabled: bool = True,
         top: bool = True,
         bottom: bool = True,
@@ -183,7 +181,7 @@ class CfgLayer(BaseModel):
 
         Parameters
         ----------
-        roughness_value : str or float
+        roughness_value : str , float, or int
             RMS roughness, e.g. ``0.3e-6`` (in metres).
         enabled : bool, optional
             Enable roughness.  Default is ``True``.
@@ -210,7 +208,7 @@ class CfgLayer(BaseModel):
 
     def set_etching(
         self,
-        factor: float | str = 0.5,
+        factor: float | int | str = 0.5,
         etch_power_ground_nets: bool = False,
         enabled: bool = True,
     ) -> "CfgLayer":
@@ -218,7 +216,7 @@ class CfgLayer(BaseModel):
 
         Parameters
         ----------
-        factor : float or str, optional
+        factor : optional, str , float, or int
             Etch factor (ratio).  Default is ``0.5``.
         etch_power_ground_nets : bool, optional
             Apply etching to power/ground nets as well.  Default is ``False``.
@@ -299,7 +297,8 @@ class CfgStackup(BaseModel):
         if name not in edb_layers:
             raise KeyError(f"Layer '{name}' not found in the EDB stackup.")
         props = edb_layers[name].properties
-        layer = CfgLayer(name=name, **{k: v for k, v in props.items() if k != "name"})
+        known = CfgLayer.model_fields.keys() | {"layer_type"}
+        layer = CfgLayer(name=name, **{k: v for k, v in props.items() if k != "name" and k in known})
         self.layers.append(layer)
         return layer
 
@@ -414,25 +413,24 @@ class CfgStackup(BaseModel):
     def add_material(
         self,
         name: str | None = None,
-        config: CfgMaterial | dict[str, Any] | None = None,
-        conductivity: Optional[str | float] = None,
-        permittivity: Optional[str | float] = None,
-        dielectric_loss_tangent: Optional[str | float] = None,
-        magnetic_loss_tangent: Optional[str | float] = None,
-        mass_density: Optional[str | float] = None,
-        permeability: Optional[str | float] = None,
-        poisson_ratio: Optional[str | float] = None,
-        specific_heat: Optional[str | float] = None,
-        thermal_conductivity: Optional[str | float] = None,
-        youngs_modulus: Optional[str | float] = None,
-        thermal_expansion_coefficient: Optional[str | float] = None,
-        dc_conductivity: Optional[str | float] = None,
-        dc_permittivity: Optional[str | float] = None,
-        dielectric_model_frequency: Optional[str | float] = None,
-        loss_tangent_at_frequency: Optional[str | float] = None,
-        permittivity_at_frequency: Optional[str | float] = None,
+        config: "CfgMaterial | dict | None" = None,
+        conductivity: Optional[str | float | int] = None,
+        permittivity: Optional[str | float | int] = None,
+        dielectric_loss_tangent: Optional[str | float | int] = None,
+        magnetic_loss_tangent: Optional[str | float | int] = None,
+        mass_density: Optional[str | float | int] = None,
+        permeability: Optional[str | float | int] = None,
+        poisson_ratio: Optional[str | float | int] = None,
+        specific_heat: Optional[str | float | int] = None,
+        thermal_conductivity: Optional[str | float | int] = None,
+        youngs_modulus: Optional[str | float | int] = None,
+        thermal_expansion_coefficient: Optional[str | float | int] = None,
+        dc_conductivity: Optional[str | float | int] = None,
+        dc_permittivity: Optional[str | float | int] = None,
+        dielectric_model_frequency: Optional[str | float | int] = None,
+        loss_tangent_at_frequency: Optional[str | float | int] = None,
+        permittivity_at_frequency: Optional[str | float | int] = None,
         thermal_modifiers=None,
-        **kwargs,
     ) -> "CfgMaterial":
         """Add a material definition to the stackup.
 
@@ -440,39 +438,41 @@ class CfgStackup(BaseModel):
         ----------
         name : str
             Material name, e.g. ``"copper"`` or ``"FR4_epoxy"``.
-        config : CfgMaterial | dict[str, Any] | None
+        config : CfgMaterial or dict, optional
             Pre-built :class:`CfgMaterial` instance or a plain dictionary with
+            material properties.  Individual keyword arguments take precedence
+            over values in *config*.
         conductivity : str or float, optional
             Electrical conductivity in S/m.
         permittivity : str or float, optional
             Relative permittivity (dielectric constant).
-        dielectric_loss_tangent : str or float, optional
+        dielectric_loss_tangent : optional, str, float or int
             Dielectric loss tangent.
-        magnetic_loss_tangent : str or float, optional
+        magnetic_loss_tangent : optional, str, float or int
             Magnetic loss tangent.
-        mass_density : str or float, optional
+        mass_density : optional, str, float or int
             Mass density in kg/m³.
-        permeability : str or float, optional
+        permeability : optional, str, float or int
             Relative permeability.
-        poisson_ratio : str or float, optional
+        poisson_ratio : optional, str, float or int
             Poisson's ratio.
-        specific_heat : str or float, optional
+        specific_heat : optional, str, float or int
             Specific heat capacity in J/(kg·K).
-        thermal_conductivity : str or float, optional
+        thermal_conductivity : optional, str, float or int
             Thermal conductivity in W/(m·K).
-        youngs_modulus : str or float, optional
+        youngs_modulus : optional, str, float or int
             Young's modulus in Pa.
-        thermal_expansion_coefficient : str or float, optional
+        thermal_expansion_coefficient : optional, str, float or int
             Coefficient of thermal expansion in 1/K.
-        dc_conductivity : str or float, optional
+        dc_conductivity : optional, str, float or int
             DC conductivity override.
-        dc_permittivity : str or float, optional
+        dc_permittivity : optional, str, float or int
             DC permittivity override.
-        dielectric_model_frequency : str or float, optional
+        dielectric_model_frequency : optional, str, float or int
             Frequency for the dielectric model in Hz.
-        loss_tangent_at_frequency : str or float, optional
+        loss_tangent_at_frequency : optional, str, float or int
             Loss tangent at the model frequency.
-        permittivity_at_frequency : str or float, optional
+        permittivity_at_frequency : optional, str, float or int
             Permittivity at the model frequency.
         thermal_modifiers : list, optional
             List of thermal modifier definitions.
@@ -487,34 +487,13 @@ class CfgStackup(BaseModel):
         >>> cfg.stackup.add_material("copper", conductivity=5.8e7)
         >>> cfg.stackup.add_material("fr4", permittivity=4.4, dielectric_loss_tangent=0.02)
         """
-        # Support config parameter (dict or CfgMaterial) from main branch API
         if config is not None:
             payload = config.model_dump(exclude_none=True) if isinstance(config, CfgMaterial) else dict(config)
-            payload.update(kwargs)
             if name is not None:
                 payload["name"] = name
             name = payload.pop("name", name)
-            kwargs = payload
-
-        # Check for duplicates in the local registry first.
-        for _mat in self.materials:
-            if _mat.name == name:
-                raise ValueError(
-                    f"Material '{name}' already exists in the builder. "
-                    f"Use get_material('{name}') to retrieve and modify it instead."
-                )
-        # When a live EDB session is attached, also check the database.
-        if self._pedb is not None:
-            edb_mats = self._pedb.materials.materials
-            if name in edb_mats:
-                raise ValueError(
-                    f"Material '{name}' already exists in the EDB material library. "
-                    f"Use get_material('{name}') to retrieve and modify it instead."
-                )
-
-        # When config is None, collect the individual named args into kwargs
-        if config is None:
-            named = dict(
+        else:
+            payload = dict(
                 conductivity=conductivity,
                 permittivity=permittivity,
                 dielectric_loss_tangent=dielectric_loss_tangent,
@@ -533,11 +512,26 @@ class CfgStackup(BaseModel):
                 permittivity_at_frequency=permittivity_at_frequency,
                 thermal_modifiers=thermal_modifiers,
             )
-            named.update(kwargs)
-            kwargs = named
-        # Drop None values so CfgMaterial does not complain about unknown None fields
-        props = {k: v for k, v in kwargs.items() if v is not None}
-        mat = CfgMaterial(name=name, **props)
+
+        # Check for duplicates in the local registry first.
+        for _mat in self.materials:
+            if _mat.name == name:
+                raise ValueError(
+                    f"Material '{name}' already exists in the builder. "
+                    f"Use get_material('{name}') to retrieve and modify it instead."
+                )
+        # When a live EDB session is attached, also check the database.
+        if self._pedb is not None:
+            edb_mats = self._pedb.materials.materials
+            if name in edb_mats:
+                raise ValueError(
+                    f"Material '{name}' already exists in the EDB material library. "
+                    f"Use get_material('{name}') to retrieve and modify it instead."
+                )
+
+        # Drop None values
+        payload = {k: v for k, v in payload.items() if v is not None}
+        mat = CfgMaterial(name=name, **payload)
         self.materials.append(mat)
         return mat
 
@@ -547,8 +541,8 @@ class CfgStackup(BaseModel):
         layer_type: Optional[str] = None,
         material: Optional[str] = None,
         fill_material: Optional[str] = None,
-        thickness: Optional[str | float] = None,
-        **kwargs,
+        thickness: Optional[str | float | int] = None,
+        type: Optional[str] = None,
     ):
         """Append a layer definition.
 
@@ -565,22 +559,23 @@ class CfgStackup(BaseModel):
             Fill material for signal layers.
         thickness : str or float, optional
             Layer thickness, e.g. ``"35um"``.
+        type : str, optional
+            layer type.
 
         Returns
         -------
         CfgLayer
             The newly created layer object.
         """
-        # Accept legacy 'type=' spelling passed via **kwargs
-        if layer_type is None and "type" in kwargs:
-            layer_type = kwargs.pop("type")
+        # Accept legacy 'type=' spelling
+        if layer_type is None and type is not None:
+            layer_type = type
         return self.add_layer_at_bottom(
             name,
             layer_type=layer_type,
             material=material,
             fill_material=fill_material,
             thickness=thickness,
-            **kwargs,
         )
 
     def add_layer_at_bottom(self, name=None, config: CfgLayer | dict[str, Any] | None = None, **kwargs):
@@ -614,6 +609,9 @@ class CfgStackup(BaseModel):
         # Normalise legacy 'type' kwarg to 'layer_type'
         if "type" in kwargs and "layer_type" not in kwargs:
             kwargs["layer_type"] = kwargs.pop("type")
+        # Drop unknown fields not accepted by CfgLayer
+        known_fields = set(CfgLayer.model_fields.keys()) | {"type"}
+        kwargs = {k: v for k, v in kwargs.items() if k in known_fields}
         layer = CfgLayer(name=name, **kwargs)
         self.layers.append(layer)
         return layer
@@ -623,7 +621,7 @@ class CfgStackup(BaseModel):
         name: str,
         material: str = "copper",
         fill_material: str = "FR4_epoxy",
-        thickness: str | float = "35um",
+        thickness: str | float | int = "35um",
     ):
         """Add a signal layer with conductor defaults."""
         return self.add_layer(
@@ -634,7 +632,7 @@ class CfgStackup(BaseModel):
         self,
         name: str,
         material: str = "FR4_epoxy",
-        thickness: str | float = "100um",
+        thickness: str | float | int = "100um",
     ):
         """Add a dielectric layer with common defaults."""
         return self.add_layer(name, layer_type="dielectric", material=material, thickness=thickness)
