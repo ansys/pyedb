@@ -117,6 +117,7 @@ class CfgLayer(BaseModel):
     thickness: Optional[float | int | str] = None
     roughness: Optional[CfgRoughnessModel] = None
     etching: Optional[EtchingModel] = None
+    color: Optional[tuple | list] = None
 
     model_config = {"populate_by_name": True, "extra": "forbid"}
 
