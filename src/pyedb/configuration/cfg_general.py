@@ -27,11 +27,13 @@ from pydantic import BaseModel, PrivateAttr, field_validator
 
 
 class CfgGeneral(BaseModel):
-    """Fluent builder for the ``general`` section.
+    """
+    Fluent builder for the ``general`` section.
     """
 
     def __init__(self, pedb=None, data=None, **kwargs):
-        """Initialize ``CfgGeneral``.
+        """
+        Initialize ``CfgGeneral``.
 
         Parameters
         ----------
@@ -41,6 +43,7 @@ class CfgGeneral(BaseModel):
             Mapping of field names to values.  Merged with any extra *kwargs*.
         **kwargs : dict
             Additional field values passed directly to the Pydantic model.
+
         """
         data = dict(data or {})
         data.update(kwargs)
