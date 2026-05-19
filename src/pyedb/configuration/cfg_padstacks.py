@@ -27,6 +27,29 @@ from pyedb.configuration.cfg_common import CfgBaseModel as CfgBase
 from pyedb.misc.decorators import deprecated
 
 
+def _make_pad_entry(layer, shape, diameter, x_size, y_size, offset_x, offset_y, rotation):
+    """Build a single pad entry dict for a given layer and shape."""
+    entry = {
+        "layer_name": layer,
+        "shape": shape,
+        "offset_x": str(offset_x),
+        "offset_y": str(offset_y),
+        "rotation": str(rotation),
+    }
+    if shape == "circle":
+        if diameter is not None:
+            entry["diameter"] = str(diameter)
+    elif shape == "square":
+        if x_size is not None:
+            entry["size"] = str(x_size)
+    elif shape in ("rectangle", "oval", "bullet"):
+        if x_size is not None:
+            entry["x_size"] = str(x_size)
+        if y_size is not None:
+            entry["y_size"] = str(y_size)
+    return entry
+
+
 class CfgBackdrillParameters(CfgBase):
     """Store optional backdrill definitions for a padstack instance."""
 
@@ -552,67 +575,20 @@ class CfgPadstacks(CfgBase):
             }
 
         if pad_parameters is None and (pad_diameter is not None or pad_x_size is not None):
-            # Resolve layer list
-            layers = pad_layers
-            if layers is None and self._cfg_stackup is not None:
-                layers = [l.name for l in self._cfg_stackup.get_signal_layers()]
-            if layers is None:
-                layers = []
-
-            def _make_pad_entry(layer, shape, diameter, x_size, y_size, offset_x, offset_y, rotation):
-                entry = {
-                    "layer_name": layer,
-                    "shape": shape,
-                    "offset_x": str(offset_x),
-                    "offset_y": str(offset_y),
-                    "rotation": str(rotation),
-                }
-                if shape == "circle":
-                    if diameter is not None:
-                        entry["diameter"] = str(diameter)
-                elif shape == "square":
-                    if x_size is not None:
-                        entry["size"] = str(x_size)
-                elif shape in ("rectangle", "oval", "bullet"):
-                    if x_size is not None:
-                        entry["x_size"] = str(x_size)
-                    if y_size is not None:
-                        entry["y_size"] = str(y_size)
-                return entry
-
-            regular_pads = [
-                _make_pad_entry(
-                    layer=layer,
-                    shape=pad_shape,
-                    diameter=pad_diameter,
-                    x_size=pad_x_size,
-                    y_size=pad_y_size,
-                    offset_x=pad_offset_x,
-                    offset_y=pad_offset_y,
-                    rotation=pad_rotation,
-                )
-                for layer in layers
-            ]
-            anti_pads = []
-            if anti_pad_diameter is not None or anti_pad_x_size is not None:
-                anti_pads = [
-                    _make_pad_entry(
-                        layer=layer,
-                        shape=anti_pad_shape,
-                        diameter=anti_pad_diameter,
-                        x_size=anti_pad_x_size,
-                        y_size=anti_pad_y_size,
-                        offset_x="0",
-                        offset_y="0",
-                        rotation="0",
-                    )
-                    for layer in layers
-                ]
-            pad_parameters = {}
-            if regular_pads:
-                pad_parameters["regular_pad"] = regular_pads
-            if anti_pads:
-                pad_parameters["anti_pad"] = anti_pads
+            pad_parameters = self._build_pad_parameters(
+                pad_layers=pad_layers,
+                pad_shape=pad_shape,
+                pad_diameter=pad_diameter,
+                pad_x_size=pad_x_size,
+                pad_y_size=pad_y_size,
+                pad_offset_x=pad_offset_x,
+                pad_offset_y=pad_offset_y,
+                pad_rotation=pad_rotation,
+                anti_pad_shape=anti_pad_shape,
+                anti_pad_diameter=anti_pad_diameter,
+                anti_pad_x_size=anti_pad_x_size,
+                anti_pad_y_size=anti_pad_y_size,
+            )
 
         kwargs = {
             "name": name,
@@ -627,6 +603,63 @@ class CfgPadstacks(CfgBase):
         obj = CfgPadstackDefinition(**kwargs)
         self.definitions.append(obj)
         return obj
+
+    def _build_pad_parameters(
+        self,
+        pad_layers,
+        pad_shape,
+        pad_diameter,
+        pad_x_size,
+        pad_y_size,
+        pad_offset_x,
+        pad_offset_y,
+        pad_rotation,
+        anti_pad_shape,
+        anti_pad_diameter,
+        anti_pad_x_size,
+        anti_pad_y_size,
+    ) -> dict:
+        """Build a pad_parameters dict from convenience arguments."""
+        layers = pad_layers
+        if layers is None and self._cfg_stackup is not None:
+            layers = [la.name for la in self._cfg_stackup.get_signal_layers()]
+        if layers is None:
+            layers = []
+
+        regular_pads = [
+            _make_pad_entry(
+                layer=layer,
+                shape=pad_shape,
+                diameter=pad_diameter,
+                x_size=pad_x_size,
+                y_size=pad_y_size,
+                offset_x=pad_offset_x,
+                offset_y=pad_offset_y,
+                rotation=pad_rotation,
+            )
+            for layer in layers
+        ]
+        anti_pads = []
+        if anti_pad_diameter is not None or anti_pad_x_size is not None:
+            anti_pads = [
+                _make_pad_entry(
+                    layer=layer,
+                    shape=anti_pad_shape,
+                    diameter=anti_pad_diameter,
+                    x_size=anti_pad_x_size,
+                    y_size=anti_pad_y_size,
+                    offset_x="0",
+                    offset_y="0",
+                    rotation="0",
+                )
+                for layer in layers
+            ]
+        pad_parameters = {}
+        if regular_pads:
+            pad_parameters["regular_pad"] = regular_pads
+        if anti_pads:
+            pad_parameters["anti_pad"] = anti_pads
+        return pad_parameters
 
     @deprecated("add_padstack_instance is deprecated, use add_instance instead.")
     def add_padstack_instance(self, **kwargs):
