@@ -345,7 +345,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
 
     @property
     def dielectric_material_model(self):
-        """dielectric material model. Set None to remove the existing model."""
+        """Dielectric material model. Set None to remove the existing model."""
         e_obj = self._edb_object.GetDielectricMaterialModel()
         if e_obj is None:
             return None

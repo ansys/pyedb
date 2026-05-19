@@ -190,7 +190,6 @@ class NetClass:
             True if the net exists in the net class, False otherwise.
 
         """
-
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         return self.core.contains_net(net)
@@ -203,7 +202,6 @@ class NetClass:
         -------
         bool
         """
-
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:

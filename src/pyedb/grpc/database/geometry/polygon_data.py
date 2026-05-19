@@ -234,7 +234,6 @@ class PolygonData:
         bool
 
         """
-
         new_poly = self.core.expand(
             offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
         )
