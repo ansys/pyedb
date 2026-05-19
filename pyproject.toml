@@ -124,8 +124,6 @@ select = [
     "W",   # pycodestyle, see https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
 ]
 ignore = [
-    #"D203", # summary-on-first-line
-    #"D213", # multi-line-summary-second-line
     # "D" - pydocstyle, see https://docs.astral.sh/ruff/rules/#pydocstyle-d
     "D100", # undocumented-public-module
     "D101", # undocumented-public-class
@@ -140,6 +138,8 @@ ignore = [
     "D208", # over-indentation
     #"D209", # new-line-after-last-paragraph
     "D210", # surrounding-whitespace
+    "D211", # blank-line-before-class
+    "D212", # blank-line-before-function
     "D214", # overindented-section
     "D215", # overindented-section-underline
     "D301", # escape-sequence-in-docstring
