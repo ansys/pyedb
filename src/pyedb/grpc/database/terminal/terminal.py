@@ -188,7 +188,9 @@ class Terminal(ConnObj):
     @property
     def do_deembed(self) -> bool:
         """Determine whether port deembed is enabled.
+
         Returns
+        -------
         """
         return self.port_post_processing_prop.do_deembed
 
@@ -375,7 +377,6 @@ class Terminal(ConnObj):
     def reference_object(self) -> Primitive | PadstackInstance | bool:
         """This returns the object assigned as reference. It can be a primitive or a padstack instance.
 
-
         Returns
         -------
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` or
@@ -429,7 +430,6 @@ class Terminal(ConnObj):
         -------
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
-
         if self.core.is_circuit_port:
             return self.get_pin_group_terminal_reference_pin()
         _, padStackInstance, _ = self.core.get_parameters()
@@ -450,7 +450,6 @@ class Terminal(ConnObj):
         -------
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
         """
-
         ref_term = self.core.reference_terminal
         if self.core.type == CoreTerminalType.PIN_GROUP:
             padstack_instance = self.core.pin_group.pins[0]
@@ -502,7 +501,6 @@ class Terminal(ConnObj):
             <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
             or :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`.
         """
-
         ref_term = self.core.reference_terminal  # return value is type terminal
         _, point_data, layer = ref_term.get_parameters()
         layer_name = layer.name

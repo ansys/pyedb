@@ -716,7 +716,6 @@ class ControlFileImportOptions:
         bool
             True if XML content was written successfully.
         """
-
         content = ET.SubElement(root, "ImportOptions")
         content.set("AutoClose", str(self.auto_close).lower())
         if self.round_to != 0:

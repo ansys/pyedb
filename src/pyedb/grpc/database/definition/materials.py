@@ -409,7 +409,6 @@ class Material:
     def permittivity(self) -> float | str | None:
         """Material permittivity.
 
-
         Returns
         -------
         float

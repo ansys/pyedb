@@ -320,6 +320,7 @@ class EdbDifferentialPairs(EdbCommon, object):
         -------
         list
             A list containing identified differential pair names.
+
         Examples
         --------
         >>> from pyedb import Edb
