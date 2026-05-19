@@ -21,7 +21,7 @@
 # SOFTWARE.
 """Build padstack definition and instance entries for configuration payloads."""
 
-from pydantic import Field, PrivateAttr, field_validator, model_validator
+from pydantic import Field, PrivateAttr, field_validator
 
 from pyedb.configuration.cfg_common import CfgBaseModel as CfgBase
 from pyedb.misc.decorators import deprecated
