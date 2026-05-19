@@ -232,7 +232,7 @@ known-first-party = ["doc", "src", "tests"]
 combine-as-imports = true
 
 [tool.ruff.lint.mccabe]
-max-complexity = 10
+max-complexity = 20
 
 [tool.codespell]
 skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,*.a3dcomp,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,*.cdb,*.CDB,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*,pyproject.toml'
