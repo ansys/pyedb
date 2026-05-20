@@ -167,7 +167,6 @@ class CfgModeler:
         ...     incremental_path=[[0.0, 0.0], [0.005, 0.0]],
         ... )
         """
-
         trace_obj = CfgTrace(
             name=name,
             layer=layer,
