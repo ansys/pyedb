@@ -742,7 +742,6 @@ class Settings(DeprecatedSettings):
         bool
             ``True`` if inductances will be computed, ``False`` otherwise.
         """
-
         return self.sim_setup_info.simulation_settings.DCSettings.ComputeInductance
 
     @compute_inductance.setter
