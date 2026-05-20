@@ -1473,6 +1473,7 @@ class TestCfgTerminals:
         tc2 = CfgTerminals.model_validate(tc.model_dump())
         assert len(tc2.terminals) == 2
 
+
 class TestCfgSpiceModel:
     def test_basic(self):
         s = CfgSpiceModel(name="ic_spice", component_definition="IC_U1", file_path="/ic.sp")
