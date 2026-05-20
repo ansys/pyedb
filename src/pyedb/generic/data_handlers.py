@@ -257,7 +257,6 @@ def from_rkm(code: str) -> str:  # pragma: no cover
     '4.7M'
 
     """
-
     # Matches RKM codes that start with a digit.
     # fd_pattern = r'([0-9]+)([LREkKMGTFmuµUnNpP]+)([0-9]*)'
     fd_pattern = r"([0-9]+)([{}]+)([0-9]*)".format(

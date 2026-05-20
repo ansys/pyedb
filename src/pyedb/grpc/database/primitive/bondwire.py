@@ -159,7 +159,8 @@ class Bondwire(Primitive):
     @property
     def type(self):
         """str: Bondwire-type of a bondwire object. Supported values for setter: `"apd"`, `"jedec4"`, `"jedec5"`,
-        `"num_of_type"`"""
+        `"num_of_type"`
+        """
         return self.core.type.name.lower()
 
     @type.setter

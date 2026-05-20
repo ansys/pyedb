@@ -142,7 +142,7 @@ class HfssSimulationSetup(SimulationSetup):
         Use :attr:`settings <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings>`
         instead.
 
-        #"""
+        """
         return self.settings
 
     @property
@@ -155,7 +155,6 @@ class HfssSimulationSetup(SimulationSetup):
         <pyedb.grpc.database.simulation_setup.hfss_simulation_settings.HFSSSimulationSettings>`
 
         """
-
         return HFSSSimulationSettings(self)
 
     @property
@@ -211,6 +210,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02) -> bool:
         """Set HFSS single frequency solution.
+
         Parameters
         ----------
         frequency : str, optional
@@ -306,7 +306,6 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-
         adapt_frequencies = self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
         adapt_frequencies.append(CoreAdaptiveFrequency(frequency, str(max_delta_s)))
         self.core.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies

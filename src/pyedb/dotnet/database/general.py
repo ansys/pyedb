@@ -59,6 +59,7 @@ def convert_netdict_to_pydict(dict_in):
 
 def convert_pytuple_to_nettuple(_tuple):
     """Convert a Python tuple into a .NET tuple.
+
     Parameters
     ----------
     tuple : Python tuple
