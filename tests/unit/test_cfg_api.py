@@ -56,8 +56,6 @@ from pyedb.configuration.cfg_terminals import (
     CfgTerminals,
 )
 
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
-
 
 class TestCfgPadstackInstanceExtra:
     def test_rotation_coerced_to_string(self):
