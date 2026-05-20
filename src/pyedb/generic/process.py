@@ -85,7 +85,6 @@ class SiwaveSolve(object):
         siwave_ng: str, optinial
             Path to the siwave_ng. Default is the SIWave installation path.
         """
-
         command = [
             self.__siwave_ng_exe_path,
             edbpath,
@@ -148,6 +147,7 @@ class SiwaveSolve(object):
             Define number of cores to use during export
         aedt_file_name : str, optional
             Output  aedt file name (without .aedt extension). If `` then default naming is used
+
         Returns
         -------
         str

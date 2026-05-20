@@ -237,7 +237,6 @@ class Terminal(Connectable):
     def reference_object(self):  # pragma : no cover
         """This returns the object assigned as reference. It can be a primitive or a padstack instance.
 
-
         Returns
         -------
         :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance` or
@@ -286,7 +285,6 @@ class Terminal(Connectable):
         -------
         :class:`dotnet.database.edb_data.padstack_data.EDBPadstackInstance`
         """
-
         if self._edb_object.GetIsCircuitPort():
             return self.get_pin_group_terminal_reference_pin()
         _, padStackInstance, _ = self._edb_object.GetParameters()
@@ -308,7 +306,6 @@ class Terminal(Connectable):
         -------
         :class:`dotnet.database.edb_data.padstack_data.EDBPadstackInstance`
         """
-
         refTerm = self._edb_object.GetReferenceTerminal()
         if self._edb_object.GetTerminalType() == self._pedb.core.Cell.Terminal.TerminalType.PinGroupTerminal:
             padStackInstance = self._edb_object.GetPinGroup().GetPins()[0]
@@ -339,7 +336,6 @@ class Terminal(Connectable):
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
         """
-
         ref_layer = self._edb_object.GetReferenceLayer()
         edges = self._edb_object.GetEdges()
         _, _, point_data = edges[0].GetParameters()
@@ -362,7 +358,6 @@ class Terminal(Connectable):
         :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance` or
         :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
         """
-
         ref_term = self._edb_object.GetReferenceTerminal()  # return value is type terminal
         _, point_data, layer = ref_term.GetParameters()
         X = point_data.X

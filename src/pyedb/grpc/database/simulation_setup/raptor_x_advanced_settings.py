@@ -76,7 +76,6 @@ class RaptorXAdvancedSettings:
         int
             Number of cells per wavelength.
         """
-
         return self.core.cells_per_wavelength
 
     @cells_per_wavelength.setter
@@ -238,7 +237,8 @@ class RaptorXAdvancedSettings:
     @property
     def defuse_enable_hybrid_extraction(self) -> bool:
         """Flag indicating if the modeler is to split the layout into two parts in an attempt to decrease
-        the complexity."""
+        the complexity.
+        """
         return self.core.defuse_enable_hybrid_extraction
 
     @defuse_enable_hybrid_extraction.setter
@@ -248,7 +248,8 @@ class RaptorXAdvancedSettings:
     @property
     def use_enable_substrate_network_extraction(self) -> bool:
         """Flag indicating if modeling of substrate coupling effects is enabled using equivalent distributed RC
-        networks."""
+        networks.
+        """
         return self.core.use_enable_substrate_network_extraction
 
     @use_enable_substrate_network_extraction.setter

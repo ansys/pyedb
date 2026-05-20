@@ -78,7 +78,6 @@ class Bondwire(Primitive):
     @property
     def type(self):
         """:class:`BondwireType`: Bondwire-type of a bondwire object."""
-
         type_name = self._edb_object.GetType()
         return [i for i, j in self._bondwire_type.items() if j == type_name][0]
 

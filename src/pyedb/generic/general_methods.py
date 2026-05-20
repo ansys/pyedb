@@ -611,6 +611,7 @@ def is_number(a: Any) -> bool:
     ----------
     a : Any
         Input to check.
+
     Returns
     -------
     bool
@@ -705,7 +706,6 @@ def read_csv(filename: str, encoding: str = "utf-8") -> list:  # pragma: no cove
     list
 
     """
-
     lines = []
     with codecs.open(filename, "rb", encoding) as csvfile:
         reader = csv.reader(csvfile, delimiter=",")

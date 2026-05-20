@@ -129,7 +129,6 @@ class SimulationSetups:
         List[:class:`SIWaveCPASimulationSetup <pyedb.grpc.database.simulation_setup.
         siwave_cpa_simulation_setup.SIWaveCPASimulationSetup>`]
         """
-
         # cpa setup is not a real simulation setup type in EDB.
         # It is created through product interface (ProductProperty).
         # THe setup is unique per design, and is created when imported inside SIwave,
@@ -509,6 +508,7 @@ class SimulationSetups:
         **kwargs,
     ) -> RaptorXSimulationSetup:
         """Add RaptorX analysis setup
+
         Parameters
         ----------
         name : str, optional
@@ -525,12 +525,12 @@ class SimulationSetups:
             Use discrete sweep.
         sweep_name : str, optional
             Name of the frequency sweep.
+
         Returns
         -------
         RaptorXSimulationSetup
             Created setup object.
         """
-
         setup = self.create(
             name=name,
             solver="raptor_x",
@@ -562,6 +562,7 @@ class SimulationSetups:
         **kwargs,
     ) -> Q3DSimulationSetup:
         """Add Q3D analysis setup
+
         Parameters
         ----------
         name : str, optional
@@ -578,12 +579,12 @@ class SimulationSetups:
             Use discrete sweep.
         sweep_name : str, optional
             Name of the frequency sweep.
+
         Returns
         -------
         Q3DSimulationSetup
             Created setup object.
         """
-
         setup = self.create(
             name=name,
             solver="q3d",
