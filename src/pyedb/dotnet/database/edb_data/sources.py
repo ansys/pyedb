@@ -159,7 +159,8 @@ class SourceBuilder(object):
     @property
     def amplitude(self):  # pragma: no cover
         """Amplitude value of the source. Either amperes for current source or volts for
-        voltage source."""
+        voltage source.
+        """
         return self._amplitude
 
     @amplitude.setter

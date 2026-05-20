@@ -1092,7 +1092,6 @@ class EDBComponent(Group):
         -------
 
         """
-
         model = self._edb.Cell.Hierarchy.NetlistModel()
         model.SetNetlist(netlist)
 
@@ -1109,6 +1108,7 @@ class EDBComponent(Group):
             Name of the S-parameter model.
         reference_net : str, optional
             Name of the reference net.
+
         Returns
         -------
 

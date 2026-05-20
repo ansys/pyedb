@@ -193,6 +193,7 @@ class Edb:
     @property
     def logger(self) -> EdbLogger:
         """PyEDB logger.
+
         Returns
         -------
         EdbLogger object.
@@ -202,6 +203,7 @@ class Edb:
     @property
     def version(self) -> str:
         """EDB API version.
+
         Returns
         -------
             str: version of the edb object.
@@ -211,9 +213,11 @@ class Edb:
     @property
     def base_path(self) -> str:
         """Base path for EDB installation.
+
         Returns
         -------
-            str: path to the edb installation."""
+            str: path to the edb installation.
+        """
         return settings.aedt_installation_path
 
     @execution_timer("EDB initialization")
@@ -470,6 +474,7 @@ class Edb:
 
     def value(self, val) -> Value:
         """Convert a value into a pyedb value.
+
         Returns
         -------
             class:`Value <pyedb.dotnet.database.utility.Value>`
@@ -482,7 +487,7 @@ class Edb:
 
     @property
     def grpc(self) -> bool:
-        """grpc flag."""
+        """Grpc flag."""
         return False
 
     @property
@@ -522,7 +527,8 @@ class Edb:
 
         Returns
         -------
-            str: path to the edb installation."""
+            str: path to the edb installation.
+        """
         return self.base_path
 
     @property
@@ -574,7 +580,6 @@ class Edb:
         Dict[str, :class:`pyedb.dotnet.database.edb_data.ports.Terminal`]
             Dictionary of terminal names to terminal objects.
         """
-
         return {i.name: i for i in self.layout.terminals}
 
     @property
@@ -1053,6 +1058,7 @@ class Edb:
 
         .. deprecated:: 0.70.0
            Use: attr:`excitation_manager` property instead.
+
         Returns
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
@@ -1099,7 +1105,6 @@ class Edb:
     def padstacks(self) -> EdbPadstacks | None:
         """Core padstack.
 
-
         Returns
         -------
         Instance of :class: `legacy.database.padstack.EdbPadstack`
@@ -1113,7 +1118,6 @@ class Edb:
         >>> ... p, "TOP", edbapp.padstacks.pad_type.RegularPad
         >>> ... )
         """
-
         if not self._padstack and self._db:
             self._padstack = EdbPadstacks(self)
         return self._padstack
@@ -1185,7 +1189,6 @@ class Edb:
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.net_classes
         """
-
         if self._db:
             return EdbNetClasses(self)
 
@@ -1203,7 +1206,6 @@ class Edb:
         >>> edbapp = Edb("myproject.aedb")
         >>> edbapp.extended_nets
         """
-
         if self._db:
             return EdbExtendedNets(self)
 
@@ -1552,7 +1554,6 @@ class Edb:
             ``True`` when successful, ``False`` when failed.
 
         """
-
         self._db.Save()
         self._wait_for_file_release()
         return True
@@ -2453,7 +2454,6 @@ class Edb:
 
         Parameters
         ----------
-
         netlist : List of net names.
             list[str]
 
@@ -2755,7 +2755,6 @@ class Edb:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", version="2023.2")
 
@@ -2798,14 +2797,12 @@ class Edb:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", version="2021.2")
         >>> options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
         >>> edb.write_export3d_option_config_file("C:\\temp", options_config)
         >>> edb.export_q3d("C:\\temp")
         """
-
         siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
             "Q3D",
@@ -2848,7 +2845,6 @@ class Edb:
 
         Examples
         --------
-
         >>> from pyedb import Edb
 
         >>> edb = Edb(edbpath="C:\\temp\\myproject.aedb", version="2021.2")
@@ -2985,7 +2981,6 @@ class Edb:
         -------
         :class:`pyedb.dotnet.database.edb_data.edbvalue.EdbValue`
         """
-
         for i, j in self.project_variables.items():
             if i == variable_name:
                 return j
@@ -3017,7 +3012,6 @@ class Edb:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_project_variable("my_local_variable", "1cm")
@@ -3049,6 +3043,7 @@ class Edb:
             When ``True``, the variable is added as a parameter default.
         description : str, optional
             Description of the variable.
+
         Returns
         -------
         tuple
@@ -3056,7 +3051,6 @@ class Edb:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean_1, ant_length = edb_app.add_design_variable("my_local_variable", "1cm")
@@ -3096,7 +3090,6 @@ class Edb:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edb_app = Edb()
         >>> boolean, ant_length = edb_app.add_design_variable("ant_length", "1cm")
@@ -3233,7 +3226,6 @@ class Edb:
         Dict[str, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
 
         """
-
         setups = {}
         for i in list(self.active_cell.SimulationSetups):
             if i.GetType().ToString().endswith("kHFSS"):
@@ -3501,6 +3493,7 @@ class Edb:
         """Return connected port list from clipped multizone layout.
 
         Parameters
+        ----------
             terminal_info_dict : dict[str][str]
                 dictionary terminals with edb name as key and created ports name on clipped signal nets.
                 Dictionary is generated by the command cutout_multizone_layout:
@@ -3601,6 +3594,7 @@ class Edb:
             Whether it is a circuit port. The default is ``False``.
         name: str, optional
             Name of the created port. The default is None, a random name is generated.
+
         Returns
         -------
         list: [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
@@ -3970,10 +3964,12 @@ class Edb:
 
     def _clean_string_for_variable_name(self, variable_name):
         """Remove forbidden character for variable name.
+
         Parameters
         ----------
         variable_name : str
                 Variable name.
+
         Returns
         -------
         str
@@ -4236,6 +4232,7 @@ class Edb:
         results: str, optional
             Path to directory in which results will be saved. If no path is given, a new "_compare_results"
             directory will be created with the same naming and path as the .aedb folder.
+
         Returns
         -------
         bool

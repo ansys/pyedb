@@ -260,7 +260,6 @@ class PadstackInstance(conn_obj.ConnObj):
         :class:`Net <pyedb.grpc.database.net.net.Net>`
             Net object.
         """
-
         net = Net(self._pedb, self.core.net)
         return net if net is not None else None
 
@@ -848,7 +847,6 @@ class PadstackInstance(conn_obj.ConnObj):
     def backdrill_type(self) -> str:
         """Backdrill type.
 
-
         Returns
         -------
         str
@@ -871,7 +869,6 @@ class PadstackInstance(conn_obj.ConnObj):
     @property
     def backdrill_bottom(self) -> bool:
         """Check is backdrill is starting at bottom.
-
 
         Returns
         -------
@@ -1050,13 +1047,11 @@ class PadstackInstance(conn_obj.ConnObj):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
 
         """
-
         name = self.core.get_product_property(CoreProductIdType.DESIGNER, 11)
         return str(name).strip("'")
 
@@ -1161,6 +1156,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
     def get_backdrill_type(self, from_bottom=True):
         """Return backdrill type
+
         Parameters
         ----------
         from_bottom : bool, optional
@@ -1196,6 +1192,7 @@ class PadstackInstance(conn_obj.ConnObj):
         include_fill_material : bool, optional
             Input flag to obtain fill material as well as other parameters.
             If false, the return tuple does not include fill material and is backward compatible with previous versions.
+
         Returns
         -------
         tuple of (.Value, .Value, str)
@@ -1282,6 +1279,7 @@ class PadstackInstance(conn_obj.ConnObj):
         include_fill_material : bool, optional
             Input flag to obtain fill material as well as other parameters.
             If false, the return tuple does not include fill material and is backward compatible with previous versions.
+
         Returns
         -------
         tuple of (.Layer, .Value, .Value, str)

@@ -112,7 +112,8 @@ class Settings(object):
     @property
     def edb_environment_variables(self):
         """Environment variables that are set before launching a new AEDT session,
-        including those that enable the beta features."""
+        including those that enable the beta features.
+        """
         return self._edb_environment_variables
 
     @edb_environment_variables.setter
@@ -122,7 +123,8 @@ class Settings(object):
     @property
     def aedt_version(self):
         """AEDT version in the form ``"2023.x"``. In AEDT 2022 R2 and later,
-        evaluating a bounding box by exporting a SAT file is disabled."""
+        evaluating a bounding box by exporting a SAT file is disabled.
+        """
         return self._aedt_version
 
     @aedt_version.setter
@@ -143,7 +145,8 @@ class Settings(object):
     @property
     def enable_global_log_file(self):
         """Flag for enabling and disabling the global PyEDB log file located in the global temp folder.
-        The default is ``True``."""
+        The default is ``True``.
+        """
         return self._enable_global_log_file
 
     @enable_global_log_file.setter
@@ -153,7 +156,8 @@ class Settings(object):
     @property
     def enable_local_log_file(self):
         """Flag for enabling and disabling the local PyEDB log file located
-        in the ``projectname.pyedb`` project folder. The default is ``True``."""
+        in the ``projectname.pyedb`` project folder. The default is ``True``.
+        """
         return self._enable_local_log_file
 
     @enable_local_log_file.setter
@@ -172,7 +176,8 @@ class Settings(object):
     @property
     def enable_debug_methods_argument_logger(self):
         """Flag for whether to write out the method's arguments in the debug logger.
-        The default is ``False``."""
+        The default is ``False``.
+        """
         return self._enable_debug_methods_argument_logger
 
     @enable_debug_methods_argument_logger.setter
@@ -218,7 +223,8 @@ class Settings(object):
     @property
     def logger_formatter(self):
         """Message format of the log entries.
-        The default is ``'%(asctime)s:%(destination)s:%(extra)s%(levelname)-8s:%(message)s'``"""
+        The default is ``'%(asctime)s:%(destination)s:%(extra)s%(levelname)-8s:%(message)s'``
+        """
         return self._logger_formatter
 
     @logger_formatter.setter
@@ -228,7 +234,8 @@ class Settings(object):
     @property
     def logger_datefmt(self):
         """Date format of the log entries.
-        The default is ``'%Y/%m/%d %H.%M.%S'``"""
+        The default is ``'%Y/%m/%d %H.%M.%S'``
+        """
         return self._logger_datefmt
 
     @logger_datefmt.setter
@@ -247,7 +254,8 @@ class Settings(object):
     @property
     def enable_debug_internal_methods_logger(self):
         """Flag for enabling and disabling the logging for internal methods.
-        This setting is useful for debug purposes."""
+        This setting is useful for debug purposes.
+        """
         return self._enable_debug_internal_methods_logger
 
     @enable_debug_internal_methods_logger.setter
@@ -298,7 +306,8 @@ class Settings(object):
         """Get the installed AEDT versions.
 
         This method returns a dictionary, with the version as the key and the installation path
-        as the value."""
+        as the value.
+        """
         version_pattern = re.compile(r"^(ANSYSEM_ROOT|ANSYSEM_PY_CLIENT_ROOT|ANSYSEMSV_ROOT)\d{3}$")
         env_list = sorted([x for x in os.environ if version_pattern.match(x)], reverse=True)
         if not env_list:  # pragma: no cover
