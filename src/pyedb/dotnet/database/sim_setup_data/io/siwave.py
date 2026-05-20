@@ -257,7 +257,6 @@ class AdvancedSettings(SettingsBase):
     def include_fringe_coupling(self):
         """Whether to include the effect of fringe field coupling between stacked cavities.
 
-
         Returns
         -------
         bool
@@ -548,7 +547,6 @@ class DCSettings(SettingsBase):
         bool
             ``True`` if inductances will be computed, ``False`` otherwise.
         """
-
         return self.sim_setup_info.simulation_settings.DCSettings.ComputeInductance
 
     @compute_inductance.setter

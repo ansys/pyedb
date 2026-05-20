@@ -40,7 +40,7 @@ class BaseTestClass:
 
     @pytest.fixture(autouse=True)
     def init(self, local_scratch, get_edb_examples, request):
-        """init runs before each test."""
+        """Init runs before each test."""
         temp = Path(local_scratch.path) / f"{request.node.name}_{secrets.token_hex(2)}"
         temp.mkdir(parents=True)
         self.edb_examples = get_edb_examples

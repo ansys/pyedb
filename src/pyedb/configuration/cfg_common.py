@@ -90,7 +90,7 @@ class CfgVariables(BaseModel):
 
     variables: list[CfgVar] = Field(default_factory=list)
 
-    def add(self, name, value, description=""):
+    def add(self, name: str, value: Union[int, float, str], description: str = "") -> None:
         """Add a design or project variable.
 
         Parameters

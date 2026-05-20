@@ -82,7 +82,6 @@ class PointTerminal(Terminal):
     @property
     def location(self):
         """Location of the terminal."""
-
         _, point_data, _ = self._edb_object.GetParameters()
         return [point_data.X.ToDouble(), point_data.Y.ToDouble()]
 
