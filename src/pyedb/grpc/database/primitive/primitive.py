@@ -742,7 +742,6 @@ class Primitive:
         list[float]
             Closest arc midpoint coordinates as ``[x, y]``.
         """
-
         if isinstance(point, CorePointData):
             point = [Value(point.x), Value(point.y)]
         dist = 1e12
@@ -822,7 +821,6 @@ class Primitive:
         List[:class:`PointData <ansys.edb.core.geometry.point_data.PointData>`]
 
         """
-
         return self.polygon_data.points_raw
 
     @property

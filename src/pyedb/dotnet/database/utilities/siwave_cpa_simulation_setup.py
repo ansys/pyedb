@@ -31,7 +31,8 @@ class ChannelSetup:
     """
     A class to manage the channel setup configuration for SIWave CPA simulations.
 
-    Attributes:
+    Attributes
+    ----------
         die_name (str): The name of the die associated with the channel setup.
         pin_grouping_mode (str): The mode for pin grouping, e.g., "perpin", "ploc", or "usediepingroups".
         channel_component_exposure (dict): A dictionary mapping component names to their exposure status (True/False).
@@ -66,10 +67,10 @@ class ChannelSetup:
         """
         Get the die name from the SIWave properties.
 
-        Returns:
+        Returns
+        -------
             str: The die name.
         """
-
         self._pedb.active_cell.SetProductProperty(
             self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_DIE_NAME, value
         )
@@ -79,10 +80,10 @@ class ChannelSetup:
         """
         Get the pin grouping mode from the SIWave properties.
 
-        Returns:
+        Returns
+        -------
             str: The pin grouping mode ("perpin", "ploc", or "usediepingroups").
         """
-
         mode_mapping = {-1: "perpin", 0: "ploc", 1: "usediepingroups"}
         pg_mode = self._pedb.active_cell.GetProductProperty(
             self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_PIN_GROUPING_MODE
@@ -109,10 +110,10 @@ class ChannelSetup:
         """
         Get the channel component exposure configuration from the SIWave properties.
 
-        Returns:
+        Returns
+        -------
             dict: A dictionary mapping component names to their exposure status (True/False).
         """
-
         cmp_exposure = self._pedb.active_cell.GetProductProperty(
             self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_COMPONENT_EXPOSURE_CONFIG
         )[-1]
@@ -142,10 +143,10 @@ class ChannelSetup:
         """
         Get the VRM (Voltage Regulator Module) setup from the SIWave properties.
 
-        Returns:
+        Returns
+        -------
             list: A list of VRM objects.
         """
-
         vrm = self._pedb.active_cell.GetProductProperty(
             self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CHANNEL_VRM_SETUP
         )[-1]
@@ -191,7 +192,8 @@ class SolverOptions:
     """
     A class to manage solver options for SIWave CPA simulations.
 
-    Attributes:
+    Attributes
+    ----------
         mode (str): The extraction mode, either "si" or "pi".
         custom_refinement (bool): Whether custom refinement is enabled.
         extraction_frequency (str): The frequency for extraction, e.g., "10Ghz".
@@ -210,7 +212,8 @@ class SolverOptions:
         cg_percent_refinement_per_pass (float): Percent refinement per pass for CG.
         return_path_net_for_loop_parameters (bool): Whether to use return path net for loop parameters.
 
-    Methods:
+    Methods
+    -------
         __init__(pedb, cfg_solver_options=None): Initializes the SolverOptions object.
         __init_values(): Initializes default values for solver options.
         _apply_cfg_object(solver_options): Applies configuration from a given solver options object.
@@ -266,10 +269,10 @@ class SolverOptions:
         """
         Get the extraction mode.
 
-        Returns:
+        Returns
+        -------
             str: The extraction mode ("si" or "pi").
         """
-
         mode = self._pedb.active_cell.GetProductProperty(
             self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_EXTRACTION_MODE
         )
@@ -293,10 +296,10 @@ class SolverOptions:
         """
         Get whether custom refinement is enabled.
 
-        Returns:
+        Returns
+        -------
             bool: True if custom refinement is enabled, False otherwise.
         """
-
         refine = self._pedb.active_cell.GetProductProperty(
             self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_CUSTOM_REFINEMENT
         )[-1]
@@ -320,7 +323,8 @@ class SolverOptions:
         """
         Get the extraction frequency.
 
-        Returns:
+        Returns
+        -------
             str: The extraction frequency.
         """
         return self._pedb.active_cell.GetProductProperty(
@@ -339,10 +343,10 @@ class SolverOptions:
         """
         Get whether capacitance computation is enabled.
 
-        Returns:
+        Returns
+        -------
             bool: True if enabled, False otherwise.
         """
-
         compute = self._pedb.active_cell.GetProductProperty(
             self._pedb._edb.ProductId.SIWave, SIwaveProperties.CPA_COMPUTE_CAPACITANCE
         )[-1]
@@ -394,7 +398,8 @@ class SolverOptions:
         """
         Get whether DC resistance and inductance computation is enabled.
 
-        Returns:
+        Returns
+        -------
             bool: True if DC resistance and inductance computation is enabled, False otherwise.
         """
         _res = self._pedb.active_cell.GetProductProperty(
@@ -420,7 +425,8 @@ class SolverOptions:
         """
         Get whether DC capacitance and conductance computation is enabled.
 
-        Returns:
+        Returns
+        -------
             bool: True if DC capacitance and conductance computation is enabled, False otherwise.
         """
         _res = self._pedb.active_cell.GetProductProperty(
@@ -446,7 +452,8 @@ class SolverOptions:
         """
         Get whether AC resistance and inductance computation is enabled.
 
-        Returns:
+        Returns
+        -------
             bool: True if AC resistance and inductance computation is enabled, False otherwise.
         """
         _res = self._pedb.active_cell.GetProductProperty(
@@ -472,7 +479,8 @@ class SolverOptions:
         """
         Gets the ground power nets for SI analysis setting from the database.
 
-        Returns:
+        Returns
+        -------
             bool: True if grounding power nets for SI analysis is enabled, False otherwise.
         """
         _res = self._pedb.active_cell.GetProductProperty(
@@ -498,7 +506,8 @@ class SolverOptions:
         """
         Gets the small hole diameter setting from the database.
 
-        Returns:
+        Returns
+        -------
             float|str: The small hole diameter as a float, or 'auto' if the value is set to -1.
         """
         _res = self._pedb.active_cell.GetProductProperty(
@@ -527,7 +536,8 @@ class SolverOptions:
         """
         Gets the model type setting from the database.
 
-        Returns:
+        Returns
+        -------
             str: The model type. Returns "rlcg" if the model type is set to "0", otherwise "esd_r".
         """
         return self._pedb.active_cell.GetProductProperty(
@@ -545,7 +555,8 @@ class SolverOptions:
         """
         Gets the maximum number of passes for CG adaptive refinement from the database.
 
-        Returns:
+        Returns
+        -------
             int: The maximum number of passes for CG adaptive refinement.
         """
         return int(
@@ -565,7 +576,8 @@ class SolverOptions:
         """
         Gets the target error percentage for CG adaptive refinement from the database.
 
-        Returns:
+        Returns
+        -------
             float: The target error percentage for CG adaptive refinement.
         """
         return float(
@@ -587,7 +599,8 @@ class SolverOptions:
         """
         Gets the percentage of CG refinement per pass from the database.
 
-        Returns:
+        Returns
+        -------
             float: The percentage of CG refinement per pass.
         """
         return float(
@@ -610,7 +623,8 @@ class SolverOptions:
         """
         Gets the maximum number of passes for RL adaptive refinement from the database.
 
-        Returns:
+        Returns
+        -------
             int: The maximum number of passes for RL adaptive refinement.
         """
         return int(
@@ -632,7 +646,8 @@ class SolverOptions:
         """
         Gets the target error percentage for RL adaptive refinement from the database.
 
-        Returns:
+        Returns
+        -------
             float: The target error percentage for RL adaptive refinement.
         """
         return float(
@@ -654,7 +669,8 @@ class SolverOptions:
         """
         Gets the percentage of RL refinement per pass from the database.
 
-        Returns:
+        Returns
+        -------
             float: The percentage of RL refinement per pass.
         """
         return float(
@@ -677,7 +693,8 @@ class SolverOptions:
         """
         Gets the return path net setting for loop parameters from the database.
 
-        Returns:
+        Returns
+        -------
             bool: True if the return path net is enabled for loop parameters, False otherwise.
         """
         _res = self._pedb.active_cell.GetProductProperty(
@@ -703,7 +720,8 @@ class SIWaveCPASimulationSetup:
     """
     Represents the setup configuration for SIwave CPA simulations.
 
-    Attributes:
+    Attributes
+    ----------
         _pedb: The database object representing the active cell.
         _channel_setup (ChannelSetup): The channel setup configuration.
         _solver_options (SolverOptions): The solver options configuration.
@@ -752,7 +770,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the name of the simulation setup.
 
-        Returns:
+        Returns
+        -------
             str: The name of the simulation setup.
         """
         return self._pedb.active_cell.GetProductProperty(
@@ -770,7 +789,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the mode of the simulation setup.
 
-        Returns:
+        Returns
+        -------
             str: The mode of the simulation setup ("channel" or "no_channel").
         """
         cpa_mode = self._pedb.active_cell.GetProductProperty(
@@ -796,7 +816,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the model type of the simulation setup.
 
-        Returns:
+        Returns
+        -------
             str: The model type ("rlcg" or "esd_r").
         """
         mod_type = self._pedb.active_cell.GetProductProperty(
@@ -823,7 +844,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the Q3D solver usage setting.
 
-        Returns:
+        Returns
+        -------
             bool: True if the Q3D solver is used, False otherwise.
         """
         return bool(
@@ -850,7 +872,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the net processing mode.
 
-        Returns:
+        Returns
+        -------
             str: The net processing mode.
         """
         return self._pedb.active_cell.GetProductProperty(
@@ -868,7 +891,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the channel setup configuration.
 
-        Returns:
+        Returns
+        -------
             ChannelSetup: The channel setup configuration.
         """
         return self._channel_setup
@@ -883,7 +907,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the solver options configuration.
 
-        Returns:
+        Returns
+        -------
             SolverOptions: The solver options configuration.
         """
         return self._solver_options
@@ -898,7 +923,8 @@ class SIWaveCPASimulationSetup:
         """
         Gets the list of nets to process.
 
-        Returns:
+        Returns
+        -------
             list: A list of nets to process.
         """
         nets = self._pedb.active_cell.GetProductProperty(

@@ -73,7 +73,6 @@ class BondwireDef:
         parameters : float
             Bondwire top-to-die distance.
         """
-
         self.core.set_parameters(self._pedb.value(parameters))
 
 

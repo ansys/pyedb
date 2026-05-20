@@ -35,7 +35,8 @@ class DjordjecvicSarkarModel(DielectricMaterialModel):
     def create(cls, pedb) -> "DjordjecvicSarkarModel":
         """Constructs a Djordjecvic-Sarkar model with the following default values.
         Frequency: 1GHz. Relative Permitivity: 4. Loss Tangent: 0.02.Use DC relative permitivity: false.
-        DC relative permitivity: 5.DC conductivity: 1e-12."""
+        DC relative permitivity: 5.DC conductivity: 1e-12.
+        """
         return cls(pedb, pedb._edb.Definition.DjordjecvicSarkarModel())
 
     @property
@@ -85,7 +86,7 @@ class DjordjecvicSarkarModel(DielectricMaterialModel):
 
     @property
     def use_dc_relative_permittivity(self):
-        """whether the DC relative permittivity nominal value is used"""
+        """Whether the DC relative permittivity nominal value is used."""
         return self._edb_object.UseDCRelativePermitivity()
 
     @use_dc_relative_permittivity.setter

@@ -114,7 +114,6 @@ class CfgModeler:
         incremental_path: Optional[Any] = None,
     ):
         """Add a trace from a dictionary of parameters."""
-
         trace_obj = CfgTrace(
             name,
             layer,

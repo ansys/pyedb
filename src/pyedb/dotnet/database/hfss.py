@@ -149,6 +149,7 @@ class EdbHfss(object):
         """Retrieve the trace width for traces with ports.
 
         Returns
+        -------
         -------<
         dict
             Dictionary of trace width data.
@@ -218,7 +219,6 @@ class EdbHfss(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -255,7 +255,6 @@ class EdbHfss(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -290,7 +289,6 @@ class EdbHfss(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -391,7 +389,6 @@ class EdbHfss(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.excitation_manager.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
@@ -447,7 +444,6 @@ class EdbHfss(object):
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.excitation_manager.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
@@ -723,7 +719,6 @@ class EdbHfss(object):
 
         Examples
         --------
-
         >>> edb_path = path_to_edb
         >>> edb = Edb(edb_path)
         >>> poly_list = [poly for poly in list(edb.layout.primitives) if poly.GetPrimitiveType() == 2]
@@ -1115,7 +1110,6 @@ class EdbHfss(object):
             ``True`` when successful, ``False`` when failed.
 
         """
-
         return self._pedb.excitation_manager.create_rlc_boundary_on_pins(
             positive_pin=positive_pin, negative_pin=negative_pin, rvalue=rvalue, lvalue=lvalue, cvalue=cvalue
         )
