@@ -2353,7 +2353,6 @@ class GeometryOperators(object):
                 returned if ``return_additional_info`` is ``True``
 
         """
-
         # Parameters
         min_num_points = max(3, int(minimum_number_of_points))
         cluster_lines_flag = False if distance_threshold is None else True

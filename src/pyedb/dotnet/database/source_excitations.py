@@ -130,7 +130,6 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -182,13 +181,11 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
-
         voltage_source = VoltageSourceBuilder()
         voltage_source.positive_node.net = pos_pin.net_name
         voltage_source.negative_node.net = neg_pin.net_name
@@ -231,7 +228,6 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -277,7 +273,6 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
@@ -351,7 +346,6 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.excitation_manager.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
@@ -419,7 +413,6 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.excitation_manager.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
@@ -489,7 +482,6 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.excitation_manager.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
@@ -1107,7 +1099,6 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> edb_path = path_to_edb
         >>> edb = Edb(edb_path)
         >>> poly_list = [poly for poly in list(edb.layout.primitives) if poly.GetPrimitiveType() == 2]
@@ -1753,7 +1744,6 @@ class SourceExcitation:
             ``True`` when successful, ``False`` when failed.
 
         """
-
         if positive_pin and negative_pin:
             positive_pin_term = self._pedb.components._create_terminal(positive_pin)
             negative_pin_term = self._pedb.components._create_terminal(negative_pin)
@@ -1978,7 +1968,6 @@ class SourceExcitation:
 
         Examples
         --------
-
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
@@ -2188,6 +2177,7 @@ class SourceExcitation:
 
         term_type: Type of terminal, gap, circuit or auto.
         str.
+
         Returns
         -------
         Edb pin group terminal.
@@ -2331,7 +2321,6 @@ class SourceExcitation:
         >>> edb.save()
         >>> edb.close()
         """
-
         if isinstance(refdes, str):
             refdes = self._pedb.components.instances[refdes]
         elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
@@ -2425,12 +2414,12 @@ class SourceExcitation:
             Whether it is a circuit port. The default is ``False``.
         name: str, optional
             Name of the created port. The default is None, a random name is generated.
+
         Returns
         -------
         list: [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
             :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,].
         """
-
         terminal.boundary_type = "PortBoundary"
         terminal.is_circuit_port = is_circuit_port
 

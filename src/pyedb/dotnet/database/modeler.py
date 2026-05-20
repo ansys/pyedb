@@ -522,7 +522,6 @@ class Modeler:
 
         References
         ----------
-
         >>> Edb.modeler.delete_primitives(net_names=["GND"])
         """
         if not isinstance(net_names, list):  # pragma: no cover
@@ -946,15 +945,14 @@ class Modeler:
 
         Parameters
         ----------
-
         evaluate_area : optional bool
             When True evaluates the layout metal surface, can take time-consuming,
             avoid using this option on large design.
         net_list: optional bool
             list of net names to evaluate area for, if None all nets will be evaluated.
+
         Returns
         -------
-
         EDBStatistics object.
 
         """
@@ -1390,6 +1388,7 @@ class Modeler:
             Set filter on primitive type. Default is ``None``.
         is_void : bool, optional
             Set filter on is_void. When ``None``, both standard primitives and voids are returned.
+
         Returns
         -------
         list
@@ -1448,7 +1447,6 @@ class Modeler:
             Netname of the taper. Default is ``""``.
 
         """
-
         p0_x, p0_y = self._pedb.value(start_point[0]), self._pedb.value(start_point[1])
         p1_x, p1_y = self._pedb.value(end_point[0]), self._pedb.value(end_point[1])
         angle = ((p1_y - p0_y) / (p1_x - p0_x)).atan()

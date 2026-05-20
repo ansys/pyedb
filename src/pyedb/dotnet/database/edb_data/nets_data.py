@@ -74,8 +74,8 @@ class EDBNetsData(NetDotNet):
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`"""
-
+        list of :class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`
+        """
         return [EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances]
 
     @property
@@ -138,7 +138,6 @@ class EDBNetsData(NetDotNet):
         show : bool, optional
             Whether to show the plot or not. Default is `True`.
         """
-
         return self._app.nets.plot(
             self.name,
             layers=layers,

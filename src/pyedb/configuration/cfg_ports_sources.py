@@ -307,7 +307,6 @@ class CfgCircuitElement(CfgBase):
 
     def create_terminals(self):
         """Create step 1. Collect positive and negative terminals."""
-
         # Collect all positive terminals
         pos_type, pos_value = self.positive_terminal_info.type, self.positive_terminal_info.value
         pos_objs = dict()

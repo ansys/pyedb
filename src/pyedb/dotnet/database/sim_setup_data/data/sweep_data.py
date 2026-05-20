@@ -495,6 +495,7 @@ class SweepData(object):
               2 - start frequency
               3 - stop frequency
               4 - step frequency or count
+
         Returns
         -------
         bool
