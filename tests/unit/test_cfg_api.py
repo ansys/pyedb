@@ -634,6 +634,7 @@ class TestCfgStackup:
         with pytest.raises(ValueError):
             s.add_material("copper")
 
+
 class TestHeightFromDiameter:
     def test_um(self):
         assert _height_from_diameter("150um") == "100um"
