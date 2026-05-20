@@ -53,7 +53,6 @@ class LayoutValidation:
 
         Examples
         --------
-
         >>> edb = Edb("edb_file")
         >>> dc_shorts = edb.layout_validation.dc_shorts()
 
@@ -154,10 +153,8 @@ class LayoutValidation:
 
         Examples
         --------
-
         >>> renamed_nets = edb.layout_validation.disjoint_nets(["GND", "Net2"])
         """
-
         if not net_list:
             net_list = list(self._pedb.nets.nets.keys())
         elif isinstance(net_list, str):
@@ -308,7 +305,6 @@ class LayoutValidation:
     @execution_timer("illegal_rlc_values")
     def illegal_rlc_values(self, fix=False):
         """Find and fix RLC illegal values."""
-
         for name, objs in {
             "inductors": self._pedb.components.inductors,
             "resistors": self._pedb.components.resistors,

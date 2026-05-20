@@ -288,7 +288,6 @@ class Meander:
         bool
             True on success.
         """
-
         # Parameters
         self._edb.add_design_variable("w", self.trace_width)  # trace width
         self._edb.add_design_variable("p", self.pitch)  # pitch (centre-to-centre)

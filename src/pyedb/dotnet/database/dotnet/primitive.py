@@ -600,8 +600,8 @@ class CircleDotNet(PrimitiveDotNet):
     def set_parameters(self, center_x, center_y, radius):
         """Set parameters of a circle.
 
-         Parameters
-         ----------
+        Parameters
+        ----------
         center_x: :class:`Value <ansys.edb.utility.Value>`
             X value of center point.
         center_y: :class:`Value <ansys.edb.utility.Value>`

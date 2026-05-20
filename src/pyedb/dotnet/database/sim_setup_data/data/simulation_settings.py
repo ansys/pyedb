@@ -240,6 +240,7 @@ class HFSSPISimulationSettings(SimulationSettings):
     def pi_slider_pos(self):
         """The Simulation Preference Slider setting
         Model type: ``0``= balanced, ``1``=Accuracy.
+
         Returns
         -------
             int
