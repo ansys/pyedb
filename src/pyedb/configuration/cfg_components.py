@@ -22,7 +22,7 @@
 
 """Build the ``components`` configuration section and its model helpers."""
 
-import re as _re
+import re
 
 from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
@@ -58,7 +58,7 @@ def _height_from_diameter(diameter: str) -> str:
 
     Raises ``ValueError`` if *diameter* cannot be parsed.
     """
-    m = _re.match(r"([0-9.eE+\-]+)\s*([a-zA-Z]*)", diameter)
+    m = re.match(r"([0-9.eE+\-]+)\s*([a-zA-Z]*)", diameter)
     if m is None:
         raise ValueError(f"Cannot parse diameter value: {diameter!r}")
     num = float(m.group(1))
