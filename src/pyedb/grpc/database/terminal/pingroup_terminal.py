@@ -94,6 +94,7 @@ class PinGroupTerminal(Terminal):
     @classmethod
     def create(cls, layout, name, pin_group, net=None, is_ref=False) -> PinGroupTerminal:
         """Create a pin group terminal.
+
         Parameters
         ----------
         layout : :class:`.Layout`
@@ -106,6 +107,7 @@ class PinGroupTerminal(Terminal):
             Net.
         is_ref : :obj:`bool`, default: False
             Whether the pin group terminal is a reference terminal.
+
         Returns
         -------
         PinGroupTerminal

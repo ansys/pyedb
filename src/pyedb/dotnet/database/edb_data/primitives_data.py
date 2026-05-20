@@ -118,8 +118,8 @@ class EdbPolygon(Primitive):
     def duplicate_across_layers(self, layers):
         """Duplicate across layer a primitive object.
 
-        Parameters:
-
+        Parameters
+        ----------
         layers: list
             list of str, with layer names
 

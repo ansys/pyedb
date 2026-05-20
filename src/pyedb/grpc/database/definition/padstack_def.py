@@ -195,7 +195,6 @@ class PadProperties:
         str
             Offset for the Y axis.
         """
-
         return Value(self._pad_parameter_value[3])
 
     @offset_x.setter
@@ -215,7 +214,6 @@ class PadProperties:
         str
             Value for the rotation.
         """
-
         return Value(self._pad_parameter_value[4])
 
     @rotation.setter
@@ -743,7 +741,6 @@ class PadstackDef:
         bool
             ``True`` when successful, ``False`` when failed.
         """
-
         if isinstance(self.core.data.get_hole_parameters()[0], CorePolygonData):
             self._pedb.logger.error("Microvias cannot be applied on vias using hole shape polygon")
             return False
@@ -1031,7 +1028,6 @@ class PadstackDef:
                     ],
                 }
         """
-
         pdef_data = self.core.data
         pad_type_list = [CorePadType.REGULAR_PAD, CorePadType.ANTI_PAD, CorePadType.THERMAL_PAD]
         data = {}

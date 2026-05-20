@@ -121,7 +121,6 @@ class BBox:
             Default is None.
 
         """
-
         self._pedb = pedb
         if core:
             self.core = core

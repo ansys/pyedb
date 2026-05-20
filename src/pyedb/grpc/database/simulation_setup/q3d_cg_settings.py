@@ -130,7 +130,9 @@ class Q3DCGSettings:
     @property
     def min_passes(self) -> int:
         """Minimum number of passes.
+
         Returns
+        -------
         """
         return self.core.min_passes
 

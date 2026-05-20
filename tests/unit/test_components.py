@@ -327,7 +327,7 @@ class TestCfgComponentSolderBallGrpc:
             c._set_solder_ball_properties_to_edb()
 
     def test_no_solder_ball_properties_shape_none_raises(self):
-        """shape key missing entirely should raise ValueError (grpc path)."""
+        """Shape key missing entirely should raise ValueError (grpc path)."""
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
         c = CfgComponent(

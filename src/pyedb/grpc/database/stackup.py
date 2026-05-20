@@ -508,7 +508,8 @@ class Stackup:
         Returns
         -------
         dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
-            Dictionary of dielectric layers."""
+            Dictionary of dielectric layers.
+        """
         return {
             layer.name: StackupLayer(self._pedb, layer)
             for layer in self._get_layers(CoreLayerTypeSet.DIELECTRIC_LAYER_SET)
@@ -2514,7 +2515,6 @@ class Stackup:
         >>> edb = Edb()
         >>> edb.stackup.load("stackup.xml")
         """
-
         if isinstance(file_path, dict):
             return self._import_dict(file_path)
         elif file_path.endswith(".csv"):
@@ -2577,7 +2577,6 @@ class Stackup:
         :class:`matplotlib.pyplot`
             Matplotlib plot object.
         """
-
         from pyedb.generic.constants import CSS4_COLORS
         from pyedb.generic.plot import plot_matplotlib
 

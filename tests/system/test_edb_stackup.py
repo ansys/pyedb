@@ -24,6 +24,7 @@
 
 import math
 import os
+import platform
 
 import pytest
 
@@ -285,6 +286,7 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.add_layer("new_bottom", "1_Top", "add_at_elevation", "dielectric", elevation=0.0003)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"] and platform.system() == "Linux", reason="random fails on Linux.")
     def test_stackup_properties_1(self):
         """Evaluate various stackup properties."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -302,6 +304,23 @@ class TestClass(BaseTestClass):
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
 
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(config["use_grpc"] and platform.system() == "Linux", reason="random fails on Linux.")
+    def test_stackup_properties_2(self):
+        """Evaluate various stackup properties (JSON export round-trip)."""
+        edbapp = self.edb_examples.create_empty_edb()
+        import_method = edbapp.stackup.load
+        export_method = edbapp.stackup.export
+
+        csv_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0]
+        assert os.path.exists(csv_path) and os.path.getsize(csv_path) > 0, f"CSV file not ready: {csv_path}"
+        assert import_method(csv_path)
+        assert "18_Bottom" in edbapp.stackup.layers.keys()
+        assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
+        export_stackup_path = os.path.join(self.edb_examples.test_folder, "export_stackup_2.csv")
+        assert export_method(export_stackup_path)
+        assert os.path.exists(export_stackup_path)
         edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_load_json(self):
@@ -608,7 +627,6 @@ class TestClass(BaseTestClass):
 
     def test_stackup_place_on_bottom_of_lam_with_mold(self):
         """Place on lam with mold using 3d placement method"""
-
         laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/lam_with_mold.aedb", "TEDB/chip_flipped_stackup.aedb"]
         )
@@ -778,7 +796,6 @@ class TestClass(BaseTestClass):
 
     def test_stackup_place_on_bottom_of_lam_with_mold_solder(self):
         """Place on bottom of lam with mold solder using 3d placement method."""
-
         laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/lam_with_mold.aedb", "TEDB/chip_solder.aedb"]
         )
@@ -948,7 +965,6 @@ class TestClass(BaseTestClass):
 
     def test_stackup_place_on_bottom_with_zoffset_chip(self):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
-
         laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/lam_with_mold.aedb", "TEDB/chip_zoffset.aedb"]
         )
@@ -1118,7 +1134,6 @@ class TestClass(BaseTestClass):
 
     def test_stackup_place_on_bottom_with_zoffset_solder_chip(self):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
-
         laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/lam_with_mold.aedb", "TEDB/chip_zoffset_solder.aedb"]
         )

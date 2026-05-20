@@ -1727,7 +1727,6 @@ class Components(object):
         --------
         >>> pos = edbapp.components.get_pin_position(pin)
         """
-
         pt_pos = pin.position
         if pin.component.is_null:
             transformed_pt_pos = pt_pos

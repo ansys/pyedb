@@ -854,7 +854,6 @@ class Siwave(object):
         bool
             ``True`` when successful, ``False`` otherwise.
         """
-
         return self._pedb.excitation_manager.create_voltage_probe_on_pin_group(
             probe_name, pos_pin_group_name, neg_pin_group_name, impedance=impedance
         )
