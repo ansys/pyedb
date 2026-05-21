@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import json
 from unittest.mock import MagicMock
 
 import pytest
@@ -30,12 +29,33 @@ from pyedb.configuration.cfg_general import CfgGeneral
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 
-# ---------------------------------------------------------------------------
-# GeneralConfig
-# ---------------------------------------------------------------------------
-
-
 class TestGeneralConfig:
+    def test_to_dict_partial(self):
+        g = CfgGeneral()
+        g.spice_model_library = "/spice"
+        d = g.get_parameters_from_edb()
+        assert d == {"spice_model_library": "/spice"}
+
+    def test_to_dict_full(self):
+        g = CfgGeneral()
+        g.spice_model_library = "/spice"
+        g.s_parameter_library = "/snp"
+        g.anti_pads_always_on = True
+        g.suppress_pads = False
+        d = g.get_parameters_from_edb()
+        assert d["spice_model_library"] == "/spice"
+        assert d["s_parameter_library"] == "/snp"
+        assert d["anti_pads_always_on"] is True
+        assert d["suppress_pads"] is False
+
+    def test_anti_pads_false_preserved(self):
+        g = CfgGeneral()
+        g.anti_pads_always_on = False
+        d = g.get_parameters_from_edb()
+        # False (bool) must be kept – not omitted
+        assert "anti_pads_always_on" in d
+        assert d["anti_pads_always_on"] is False
+
     def test_defaults(self):
         g = CfgGeneral()
         assert g.spice_model_library == ""

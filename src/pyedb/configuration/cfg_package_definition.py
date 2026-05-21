@@ -208,7 +208,7 @@ class CfgPackageDefinitions:
 
     def to_list(self):
         """Serialize all package definitions to a list of dictionaries."""
-        return [p.to_dict() for p in self.packages]
+        return [p.model_dump(exclude_none=True) for p in self.packages]
 
     def add(
         self,

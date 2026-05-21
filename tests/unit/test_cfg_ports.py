@@ -204,6 +204,11 @@ class TestCfgEdgePort:
         assert d["vertical_extent_factor"] == 3
         assert d["pec_launch_width"] == "0.01mm"
 
+    def test_gap_port(self):
+        ep = CfgEdgePort("gp1", "gap_port", "trace2", [0.003, 0.004], horizontal_extent_factor=3)
+        d = ep.export_properties()
+        assert d["horizontal_extent_factor"] == 3
+
     def test_gap_port_custom_extent(self):
         ep = CfgEdgePort(
             "gp1", "gap_port", "trace2", [0.003, 0.004], horizontal_extent_factor=3, vertical_extent_factor=2
@@ -266,6 +271,20 @@ class TestCfgDiffWavePort:
 class TestCfgPorts:
     def test_empty(self):
         assert CfgPorts().export_properties() == []
+
+    def test_add_coax_port(self):
+        pc = CfgPorts()
+        pc.add_coax_port("coax1", {"padstack": "v1"})
+        assert pc.export_properties()[0]["type"] == "coax"
+
+    def test_add_diff_wave_port(self):
+        pc = CfgPorts()
+        pc.add_diff_wave_port(
+            "diff1",
+            {"primitive_name": "tp", "point_on_edge": [0, 0]},
+            {"primitive_name": "tn", "point_on_edge": [0, 1e-4]},
+        )
+        assert pc.export_properties()[0]["type"] == "diff_wave_port"
 
     def test_add_circuit_port(self):
         pc = CfgPorts()
@@ -533,6 +552,13 @@ class TestCfgProbe:
         assert d["type"] == "probe"
         assert d["positive_terminal"] == {"net": "SIG"}
         assert d["negative_terminal"] == {"net": "GND"}
+
+    def test_probe(self):
+        p = CfgProbe("probe1", {"net": "SIG"}, {"net": "GND"})
+        d = p.export_properties()
+        assert d["name"] == "probe1"
+        assert d["type"] == "probe"
+        assert d["positive_terminal"] == {"net": "SIG"}
 
     def test_reference_designator(self):
         p = CfgProbe("probe2", {"pin": "A1"}, {"pin": "A2"}, reference_designator="U1")

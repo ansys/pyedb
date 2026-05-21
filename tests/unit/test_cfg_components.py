@@ -305,6 +305,12 @@ class TestComponentConfig:
         c = CfgComponent("U1")
         c.retrieve_parameters_from_edb()  # must not raise
 
+    def test_ic_die_properties_no_die(self):
+        c = CfgComponent("U1")
+        c.set_ic_die_properties("no_die")
+        d = c.to_dict()
+        assert d["ic_die_properties"]["type"] == "no_die"
+
 
 class TestComponentsConfig:
     def test_empty(self):

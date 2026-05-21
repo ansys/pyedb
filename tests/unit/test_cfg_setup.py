@@ -33,8 +33,12 @@ from pyedb.configuration.cfg_setup import (
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
-# Convenience alias so tests read naturally
+# alias so tests read naturally
 FrequencySweep = CfgSetupAC.CfgFrequencySweep
+FrequencySweepConfig = CfgSetupAC.CfgFrequencySweep
+# Attach to_dict as a convenience method for standalone use in tests
+if not hasattr(FrequencySweepConfig, "to_dict"):
+    FrequencySweepConfig.to_dict = lambda self: self.model_dump()
 
 
 class TestCfgSParameterModel:
@@ -87,6 +91,11 @@ class TestCfgHFSSSetup:
         assert d["name"] == "setup1"
         assert d["type"] == "hfss"
         assert d["adapt_type"] == "single"
+
+    def test_no_mesh_ops_key_when_empty(self):
+        h = CfgHFSSSetup(name="s")
+        d = h.model_dump(exclude_none=True, exclude_defaults=True)
+        assert "mesh_operations" not in d
 
     def test_set_single_frequency_adaptive(self):
         h = CfgHFSSSetup(name="setup1")
@@ -409,3 +418,91 @@ class TestCfgSetups:
         d = sc.setups[0].model_dump()
         assert d["freq_sweep"][0]["frequencies"][0]["distribution"] == "linear_count"
         assert d["freq_sweep"][0]["frequencies"][0]["increment"] == 200
+
+class TestFrequencySweepConfig:
+    def test_all_params_explicit(self):
+        """Every FrequencySweepConfig constructor param is explicit — no **kwargs."""
+        fs = FrequencySweepConfig(
+            name="sw",
+            sweep_type="discrete",
+            use_q3d_for_dc=True,
+            compute_dc_point=True,
+            enforce_causality=True,
+            enforce_passivity=False,
+            adv_dc_extrapolation=True,
+            use_hfss_solver_regions=True,
+            hfss_solver_region_setup_name="setup_a",
+            hfss_solver_region_sweep_name="sweep_a",
+        )
+        d = fs.to_dict()
+        assert d["type"] == "discrete"
+        assert d["use_q3d_for_dc"] is True
+        assert d["compute_dc_point"] is True
+        assert d["enforce_causality"] is True
+        assert d["enforce_passivity"] is False
+        assert d["adv_dc_extrapolation"] is True
+        assert d["use_hfss_solver_regions"] is True
+        assert d["hfss_solver_region_setup_name"] == "setup_a"
+        assert d["hfss_solver_region_sweep_name"] == "sweep_a"
+
+    def test_linear_count(self):
+        fs = FrequencySweepConfig(name="sweep1")
+        fs.add_linear_count_frequencies("1GHz", "10GHz", 100)
+        freqs = fs.to_dict()["frequencies"]
+        assert len(freqs) == 1
+        assert freqs[0]["distribution"] == "linear_count"
+        assert freqs[0]["increment"] == 100
+
+    def test_log_count(self):
+        fs = FrequencySweepConfig(name="sweep2")
+        fs.add_log_count_frequencies("1MHz", "1GHz", 50)
+        assert fs.to_dict()["frequencies"][0]["distribution"] == "log_count"
+
+    def test_linear_scale(self):
+        fs = FrequencySweepConfig(name="sweep3")
+        fs.add_linear_scale_frequencies("0Hz", "1GHz", "10MHz")
+        assert fs.to_dict()["frequencies"][0]["distribution"] == "linear_scale"
+
+    def test_log_scale(self):
+        fs = FrequencySweepConfig(name="sweep4")
+        fs.add_log_scale_frequencies("1kHz", "1GHz", "1octave")
+        assert fs.to_dict()["frequencies"][0]["distribution"] == "log_scale"
+
+    def test_single_frequency(self):
+        fs = FrequencySweepConfig(name="sweep5")
+        fs.add_single_frequency("5GHz")
+        freqs = fs.to_dict()["frequencies"]
+        assert freqs[0]["distribution"] == "single"
+        assert freqs[0]["start"] == "5GHz"
+
+    def test_multiple_frequency_ranges(self):
+        fs = FrequencySweepConfig(name="sweep6")
+        fs.add_linear_count_frequencies("1GHz", "5GHz", 50)
+        fs.add_log_count_frequencies("5GHz", "20GHz", 50)
+        assert len(fs.to_dict()["frequencies"]) == 2
+
+    def test_method_chaining(self):
+        """All add_*_frequencies methods return self for chaining."""
+        fs = FrequencySweepConfig(name="sw")
+        result = (
+            fs.add_linear_count_frequencies("1GHz", "5GHz", 50)
+            .add_log_count_frequencies("5GHz", "20GHz", 50)
+            .add_single_frequency("0Hz")
+        )
+        assert result is fs
+        assert len(fs.to_dict()["frequencies"]) == 3
+
+    def test_flags(self):
+        fs = FrequencySweepConfig(
+            "sweep7",
+            enforce_causality=True,
+            enforce_passivity=False,
+            use_q3d_for_dc=True,
+            compute_dc_point=True,
+        )
+        d = fs.to_dict()
+        assert d["enforce_causality"] is True
+        assert d["enforce_passivity"] is False
+        assert d["use_q3d_for_dc"] is True
+        assert d["compute_dc_point"] is True
+
