@@ -45,7 +45,7 @@ Two ways to configure a design
 .. tip::
 
    ``edb.configuration.run()`` accepts a file path, a plain dictionary, **or**
-   a :class:`~pyedb.configuration.cfg_data.CfgData` instance, so you can mix and match approaches in the
+   a ``CfgData`` instance, so you can mix and match approaches in the
    same script.
 
 How a configuration file is consumed
@@ -219,10 +219,10 @@ Use this section for design-wide paths and a small number of global options.
      - string
      - Base folder used to resolve relative paths in ``s_parameters``.
    * - ``anti_pads_always_on``
-     - boolean
+     - Boolean
      - Controls the design option that keeps anti-pads enabled.
    * - ``suppress_pads``
-     - boolean
+     - Boolean
      - Controls the design option that suppresses pads where supported.
 
 ``stackup``
@@ -281,9 +281,9 @@ This section defines materials and the layer sequence.
 
 * ``enabled``
 * ``top`` / ``bottom`` / ``side``
-* Each surface can use either a Huray model
+* Each surface can use either a Huray roughness model
   (``model``, ``nodule_radius``, ``surface_ratio``)
-  or a Groisse model (``model``, ``roughness``).
+  or a Groiss roughness model (``model``, ``roughness``).
 
 ``etching`` supports:
 
@@ -367,7 +367,7 @@ Each ``components[]`` entry supports these keys:
      - string
      - Component type such as ``resistor``, ``capacitor``, or ``ic``.
    * - ``enabled``
-     - boolean
+     - Boolean
      - Enables or disables application of the entry.
    * - ``definition``
      - string

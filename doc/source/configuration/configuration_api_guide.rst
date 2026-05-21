@@ -3,8 +3,7 @@ Configuration API guide and complete example
 
 The :mod:`pyedb.configuration` package provides a Python interface for
 building the same configuration payload described in :doc:`file_architecture`.
-Instead of manually authoring JSON, you populate a
-:class:`~pyedb.configuration.cfg_data.CfgData` object and then pass it directly
+Instead of manually authoring JSON, you populate a ``CfgData`` object and then pass it directly
 to ``Configuration.run`` with no
 serialization step required.
 
@@ -89,7 +88,7 @@ When a builder is created via ``edb.configuration.create_config_builder()`` it
 is bound to the live EDB session. Each section exposes a ``get()`` (or
 ``get_layer`` / ``get_material`` / ``get_definition`` / ``get_instance``)
 helper that retrieves an *existing* database object and wraps it in the
-corresponding builder. This avoids having to redeclare objects that already
+corresponding builder. This avoids having to define again objects that already
 exist in the design.
 
 .. list-table::
@@ -578,7 +577,7 @@ applies the configuration with a single ``run()`` call.
 Persisting the configuration
 -----------------------------
 
-:class:`~pyedb.configuration.cfg_data.CfgData` can be passed **directly** to ``edb.configuration.run()``—
+``CfgData`` can be passed **directly** to ``edb.configuration.run()``—
 no ``.to_dict()`` call is required:
 
 .. code-block:: python
@@ -607,7 +606,7 @@ another project, serialize the builder before (or instead of) calling ``run()``:
 
 .. note::
 
-   ``edb.configuration.run(cfg)`` accepts a :class:`~pyedb.configuration.cfg_data.CfgData` instance
+   ``edb.configuration.run(cfg)`` accepts a ``CfgData`` instance
    directly and handles the serialization step internally. You only need
    ``cfg.to_dict()`` when you want to inspect the payload programmatically or
    pass it to another API that expects a plain dictionary.
@@ -644,12 +643,12 @@ Practical recommendations
 * **Prefer** ``TerminalInfo`` factory methods
   over hand-written terminal dictionaries.
 * **Build only the sections you need**: empty sections are omitted by
-  :meth:`~pyedb.configuration.cfg_data.CfgData.to_dict` so the
+  ``CfgData.to_dict()`` so the
   serialized payload stays minimal.
 * **Persist to JSON / TOML** when you want a reviewed artifact kept in version
   control and applied without a Python script.
 * **Store reusable snippets** as plain Python functions that accept and return
-  a :class:`~pyedb.configuration.cfg_data.CfgData` instance. Composing
+  a ``CfgData`` instance. Composing
   builders is straightforward.
 
 Related reference

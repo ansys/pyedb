@@ -1,10 +1,10 @@
-Configuration API: Practical examples
+Configuration API: practical examples
 ======================================
 
 What is ``CfgData``?
 ---------------------
 
-Think of :class:`~pyedb.configuration.cfg_data.CfgData` as a **live blueprint** of your PCB design setup.
+Think of ``CfgData`` as a **live blueprint** of your PCB design setup.
 Instead of manually crafting a JSON file, you describe what you want—nets,
 components, ports, setups, and geometry—through a clean Python object-oriented
 API.  When you are happy with the blueprint, you hand it to PyEDB and it
@@ -53,7 +53,7 @@ When you already have an open EDB layout the preferred way is:
    edb = Edb("my_design.aedb", version="2026.1")
    cfg = edb.configuration.create_config_builder()
 
-``create_config_builder()`` returns a :class:`~pyedb.configuration.cfg_data.CfgData` instance that is *bound* to
+``create_config_builder()`` returns a ``CfgData`` instance that is *bound* to
 the live session. Bound builders can read existing objects from the database.
 This is useful for ``cfg.components.get("U1")``, ``cfg.stackup.get_layer("1_Top")``,
 ``cfg.nets.get("GND")``, etc.
