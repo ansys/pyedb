@@ -298,8 +298,12 @@ class CfgStackup(BaseModel):
         if name not in edb_layers:
             raise KeyError(f"Layer '{name}' not found in the EDB stackup.")
         props = edb_layers[name].properties
-        known = CfgLayer.model_fields.keys() | {"layer_type"}
-        layer = CfgLayer(name=name, **{k: v for k, v in props.items() if k != "name" and k in known})
+        known = CfgLayer.model_fields.keys() | {"layer_type", "type"}
+        filtered = {k: v for k, v in props.items() if k != "name" and k in known}
+        # Map the alias "type" to the field name "layer_type" so CfgLayer receives a known kwarg
+        if "type" in filtered:
+            filtered["layer_type"] = filtered.pop("type")
+        layer = CfgLayer(name=name, **filtered)
         self.layers.append(layer)
         return layer
 

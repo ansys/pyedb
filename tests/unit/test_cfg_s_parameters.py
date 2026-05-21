@@ -59,6 +59,10 @@ class TestCfgSParameterModel:
         m = CfgSParameterModel(name="m1", component_definition="DEF", file_path="f.s2p")
         assert m.model_dump()["pin_order"] is None
 
+    def test_no_pin_order_key_when_none(self):
+        m = CfgSParameterModel(name="m1", component_definition="DEF", file_path="f.s2p")
+        assert "pin_order" not in m.model_dump(exclude_none=True)
+
 
 class TestCfgSParameters:
     def test_empty(self):

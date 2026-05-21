@@ -203,3 +203,18 @@ class TestNetsConfig:
         d = ops.model_dump()
         assert d["cutout"]["signal_nets"] == ["SIG"]
         assert d["cutout"]["reference_nets"] == ["GND"]
+
+    def test_reference_nets_property(self):
+        n = CfgNets()
+        n.add_reference_nets(["GND"])
+        assert n.reference_nets == ["GND"]
+
+    def test_signal_nets_property(self):
+        n = CfgNets()
+        n.add_signal_nets(["CLK", "DATA"])
+        assert n.signal_nets == ["CLK", "DATA"]
+
+    def test_power_ground_nets_property(self):
+        n = CfgNets()
+        n.add_power_ground_nets(["VDD"])
+        assert n.power_ground_nets == ["VDD"]
