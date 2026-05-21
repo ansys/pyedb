@@ -96,7 +96,6 @@ doc = [
 [tool.flit.module]
 name = "pyedb"
 
-
 # uv configuration
 [tool.uv]
 compile-bytecode = true
