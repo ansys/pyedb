@@ -760,3 +760,4 @@ class CfgPadstacks(CfgBase):
         if self.instances:
             data["instances"] = [i.model_dump(exclude_none=True, by_alias=False) for i in self.instances]
         return data
+

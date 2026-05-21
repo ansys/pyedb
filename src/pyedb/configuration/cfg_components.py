@@ -822,3 +822,4 @@ class CfgComponents:
     def to_list(self):
         """Serialize all configured components."""
         return [c.to_dict() for c in self.components]
+

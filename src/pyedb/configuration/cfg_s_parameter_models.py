@@ -115,6 +115,10 @@ class CfgSParameters:
         self.path_libraries = path_lib
         self.models = [CfgSParameterModel(**i) if isinstance(i, dict) else i for i in (data or [])]
 
+    def to_list(self):
+        """Serialize all S-parameter models to a list of dictionaries."""
+        return [m.model_dump() for m in self.models]
+
     @property
     @deprecated_property("Use models instead of s_parameters_models.")
     def s_parameters_models(self):
