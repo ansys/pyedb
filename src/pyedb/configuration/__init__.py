@@ -19,3 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+"""Public API for the PyEDB configuration system."""
+
+from pyedb.configuration.cfg_data import CfgData
+from pyedb.configuration.cfg_ports_sources import CfgTerminalInfo as TerminalInfo
+
+__all__ = [
+    "CfgData",
+    "TerminalInfo",
+]
+
