@@ -509,7 +509,7 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["diff_wave_1"].horizontal_extent_factor == 6
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(config["use_grpc"], reason="Random crash wait SP2 for in memory.")
+    @pytest.mark.skipif(config["use_grpc"], reason="Random crash wait SP2 for in memory.")
     def test_06_s_parameters(self):
         self.edb_examples.copy_test_files_into_local_folder("TEDB/GRM32_DC0V_25degC_series.s2p")
         edbapp = self.edb_examples.get_si_verse()
