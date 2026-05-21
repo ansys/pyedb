@@ -380,4 +380,3 @@ class CfgModeler:
         if prim_del:
             data["primitives_to_delete"] = prim_del
         return data
-

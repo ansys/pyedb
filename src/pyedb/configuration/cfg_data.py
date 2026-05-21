@@ -225,9 +225,7 @@ class CfgData:
         return f"CfgData(sections=[{sections}])"
 
     def _serialized_sections(self):
-        """Yield serialized section payloads in export order.
-
-        """
+        """Yield serialized section payloads in export order."""
         yield "general", {k: v for k, v in self.general.model_dump(exclude_none=True).items() if v != ""}
         yield "stackup", self.stackup.model_dump(exclude_none=True)
         yield "nets", self.nets.to_dict()

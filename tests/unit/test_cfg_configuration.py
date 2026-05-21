@@ -39,12 +39,12 @@ HeatSinkConfig = CfgHeatSink
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 
-
 class TestVariablesConfig:
     def test_numeric_value(self):
         v = VariablesConfig()
         v.add("via_diam", 0.2)
         assert v.variables[0].value == 0.2
+
 
 class TestEdbConfigBuilder:
     def _full_builder(self) -> EdbConfigBuilder:
@@ -494,6 +494,7 @@ class TestTerminalInfo:
         t = TerminalInfo.net("VDD", reference_designator="U1")
         assert t["reference_designator"] == "U1"
 
+
 class TestTerminalsConfig:
     def test_mixed_terminals(self):
         tc = TerminalsConfig()
@@ -548,6 +549,7 @@ class TestPackageDefinitionsConfig:
         d = cfg.to_dict()
         assert "package_definitions" in d
         assert d["package_definitions"][0]["heatsink"]["fin_height"] == "3mm"
+
 
 class TestBuilderTomlRoundTrip:
     def test_to_toml_creates_file(self, tmp_path):

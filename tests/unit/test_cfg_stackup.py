@@ -93,6 +93,7 @@ class TestLayerConfig:
         assert "roughness" in d
         assert "etching" in d
 
+
 class TestMaterialConfig:
     def test_name_only(self):
         m = CfgMaterial(name="copper")
@@ -390,6 +391,7 @@ class TestCfgStackup:
         lyr.set_huray_roughness("0.1um", "2.9")
         d = s.model_dump(exclude_none=True)["layers"][0]
         assert d["roughness"]["top"]["model"] == "huray"
+
 
 class TestCfgStackupAddMaterial:
     def test_returns_material_config_instance(self):
