@@ -160,7 +160,6 @@ class TestCfgPadstackInstanceTerminal:
             )
 
 
-
 class TestCfgPinGroupTerminal:
     def test_basic(self):
         t = CfgPinGroupTerminal(name="t1", pin_group="pg_VDD", impedance=50, boundary_type="port")
@@ -284,7 +283,6 @@ class TestCfgEdgeTerminal:
         )
         t2 = CfgEdgeTerminal.model_validate(t.model_dump())
         assert t == t2
-
 
 
 class TestCfgBundleTerminal:

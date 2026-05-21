@@ -419,6 +419,7 @@ class TestCfgSetups:
         assert d["freq_sweep"][0]["frequencies"][0]["distribution"] == "linear_count"
         assert d["freq_sweep"][0]["frequencies"][0]["increment"] == 200
 
+
 class TestFrequencySweepConfig:
     def test_all_params_explicit(self):
         """Every FrequencySweepConfig constructor param is explicit — no **kwargs."""
@@ -505,4 +506,3 @@ class TestFrequencySweepConfig:
         assert d["enforce_passivity"] is False
         assert d["use_q3d_for_dc"] is True
         assert d["compute_dc_point"] is True
-

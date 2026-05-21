@@ -26,8 +26,9 @@ from pathlib import Path
 from typing import Any, Optional
 
 from pydantic import Field
-from pyedb.misc.decorators import deprecated_property
+
 from pyedb.configuration.cfg_common import CfgBaseModel
+from pyedb.misc.decorators import deprecated_property
 
 
 class CfgSParameterModel(CfgBaseModel):

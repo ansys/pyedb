@@ -85,4 +85,3 @@ class CfgGeneral(BaseModel):
     def get_data_from_db(self):
         """Read general settings from EDB."""
         return self.get_parameters_from_edb()
-
