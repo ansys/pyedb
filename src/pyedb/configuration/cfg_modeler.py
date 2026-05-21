@@ -360,3 +360,23 @@ class CfgModeler:
     def delete_primitives_by_net(self, net_names: list[str]):
         """Schedule all primitives on the given nets for deletion."""
         self.primitives_to_delete.setdefault("net_name", []).extend(net_names)
+
+    def to_dict(self) -> dict:
+        """Serialize modeler configuration to a plain dictionary."""
+        data = {}
+        if self.traces:
+            data["traces"] = [t.model_dump(exclude_none=True) for t in self.traces]
+        if self.planes:
+            data["planes"] = [p.model_dump(exclude_none=True) for p in self.planes]
+        if self.padstack_defs:
+            data["padstack_definitions"] = [d.model_dump(exclude_none=True, by_alias=False) for d in self.padstack_defs]
+        if self.padstack_instances:
+            data["padstack_instances"] = [
+                i.model_dump(exclude_none=True, by_alias=False) for i in self.padstack_instances
+            ]
+        if self.components:
+            data["components"] = [c.to_dict() for c in self.components]
+        prim_del = {k: v for k, v in self.primitives_to_delete.items() if v}
+        if prim_del:
+            data["primitives_to_delete"] = prim_del
+        return data

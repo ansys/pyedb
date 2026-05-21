@@ -28,6 +28,7 @@ from typing import Any, Optional
 from pydantic import Field
 
 from pyedb.configuration.cfg_common import CfgBaseModel
+from pyedb.misc.decorators import deprecated_property
 
 
 class CfgSParameterModel(CfgBaseModel):
@@ -114,6 +115,25 @@ class CfgSParameters:
         self._pedb = pedb
         self.path_libraries = path_lib
         self.models = [CfgSParameterModel(**i) if isinstance(i, dict) else i for i in (data or [])]
+
+    def to_list(self):
+        """Serialize all S-parameter models to a list of dictionaries."""
+        return [m.model_dump() for m in self.models]
+
+    @property
+    @deprecated_property("Use models instead of s_parameters_models.")
+    def s_parameters_models(self):
+        """Alias for :attr:`models` for backwards compatibility.
+
+        ..deprecated:: 0.76.0
+            Use :attr:`models` instead of :attr:`s_parameters_models`.
+
+        """
+        return self.models
+
+    @s_parameters_models.setter
+    def s_parameters_models(self, value):
+        self.models = value
 
     def add(
         self,

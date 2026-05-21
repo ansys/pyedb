@@ -151,3 +151,5 @@ API
 interdigital
 ore
 .NET
+[Gg]roiss
+[Hh]uray

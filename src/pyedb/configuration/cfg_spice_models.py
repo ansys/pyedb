@@ -103,6 +103,10 @@ class CfgSpiceModels:
             for spice_model in (data or [])
         ]
 
+    def to_list(self):
+        """Serialize all SPICE models to a list of dictionaries."""
+        return [m.model_dump(exclude_none=True) for m in self.models]
+
     def add(
         self,
         name: str,
