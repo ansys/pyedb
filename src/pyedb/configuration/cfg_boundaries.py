@@ -19,26 +19,22 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import Union
-
-from pydantic import BaseModel
-
-
-class CfgBase(BaseModel):
-    model_config = {
-        "populate_by_name": True,
-        "extra": "forbid",
-    }
-
+"""Build the ``boundaries`` configuration section."""
 
 from typing import Any, Optional
 
 from pydantic import Field
 
+from pyedb.configuration.cfg_common import CfgBaseModel
 
-class CfgBoundaries(CfgBase):
-    class PaddingData(CfgBase):
-        size: Union[float, str]
+
+class CfgBoundaries(CfgBaseModel):
+    """Represent open-region and extent settings."""
+
+    class PaddingData(CfgBaseModel):
+        """Represent padding data for extent regions."""
+
+        size: float | str
         is_multiple: bool
 
     use_open_region: Optional[bool] = Field(default=None, description="Whether to enable the use of an open region")
@@ -144,5 +140,72 @@ class CfgBoundaries(CfgBase):
     )
 
     @classmethod
-    def create(cls, **kwargs):
+    def create(cls, **kwargs) -> "CfgBoundaries":
+        """Create a :class:`CfgBoundaries` instance."""
         return cls(**kwargs)
+
+    def set_radiation_boundary(self, use_open_region: bool = True):
+        """Configure a radiation open region."""
+        self.use_open_region = use_open_region
+        self.open_region_type = "radiation"
+
+    def set_pml_boundary(self, operating_freq, radiation_level: float = 20, is_pml_visible: bool = False):
+        """Configure a perfectly matched layer boundary."""
+        self.use_open_region = True
+        self.open_region_type = "pml"
+        self.operating_freq = operating_freq
+        self.radiation_level = radiation_level
+        self.is_pml_visible = is_pml_visible
+
+    def set_air_box_extents(
+        self,
+        horizontal_size: float = 0.15,
+        horizontal_is_multiple: bool = False,
+        positive_vertical_size: float = 0.15,
+        positive_vertical_is_multiple: bool = False,
+        negative_vertical_size: float = 0.15,
+        negative_vertical_is_multiple: bool = False,
+        sync: bool = False,
+        truncate_at_ground: bool = False,
+    ):
+        """Set horizontal and vertical air-box padding."""
+        padding_data = CfgBoundaries.PaddingData
+        self.air_box_horizontal_extent = padding_data(size=horizontal_size, is_multiple=horizontal_is_multiple)
+        self.air_box_positive_vertical_extent = padding_data(
+            size=positive_vertical_size,
+            is_multiple=positive_vertical_is_multiple,
+        )
+        self.air_box_negative_vertical_extent = padding_data(
+            size=negative_vertical_size,
+            is_multiple=negative_vertical_is_multiple,
+        )
+        self.sync_air_box_vertical_extent = sync
+        self.truncate_air_box_at_ground = truncate_at_ground
+
+    def set_extent(
+        self,
+        extent_type: str = "BoundingBox",
+        base_polygon: Optional[str] = None,
+        truncate_air_box_at_ground: bool = False,
+    ):
+        """Set the layout extent used for region construction."""
+        self.extent_type = extent_type
+        if base_polygon:
+            self.base_polygon = base_polygon
+        self.truncate_air_box_at_ground = truncate_air_box_at_ground
+
+    def set_dielectric_extent(
+        self,
+        extent_type: str = "BoundingBox",
+        expansion_size: int = 0,
+        is_multiple: bool = False,
+        base_polygon: Optional[str] = None,
+        honor_user_dielectric: bool = False,
+    ):
+        """Configure the dielectric extent envelope."""
+        self.dielectric_extent_type = extent_type
+        self.dielectric_extent_size = CfgBoundaries.PaddingData(size=expansion_size, is_multiple=is_multiple)
+        if base_polygon:
+            self.dielectric_base_polygon = base_polygon
+        if honor_user_dielectric:
+            self.honor_user_dielectric = honor_user_dielectric

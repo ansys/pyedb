@@ -181,7 +181,7 @@ class Configuration:
 
         self.__apply_with_logging("Applying S-parameters", self.cfg_data.s_parameters.apply)
 
-        for spice_model in self.cfg_data.spice_models:
+        for spice_model in self.cfg_data.spice_models.models:
             self.__apply_with_logging(f"Assigning Spice model {spice_model}", spice_model.apply)
 
         self.__apply_with_logging("Applying package definitions", self.cfg_data.package_definitions.apply)
@@ -202,9 +202,9 @@ class Configuration:
                 edb_setup = self._pedb.create_siwave_dc_setup(
                     name=setup.name, dc_slider_position=setup.dc_slider_position
                 )
-                edb_setup.dc_settings.dc_slider_position = setup.dc_slider_position
+                edb_setup.settings.dc.dc_slider_position = setup.dc_slider_position
                 dc_ir_settings = setup.dc_ir_settings
-                edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
+                edb_setup.settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
             else:
                 if setup.type == "hfss":
                     edb_setup = self._pedb.simulation_setups.create(name=setup.name, solver="hfss")
@@ -312,8 +312,8 @@ class Configuration:
             if setup.type in ["siwave_dc", "siwave_dcir"]:
                 self.cfg_data.setups.add_siwave_dc_setup(
                     name=setup.name,
-                    dc_slider_position=setup.dc_settings.dc_slider_position,
-                    dc_ir_settings={"export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data},
+                    dc_slider_position=setup.settings.dc.dc_slider_position,
+                    dc_ir_settings={"export_dc_thermal_data": setup.settings.export_dc_thermal_data},
                 )
             else:
                 if setup.type == "hfss":
@@ -371,9 +371,9 @@ class Configuration:
                 elif setup.type in ["siwave", "siwave_ac"]:  # siwave ac
                     cfg_ac_setup = self.cfg_data.setups.add_siwave_ac_setup(
                         name=setup.name,
-                        use_si_settings=setup.use_si_settings,
-                        si_slider_position=setup.si_slider_position,
-                        pi_slider_position=setup.pi_slider_position,
+                        use_si_settings=setup.settings.general.use_si_settings,
+                        si_slider_position=setup.settings.general.si_slider_position,
+                        pi_slider_position=setup.settings.general.pi_slider_position,
                     )
                 else:
                     self._pedb.logger.warning(f"Unsupported setup type '{setup.type}'.")
@@ -612,21 +612,22 @@ class Configuration:
 
     def apply_stackup(self):
         layers = self.cfg_data.stackup.layers
-        input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
-        if len(input_signal_layers) == 0:
+        if not layers:
             return
-        else:  # Create materials with default properties used in stackup but not defined
-            materials = [m.name for m in self.cfg_data.stackup.materials]
+        input_signal_layers = [i for i in layers if i.type and i.type.lower() == "signal"]
+        if len(input_signal_layers) > 0:  # Create materials with default properties used in stackup but not defined
             for i in self.cfg_data.stackup.layers:
+                materials = [m.name for m in self.cfg_data.stackup.materials]
                 if i.type == "signal":
                     if i.material not in materials:
                         self.cfg_data.stackup.add_material(
                             name=i.material, config=self._pedb.materials.default_conductor_property_values
                         )
+                        materials = [m.name for m in self.cfg_data.stackup.materials]
 
-                    if i.fill_material not in materials:
+                    if i.fill_material and i.fill_material not in materials:
                         self.cfg_data.stackup.add_material(
-                            name=i.material, config=self._pedb.materials.default_dielectric_property_values
+                            name=i.fill_material, config=self._pedb.materials.default_dielectric_property_values
                         )
 
                 elif i.type == "dielectric":
@@ -790,7 +791,7 @@ class Configuration:
             data.update(self.cfg_data.variables.model_dump(exclude_none=True))
         if kwargs.get("stackup", False):
             self.get_stackup()
-            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
+            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True, by_alias=True)
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):

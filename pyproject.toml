@@ -27,8 +27,8 @@ classifiers = [
 dependencies = [
     "numpy>=1.20.0,<3",
     "pydantic>=2.6.4,<2.14",
-    "toml==0.10.2",
-    "ansys-edb-core==0.3.1",
+    "toml>=0.10.2",
+    "ansys-edb-core>=0.3.1",
     "psutil",
     "defusedxml>=0.7,<8.0",
     "xmltodict"
@@ -71,7 +71,7 @@ tests = [
 ]
 
 doc = [
-    "ansys-sphinx-theme[autoapi]>=1.0.0,<1.8",
+    "ansys-sphinx-theme[autoapi]>=1.0.0,<1.9",
     "ezdxf>=1.4.2",
     "imageio>=2.30.0,<2.38",
     "jupyterlab>=4.0.0,<4.6",
@@ -79,7 +79,7 @@ doc = [
     "matplotlib>=3.5.0,<3.11",
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert<7.18",
-    "numpydoc==1.10.0",
+    "numpydoc>=1.10.0",
     "pandas>=1.1.0,<2.4",
     "pypandoc>=1.10.0,<1.18",
     # NOTE: Remove recommonmark once examples are reworked.
@@ -87,7 +87,7 @@ doc = [
     "Rtree>=1.2.0",
     "shapely",
     "Sphinx>=7.1.0,<9.1",
-    "sphinx-autobuild==2024.10.3",
+    "sphinx-autobuild>=2024.10.3",
     "sphinx-copybutton>=0.5.0,<0.6",
     "sphinx-gallery>=0.14.0,<0.22",
     "sphinx_design>=0.4.0,<0.7"
@@ -124,8 +124,6 @@ select = [
     "W",   # pycodestyle, see https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
 ]
 ignore = [
-    "D203", # summary-on-first-line
-    "D213", # multi-line-summary-second-line
     # "D" - pydocstyle, see https://docs.astral.sh/ruff/rules/#pydocstyle-d
     "D100", # undocumented-public-module
     "D101", # undocumented-public-class
