@@ -115,6 +115,16 @@ class CfgSParameters:
         self.path_libraries = path_lib
         self.models = [CfgSParameterModel(**i) if isinstance(i, dict) else i for i in (data or [])]
 
+    @property
+    def s_parameters_models(self):
+        """List of S-parameter model assignments.
+
+        Returns
+        -------
+        list of CfgSParameterModel
+        """
+        return self.models
+
     def add(
         self,
         name: str,
