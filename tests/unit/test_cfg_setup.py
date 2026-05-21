@@ -69,15 +69,15 @@ class TestCfgSParameterModel:
 class TestCfgSParameters:
     def test_empty(self):
         sc = CfgSParameters(pedb=None, data=[])
-        assert sc.s_parameters_models == []
+        assert sc.models == []
 
     def test_instantiation_with_data(self):
         sc = CfgSParameters(
             pedb=None,
             data=[{"name": "m1", "component_definition": "DEF", "file_path": "f.s2p"}],
         )
-        assert len(sc.s_parameters_models) == 1
-        assert sc.s_parameters_models[0].name == "m1"
+        assert len(sc.models) == 1
+        assert sc.models[0].name == "m1"
 
 
 class TestCfgHFSSSetup:
