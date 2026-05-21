@@ -141,6 +141,7 @@ Releases = "https://github.com/ansys/pyedb/releases"
 [tool.ruff]
 line-length = 120
 fix = true
+exclude = ["uv.lock"]
 
 [tool.ruff.format]
 quote-style = "double"
