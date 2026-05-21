@@ -151,5 +151,5 @@ API
 interdigital
 ore
 .NET
-[Gg]roisse
-{Hh]uray
+[Gg]roiss
+[Hh]uray
