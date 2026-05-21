@@ -19,12 +19,21 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+"""Load, merge, export, and apply PyEDB configuration payloads."""
+
+from __future__ import annotations
+
 from copy import deepcopy
 from datetime import datetime
 import json
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 import warnings
+
+if TYPE_CHECKING:
+    pass
 
 import toml
 
@@ -93,13 +102,59 @@ class Configuration:
         func()
         self._pedb.logger.info(f"{label} finished. Time lapse {datetime.now() - start}")
 
+    def create_config_builder(self) -> CfgData:
+        """Create and return a :class:`~pyedb.configuration.cfg_data.CfgData` bound to this EDB session.
+
+        Because the builder is initialised with a reference to the live EDB
+        session, you can retrieve *existing* objects directly via ``get``
+        methods instead of registering them manually:
+
+        * ``cfg.components.get(refdes)`` — existing component (pre-loads all properties).
+        * ``cfg.stackup.get_layer(name)`` — existing layer (pre-loads properties).
+        * ``cfg.stackup.get_material(name)`` — existing material (pre-loads properties).
+        * ``cfg.nets.get(net_name)`` — net classification from EDB.
+        * ``cfg.padstacks.get_definition(name)`` — existing padstack definition.
+        * ``cfg.padstacks.get_instance(name)`` — existing padstack instance.
+        * ``cfg.pin_groups.get(name)`` — existing pin group (pre-loads pins).
+        * ``cfg.setups.get(name)`` — a previously registered setup by name.
+
+        Returns
+        -------
+        CfgData
+            A new, session-aware configuration builder instance.
+
+        Examples
+        --------
+        Retrieve an existing component and modify its solder-ball geometry:
+
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> u1 = cfg.components.get("U1")  # looks up U1 from EDB
+        >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        >>> edb.configuration.run(cfg)
+
+        Traditional workflow (creating new component entries) still works:
+
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> cfg.general.anti_pads_always_on = False
+        >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
+        >>> cfg.nets.add_power_ground_nets(["VDD", "GND"])
+        >>> edb.configuration.run(cfg)
+
+        """
+        return CfgData(pedb=self._pedb)
+
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
         """Import configuration settings from a configure file.
 
         Parameters
         ----------
-        config_file : str, dict
-            Full path to configure file in JSON or TOML format. Dictionary is also supported.
+        config_file : str, dict, or CfgData
+            Full path to configure file in JSON or TOML format, a plain Python
+            dictionary, or a :class:`~pyedb.configuration.cfg_data.CfgData`
+            instance.  When a ``CfgData`` is supplied its
+            :meth:`~pyedb.configuration.cfg_data.CfgData.to_dict` method is
+            called automatically so the builder can be passed without any extra
+            serialization step.
         append : bool, optional
             Whether if the new file will append to existing properties or the properties will be cleared before import.
             Default is ``True`` to keep stored properties
@@ -112,15 +167,29 @@ class Configuration:
 
         Returns
         -------
-        dict
-            Config dictionary.
+        CfgData
+            Populated configuration data object.
+
+        Examples
+        --------
+        Pass a :class:`~pyedb.configuration.cfg_data.CfgData` directly:
+
+        >>> from pyedb.configuration.cfg_data import CfgData
+        >>> cfg = CfgData()
+        >>> cfg.general.anti_pads_always_on = False
+        >>> edb.configuration.load(cfg, apply_file=True)
+
         """
+        # Accept CfgData directly – convert to dict transparently.
+        if isinstance(config_file, CfgData):
+            config_file = config_file.to_dict()
+
         if isinstance(config_file, dict):
             data = deepcopy(config_file)
         else:
             config_file = str(config_file)
             if os.path.isfile(config_file):
-                with open(config_file, "r") as f:
+                with open(config_file, "r", encoding="utf-8") as f:
                     if config_file.endswith(".json"):
                         data = json.load(f)
                     elif config_file.endswith(".toml"):
@@ -155,8 +224,43 @@ class Configuration:
                 self._pedb.open_edb()
         return self.cfg_data
 
-    def run(self, **kwargs):
-        """Apply configuration settings to the current design"""
+    def run(self, config=None, **kwargs):
+        """Apply configuration settings to the current design.
+
+        Parameters
+        ----------
+        config : CfgData, dict, or str, optional
+            When supplied the configuration is loaded before applying.
+            Accepts the same types as :meth:`load`: a
+            :class:`~pyedb.configuration.cfg_data.CfgData` instance,
+            a plain Python dictionary, or a path to a JSON / TOML file.
+            When *None* (default) the previously loaded :attr:`cfg_data` is used.
+
+        Examples
+        --------
+        Pass a builder directly — no ``load`` call needed:
+
+        >>> from pyedb.configuration.cfg_data import CfgData
+        >>> cfg = CfgData()
+        >>> cfg.general.anti_pads_always_on = False
+        >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
+        >>> edb.configuration.run(cfg)
+
+        Use the existing workflow unchanged:
+
+        >>> edb.configuration.load("my_config.json")
+        >>> edb.configuration.run()
+
+        """
+        if config is not None:
+            if isinstance(config, CfgData):
+                # When a CfgData is passed directly, use it as-is without accumulating into self.data.
+                # This avoids cross-contamination from previously loaded configurations.
+                self.data = config.to_dict()
+                self.cfg_data = CfgData(self._pedb, **self.data)
+            else:
+                self.load(config)
+
         if kwargs.get("fix_padstack_def"):
             warnings.warn("fix_padstack_def is deprecated.", DeprecationWarning)
 
@@ -196,15 +300,25 @@ class Configuration:
 
     @execution_timer("Applying setups")
     def apply_setups(self):
+        """Apply simulation setups (HFSS, SIwave AC/DC) to the current design.
+
+        Iterates over every setup defined in :attr:`cfg_data.setups` and creates
+        the corresponding EDB setup object, including frequency sweeps and mesh
+        operations.
+
+        Returns
+        -------
+        None
+        """
         cfg_setups = self.cfg_data.setups.setups
         for setup in cfg_setups:
             if setup.type == "siwave_dc":
                 edb_setup = self._pedb.create_siwave_dc_setup(
                     name=setup.name, dc_slider_position=setup.dc_slider_position
                 )
-                edb_setup.settings.dc.dc_slider_position = setup.dc_slider_position
+                edb_setup.dc_settings.dc_slider_position = setup.dc_slider_position
                 dc_ir_settings = setup.dc_ir_settings
-                edb_setup.settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
+                edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
             else:
                 if setup.type == "hfss":
                     edb_setup = self._pedb.simulation_setups.create(name=setup.name, solver="hfss")
@@ -280,7 +394,6 @@ class Configuration:
                 # Apply frequency sweeps
                 for sw in setup.freq_sweep:
                     f_set = []
-                    freq_string = []
                     for f in sw.frequencies:
                         if isinstance(f, str):
                             freq_strng = f.split(" ")
@@ -293,8 +406,6 @@ class Configuration:
                         sw.name, frequency_set=f_set, discrete=False if sw.type == "interpolation" else True
                     )
 
-                    if len(freq_string) > 0 and not settings.is_grpc:
-                        sweep.frequency_string = freq_string
                     sweep.use_q3d_for_dc = sw.use_q3d_for_dc
                     sweep.compute_dc_point = sw.compute_dc_point
                     sweep.enforce_causality = sw.enforce_causality
@@ -307,13 +418,23 @@ class Configuration:
                         sweep.hfss_solver_region_sweep_name = sw.hfss_solver_region_sweep_name
 
     def get_setups(self):
+        """Populate :attr:`cfg_data.setups` from the currently open EDB design.
+
+        Reads every simulation setup in the database and converts it to the
+        corresponding ``CfgSetup`` model so it can later be serialized or
+        re-applied to another design.
+
+        Returns
+        -------
+        None
+        """
         self.cfg_data.setups.setups = []
         for _, setup in self._pedb.setups.items():
             if setup.type in ["siwave_dc", "siwave_dcir"]:
                 self.cfg_data.setups.add_siwave_dc_setup(
                     name=setup.name,
-                    dc_slider_position=setup.settings.dc.dc_slider_position,
-                    dc_ir_settings={"export_dc_thermal_data": setup.settings.export_dc_thermal_data},
+                    dc_slider_position=setup.dc_settings.dc_slider_position,
+                    dc_ir_settings={"export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data},
                 )
             else:
                 if setup.type == "hfss":
@@ -371,9 +492,9 @@ class Configuration:
                 elif setup.type in ["siwave", "siwave_ac"]:  # siwave ac
                     cfg_ac_setup = self.cfg_data.setups.add_siwave_ac_setup(
                         name=setup.name,
-                        use_si_settings=setup.settings.general.use_si_settings,
-                        si_slider_position=setup.settings.general.si_slider_position,
-                        pi_slider_position=setup.settings.general.pi_slider_position,
+                        use_si_settings=setup.use_si_settings,
+                        si_slider_position=setup.si_slider_position,
+                        pi_slider_position=setup.pi_slider_position,
                     )
                 else:
                     self._pedb.logger.warning(f"Unsupported setup type '{setup.type}'.")
@@ -404,6 +525,15 @@ class Configuration:
                     )
 
     def apply_boundaries(self):
+        """Write HFSS open-region and airbox settings into the current design.
+
+        Reads the ``boundaries`` section of :attr:`cfg_data` and pushes every
+        non-``None`` attribute to :class:`pyedb.edb_core.hfss.HfssExtentInfo`.
+
+        Returns
+        -------
+        None
+        """
         boundaries = self.cfg_data.boundaries
         info = self._pedb.hfss.hfss_extent_info
 
@@ -445,6 +575,17 @@ class Configuration:
             info.set_air_box_negative_vertical_extent(**boundaries.air_box_negative_vertical_extent.model_dump())
 
     def get_boundaries(self):
+        """Populate :attr:`cfg_data.boundaries` from the open EDB design.
+
+        Reads the HFSS extent information (open-region type, PML settings,
+        airbox padding, dielectric extents) from the database and stores the
+        values in the active :class:`~pyedb.configuration.cfg_boundaries.CfgBoundaries`
+        model.
+
+        Returns
+        -------
+        None
+        """
         boundaries = self.cfg_data.boundaries
         edb_hfss_extent_info = self._pedb.hfss.hfss_extent_info
 
@@ -470,6 +611,16 @@ class Configuration:
         boundaries.sync_air_box_vertical_extent = edb_hfss_extent_info.sync_air_box_vertical_extent
 
     def apply_modeler(self):
+        """Create modeler primitives (traces, planes, padstacks, components) in the design.
+
+        Processes every item in ``cfg_data.modeler`` and invokes the matching
+        ``pyedb.modeler`` or ``pyedb.components`` factory method.  After creation,
+        primitives marked for deletion are removed from the layout.
+
+        Returns
+        -------
+        None
+        """
         modeler = self.cfg_data.modeler
         if modeler.traces:
             for t in modeler.traces:
@@ -590,7 +741,7 @@ class Configuration:
             self.cfg_data.variables.add(name, str(obj.value), obj.description)
 
     def apply_materials(self):
-        """Apply material settings to the current design."""
+        """Apply material settings to the current design"""
         cfg_stackup = self.cfg_data.stackup
         if len(cfg_stackup.materials):
             materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
@@ -606,34 +757,70 @@ class Configuration:
 
     def get_materials(self):
         """Retrieve materials from the current design."""
+
         self.cfg_data.stackup.materials = []
-        for name, mat in self._pedb.materials.materials.items():
-            self.cfg_data.stackup.add_material(**mat.to_dict())
+        saved_pedb = self.cfg_data.stackup._pedb
+        # object.__setattr__ to properly set the private _pedb attribute on the Pydantic model, matching how _set_pedb
+        # does it. This ensures the EDB duplicate check is truly bypassed when reading materials back from the database.
+        object.__setattr__(self.cfg_data.stackup, "_pedb", None)
+        try:
+            for name, mat in self._pedb.materials.materials.items():
+                self.cfg_data.stackup.add_material(**mat.to_dict())
+        finally:
+            object.__setattr__(self.cfg_data.stackup, "_pedb", saved_pedb)
 
     def apply_stackup(self):
-        layers = self.cfg_data.stackup.layers
-        if not layers:
-            return
-        input_signal_layers = [i for i in layers if i.type and i.type.lower() == "signal"]
-        if len(input_signal_layers) > 0:  # Create materials with default properties used in stackup but not defined
-            for i in self.cfg_data.stackup.layers:
-                materials = [m.name for m in self.cfg_data.stackup.materials]
-                if i.type == "signal":
-                    if i.material not in materials:
-                        self.cfg_data.stackup.add_material(
-                            name=i.material, config=self._pedb.materials.default_conductor_property_values
-                        )
-                        materials = [m.name for m in self.cfg_data.stackup.materials]
+        """Apply stackup layer definitions to the current design.
 
-                    if i.fill_material and i.fill_material not in materials:
+        If the database already has signal layers, the existing stackup is
+        updated in-place; otherwise a new stackup is created from scratch.
+        Materials referenced by layers that are not yet in the database are
+        created automatically with default properties.
+
+        Raises
+        ------
+        Exception
+            If the number of signal layers in the configuration does not match
+            the database.
+
+        Returns
+        -------
+        None
+        """
+        layers = self.cfg_data.stackup.layers
+        # Default layers without an explicit type to "signal"
+        for layer in layers:
+            if layer.layer_type is None:
+                layer.layer_type = "signal"
+        input_signal_layers = [i for i in layers if (i.type or "").lower() == "signal"]
+        if len(input_signal_layers) == 0:
+            return
+        else:  # Create materials with default properties used in stackup but not defined
+
+            def _material_known(mat_name):
+                """Return True if mat_name is already in the builder or in EDB."""
+                if any(m.name == mat_name for m in self.cfg_data.stackup.materials):
+                    return True
+                if mat_name in self._pedb.materials.materials:
+                    return True
+                return False
+
+            for i in self.cfg_data.stackup.layers:
+                if i.type == "signal":
+                    if not _material_known(i.material):
                         self.cfg_data.stackup.add_material(
-                            name=i.fill_material, config=self._pedb.materials.default_dielectric_property_values
+                            name=i.material, **self._pedb.materials.default_conductor_property_values
+                        )
+
+                    if i.fill_material and not _material_known(i.fill_material):
+                        self.cfg_data.stackup.add_material(
+                            name=i.fill_material, **self._pedb.materials.default_dielectric_property_values
                         )
 
                 elif i.type == "dielectric":
-                    if i.material not in materials:
+                    if not _material_known(i.material):
                         self.cfg_data.stackup.add_material(
-                            name=i.material, config=self._pedb.materials.default_dielectric_property_values
+                            name=i.material, **self._pedb.materials.default_dielectric_property_values
                         )
 
         if len(self._pedb.stackup.signal_layers) == 0:
@@ -647,11 +834,12 @@ class Configuration:
         layers_ = list()
         layers_.extend(self.cfg_data.stackup.layers)
         for l_attrs in layers_:
-            attrs = l_attrs.model_dump(exclude_none=True)
+            attrs = l_attrs.model_dump(exclude_none=True, by_alias=True)
             self._pedb.stackup.add_layer_bottom(**attrs)
 
     def __update_stackup(self):
-        """Apply layer settings to the current design."""
+        """Apply layer settings to the current design"""
+
         # After import stackup, padstacks lose their definitions. They need to be fixed after loading stackup
         # step 1, archive padstack definitions
         temp_pdef_data = {}
@@ -663,7 +851,6 @@ class Configuration:
         for p_inst in self._pedb.layout.padstack_instances:
             temp_p_inst_layer_map[p_inst.id] = p_inst.layer_map
 
-        # ----------------------------------------------------------------------
         # Apply stackup
         layers = list()
         layers.extend(self.cfg_data.stackup.layers)
@@ -685,7 +872,7 @@ class Configuration:
             if l.type == "signal":
                 layer_id = lc_signal_layers[signal_idx]
                 layer_name = id_name[layer_id]
-                attrs = l.model_dump(exclude_none=True)
+                attrs = l.model_dump(exclude_none=True, by_alias=True)
                 self._pedb.stackup.layers[layer_name].update(**attrs)
                 signal_idx = signal_idx + 1
 
@@ -695,30 +882,55 @@ class Configuration:
         if l.type == "signal":
             prev_layer_clone = self._pedb.stackup.layers[l.name]
         else:
-            attrs = l.model_dump(exclude_none=True)
+            attrs = l.model_dump(exclude_none=True, by_alias=True)
             prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
         for idx, l in enumerate(layers):
             if l.type == "dielectric":
-                attrs = l.model_dump(exclude_none=True)
+                attrs = l.model_dump(exclude_none=True, by_alias=True)
                 prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **attrs)
             elif l.type == "signal":
                 prev_layer_clone = self._pedb.stackup.layers[l.name]
 
-        # ----------------------------------------------------------------------
         # restore padstack definitions
         for pdef_name, pdef_data in temp_pdef_data.items():
             pdef = self._pedb.padstacks.definitions[pdef_name]
-            pdef._padstack_def_data = pdef_data
+            if settings.is_grpc:
+                pdef.data = pdef_data
+            else:
+                pdef._padstack_def_data = pdef_data
+
         # restore padstack instance layer map
         for p_inst in self._pedb.layout.padstack_instances:
-            p_inst._layer_map = temp_p_inst_layer_map[p_inst.id]
+            if settings.is_grpc:
+                p_inst.layer_map = temp_p_inst_layer_map[p_inst.id]
+            else:
+                p_inst._layer_map = temp_p_inst_layer_map[p_inst.id]
 
     def get_stackup(self):
+        """Populate :attr:`cfg_data.stackup` layers from the open EDB design.
+
+        Clears the existing layer list and re-populates it by reading every
+        layer in :attr:`pyedb.Edb.stackup.all_layers`.
+
+        Returns
+        -------
+        None
+        """
         self.cfg_data.stackup.layers = []
         for name, obj in self._pedb.stackup.all_layers.items():
             self.cfg_data.stackup.add_layer_at_bottom(**obj.properties)
 
     def get_padstacks(self):
+        """Populate :attr:`cfg_data.padstacks` from the open EDB design.
+
+        Reads every padstack definition and every padstack instance from the
+        database and stores them in the active
+        :class:`~pyedb.configuration.cfg_padstacks.CfgPadstacks` model.
+
+        Returns
+        -------
+        None
+        """
         padstacks = self.cfg_data.padstacks
         padstacks.clean()
 
@@ -760,77 +972,51 @@ class Configuration:
 
     @execution_timer("Applying padstack definitions and instances")
     def apply_padstacks(self):
+        """Apply padstack definitions and instance overrides to the current design.
+
+        Iterates over :attr:`cfg_data.padstacks` and updates the matching EDB
+        padstack-definition and padstack-instance objects in the database.
+
+        Returns
+        -------
+        None
+        """
         padstacks = self.cfg_data.padstacks
         p_d = {i: j for i, j in self._pedb.padstacks.definitions.items()}
         for pdef in padstacks.definitions:
+            if pdef.name not in p_d:
+                self._pedb.logger.info(f"Padstack definition '{pdef.name}' not found in EDB — creating it.")
+                self._pedb.padstacks.create(pdef.name)
+                p_d = {i: j for i, j in self._pedb.padstacks.definitions.items()}
             pdef_obj = p_d[pdef.name]
             set_padstack_definition(pdef, pdef_obj)
 
         if padstacks.instances:
+            # Clear cache once before iterating got grpc only.
+            if hasattr(self._pedb.padstacks, "clear_instances_cache"):
+                self._pedb.padstacks.clear_instances_cache()
             insts_by_name = self._pedb.padstacks.instances_by_name
-        for inst in padstacks.instances:
-            inst_obj = insts_by_name[inst.name]
-            set_padstack_instance(inst, inst_obj)
-
-    def get_data_from_db(self, **kwargs):
-        """Get configuration data from layout.
-
-        Returns
-        -------
-
-        """
-        self._pedb.logger.info("Getting data from layout database.")
-
-        self.get_materials()
-
-        data = {}
-        if kwargs.get("general", False):
-            data["general"] = self.cfg_data.general.get_data_from_db()
-        if kwargs.get("variables", False):
-            self.get_variables()
-            data.update(self.cfg_data.variables.model_dump(exclude_none=True))
-        if kwargs.get("stackup", False):
-            self.get_stackup()
-            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True, by_alias=True)
-        if kwargs.get("package_definitions", False):
-            data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
-        if kwargs.get("setups", False):
-            self.get_setups()
-            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups.setups]
-        if kwargs.get("terminals", False):
-            self.get_terminals()
-            data.update(self.cfg_data.terminals.model_dump(exclude_none=True))
-        if kwargs.get("sources", False):
-            data["sources"] = self.cfg_data.sources.get_data_from_db()
-        if kwargs.get("ports", False):
-            data["ports"] = self.cfg_data.ports.get_data_from_db()
-        if kwargs.get("components", False) or kwargs.get("s_parameters", False):
-            self.cfg_data.components.retrieve_parameters_from_edb()
-            components = []
-            for i in self.cfg_data.components.components:
-                if i.type == "io":
-                    components.append(i.get_attributes())
-                components.append(i.get_attributes())
-
-            if kwargs.get("components", False):
-                data["components"] = components
-            elif kwargs.get("s_parameters", False):
-                data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db(components)
-        if kwargs.get("nets", False):
-            data["nets"] = self.cfg_data.nets.get_data_from_db()
-        if kwargs.get("pin_groups", False):
-            data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
-        if kwargs.get("operations", False):
-            self.get_operations()
-            data["operations"] = self.cfg_data.operations.model_dump()
-        if kwargs.get("padstacks", False):
-            self.get_padstacks()
-            data["padstacks"] = self.cfg_data.padstacks.model_dump(exclude_none=True)
-
-        if kwargs.get("boundaries", False):
-            self.get_boundaries()
-            data["boundaries"] = self.cfg_data.boundaries.model_dump(exclude_none=True)
-        return data
+            for inst in padstacks.instances:
+                inst_obj = insts_by_name.get(inst.name)
+                if inst_obj is None:
+                    # New instance — place it and use the returned object directly
+                    self._pedb.logger.info(f"Padstack instance '{inst.name}' not found in EDB — placing it.")
+                    position = inst.position if inst.position else [0, 0]
+                    rotation = float(inst.rotation) if inst.rotation is not None else 0.0
+                    inst_obj = self._pedb.padstacks.place(
+                        position=position,
+                        definition_name=inst.definition,
+                        net_name=inst.net_name or "",
+                        via_name=inst.name,
+                        rotation=rotation,
+                    )
+                if inst_obj is None:
+                    self._pedb.logger.error(
+                        f"Padstack instance '{inst.name}' could not be created or found — skipping."
+                    )
+                    continue
+                # Existing instances are updated; new ones have properties applied via set_padstack_instance
+                set_padstack_instance(inst, inst_obj)
 
     @execution_timer("Applying operations")
     def apply_operations(self):
@@ -863,6 +1049,7 @@ class Configuration:
                             signal_nets.append(i.net_name)
 
                     cutout_params["signal_nets"] = signal_nets
+            cutout_params["open_cutout_at_end"] = False
             polygon_points = self._pedb.cutout(**cutout_params)
             if "pyedb_cutout" not in self._pedb.stackup.all_layers:
                 self._pedb.stackup.add_document_layer(name="pyedb_cutout")
@@ -872,6 +1059,16 @@ class Configuration:
             self._pedb.hfss.generate_auto_hfss_regions()
 
     def get_operations(self):
+        """Populate :attr:`cfg_data.operations` from the open EDB design.
+
+        Detects whether a ``pyedb_cutout`` layer is present and, when found,
+        reconstructs the cutout operation (signal nets + custom extent polygon)
+        so it can be serialised or re-applied.
+
+        Returns
+        -------
+        None
+        """
         if "pyedb_cutout" not in self._pedb.stackup.all_layers:
             return
 
@@ -895,9 +1092,18 @@ class Configuration:
 
     @execution_timer("Placing terminals")
     def apply_terminals(self):
+        """Create terminal excitations (padstack, pin-group, point, edge, bundle) in the design.
+
+        Iterates over every terminal in :attr:`cfg_data.terminals`, creates the
+        corresponding EDB excitation object, assigns impedance / boundary-type /
+        source-amplitude settings, and resolves reference-terminal links.
+
+        Returns
+        -------
+        None
+        """
         terminals_dict = {}
         bungle_terminals = []
-        edge_terminals = {}
         for cfg_terminal in self.cfg_data.terminals.terminals:
             if cfg_terminal.terminal_type == "padstack_instance":
                 terminal = self._pedb.excitation_manager.create_padstack_instance_terminal(
@@ -932,7 +1138,6 @@ class Configuration:
                 terminal.pec_launch_width = cfg_terminal.pec_launch_width
                 terminal.do_renormalize = True
                 terminal.hfss_type = cfg_terminal.hfss_type
-                edge_terminals[cfg_terminal.name] = terminal
             elif cfg_terminal.terminal_type == "bundle":
                 bungle_terminals.append(cfg_terminal)
                 continue
@@ -959,6 +1164,16 @@ class Configuration:
 
     @execution_timer("Retrieving terminal information")
     def get_terminals(self):
+        """Populate :attr:`cfg_data.terminals` from the open EDB design.
+
+        Reads every terminal excitation from the database and stores it as the
+        appropriate ``Cfg*Terminal`` model so it can later be serialised or
+        re-applied.
+
+        Returns
+        -------
+        None
+        """
         manager = self.cfg_data.terminals
         manager.terminals = []
         for i in self._pedb.terminals.values():
@@ -1007,6 +1222,99 @@ class Configuration:
                 pass
             else:  # pragma: no cover
                 raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
+
+    def get_data_from_db(self, **kwargs):
+        """Get configuration data from layout.
+
+        Parameters
+        ----------
+        stackup : bool, optional
+            Whether to retrieve stackup data.
+        package_definitions : bool, optional
+            Whether to retrieve package definitions.
+        setups : bool, optional
+            Whether to retrieve setups.
+        sources : bool, optional
+            Whether to retrieve sources.
+        ports : bool, optional
+            Whether to retrieve ports.
+        nets : bool, optional
+            Whether to retrieve nets.
+        pin_groups : bool, optional
+            Whether to retrieve pin groups.
+        operations : bool, optional
+            Whether to retrieve operations.
+        components : bool, optional
+            Whether to retrieve components.
+        boundaries : bool, optional
+            Whether to retrieve boundaries.
+        s_parameters : bool, optional
+            Whether to retrieve s-parameters.
+        padstacks : bool, optional
+            Whether to retrieve padstacks.
+        general : bool, optional
+            Whether to retrieve general information.
+        variables : bool, optional
+            Whether to retrieve variables.
+        terminals : bool, optional
+            Whether to retrieve terminals.
+
+        Returns
+        -------
+        dict
+            Dictionary with requested configuration data.
+        """
+        self._pedb.logger.info("Getting data from layout database.")
+
+        self.get_materials()
+
+        data = {}
+        if kwargs.get("general", False):
+            data["general"] = self.cfg_data.general.get_data_from_db()
+        if kwargs.get("variables", False):
+            self.get_variables()
+            data.update(self.cfg_data.variables.model_dump(exclude_none=True))
+        if kwargs.get("stackup", False):
+            self.get_stackup()
+            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True, by_alias=True)
+        if kwargs.get("package_definitions", False):
+            data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
+        if kwargs.get("setups", False):
+            self.get_setups()
+            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups.setups]
+        if kwargs.get("terminals", False):
+            self.get_terminals()
+            data.update(self.cfg_data.terminals.model_dump(exclude_none=True))
+        if kwargs.get("sources", False):
+            data["sources"] = self.cfg_data.sources.get_data_from_db()
+        if kwargs.get("ports", False):
+            data["ports"] = self.cfg_data.ports.get_data_from_db()
+        if kwargs.get("components", False) or kwargs.get("s_parameters", False):
+            self.cfg_data.components.retrieve_parameters_from_edb()
+            components = []
+            for i in self.cfg_data.components.components:
+                if i.type == "io":
+                    components.append(i.get_attributes())
+                components.append(i.get_attributes())
+
+            if kwargs.get("components", False):
+                data["components"] = components
+            elif kwargs.get("s_parameters", False):
+                data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db(components)
+        if kwargs.get("nets", False):
+            data["nets"] = self.cfg_data.nets.get_data_from_db()
+        if kwargs.get("pin_groups", False):
+            data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
+        if kwargs.get("operations", False):
+            self.get_operations()
+            data["operations"] = self.cfg_data.operations.model_dump()
+        if kwargs.get("padstacks", False):
+            self.get_padstacks()
+            data["padstacks"] = self.cfg_data.padstacks.model_dump(exclude_none=True)
+        if kwargs.get("boundaries", False):
+            self.get_boundaries()
+            data["boundaries"] = self.cfg_data.boundaries.model_dump(exclude_none=True)
+        return data
 
     def export(
         self,
@@ -1063,7 +1371,6 @@ class Configuration:
             Whether to export variable.
         terminals : bool
             Whether to export terminals. Alternative to ports and sources.
-
         Returns
         -------
         bool
@@ -1090,15 +1397,7 @@ class Configuration:
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)
         file_path = file_path.with_suffix(".json") if file_path.suffix == "" else file_path
 
-        for comp in data["components"]:
-            for key, value in comp.items():
-                try:
-                    json.dumps(value)
-                    print(f"Key '{key}' is serializable.")
-                except TypeError as e:
-                    print(f"Key '{key}' failed: {e}")
-
-        with open(file_path, "w") as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             if file_path.suffix == ".json":
                 json.dump(data, f, ensure_ascii=False, indent=4)
             else:
