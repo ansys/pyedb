@@ -392,6 +392,107 @@ class TestCfgStackup:
         d = s.model_dump(exclude_none=True)["layers"][0]
         assert d["roughness"]["top"]["model"] == "huray"
 
+    def test_get_layer_from_edb_with_pedb(self):
+        """get_layer loads from EDB when not in cache."""
+        from unittest.mock import MagicMock
+
+        mock_layer = MagicMock()
+        mock_layer.properties = {"type": "signal", "material": "copper", "thickness": "35um"}
+        mock_pedb = MagicMock()
+        mock_pedb.stackup.all_layers = {"top": mock_layer}
+        s = CfgStackup()
+        s._set_pedb(mock_pedb)
+        lyr = s.get_layer("top")
+        assert lyr.name == "top"
+        assert lyr.layer_type == "signal"
+        assert lyr.material == "copper"
+
+    def test_get_layer_from_edb_not_found_raises(self):
+        from unittest.mock import MagicMock
+
+        mock_pedb = MagicMock()
+        mock_pedb.stackup.all_layers = {}
+        s = CfgStackup()
+        s._set_pedb(mock_pedb)
+        with pytest.raises(KeyError, match="missing"):
+            s.get_layer("missing")
+
+    def test_get_layers_raises_without_pedb(self):
+        s = CfgStackup()
+        with pytest.raises(KeyError):
+            s.get_layers()
+
+    def test_get_layers_with_pedb(self):
+        from unittest.mock import MagicMock
+
+        mock_layer = MagicMock()
+        mock_layer.properties = {"type": "signal", "material": "copper", "thickness": "35um"}
+        mock_pedb = MagicMock()
+        mock_pedb.stackup.all_layers = {"top": mock_layer}
+        s = CfgStackup()
+        s._set_pedb(mock_pedb)
+        layers = s.get_layers()
+        assert len(layers) == 1
+        assert layers[0].name == "top"
+
+    def test_get_signal_layers_raises_without_pedb(self):
+        s = CfgStackup()
+        with pytest.raises(KeyError):
+            s.get_signal_layers()
+
+    def test_get_signal_layers_with_pedb(self):
+        from unittest.mock import MagicMock
+
+        mock_layer = MagicMock()
+        mock_layer.properties = {"type": "signal", "material": "copper", "thickness": "35um"}
+        mock_pedb = MagicMock()
+        mock_pedb.stackup.signal_layers = {"top": mock_layer}
+        mock_pedb.stackup.all_layers = {"top": mock_layer}
+        s = CfgStackup()
+        s._set_pedb(mock_pedb)
+        sig_layers = s.get_signal_layers()
+        assert len(sig_layers) == 1
+        assert sig_layers[0].type == "signal"
+
+    def test_get_material_from_edb_with_pedb(self):
+        from unittest.mock import MagicMock
+
+        mock_mat = MagicMock()
+        mock_mat.to_dict.return_value = {"name": "copper", "conductivity": 5.8e7}
+        mock_pedb = MagicMock()
+        mock_pedb.materials.materials = {"copper": mock_mat}
+        s = CfgStackup()
+        s._set_pedb(mock_pedb)
+        mat = s.get_material("copper")
+        assert mat.name == "copper"
+        assert mat.conductivity == 5.8e7
+
+    def test_get_material_from_edb_not_found_raises(self):
+        from unittest.mock import MagicMock
+
+        mock_pedb = MagicMock()
+        mock_pedb.materials.materials = {}
+        s = CfgStackup()
+        s._set_pedb(mock_pedb)
+        with pytest.raises(KeyError, match="missing"):
+            s.get_material("missing")
+
+    def test_add_material_config_with_name_override(self):
+        """add_material with config object and explicit name overrides the config name."""
+        s = CfgStackup()
+        mat_cfg = CfgMaterial(name="old_name", conductivity=5.8e7)
+        mat = s.add_material(name="new_name", config=mat_cfg)
+        assert mat.name == "new_name"
+        assert mat.conductivity == 5.8e7
+
+    def test_normalize_thickness_numeric_layer(self):
+        """normalize_thickness handles numeric (non-string) thickness."""
+        s = CfgStackup()
+        s.add_signal_layer(name="top", thickness=35e-6)
+        s.normalize_thickness("m")
+        # numeric thickness gets f"{val}m" appended
+        assert s.layers[0].thickness == f"{35e-6}m"
+
 
 class TestCfgStackupAddMaterial:
     def test_returns_material_config_instance(self):

@@ -218,3 +218,35 @@ class TestNetsConfig:
         n = CfgNets()
         n.add_power_ground_nets(["VDD"])
         assert n.power_ground_nets == ["VDD"]
+
+    def test_set_parameters_to_edb_with_pedb(self):
+        """set_parameters_to_edb writes classifications into EDB when pedb is attached."""
+        mock_net_sig = MagicMock()
+        mock_net_pwr = MagicMock()
+        mock_pedb = MagicMock()
+        mock_pedb.nets.nets = {"CLK": mock_net_sig, "VDD": mock_net_pwr}
+        mock_pedb.nets.__contains__ = lambda self, item: item in ["CLK", "VDD"]
+        n = CfgNets(pedb=mock_pedb, signal_nets=["CLK"], power_nets=["VDD"])
+        n.set_parameters_to_edb()
+        assert mock_net_sig.is_power_ground is False
+        assert mock_net_pwr.is_power_ground is True
+
+    def test_set_parameters_to_edb_skips_missing_nets(self):
+        """set_parameters_to_edb skips nets not present in EDB."""
+        mock_pedb = MagicMock()
+        mock_pedb.nets.nets = {}
+        mock_pedb.nets.__contains__ = lambda self, item: False
+        n = CfgNets(pedb=mock_pedb, signal_nets=["MISSING"])
+        n.set_parameters_to_edb()  # should not raise
+
+    def test_get_parameters_from_edb_with_pedb(self):
+        """get_parameters_from_edb reads from EDB when pedb is attached."""
+        mock_pedb = MagicMock()
+        mock_pedb.nets.signal = ["CLK", "DATA"]
+        mock_pedb.nets.power = ["VDD", "GND"]
+        n = CfgNets(pedb=mock_pedb)
+        d = n.get_parameters_from_edb()
+        assert d["signal_nets"] == ["CLK", "DATA"]
+        assert d["power_ground_nets"] == ["VDD", "GND"]
+        assert n.signal_nets == ["CLK", "DATA"]
+        assert n.power_nets == ["VDD", "GND"]

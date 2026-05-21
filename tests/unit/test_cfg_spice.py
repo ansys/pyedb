@@ -98,3 +98,69 @@ class TestCfgSpiceModels:
         sc = CfgSpiceModels(data=[{"name": "m1", "component_definition": "DEF", "file_path": "f.sp"}])
         assert len(sc.models) == 1
         assert sc.models[0].name == "m1"
+
+
+class TestCfgSpiceModelApply:
+    """Tests for CfgSpiceModel.apply() without a live EDB session."""
+
+    def test_apply_no_pedb_returns_dump(self):
+        m = CfgSpiceModel(name="ic", component_definition="DEF", file_path="f.sp")
+        result = m.apply()
+        assert isinstance(result, dict)
+        assert result["name"] == "ic"
+
+    def test_apply_with_pedb_apply_to_all(self):
+        from unittest.mock import MagicMock
+
+        mock_comp1 = MagicMock()
+        mock_comp2 = MagicMock()
+        mock_pedb = MagicMock()
+        mock_pedb.components.definitions = {"DEF": MagicMock(components={"U1": mock_comp1, "U2": mock_comp2})}
+        m = CfgSpiceModel(
+            name="ic",
+            component_definition="DEF",
+            file_path="/abs/path/f.sp",
+            apply_to_all=True,
+            pedb=mock_pedb,
+        )
+        m.apply()
+        mock_comp1.assign_spice_model.assert_called_once_with("/abs/path/f.sp", "ic", "", None)
+        mock_comp2.assign_spice_model.assert_called_once_with("/abs/path/f.sp", "ic", "", None)
+
+    def test_apply_with_pedb_selective_components(self):
+        from unittest.mock import MagicMock
+
+        mock_comp1 = MagicMock()
+        mock_comp2 = MagicMock()
+        mock_pedb = MagicMock()
+        mock_pedb.components.definitions = {"DEF": MagicMock(components={"U1": mock_comp1, "U2": mock_comp2})}
+        m = CfgSpiceModel(
+            name="ic",
+            component_definition="DEF",
+            file_path="/abs/path/f.sp",
+            apply_to_all=False,
+            components=["U1"],
+            pedb=mock_pedb,
+        )
+        m.apply()
+        mock_comp1.assign_spice_model.assert_called_once()
+        mock_comp2.assign_spice_model.assert_not_called()
+
+    def test_apply_with_relative_path_and_path_lib(self):
+        from unittest.mock import MagicMock
+
+        mock_comp = MagicMock()
+        mock_pedb = MagicMock()
+        mock_pedb.components.definitions = {"DEF": MagicMock(components={"U1": mock_comp})}
+        m = CfgSpiceModel(
+            name="ic",
+            component_definition="DEF",
+            file_path="f.sp",
+            apply_to_all=True,
+            pedb=mock_pedb,
+            path_lib="/lib/path",
+        )
+        m.apply()
+        called_path = mock_comp.assign_spice_model.call_args[0][0]
+        assert called_path.endswith("f.sp")
+        assert "/lib/path" in called_path or "lib" in called_path
