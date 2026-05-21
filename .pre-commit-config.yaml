@@ -9,9 +9,7 @@ repos:
   rev: v0.15.13
   hooks:
   - id: ruff-check
-    exclude: uv\.lock
-  - id: ruff-format
-    exclude: uv\.lock
+- id: ruff-format
 
 - repo: https://github.com/adamchainz/blacken-docs
   rev: 1.20.0
@@ -37,7 +35,6 @@ repos:
   rev: v6.0.0
   hooks:
   - id: requirements-txt-fixer
-    exclude: uv\.lock
   - id: debug-statements
   - id: trailing-whitespace
     files: (src|doc|tests)/.*
