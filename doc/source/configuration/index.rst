@@ -83,7 +83,6 @@ what a declarative system can reasonably express:
 * Net-class scripting driven by complex electrical rules.
 * Dynamic, algorithmically generated layout modifications.
 * Deep EDB object-level inspection or repair operations.
-* Custom post-processing of simulation results inside the same script.
 
 For these scenarios it is recommended to use the **PyEDB Python APIs directly**.
 The two approaches are fully complementary: a typical production workflow might

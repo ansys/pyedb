@@ -26,30 +26,6 @@ The programmatic API is useful when you want to:
 * pass a builder directly to ``run()`` without touching the file system, and
 * move between dictionary, JSON, and TOML forms.
 
-Configuration API workflow
---------------------------
-
-.. graphviz::
-
-   digraph configuration_api_workflow {
-       rankdir=LR;
-       node [shape=box, style="rounded,filled", fillcolor="#F7F7F7", color="#4F81BD"];
-       edge [color="#4F81BD"];
-
-       create [label="edb.configuration\n.create_config_builder()"];
-       build  [label="CfgData\n(section builders)"];
-       decide [label="apply now\nor export first?", shape=diamond, fillcolor="#FFF2CC", color="#D6B656"];
-       export [label="cfg.to_json()\ncfg.to_toml()\ncfg.to_dict()"];
-       run    [label="edb.configuration.run(cfg)\nor Configuration.load(...)\n+ run()"];
-       design [label="Configured EDB\ndesign"];
-
-       create -> build -> decide;
-       decide -> run    [label="apply"];
-       decide -> export [label="export"];
-       export -> run    [style=dashed, label="later"];
-       run -> design;
-   }
-
 Two entry points
 ----------------
 
@@ -232,8 +208,8 @@ You can pass any of the supported input types directly:
    edb.configuration.load("overlay.json")  # merges on top
    edb.configuration.run()
 
-TerminalInfo helpers
---------------------
+Terminal Info helpers
+---------------------
 
 For ``ports``, ``sources``, and ``probes``, use
 ``TerminalInfo`` factory methods instead of
@@ -577,7 +553,7 @@ applies the configuration with a single ``run()`` call.
 Persisting the configuration
 -----------------------------
 
-``CfgData`` can be passed **directly** to ``edb.configuration.run()``—
+``CfgData`` can be passed **directly** to ``edb.configuration.run()``,
 no ``.to_dict()`` call is required:
 
 .. code-block:: python

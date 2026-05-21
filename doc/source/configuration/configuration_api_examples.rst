@@ -21,24 +21,6 @@ The key insight is that the builder **separates intent from execution**:
 This separates three concerns that are often tangled together in scripted
 workflows: *definition*, *validation*, and *application*.
 
-.. graphviz::
-
-   digraph builder_flow {
-       rankdir=LR;
-       node [shape=box, style="rounded,filled", fillcolor="#F7F7F7", color="#4F81BD"];
-       edge [color="#4F81BD"];
-
-       create  [label="create_config_builder()\nor CfgData()"];
-       build   [label="Populate sections\n(nets, ports, setups …)"];
-       decide  [label="apply\nor export?", shape=diamond, fillcolor="#FFF2CC", color="#D6B656"];
-       run     [label="edb.configuration.run(cfg)\n→ layout updated"];
-       export  [label="cfg.to_json()\ncfg.to_toml()\ncfg.to_dict()"];
-
-       create -> build -> decide;
-       decide -> run     [label="apply"];
-       decide -> export  [label="export"];
-   }
-
 Creating a builder
 ------------------
 
@@ -124,8 +106,8 @@ full stackup and modeler operations.
 .. note::
 
    All examples assume ``edb`` is an open :class:`Edb` session.
-   ``get_si_verse()`` is a helper that opens the *ANSYS-HSD_V1* reference
-   design. Replace it with ``Edb("your_design.aedb", ...)``.
+   examples below assume that the design *ANSYS-HSD_V1* is open.
+   Replace it with ``Edb("your_design.aedb", ...)``.
 
 Example 1: Coax ports with explicit solder-ball geometry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

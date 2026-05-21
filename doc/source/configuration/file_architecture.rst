@@ -55,22 +55,6 @@ At runtime, PyEDB parses the file (or builder) into a dictionary, maps each
 top-level key to an internal section model, and then applies those models to
 the active EDB design.
 
-.. graphviz::
-
-   digraph configuration_architecture {
-       rankdir=LR;
-       node [shape=box, style="rounded,filled", fillcolor="#F7F7F7", color="#4F81BD"];
-       edge [color="#4F81BD"];
-
-       file    [label="JSON / TOML file\nor CfgData"];
-       load    [label="Configuration.load(...)"];
-       cfgdata [label="CfgData\n(section manager)"];
-       run     [label="Configuration.run(cfg)\napply methods"];
-       design  [label="Active EDB design"];
-
-       file -> load -> cfgdata -> run -> design;
-   }
-
 Top-level architecture
 ----------------------
 
