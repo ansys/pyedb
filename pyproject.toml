@@ -268,9 +268,9 @@ combine-as-imports = true
 max-complexity = 10
 
 [tool.codespell]
-skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,*.a3dcomp,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,*.cdb,*.CDB,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*,pyproject.toml'
+skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,*.a3dcomp,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,*.cdb,*.CDB,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*,pyproject.toml,uv.lock'
 ignore-words = "doc/styles/config/vocabularies/ANSYS/accept.txt"
-ignore-words-list = "renabled, sie, mot"
+ignore-words-list = "renabled, sie, mot, astroid"
 enable-colors = true
 
 [tool.coverage.run]
