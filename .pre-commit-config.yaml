@@ -35,6 +35,7 @@ repos:
   rev: v6.0.0
   hooks:
   - id: requirements-txt-fixer
+    exclude: uv\.lock
   - id: debug-statements
   - id: trailing-whitespace
     files: (src|doc|tests)/.*
