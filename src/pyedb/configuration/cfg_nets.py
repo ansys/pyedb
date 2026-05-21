@@ -97,6 +97,21 @@ class CfgNets:
         self.power_nets = list(self._pedb.nets.power)
         return {"signal_nets": self.signal_nets, "power_ground_nets": self.power_nets}
 
+    def to_dict(self):
+        """Serialize the in-memory net classification lists.
+
+        Unlike :meth:`get_parameters_from_edb`, this method does **not** query
+        the live EDB session and therefore preserves any pending changes made
+        via :meth:`add_power_ground_nets` / :meth:`add_signal_nets` before
+        :meth:`set_parameters_to_edb` has been called.
+
+        Returns
+        -------
+        dict
+            Dictionary with ``"signal_nets"`` and ``"power_ground_nets"`` keys.
+        """
+        return {"signal_nets": list(self.signal_nets), "power_ground_nets": list(self.power_nets)}
+
     def __init__(self, pedb=None, signal_nets=None, power_nets=None, reference_nets=None):
         """Initialize the nets configuration."""
         self._pedb = pedb

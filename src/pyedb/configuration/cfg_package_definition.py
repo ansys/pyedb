@@ -206,6 +206,10 @@ class CfgPackageDefinitions:
         self._pedb = pedb
         self.packages = [CfgPackage(**package) for package in (data or [])]
 
+    def to_list(self):
+        """Serialize all package definitions to a list of dictionaries."""
+        return [p.model_dump(exclude_none=True) for p in self.packages]
+
     def add(
         self,
         name: str,

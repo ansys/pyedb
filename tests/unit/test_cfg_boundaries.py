@@ -150,3 +150,12 @@ class TestBoundariesConfig:
         assert d["air_box_horizontal_extent"]["size"] == 0.2
         assert d["extent_type"] == "ConvexHull"
         assert d["dielectric_extent_size"]["size"] == 0.01
+
+    def test_manual_attributes(self):
+        b = CfgBoundaries()
+        b.dielectric_extent_type = "ConvexHull"
+        b.honor_user_dielectric = True
+        d = b.model_dump(exclude_none=True, exclude_defaults=True)
+        assert d["dielectric_extent_type"] == "ConvexHull"
+        # honor_user_dielectric is only emitted when True
+        assert d["honor_user_dielectric"] is True

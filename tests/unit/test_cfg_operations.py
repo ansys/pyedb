@@ -114,6 +114,54 @@ class TestCfgCutout:
         d = c.model_dump(exclude_none=False)
         assert "custom_extent" in d
 
+    def test_nets(self):
+        c = CfgCutout(signal_nets=["SIG1"], reference_nets=["GND"])
+        d = c.model_dump(exclude_none=True)
+        assert d["signal_nets"] == ["SIG1"]
+        assert d["reference_nets"] == ["GND"]
+
+    def test_auto_identify_nets(self):
+        c = CfgCutout(auto_identify_nets_enabled=True, resistor_below=200)
+        d = c.model_dump(exclude_none=True)
+        assert d["auto_identify_nets"]["enabled"] is True
+        assert d["auto_identify_nets"]["resistor_below"] == 200
+
+    def test_extent_type_convexhull(self):
+        c = CfgCutout(extent_type="ConvexHull")
+        assert c.model_dump(exclude_none=True)["extent_type"] == "ConvexHull"
+
+    def test_extent_type_bounding_box(self):
+        c = CfgCutout(extent_type="BoundingBox")
+        assert c.model_dump(exclude_none=True)["extent_type"] == "BoundingBox"
+
+    def test_extent_type_conformal(self):
+        c = CfgCutout(extent_type="Conformal")
+        assert c.model_dump(exclude_none=True)["extent_type"] == "Conformal"
+
+    def test_extent_type_case_insensitive_lower(self):
+        c = CfgCutout(extent_type="convexhull")
+        assert c.model_dump(exclude_none=True)["extent_type"] == "ConvexHull"
+
+    def test_extent_type_case_insensitive_upper(self):
+        c = CfgCutout(extent_type="CONVEXHULL")
+        assert c.model_dump(exclude_none=True)["extent_type"] == "ConvexHull"
+
+    def test_extent_type_case_insensitive_boundingbox(self):
+        c = CfgCutout(extent_type="boundingbox")
+        assert c.model_dump(exclude_none=True)["extent_type"] == "BoundingBox"
+
+    def test_extent_type_case_insensitive_conformal(self):
+        c = CfgCutout(extent_type="CONFORMAL")
+        assert c.model_dump(exclude_none=True)["extent_type"] == "Conformal"
+
+    def test_expansion_size(self):
+        c = CfgCutout(expansion_size=0.005)
+        assert c.model_dump(exclude_none=True)["expansion_size"] == 0.005
+
+    def test_expansion_factor(self):
+        c = CfgCutout(expansion_factor=0.1)
+        assert c.model_dump(exclude_none=True)["expansion_factor"] == 0.1
+
 
 class TestOperationsConfig:
     def test_empty(self):

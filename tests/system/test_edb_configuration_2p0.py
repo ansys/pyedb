@@ -965,7 +965,7 @@ class TestClassTerminals(BaseTestClass):
         "name": "bundle_terminal",
     }
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet bug always returning Wave port.")
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet always return Wave-port type.")
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
@@ -990,10 +990,6 @@ class TestClassTerminals(BaseTestClass):
         }
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_pin_group_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"pin_groups": [self.pin_group2]})
@@ -1882,7 +1878,7 @@ class TestComponent(BaseTestClass):
         db = self.edb_examples.get_si_verse()
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
         component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
-        assert component["ic_die_properties"]["type"] in ["none", "no_die"]
+        assert component["ic_die_properties"]["type"] in ["none", "no_die", "flip_chip", "flipchip"]
         if db.grpc:
             # grpc does have this property not DotNet.
             assert "orientation" in component["ic_die_properties"]
@@ -1981,3 +1977,438 @@ class TestOperations(BaseTestClass):
         c375 = [i for i in data_from_db["components"] if i["reference_designator"] == "C375"][0]
         assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_builder_1(self):
+        # Test with solder ball coax ports
+        edb_app = self.edb_examples.get_si_verse()
+        signal_nets = [
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_RX3_N",
+        ]
+
+        config_builder = edb_app.configuration.create_config_builder()
+        config_builder.nets.add_signal_nets(signal_nets)
+        config_builder.nets.add_reference_nets(["GND"])
+        config_builder.operations.add_cutout(
+            signal_nets=config_builder.nets.signal_nets,
+            reference_nets=config_builder.nets.reference_nets,
+            extent_type="ConvexHull",
+            expansion_size=3e-3,
+        )
+        setup = config_builder.setups.add_hfss_setup(name="Test_HFSS")
+        setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+        component = config_builder.components.get("U1")
+        component.set_solder_ball_properties(shape="cylinder", diameter="300um", height="300um")
+        config_builder.ports.add_coax_port(reference_designator="U1", net_list=signal_nets)
+        edb_app.configuration.run(config_builder)
+        assert len(edb_app.nets.nets) == 10
+        assert len(edb_app.ports) == 8
+        assert edb_app.components["U1"].component_property.solder_ball_property.shape == "cylinder"
+        assert edb_app.components["U1"].component_property.solder_ball_property.get_diameter() == (300e-6, 300e-6)
+        assert edb_app.components["U1"].component_property.solder_ball_property.height == 300e-6
+        bbox = edb_app.get_bounding_box()
+        assert pytest.approx(bbox[0][0], 5) == 0.010
+        assert pytest.approx(bbox[0][1], 5) == 0.0216
+        assert pytest.approx(bbox[1][0], 5) == 0.0751
+        assert pytest.approx(bbox[1][1], 5) == 0.0481
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_builder_2(self):
+        #  test with circuit port and pin group
+        edb_app = self.edb_examples.get_si_verse()
+        signal_nets = [
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_RX3_N",
+        ]
+
+        config_builder = edb_app.configuration.create_config_builder()
+        config_builder.nets.add_signal_nets(signal_nets)
+        config_builder.nets.add_reference_nets(["GND"])
+        config_builder.operations.add_cutout(
+            signal_nets=config_builder.nets.signal_nets,
+            reference_nets=config_builder.nets.reference_nets,
+            extent_type="ConvexHull",
+            expansion_size=3e-3,
+        )
+        setup = config_builder.setups.add_hfss_setup(name="Test_HFSS")
+        setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+        config_builder.pin_groups.add(reference_designator="U1", nets="GND")
+        config_builder.pin_groups.add(reference_designator="U1", nets=config_builder.nets.signal_nets)
+        for sign_net in config_builder.nets.signal_nets:
+            config_builder.ports.add_circuit_port(reference_designator="U1", positive_net=sign_net, negative_net="GND")
+        edb_app.configuration.run(config_builder)
+        assert len(edb_app.ports) == 8
+        assert "Port_U1_PCIe_Gen4_RX0_P_AP26" in edb_app.ports
+        assert "Test_HFSS" in edb_app.setups
+        assert edb_app.setups["Test_HFSS"].sweeps["Test_Sweep"].frequency_string[0] == "LIN 1GHz 10GHz 0.5GHz"
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_builder_3(self):
+        # Test with solder ball coax ports but discovering solder balls diameters
+        edb_app = self.edb_examples.get_si_verse()
+        signal_nets = [
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_RX3_N",
+        ]
+
+        config_builder = edb_app.configuration.create_config_builder()
+        config_builder.nets.add_signal_nets(signal_nets)
+        config_builder.nets.add_reference_nets(["GND"])
+        config_builder.operations.add_cutout(
+            signal_nets=config_builder.nets.signal_nets,
+            reference_nets=config_builder.nets.reference_nets,
+            extent_type="ConvexHull",
+            expansion_size=3e-3,
+        )
+        setup = config_builder.setups.add_hfss_setup(name="Test_HFSS")
+        setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+        component = config_builder.components.get("U1")
+        component.set_solder_ball_properties(shape="cylinder", reference_designator="U1")
+        config_builder.ports.add_coax_port(reference_designator="U1", net_list=signal_nets)
+        edb_app.configuration.run(config_builder)
+        assert len(edb_app.nets.nets) == 10
+        assert len(edb_app.ports) == 8
+        assert edb_app.components["U1"].component_property.solder_ball_property.shape == "cylinder"
+        assert edb_app.components["U1"].component_property.solder_ball_property.get_diameter() == (
+            pytest.approx(500e-6, 5),
+            pytest.approx(500e-6, 5),
+        )
+        assert edb_app.components["U1"].component_property.solder_ball_property.height == pytest.approx(333e-6, 5)
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_cdg_builder_nets(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        net = cfg_builder.nets.get("PCIe_Gen4_RX0_P")
+        assert not net.is_power_ground
+        assert net.classification == "signal"
+        cfg_builder.nets.add_power_ground_nets(["PCIe_Gen4_RX0_P"])
+        assert "PCIe_Gen4_RX0_P" in cfg_builder.nets.power_ground_nets
+        cfg_builder.nets.add_signal_nets(["PCIe_Gen4_RX0_P"])
+        assert "PCIe_Gen4_RX0_P" in cfg_builder.nets.signal_nets
+        assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.power_ground_nets  # net must be removed
+        assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.reference_nets  # net must be removed
+        cfg_builder.nets.add_power_ground_nets(["PCIe_Gen4_RX0_P"])
+        edb_app.configuration.run(cfg_builder)
+        assert edb_app.nets.nets.get("PCIe_Gen4_RX0_P").is_power_ground  # net physically changed as pwr in EDB
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_gap_port(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        polygon = edb_app.layout.polygons[0]
+
+        cfg_edg_port = cfg_builder.ports.add_gap_port(
+            name="test_cfg_gap_port",
+            primitive=polygon,
+            point_on_edge=polygon.arcs[0].midpoint,
+            pec_launch_width="0.02mm",
+        )
+        assert cfg_edg_port.horizontal_extent_factor == 5
+        assert cfg_edg_port.name == "test_cfg_gap_port"
+        assert cfg_edg_port.pec_launch_width == "0.02mm"
+        assert cfg_edg_port.type == "gap_port"
+        edb_app.configuration.run(cfg_builder)
+        assert "test_cfg_gap_port" in edb_app.ports
+        port = edb_app.ports.get("test_cfg_gap_port")
+        assert port.hfss_type == "Gap"
+        assert port.pec_launch_width == "0.02mm"
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_diff_wave_port(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        path_p = edb_app.nets.nets.get("PCIe_Gen4_RX3_P").primitives[0]
+        path_n = edb_app.nets.nets.get("PCIe_Gen4_RX3_N").primitives[0]
+        point_on_edge_p = path_p.center_line[0]
+        point_on_edge_n = path_p.center_line[-1]
+        cfg_wave_port = cfg_builder.ports.add_diff_wave_port(
+            name="test_cfg_wave_port",
+            positive_primitive=path_p,
+            positive_terminal_point=point_on_edge_p,
+            negative_primitive=path_n,
+            negative_terminal_point=point_on_edge_n,
+        )
+        assert cfg_wave_port.horizontal_extent_factor == 5
+        assert cfg_wave_port.name == "test_cfg_wave_port"
+        assert cfg_wave_port.type == "diff_wave_port"
+        positive_port = cfg_wave_port.positive_port
+        assert positive_port.name == "test_cfg_wave_port:T1"
+        assert positive_port.primitive_name == "line_165"
+        assert positive_port.point_on_edge == point_on_edge_p
+        negative_port = cfg_wave_port.negative_port
+        assert negative_port.name == "test_cfg_wave_port:T2"
+        assert negative_port.primitive_name == "line_166"
+        assert negative_port.point_on_edge == point_on_edge_n
+        edb_app.configuration.run(cfg_builder)
+        assert "test_cfg_wave_port" in edb_app.ports
+        diff_wave_port = edb_app.ports.get("test_cfg_wave_port")
+        assert diff_wave_port.hfss_type == "Wave"
+        assert len(diff_wave_port.terminals) == 2
+        terminal1 = diff_wave_port.terminals[0]
+        assert terminal1.net_name == "PCIe_Gen4_RX3_P"
+        assert terminal1.name == "test_cfg_wave_port:T1"
+        assert terminal1.terminal_type == "edge"
+        assert terminal1.is_port is True
+        terminal2 = diff_wave_port.terminals[-1]
+        assert terminal2.net_name == "PCIe_Gen4_RX3_N"
+        assert terminal2.name == "test_cfg_wave_port:T2"
+        assert terminal2.terminal_type == "edge"
+        assert terminal2.is_port is True
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_wave_port(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        path = edb_app.nets.nets.get("PCIe_Gen4_RX3_P").primitives[0]
+        point_on_edge = path.center_line[0]
+        cfg_wave_port = cfg_builder.ports.add_wave_port(
+            name="test_wave_port", primitive=path, point_on_edge=point_on_edge
+        )
+        assert cfg_wave_port.horizontal_extent_factor == 5
+        assert cfg_wave_port.name == "test_wave_port"
+        assert cfg_wave_port.type == "wave_port"
+        assert cfg_wave_port.primitive_name == "line_165"
+        assert cfg_wave_port.point_on_edge == point_on_edge
+        edb_app.configuration.run(cfg_builder)
+        assert "test_wave_port" in edb_app.ports
+        wave_port = edb_app.ports.get("test_wave_port")
+        assert wave_port.is_port is True
+        assert wave_port.net_name == "PCIe_Gen4_RX3_P"
+        assert wave_port.terminal_type == "edge"
+        assert wave_port.hfss_type == "Wave"
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_hfss_setup(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        signal_nets = [
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_RX3_N",
+        ]
+        # create port is needed for auto assign mesh op
+        component = cfg_builder.components.get("U1")
+        component.set_solder_ball_properties(shape="cylinder", reference_designator="U1")
+        cfg_builder.ports.add_coax_port(reference_designator="U1", net_list=signal_nets)
+        # hfss setup
+        cfg_setup = cfg_builder.setups.add_hfss_setup(name="Test_HFSS")
+        cfg_setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+        cfg_setup.set_auto_mesh_operation(enabled=True, trace_ratio_seeding=3.0, signal_via_side_number=12)
+        cfg_setup.set_broadband_adaptive(low_freq="5GHz", high_freq="10GHz", max_delta=0.05, max_passes=30)
+        assert cfg_setup.name == "Test_HFSS"
+        cfg_sweep = cfg_setup.freq_sweep[0]
+        assert cfg_sweep.name == "Test_Sweep"
+        assert cfg_setup.freq_sweep[0].frequencies[0].start == "1GHz"
+        assert cfg_setup.freq_sweep[0].frequencies[0].stop == "10GHz"
+        assert cfg_setup.freq_sweep[0].frequencies[0].increment == "0.5GHz"
+        assert cfg_setup.broadband_adaptive_solution.low_frequency == "5GHz"
+        assert cfg_setup.broadband_adaptive_solution.high_frequency == "10GHz"
+        assert cfg_setup.broadband_adaptive_solution.max_delta == 0.05
+        assert cfg_setup.broadband_adaptive_solution.max_passes == 30
+        edb_app.configuration.run(cfg_builder)
+        assert len(edb_app.ports) == 8
+        assert "Test_HFSS" in edb_app.setups
+        setup = edb_app.setups.get("Test_HFSS")
+        assert setup.frequency_sweeps["Test_Sweep"].frequency_string[0] == "LIN 1GHz 10GHz 0.5GHz"
+        mesh_operation = edb_app.setups["Test_HFSS"].mesh_operations[0]
+        assert mesh_operation.enabled is True
+        assert mesh_operation.mesh_operation_type == "LengthMeshOperation"
+        assert mesh_operation.name == "Test_HFSS_AutoMeshOp"
+        assert len(mesh_operation.net_layer_info) == 16
+        assert mesh_operation.restrict_max_length is True
+        assert edb_app.value(edb_app.setups["Test_HFSS"].mesh_operations[0].max_length) == pytest.approx(450, 1)
+        assert setup.adaptive_settings.broadband_adaptive_solution.low_frequency == "5GHz"
+        assert setup.adaptive_settings.broadband_adaptive_solution.high_frequency == "10GHz"
+        assert setup.adaptive_settings.broadband_adaptive_solution.max_delta == "0.05"
+        assert setup.adaptive_settings.broadband_adaptive_solution.max_passes == 30
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_siwave_ac_setup(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        setup = cfg_builder.setups.add_siwave_ac_setup(
+            name="Test_siwave_AC_Setup", use_si_settings=True, si_slider_position=2
+        )
+        setup.add_frequency_sweep(name="Test_Sweep", start="0GHz", stop="35GHz", step_or_count="0.1GHz")
+        assert setup.name == "Test_siwave_AC_Setup"
+        assert setup.si_slider_position == 2
+        assert setup.freq_sweep[0].frequencies[0].start == "0GHz"
+        assert setup.freq_sweep[0].frequencies[0].stop == "35GHz"
+        assert setup.freq_sweep[0].frequencies[0].increment == "0.1GHz"
+        edb_app.configuration.run(cfg_builder)
+        assert "Test_siwave_AC_Setup" in edb_app.setups
+        setup = edb_app.setups.get("Test_siwave_AC_Setup")
+        assert setup.settings.general.si_slider_position == 2
+        assert setup.frequency_sweeps.get("Test_Sweep").frequency_string == ["LIN 0GHz 35GHz 0.1GHz"]
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_siwave_dc_setup(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        setup = cfg_builder.setups.add_siwave_dc_setup(
+            name="Test_siwave_DC_Setup",
+            dc_slider_position=2,
+            export_dc_thermal_data=True,
+        )
+        assert setup.name == "Test_siwave_DC_Setup"
+        assert setup.dc_slider_position == 2
+        assert setup.dc_ir_settings.export_dc_thermal_data is True
+        edb_app.configuration.run(cfg_builder)
+        assert "Test_siwave_DC_Setup" in edb_app.setups
+        edb_setup = edb_app.setups.get("Test_siwave_DC_Setup")
+        assert edb_setup.settings.dc.dc_slider_position == 2
+        assert edb_setup.settings.export_dc_thermal_data is True
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_padstack_create_definition_and_place_instance(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        cfg_builder.padstacks.add_definition(
+            name="Test_padstacks",
+            hole_plating_thickness="10um",
+            material="copper",
+            hole_range="through",
+            hole_diameter="200um",
+            pad_diameter="300um",
+            anti_pad_diameter="400um",
+        )
+        cfg_def = cfg_builder.padstacks.definitions[0]
+        assert cfg_def.name == "Test_padstacks"
+        cfg_padstack_instance = cfg_builder.padstacks.add_instance(
+            name="Test_padstacks_inst", net_name="Test_net", definition="Test_padstacks", position=[1e-3, 2e-3]
+        )
+        assert cfg_padstack_instance.position == [0.001, 0.002]
+        assert cfg_padstack_instance.name == "Test_padstacks_inst"
+        assert cfg_padstack_instance.net_name == "Test_net"
+        edb_app.configuration.run(cfg_builder)
+        padstack_def = edb_app.padstacks.definitions.get("Test_padstacks")
+        assert not padstack_def.is_null
+        assert padstack_def.start_layer == "1_Top"
+        assert padstack_def.stop_layer == "16_Bottom"
+        assert padstack_def.hole_plating_thickness == 10e-6
+        assert padstack_def.material == "copper"
+        assert padstack_def.hole_diameter == pytest.approx(200e-6, 1)
+        assert padstack_def.pad_by_layer["1_Top"].parameters_values[0] == pytest.approx(300e-6, 1)
+        assert padstack_def.antipad_by_layer["1_Top"].parameters_values[0] == pytest.approx(400e-6, 1)
+        assert len(padstack_def.instances) == 1
+        assert padstack_def.instances[0].name == "Test_padstacks_inst"
+        assert padstack_def.instances[0].net_name == "Test_net"
+        assert padstack_def.instances[0].position == [0.001, 0.002]
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_modeler_create_primitives(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        cfg_builder.modeler.add_trace(
+            name="Test_trace",
+            layer="1_Top",
+            width="100um",
+            net_name="Test_net",
+            start_cap_style="flat",
+            end_cap_style="flat",
+            path=[[0, 0], [0, 1e-3], [1e-3, 1e-3]],
+        )
+        cfg_builder.modeler.add_circular_plane(
+            layer="1_Top", name="Test_circular_plane", net_name="Test_net_circle", radius="2mm", position=[5e-3, 5e-3]
+        )
+
+        cfg_builder.modeler.add_rectangular_plane(
+            layer="1_Top",
+            name="Test_rectangular_plane",
+            lower_left_point=[0, 0],
+            upper_right_point=[0, 5e-3],
+        )
+        cfg_builder.modeler.add_polygon_plane(
+            layer="1_Top",
+            name="Test_polygon_plane",
+            net_name="Test_net_polygon",
+            points=[[0, 0], [0, 2e-3], [2e-3, 2e-3], [0, 0]],
+        )
+        edb_app.configuration.run(cfg_builder)
+        trace = edb_app.layout.find_primitive(name="Test_trace")[0]
+        assert trace
+        assert trace.aedt_name == "Test_trace"
+        assert trace.layer_name == "1_Top"
+        assert trace.net_name == "Test_net"
+        circular_plane = edb_app.layout.find_primitive(name="Test_circular_plane")[0]
+        assert circular_plane.aedt_name == "Test_circular_plane"
+        assert circular_plane.net_name == "Test_net_circle"
+        assert circular_plane.center == tuple([0.005, 0.005])
+        assert circular_plane.radius == pytest.approx(2e-3, 1)
+        assert circular_plane.layer_name == "1_Top"
+        rectangle = edb_app.layout.find_primitive(name="Test_rectangular_plane")[0]
+        assert rectangle.aedt_name == "Test_rectangular_plane"
+        assert rectangle.bbox[:2] == [0, 0]
+        assert rectangle.bbox[2:] == [0, 0.005]
+        assert rectangle.layer_name == "1_Top"
+        polygon = edb_app.layout.find_primitive(name="Test_polygon_plane")[0]
+        assert polygon.aedt_name == "Test_polygon_plane"
+        assert polygon.net_name == "Test_net_polygon"
+        assert polygon.polygon_data.points == [(0, 0), (0, 0.002), (0.002, 0.002)]
+        assert polygon.layer_name == "1_Top"
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_stackup(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        layers = cfg_builder.stackup.get_layers()
+        assert len(layers) == 26
+        cfg_builder.stackup.add_material(name="Test_material", permittivity=3.48, dielectric_loss_tangent=0.02)
+        cfg_builder.stackup.add_material(
+            name="Test_metal",
+            conductivity=6e7,
+        )
+        cfg_builder.stackup.add_dielectric_layer(name="Test_dielectric", material="Test_material", thickness="250um")
+        edb_app.configuration.run(cfg_builder)
+        assert "Test_material" in edb_app.materials.materials
+        assert "Test_metal" in edb_app.materials.materials
+        assert "Test_dielectric" in edb_app.stackup.layers
+
+        diel_mat = edb_app.materials.materials.get("Test_material")
+        assert diel_mat.name == "Test_material"
+        assert diel_mat.permittivity == pytest.approx(3.48)
+        assert diel_mat.dielectric_loss_tangent == pytest.approx(0.02)
+        met_mat = edb_app.materials.materials.get("Test_metal")
+        assert met_mat.name == "Test_metal"
+        assert met_mat.conductivity == pytest.approx(6e7)
+
+        dielectric_layer = edb_app.stackup.layers.get("Test_dielectric")
+        assert dielectric_layer.material == "Test_material"
+        assert dielectric_layer.thickness == 250e-6
+        edb_app.close(terminate_rpc_session=False)
