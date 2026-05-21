@@ -107,3 +107,34 @@ class Circle(Primitive):
 
         """
         self.core.set_parameters(Value(center_x), Value(center_y), Value(radius))
+
+    @property
+    def radius(self) -> float | int:
+        """Radius of the circle in meters.
+
+        Returns
+        -------
+        float, int
+        """
+        return self.get_parameters()[2]
+
+    @radius.setter
+    def radius(self, value: float | int):
+        cx, cy, _ = self.get_parameters()
+        self.set_parameters(float(cx), float(cy), value)
+
+    @property
+    def center(self) -> tuple:
+        """Center of the circle as ``(x, y)`` in meters.
+
+        Returns
+        -------
+        tuple[float, float]
+        """
+        params = self.get_parameters()
+        return float(params[0]), float(params[1])
+
+    @center.setter
+    def center(self, value: tuple):
+        _, _, r = self.get_parameters()
+        self.set_parameters(value[0], value[1], float(r))

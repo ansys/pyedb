@@ -316,9 +316,13 @@ class Configuration:
                 edb_setup = self._pedb.create_siwave_dc_setup(
                     name=setup.name, dc_slider_position=setup.dc_slider_position
                 )
-                edb_setup.dc_settings.dc_slider_position = setup.dc_slider_position
                 dc_ir_settings = setup.dc_ir_settings
-                edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
+                if settings.is_grpc:
+                    edb_setup.settings.dc.dc_slider_position = setup.dc_slider_position
+                    edb_setup.settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
+                else:
+                    edb_setup.dc_settings.dc_slider_position = setup.dc_slider_position
+                    edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
             else:
                 if setup.type == "hfss":
                     edb_setup = self._pedb.simulation_setups.create(name=setup.name, solver="hfss")
@@ -385,9 +389,13 @@ class Configuration:
                 elif setup.type in ["siwave_ac", "siwave_syz"]:  # siwave ac
                     edb_setup = self._pedb.create_siwave_syz_setup(name=setup.name)
                     if setup.si_slider_position is not None:
-                        edb_setup.si_slider_position = setup.si_slider_position
+                        edb_setup.settings.general.use_si_settings = True
+                        edb_setup.settings.general.use_custom_settings = False
+                        edb_setup.settings.general.si_slider_position = setup.si_slider_position
                     else:
-                        edb_setup.pi_slider_position = setup.pi_slider_position
+                        edb_setup.settings.general.use_si_settings = False
+                        edb_setup.settings.general.use_custom_settings = False
+                        edb_setup.settings.general.pi_slider_position = setup.pi_slider_position
                 else:
                     raise SyntaxError(f"Unsupported setup type '{setup.type}'.")
                 dist_dict = {"LIN": "linear_scale", "DEC": "log_scale", "LINC": "linear_count"}
@@ -433,8 +441,8 @@ class Configuration:
             if setup.type in ["siwave_dc", "siwave_dcir"]:
                 self.cfg_data.setups.add_siwave_dc_setup(
                     name=setup.name,
-                    dc_slider_position=setup.dc_settings.dc_slider_position,
-                    dc_ir_settings={"export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data},
+                    dc_slider_position=setup.settings.dc.dc_slider_position,
+                    dc_ir_settings={"export_dc_thermal_data": setup.settings.export_dc_thermal_data},
                 )
             else:
                 if setup.type == "hfss":
@@ -492,9 +500,9 @@ class Configuration:
                 elif setup.type in ["siwave", "siwave_ac"]:  # siwave ac
                     cfg_ac_setup = self.cfg_data.setups.add_siwave_ac_setup(
                         name=setup.name,
-                        use_si_settings=setup.use_si_settings,
-                        si_slider_position=setup.si_slider_position,
-                        pi_slider_position=setup.pi_slider_position,
+                        use_si_settings=setup.settings.general.use_si_settings,
+                        si_slider_position=setup.settings.general.si_slider_position,
+                        pi_slider_position=setup.settings.general.pi_slider_position,
                     )
                 else:
                     self._pedb.logger.warning(f"Unsupported setup type '{setup.type}'.")

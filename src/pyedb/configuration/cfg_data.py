@@ -230,7 +230,7 @@ class CfgData:
         """
         yield "general", {k: v for k, v in self.general.model_dump(exclude_none=True).items() if v != ""}
         yield "stackup", self.stackup.model_dump(exclude_none=True)
-        yield "nets", self.nets.get_parameters_from_edb()
+        yield "nets", self.nets.to_dict()
         yield "components", self.components.to_list()
         yield "padstacks", self.padstacks.model_dump(exclude_none=True, exclude_defaults=True, by_alias=False)
         yield "pin_groups", self.pin_groups.export_properties()
