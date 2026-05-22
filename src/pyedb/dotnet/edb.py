@@ -409,7 +409,8 @@ class Edb:
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
         oaDirectory = os.path.join(self.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oaDirectory
-        os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
+        if self.base_path not in os.environ["PATH"].split(os.pathsep):
+            os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
         edb = __import__("Ansys.Ansoft.Edb")
         edbbuilder = __import__("Ansys.Ansoft.EdbBuilderUtils")
         self.simSetup = __import__("Ansys.Ansoft.SimSetupData")

@@ -145,7 +145,8 @@ class RpcSession:
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = RpcSession.base_path
         oa_directory = os.path.join(RpcSession.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oa_directory
-        os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], RpcSession.base_path])
+        if RpcSession.base_path not in os.environ["PATH"].split(os.pathsep):
+            os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], RpcSession.base_path])
 
         if RpcSession.rpc_session:
             # Validate the existing session is still alive

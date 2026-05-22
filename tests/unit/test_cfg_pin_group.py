@@ -204,3 +204,65 @@ class TestCfgPinGroups:
         """set_pingroup_to_edb is an alias for set_pin_groups_to_edb."""
         pgs = CfgPinGroups()
         assert pgs.set_pingroup_to_edb == pgs.set_pin_groups_to_edb
+
+    def test_add_multi_net_with_pedb(self):
+        """Multi-net add with pedb resolves pins via _resolve_pins."""
+        mock_pin_vdd = MagicMock()
+        mock_pin_vdd.net_name = "VDD"
+        mock_pin_gnd = MagicMock()
+        mock_pin_gnd.net_name = "GND"
+        mock_comp = MagicMock()
+        mock_comp.pins = {"A1": mock_pin_vdd, "A2": mock_pin_vdd, "B1": mock_pin_gnd, "B2": mock_pin_gnd}
+        mock_pedb = MagicMock()
+        mock_pedb.components.instances.get.return_value = mock_comp
+        pgs = CfgPinGroups(pedb=mock_pedb)
+        result = pgs.add(reference_designator="U1", nets=["VDD", "GND"])
+        assert isinstance(result, list)
+        assert len(result) == 2
+        assert result[0].name == "Pingroup_U1.VDD"
+        assert result[1].name == "Pingroup_U1.GND"
+
+    def test_add_single_net_with_pedb(self):
+        """Single-net add with pedb resolves pins via _resolve_pins."""
+        mock_pin = MagicMock()
+        mock_pin.net_name = "VDD"
+        mock_comp = MagicMock()
+        mock_comp.pins = {"A1": mock_pin, "A2": mock_pin}
+        mock_pedb = MagicMock()
+        mock_pedb.components.instances.get.return_value = mock_comp
+        pgs = CfgPinGroups(pedb=mock_pedb)
+        pg = pgs.add(name="pg_VDD", reference_designator="U1", nets="VDD")
+        assert pg is not None
+        assert pg.name == "pg_VDD"
+        assert "A1" in pg.pins or "A2" in pg.pins
+
+    def test_resolve_pins_component_not_found(self):
+        """_resolve_pins raises KeyError when component is missing."""
+        mock_pedb = MagicMock()
+        mock_pedb.components.instances.get.return_value = None
+        pgs = CfgPinGroups(pedb=mock_pedb)
+        with pytest.raises(KeyError, match="U_MISSING"):
+            pgs._resolve_pins("U_MISSING", "VDD", "pg")
+
+    def test_resolve_pins_no_matching_pins(self):
+        """_resolve_pins raises ValueError when no pins on net."""
+        mock_comp = MagicMock()
+        mock_comp.pins = {}
+        mock_pedb = MagicMock()
+        mock_pedb.components.instances.get.return_value = mock_comp
+        pgs = CfgPinGroups(pedb=mock_pedb)
+        with pytest.raises(ValueError, match="No pins found"):
+            pgs._resolve_pins("U1", "MISSING_NET", "pg")
+
+    def test_get_from_edb(self):
+        """get() loads pin group from EDB when not cached."""
+        mock_pin = MagicMock()
+        mock_pin.component.name = "U1"
+        mock_pg_obj = MagicMock()
+        mock_pg_obj.pins = {"A1": mock_pin, "A2": mock_pin}
+        mock_pedb = MagicMock()
+        mock_pedb.siwave.pin_groups = {"pg_VDD": mock_pg_obj}
+        pgs = CfgPinGroups(pedb=mock_pedb)
+        pg = pgs.get("pg_VDD")
+        assert pg.name == "pg_VDD"
+        assert pg.reference_designator == "U1"

@@ -25,7 +25,7 @@ import json
 import pytest
 import toml
 
-from pyedb.configuration.cfg_common import CfgVariables
+from pyedb.configuration.cfg_common import CfgBase, CfgVariables
 from pyedb.configuration.cfg_data import CfgData
 from pyedb.configuration.cfg_package_definition import CfgHeatSink
 from pyedb.configuration.cfg_ports_sources import CfgTerminalInfo as TerminalInfo
@@ -597,3 +597,73 @@ class TestBuilderTomlRoundTrip:
         from pathlib import Path
 
         assert isinstance(result, Path)
+
+
+class TestCfgBase:
+    """Unit tests for CfgBase helper methods (cfg_common.py)."""
+
+    def _make_instance(self, **attrs):
+        obj = CfgBase()
+        for k, v in attrs.items():
+            setattr(obj, k, v)
+        return obj
+
+    def test_get_attributes_basic(self):
+        obj = self._make_instance(foo="bar", baz=42)
+        d = obj.get_attributes()
+        assert d["foo"] == "bar"
+        assert d["baz"] == 42
+
+    def test_get_attributes_excludes_none_and_empty(self):
+        obj = self._make_instance(a=None, b=[], c={}, d="keep")
+        d = obj.get_attributes()
+        assert "a" not in d
+        assert "b" not in d
+        assert "c" not in d
+        assert "d" in d
+
+    def test_get_attributes_excludes_protected(self):
+        obj = self._make_instance(pedb="session", foo="bar")
+        d = obj.get_attributes()
+        assert "pedb" not in d
+        assert "foo" in d
+
+    def test_get_attributes_excludes_private(self):
+        obj = self._make_instance(foo="public")
+        obj._private = "hidden"
+        d = obj.get_attributes()
+        assert "_private" not in d
+        assert "foo" in d
+
+    def test_get_attributes_extra_exclude_string(self):
+        obj = self._make_instance(foo="bar", skip_me="x")
+        d = obj.get_attributes(exclude="skip_me")
+        assert "skip_me" not in d
+        assert "foo" in d
+
+    def test_get_attributes_extra_exclude_list(self):
+        obj = self._make_instance(foo="bar", a="x", b="y")
+        d = obj.get_attributes(exclude=["a", "b"])
+        assert "a" not in d
+        assert "b" not in d
+        assert "foo" in d
+
+    def test_set_attributes_applies_values(self):
+        class Target:
+            foo = None
+            baz = None
+
+        obj = self._make_instance(foo="bar", baz=42)
+        t = Target()
+        obj.set_attributes(t)
+        assert t.foo == "bar"
+        assert t.baz == 42
+
+    def test_set_attributes_raises_on_unknown_attr(self):
+        class Target:
+            pass
+
+        obj = self._make_instance(unknown_attr="x")
+        t = Target()
+        with pytest.raises(AttributeError, match="unknown_attr"):
+            obj.set_attributes(t)

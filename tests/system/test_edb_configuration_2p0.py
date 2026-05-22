@@ -2413,3 +2413,456 @@ class TestOperations(BaseTestClass):
         assert dielectric_layer.material == "Test_material"
         assert dielectric_layer.thickness == 250e-6
         edb_app.close(terminate_rpc_session=False)
+
+
+@pytest.mark.usefixtures("close_rpc_session")
+class TestCfgBuilderGetDataFromDb(BaseTestClass):
+    """Tests for get_data_from_db, export and round-trip coverage using SIverse."""
+
+    SIGNAL_NETS = [
+        "PCIe_Gen4_RX0_P",
+        "PCIe_Gen4_RX0_N",
+        "PCIe_Gen4_RX1_P",
+        "PCIe_Gen4_RX1_N",
+    ]
+
+    def _get_edb_with_coax_ports(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        comp = cfg.components.get("U1")
+        comp.set_solder_ball_properties(shape="cylinder", diameter="300um", height="300um")
+        cfg.ports.add_coax_port(reference_designator="U1", net_list=self.SIGNAL_NETS)
+        edb_app.configuration.run(cfg)
+        return edb_app
+
+    # get_data_from_db – individual flags
+    def test_get_data_from_db_stackup(self):
+        edb_app = self.edb_examples.get_si_verse()
+        data = edb_app.configuration.get_data_from_db(stackup=True)
+        assert "stackup" in data
+        assert len(data["stackup"]["layers"]) > 0
+        assert len(data["stackup"]["materials"]) > 0
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_nets(self):
+        edb_app = self.edb_examples.get_si_verse()
+        data = edb_app.configuration.get_data_from_db(nets=True)
+        assert "nets" in data
+        assert isinstance(data["nets"]["signal_nets"], list)
+        assert isinstance(data["nets"]["power_ground_nets"], list)
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_padstacks(self):
+        edb_app = self.edb_examples.get_si_verse()
+        data = edb_app.configuration.get_data_from_db(padstacks=True)
+        assert "padstacks" in data
+        assert "definitions" in data["padstacks"]
+        assert len(data["padstacks"]["definitions"]) > 0
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_components(self):
+        edb_app = self.edb_examples.get_si_verse()
+        data = edb_app.configuration.get_data_from_db(components=True)
+        assert "components" in data
+        assert len(data["components"]) > 0
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_pin_groups(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.pin_groups.add(reference_designator="U1", nets="GND")
+        edb_app.configuration.run(cfg)
+        data = edb_app.configuration.get_data_from_db(pin_groups=True)
+        assert "pin_groups" in data
+        assert len(data["pin_groups"]) > 0
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_ports_coax(self):
+        edb_app = self._get_edb_with_coax_ports()
+        data = edb_app.configuration.get_data_from_db(ports=True)
+        assert "ports" in data
+        coax_ports = [p for p in data["ports"] if p["type"] == "coax"]
+        assert len(coax_ports) == len(self.SIGNAL_NETS)
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_ports_circuit(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.pin_groups.add(reference_designator="U1", nets="GND")
+        for net in self.SIGNAL_NETS:
+            cfg.ports.add_circuit_port(reference_designator="U1", positive_net=net, negative_net="GND")
+        edb_app.configuration.run(cfg)
+        data = edb_app.configuration.get_data_from_db(ports=True)
+        assert "ports" in data
+        circuit_ports = [p for p in data["ports"] if p["type"] == "circuit"]
+        assert len(circuit_ports) == len(self.SIGNAL_NETS)
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_get_data_from_db_wave_port(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        path = edb_app.nets.nets.get("PCIe_Gen4_RX0_P").primitives[0]
+        point = path.center_line[0]
+        cfg.ports.add_wave_port(name="test_wp", primitive=path, point_on_edge=point)
+        edb_app.configuration.run(cfg)
+        data = edb_app.configuration.get_data_from_db(ports=True)
+        wave_ports = [p for p in data["ports"] if p["type"] == "wave_port"]
+        assert len(wave_ports) >= 1
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_setups(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        setup = cfg.setups.add_hfss_setup(name="HFSS_export_test")
+        setup.add_frequency_sweep(name="Sweep1", start="1GHz", stop="5GHz", step_or_count="1GHz")
+        edb_app.configuration.run(cfg)
+        data = edb_app.configuration.get_data_from_db(setups=True)
+        assert "setups" in data
+        hfss_setups = [s for s in data["setups"] if s.get("type") == "hfss"]
+        assert any(s["name"] == "HFSS_export_test" for s in hfss_setups)
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_setups_siwave_dc(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.setups.add_siwave_dc_setup(name="DC_export_test", dc_slider_position=1)
+        edb_app.configuration.run(cfg)
+        data = edb_app.configuration.get_data_from_db(setups=True)
+        dc_setups = [s for s in data["setups"] if s.get("type") in ("siwave_dc", "siwave_dcir")]
+        assert any(s["name"] == "DC_export_test" for s in dc_setups)
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_setups_siwave_ac(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        setup = cfg.setups.add_siwave_ac_setup(name="AC_export_test", use_si_settings=True, si_slider_position=1)
+        setup.add_frequency_sweep(name="Sweep1", start="0GHz", stop="10GHz", step_or_count="0.5GHz")
+        edb_app.configuration.run(cfg)
+        data = edb_app.configuration.get_data_from_db(setups=True)
+        ac_setups = [s for s in data["setups"] if s.get("type") in ("siwave_ac", "siwave")]
+        assert any(s["name"] == "AC_export_test" for s in ac_setups)
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_general(self):
+        edb_app = self.edb_examples.get_si_verse()
+        data = edb_app.configuration.get_data_from_db(general=True)
+        assert "general" in data
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_variables(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.variables.add("trace_width", "0.15mm", "Default trace width")
+        edb_app.configuration.run(cfg)
+        data = edb_app.configuration.get_data_from_db(variables=True)
+        assert "variables" in data
+        var_names = [v["name"] for v in data["variables"]]
+        assert "trace_width" in var_names
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_boundaries(self):
+        edb_app = self.edb_examples.get_si_verse()
+        data = edb_app.configuration.get_data_from_db(boundaries=True)
+        assert "boundaries" in data
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_s_parameters(self):
+        edb_app = self.edb_examples.get_si_verse()
+        data = edb_app.configuration.get_data_from_db(s_parameters=True)
+        assert "s_parameters" in data
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_terminals(self):
+        edb_app = self._get_edb_with_coax_ports()
+        data = edb_app.configuration.get_data_from_db(terminals=True)
+        assert "terminals" in data
+        assert len(data["terminals"]) > 0
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_get_data_from_db_sources(self):
+        """get_data_from_db(sources=True) with pin-group-based current source."""
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.pin_groups.add(name="pg_sig", reference_designator="U1", nets="PCIe_Gen4_RX0_P")
+        cfg.pin_groups.add(name="pg_gnd", reference_designator="U1", nets="GND")
+        cfg.sources.add_current_source(
+            name="isrc1",
+            positive_terminal={"pin_group": "pg_sig"},
+            negative_terminal={"pin_group": "pg_gnd"},
+        )
+        edb_app.configuration.run(cfg)
+        data = edb_app.configuration.get_data_from_db(sources=True)
+        assert "sources" in data
+        source_names = [s["name"] for s in data["sources"]]
+        assert "isrc1" in source_names
+        edb_app.close(terminate_rpc_session=False)
+
+    # export()
+    def test_export_json(self, tmp_path):
+        edb_app = self.edb_examples.get_si_verse()
+        out = tmp_path / "cfg_export.json"
+        result = edb_app.configuration.export(
+            str(out),
+            stackup=True,
+            nets=True,
+            components=True,
+            padstacks=True,
+            setups=False,
+            sources=False,
+            ports=False,
+            pin_groups=False,
+            operations=False,
+            boundaries=False,
+            s_parameters=False,
+            general=True,
+            variables=False,
+        )
+        assert result is True
+        assert out.exists()
+        with open(out) as f:
+            data = json.load(f)
+        assert "stackup" in data
+        assert "nets" in data
+        assert "components" in data
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_export_toml(self, tmp_path):
+        edb_app = self.edb_examples.get_si_verse()
+        out = tmp_path / "cfg_export.toml"
+        result = edb_app.configuration.export(
+            str(out),
+            stackup=True,
+            nets=True,
+            components=False,
+            padstacks=False,
+            setups=False,
+            sources=False,
+            ports=False,
+            pin_groups=False,
+            operations=False,
+            boundaries=False,
+            s_parameters=False,
+            general=False,
+            variables=False,
+        )
+        assert result is True
+        assert out.exists()
+        edb_app.close(terminate_rpc_session=False)
+
+    # Round-trip: export then re-load
+    def test_round_trip_nets_and_stackup(self, tmp_path):
+        edb_app = self.edb_examples.get_si_verse()
+        out = tmp_path / "rt_cfg.json"
+        edb_app.configuration.export(
+            str(out),
+            stackup=True,
+            nets=True,
+            components=False,
+            padstacks=False,
+            setups=False,
+            sources=False,
+            ports=False,
+            pin_groups=False,
+            operations=False,
+            boundaries=False,
+            s_parameters=False,
+            general=False,
+            variables=False,
+        )
+        edb_app2 = self.edb_examples.get_si_verse()
+        result = edb_app2.configuration.load(str(out), apply_file=True)
+        assert result
+        # Signal and power-ground nets are preserved
+        for net in ["GND", "PCIe_Gen4_RX0_P"]:
+            assert net in edb_app2.nets.nets
+        edb_app.close(terminate_rpc_session=False)
+        edb_app2.close(terminate_rpc_session=False)
+
+    # apply_variables
+    def test_apply_variables_design_and_project(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.variables.add("my_width", "0.1mm", "trace width")
+        cfg.variables.add("$my_proj_var", "25cel", "project temperature")
+        edb_app.configuration.run(cfg)
+        assert "my_width" in edb_app.design_variables
+        assert "$my_proj_var" in edb_app.project_variables
+        edb_app.close(terminate_rpc_session=False)
+
+    # Circuit port with positive_net / negative_net auto-resolve (EDB-live)
+    def test_circuit_port_positive_net_auto_resolve(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.ports.add_circuit_port(
+            reference_designator="U1",
+            positive_net="PCIe_Gen4_RX0_P",
+            negative_net="GND",
+        )
+        edb_app.configuration.run(cfg)
+        assert len(edb_app.ports) >= 1
+        edb_app.close(terminate_rpc_session=False)
+
+    # Voltage source
+    def test_add_voltage_source_pin_group(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.pin_groups.add(name="pg_sig", reference_designator="U1", nets="PCIe_Gen4_RX0_P")
+        cfg.pin_groups.add(name="pg_gnd", reference_designator="U1", nets="GND")
+        cfg.sources.add_voltage_source(
+            name="vsrc1",
+            positive_terminal={"pin_group": "pg_sig"},
+            negative_terminal={"pin_group": "pg_gnd"},
+            magnitude=3.3,
+        )
+        edb_app.configuration.run(cfg)
+        assert "vsrc1" in edb_app.terminals
+        edb_app.close(terminate_rpc_session=False)
+
+    # get_layer / get_signal_layers on live session
+    def test_cfg_builder_get_layer_and_signal_layers(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        layer = cfg.stackup.get_layer("1_Top")
+        assert layer.name == "1_Top"
+        assert layer.layer_type == "signal"
+        sig_layers = cfg.stackup.get_signal_layers()
+        assert len(sig_layers) > 0
+        assert all(la.type == "signal" for la in sig_layers)
+        edb_app.close(terminate_rpc_session=False)
+
+    # get_material on live session
+    def test_cfg_builder_get_material(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        mat = cfg.stackup.get_material("copper")
+        assert mat.name == "copper"
+        assert mat.conductivity is not None
+        edb_app.close(terminate_rpc_session=False)
+
+    # get_definition / get_instance on live padstacks
+    def test_cfg_builder_get_padstack_definition(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        # Get first definition name from EDB
+        first_def_name = next(iter(edb_app.padstacks.definitions))
+        pdef = cfg.padstacks.get_definition(first_def_name)
+        assert pdef.name == first_def_name
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_cfg_builder_get_padstack_instance(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        first_inst_name = next(name for name, obj in edb_app.padstacks.instances_by_name.items() if not obj.is_pin)
+        inst = cfg.padstacks.get_instance(first_inst_name)
+        assert inst.name == first_inst_name
+        edb_app.close(terminate_rpc_session=False)
+
+    # Pin group get() on live session
+    def test_cfg_builder_get_pin_group_from_edb(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.pin_groups.add(reference_designator="U1", nets="GND")
+        edb_app.configuration.run(cfg)
+        # Now the pin group exists in EDB — create a fresh builder and get it
+        cfg2 = edb_app.configuration.create_config_builder()
+        pg = cfg2.pin_groups.get("Pingroup_U1.GND")
+        assert pg.name == "Pingroup_U1.GND"
+        assert pg.reference_designator == "U1"
+        edb_app.close(terminate_rpc_session=False)
+
+    # Roughness model apply via configuration
+    def test_cfg_stackup_roughness_huray(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.stackup.get_layers()  # pre-populate all layers so apply_stackup count matches
+        layer = cfg.stackup.get_layer("1_Top")
+        layer.set_huray_roughness("0.5um", "2.9")
+        edb_app.configuration.run(cfg)
+        assert "1_Top" in edb_app.stackup.layers
+        assert edb_app.stackup.layers["1_Top"].roughness_enabled
+        assert edb_app.stackup.layers["1_Top"].top_hallhuray_nodule_radius == 5e-7
+        assert edb_app.stackup.layers["1_Top"].top_hallhuray_surface_ratio == 2.9
+        assert edb_app.stackup.layers["1_Top"].bottom_hallhuray_nodule_radius == 5e-7
+        assert edb_app.stackup.layers["1_Top"].bottom_hallhuray_surface_ratio == 2.9
+        assert edb_app.stackup.layers["1_Top"].side_hallhuray_nodule_radius == 5e-7
+        assert edb_app.stackup.layers["1_Top"].side_hallhuray_surface_ratio == 2.9
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_stackup_roughness_groisse(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.stackup.get_layers()  # pre-populate all layers so apply_stackup count matches
+        layer = cfg.stackup.get_layer("1_Top")
+        layer.set_groisse_roughness(0.3e-6)
+        edb_app.configuration.run(cfg)
+        assert "1_Top" in edb_app.stackup.layers
+        assert edb_app.stackup.layers["1_Top"].roughness_enabled
+        assert edb_app.stackup.layers["1_Top"].top_groisse_roughness == 3e-7
+        assert edb_app.stackup.layers["1_Top"].bottom_groisse_roughness == 3e-7
+        assert edb_app.stackup.layers["1_Top"].side_groisse_roughness == 3e-7
+        edb_app.close(terminate_rpc_session=False)
+
+    # load() from file paths (JSON and TOML)
+    def test_load_from_json_file(self, tmp_path):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_data = {"nets": {"signal_nets": ["PCIe_Gen4_RX0_P"], "power_ground_nets": ["GND"]}}
+        json_file = tmp_path / "test_cfg.json"
+        with open(json_file, "w") as f:
+            json.dump(cfg_data, f)
+        edb_app.configuration.load(str(json_file), apply_file=True)
+        assert edb_app.nets.nets["PCIe_Gen4_RX0_P"].is_power_ground is False
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_load_from_toml_file(self, tmp_path):
+        import toml
+
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_data = {"nets": {"signal_nets": ["PCIe_Gen4_RX0_P"], "power_ground_nets": ["GND"]}}
+        toml_file = tmp_path / "test_cfg.toml"
+        with open(toml_file, "w") as f:
+            toml.dump(cfg_data, f)
+        edb_app.configuration.load(str(toml_file), apply_file=True)
+        edb_app.close(terminate_rpc_session=False)
+
+    # run() with dict and CfgData passed directly
+    def test_run_with_cfgdata_directly(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.nets.add_power_ground_nets(["PCIe_Gen4_RX0_P"])
+        edb_app.configuration.run(cfg)
+        assert edb_app.nets.nets["PCIe_Gen4_RX0_P"].is_power_ground is True
+        edb_app.close(terminate_rpc_session=False)
+
+    def test_run_with_dict_directly(self):
+        edb_app = self.edb_examples.get_si_verse()
+        edb_app.configuration.run({"nets": {"power_ground_nets": ["PCIe_Gen4_RX0_P"]}})
+        assert edb_app.nets.nets["PCIe_Gen4_RX0_P"].is_power_ground is True
+        edb_app.close(terminate_rpc_session=False)
+
+    # get_data_from_db with operations (after cutout)
+    def test_get_data_from_db_operations_after_cutout(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg = edb_app.configuration.create_config_builder()
+        cfg.nets.add_signal_nets(["PCIe_Gen4_RX0_P", "PCIe_Gen4_RX0_N"])
+        cfg.nets.add_reference_nets(["GND"])
+        cfg.operations.add_cutout(
+            signal_nets=cfg.nets.signal_nets,
+            reference_nets=cfg.nets.reference_nets,
+            extent_type="ConvexHull",
+            expansion_size=2e-3,
+        )
+        edb_app.configuration.run(cfg)
+        data = edb_app.configuration.get_data_from_db(operations=True)
+        assert "operations" in data
+        assert "cutout" in data["operations"]
+        assert len(data["operations"]["cutout"]["signal_nets"]) > 0
+        edb_app.close(terminate_rpc_session=False)
+
+    # package_definitions get_data_from_db
+    def test_get_data_from_db_package_definitions(self):
+        edb_app = self.edb_examples.get_si_verse()
+        data = edb_app.configuration.get_data_from_db(package_definitions=True)
+        assert "package_definitions" in data
+        edb_app.close(terminate_rpc_session=False)
