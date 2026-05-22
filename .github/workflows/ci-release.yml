@@ -132,14 +132,12 @@ jobs:
 
       - name: Run unit tests
         run: |
-          source .venv/bin/activate
-          pytest tests/unit -vvv --cov
+          uv run --no-sync pytest tests/unit -vvv --cov
 
       - name: Create coverage files
         run: |
-          source .venv/bin/activate
-          python -m coverage html -d .cov\unit-html
-          python -m coverage xml -o .cov\unit.xml
+          uv run --no-sync python -m coverage html -d .cov\unit-html
+          uv run --no-sync python -m coverage xml -o .cov\unit.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -187,14 +185,12 @@ jobs:
 
       - name: Run unit tests
         run: |
-          source .venv/bin/activate
-          pytest tests/unit -vvv --cov
+          uv run --no-sync pytest tests/unit -vvv --cov
 
       - name: Create coverage files
         run: |
-          source .venv/bin/activate
-          python -m coverage html -d .cov\unit-html
-          python -m coverage xml -o .cov\unit.xml
+          uv run --no-sync python -m coverage html -d .cov\unit-html
+          uv run --no-sync python -m coverage xml -o .cov\unit.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -249,14 +245,12 @@ jobs:
           retry_on: error
           timeout_minutes: 80
           command: |
-            . .venv\Scripts\Activate.ps1
-            pytest tests/system -vvv --cov
+            uv run --no-sync pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
-          . .venv\Scripts\Activate.ps1
-          python -m coverage html -d .cov\system-html
-          python -m coverage xml -o .cov\system.xml
+          uv run --no-sync python -m coverage html -d .cov\system-html
+          uv run --no-sync python -m coverage xml -o .cov\system.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -311,14 +305,12 @@ jobs:
           retry_on: error
           timeout_minutes: 80
           command: |
-            . .venv\Scripts\Activate.ps1
-            pytest tests/system -vvv --cov
+            uv run --no-sync pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
-          . .venv\Scripts\Activate.ps1
-          python -m coverage html -d .cov\system-html
-          python -m coverage xml -o .cov\system.xml
+          uv run --no-sync python -m coverage html -d .cov\system-html
+          uv run --no-sync python -m coverage xml -o .cov\system.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -380,14 +372,12 @@ jobs:
           retry_on: error
           timeout_minutes: 80
           command: |
-            . .venv/bin/activate
-            pytest tests/system -vvv --cov
+            uv run --no-sync pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
-          . .venv/bin/activate
-          python -m coverage html -d .cov/system-html
-          python -m coverage xml -o .cov/system.xml
+          uv run --no-sync python -m coverage html -d .cov/system-html
+          uv run --no-sync python -m coverage xml -o .cov/system.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -449,14 +439,12 @@ jobs:
           retry_on: error
           timeout_minutes: 80
           command: |
-            . .venv/bin/activate
-            pytest tests/system -vvv --cov
+            uv run --no-sync pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
-          . .venv/bin/activate
-          python -m coverage html -d .cov/system-html
-          python -m coverage xml -o .cov/system.xml
+          uv run --no-sync python -m coverage html -d .cov/system-html
+          uv run --no-sync python -m coverage xml -o .cov/system.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -528,13 +516,12 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            .venv\Scripts\Activate.ps1
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
-            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
-            pytest -v external/pyaedt/tests/system/general/test_circuit.py
-            pytest -v external/pyaedt/tests/system/general/test_hfss.py
-            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/general/test_circuit.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/general/test_hfss.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -546,8 +533,7 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            .venv\Scripts\Activate.ps1
-            pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -559,16 +545,15 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            .venv\Scripts\Activate.ps1
-            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
-            pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -636,13 +621,12 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
-            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
-            pytest -v external/pyaedt/tests/system/general/test_circuit.py
-            pytest -v external/pyaedt/tests/system/general/test_hfss.py
-            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/general/test_circuit.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/general/test_hfss.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -654,8 +638,7 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -667,16 +650,15 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
-            pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
+            uv run --no-sync pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
 
   docs-build:
     name: Build documentation

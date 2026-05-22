@@ -128,14 +128,12 @@ jobs:
 
       - name: Run unit tests
         run: |
-          source .venv/bin/activate
-          pytest tests/unit -vvv --cov=pyedb --color=yes -ra
+          uv run --no-sync pytest tests/unit -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          source .venv/bin/activate
-          python -m coverage html -d .cov\unit-html
-          python -m coverage xml -o .cov\unit.xml
+          uv run --no-sync python -m coverage html -d .cov\unit-html
+          uv run --no-sync python -m coverage xml -o .cov\unit.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -183,14 +181,12 @@ jobs:
 
       - name: Run unit tests
         run: |
-          source .venv/bin/activate
-          pytest tests/unit -vvv --cov=pyedb --color=yes -ra
+          uv run --no-sync pytest tests/unit -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          source .venv/bin/activate
-          python -m coverage html -d .cov\unit-html
-          python -m coverage xml -o .cov\unit.xml
+          uv run --no-sync python -m coverage html -d .cov\unit-html
+          uv run --no-sync python -m coverage xml -o .cov\unit.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -245,14 +241,12 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            . .venv\Scripts\Activate.ps1
-            pytest tests/system --cov=pyedb --color=yes -ra
+            uv run --no-sync pytest tests/system --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          . .venv\Scripts\Activate.ps1
-          python -m coverage html -d .cov\system-html
-          python -m coverage xml -o .cov\system.xml
+          uv run --no-sync python -m coverage html -d .cov\system-html
+          uv run --no-sync python -m coverage xml -o .cov\system.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -307,14 +301,12 @@ jobs:
           retry_on: error
           timeout_minutes: 70
           command: |
-            . .venv\Scripts\Activate.ps1
-            pytest tests/system -vvv --cov=pyedb --color=yes -ra
+            uv run --no-sync pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          . .venv\Scripts\Activate.ps1
-          python -m coverage html -d .cov\system-html
-          python -m coverage xml -o .cov\system.xml
+          uv run --no-sync python -m coverage html -d .cov\system-html
+          uv run --no-sync python -m coverage xml -o .cov\system.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -376,14 +368,12 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            . .venv/bin/activate
-            pytest tests/system -vvv --cov=pyedb --color=yes -ra
+            uv run --no-sync pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          . .venv/bin/activate
-          python -m coverage html -d .cov/system-html
-          python -m coverage xml -o .cov/system.xml
+          uv run --no-sync python -m coverage html -d .cov/system-html
+          uv run --no-sync python -m coverage xml -o .cov/system.xml
 
       - name: Upload Coverage Results
         if: always()
@@ -445,14 +435,12 @@ jobs:
           retry_on: error
           timeout_minutes: 70
           command: |
-            . .venv/bin/activate
-            pytest tests/system -vvv --cov=pyedb --color=yes -ra
+            uv run --no-sync pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          . .venv/bin/activate
-          python -m coverage html -d .cov/system-html
-          python -m coverage xml -o .cov/system.xml
+          uv run --no-sync python -m coverage html -d .cov/system-html
+          uv run --no-sync python -m coverage xml -o .cov/system.xml
 
       - name: Upload Coverage Results
         if: always()
