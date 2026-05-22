@@ -2415,7 +2415,6 @@ class TestOperations(BaseTestClass):
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-@pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
 class TestCfgBuilderGetDataFromDb(BaseTestClass):
     """Tests for get_data_from_db, export and round-trip coverage using SIverse."""
 
@@ -2498,6 +2497,7 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
         assert len(circuit_ports) == len(self.SIGNAL_NETS)
         edb_app.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
     def test_get_data_from_db_wave_port(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg = edb_app.configuration.create_config_builder()
@@ -2583,12 +2583,12 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
         """get_data_from_db(sources=True) with pin-group-based current source."""
         edb_app = self.edb_examples.get_si_verse()
         cfg = edb_app.configuration.create_config_builder()
-        cfg.pin_groups.add(reference_designator="U1", nets="PCIe_Gen4_RX0_P")
-        cfg.pin_groups.add(reference_designator="U1", nets="GND")
+        cfg.pin_groups.add(name="pg_sig", reference_designator="U1", nets="PCIe_Gen4_RX0_P")
+        cfg.pin_groups.add(name="pg_gnd", reference_designator="U1", nets="GND")
         cfg.sources.add_current_source(
             name="isrc1",
-            positive_terminal={"pin_group": "Pingroup_U1.PCIe_Gen4_RX0_P"},
-            negative_terminal={"pin_group": "Pingroup_U1.GND"},
+            positive_terminal={"pin_group": "pg_sig"},
+            negative_terminal={"pin_group": "pg_gnd"},
         )
         edb_app.configuration.run(cfg)
         data = edb_app.configuration.get_data_from_db(sources=True)
@@ -2706,12 +2706,12 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
     def test_add_voltage_source_pin_group(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg = edb_app.configuration.create_config_builder()
-        cfg.pin_groups.add(reference_designator="U1", nets="PCIe_Gen4_RX0_P")
-        cfg.pin_groups.add(reference_designator="U1", nets="GND")
+        cfg.pin_groups.add(name="pg_sig", reference_designator="U1", nets="PCIe_Gen4_RX0_P")
+        cfg.pin_groups.add(name="pg_gnd", reference_designator="U1", nets="GND")
         cfg.sources.add_voltage_source(
             name="vsrc1",
-            positive_terminal={"pin_group": "Pingroup_U1.PCIe_Gen4_RX0_P"},
-            negative_terminal={"pin_group": "Pingroup_U1.GND"},
+            positive_terminal={"pin_group": "pg_sig"},
+            negative_terminal={"pin_group": "pg_gnd"},
             magnitude=3.3,
         )
         edb_app.configuration.run(cfg)
@@ -2774,19 +2774,33 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
     def test_cfg_stackup_roughness_huray(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg = edb_app.configuration.create_config_builder()
+        cfg.stackup.get_layers()  # pre-populate all layers so apply_stackup count matches
         layer = cfg.stackup.get_layer("1_Top")
         layer.set_huray_roughness("0.5um", "2.9")
         edb_app.configuration.run(cfg)
         assert "1_Top" in edb_app.stackup.layers
+        assert edb_app.stackup.layers["1_Top"].roughness_enabled
+        assert edb_app.stackup.layers["1_Top"].top_hallhuray_nodule_radius == 5e-7
+        assert edb_app.stackup.layers["1_Top"].top_hallhuray_surface_ratio == 2.9
+        assert edb_app.stackup.layers["1_Top"].bottom_hallhuray_nodule_radius == 5e-7
+        assert edb_app.stackup.layers["1_Top"].bottom_hallhuray_surface_ratio == 2.9
+        assert edb_app.stackup.layers["1_Top"].side_hallhuray_nodule_radius == 5e-7
+        assert edb_app.stackup.layers["1_Top"].side_hallhuray_surface_ratio == 2.9
         edb_app.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
     def test_cfg_stackup_roughness_groisse(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg = edb_app.configuration.create_config_builder()
+        cfg.stackup.get_layers()  # pre-populate all layers so apply_stackup count matches
         layer = cfg.stackup.get_layer("1_Top")
         layer.set_groisse_roughness(0.3e-6)
         edb_app.configuration.run(cfg)
         assert "1_Top" in edb_app.stackup.layers
+        assert edb_app.stackup.layers["1_Top"].roughness_enabled
+        assert edb_app.stackup.layers["1_Top"].top_groisse_roughness == 3e-7
+        assert edb_app.stackup.layers["1_Top"].bottom_groisse_roughness == 3e-7
+        assert edb_app.stackup.layers["1_Top"].side_groisse_roughness == 3e-7
         edb_app.close(terminate_rpc_session=False)
 
     # load() from file paths (JSON and TOML)
