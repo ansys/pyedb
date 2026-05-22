@@ -77,7 +77,8 @@ class EdbInit(object):
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
         oa_directory = os.path.join(self.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oa_directory
-        os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], self.base_path])
+        if self.base_path not in os.environ["PATH"].split(os.pathsep):
+            os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], self.base_path])
         # register server kill
         atexit.register(self._signal_handler)
         # register signal handlers
