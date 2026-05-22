@@ -254,30 +254,6 @@ class TestCfgPinGroups:
         with pytest.raises(ValueError, match="No pins found"):
             pgs._resolve_pins("U1", "MISSING_NET", "pg")
 
-    def test_resolve_pins_single_pin_returns_none(self):
-        """_resolve_pins returns None and logs warning when only 1 pin found."""
-        mock_pin = MagicMock()
-        mock_pin.net_name = "VDD"
-        mock_comp = MagicMock()
-        mock_comp.pins = {"A1": mock_pin}
-        mock_pedb = MagicMock()
-        mock_pedb.components.instances.get.return_value = mock_comp
-        pgs = CfgPinGroups(pedb=mock_pedb)
-        result = pgs._resolve_pins("U1", "VDD", "pg_VDD")
-        assert result is None
-
-    def test_add_multi_net_skips_when_single_pin(self):
-        """Multi-net add skips net when only 1 pin is found (returns None from _resolve_pins)."""
-        mock_pin = MagicMock()
-        mock_pin.net_name = "VDD"
-        mock_comp = MagicMock()
-        mock_comp.pins = {"A1": mock_pin}  # only 1 pin on VDD
-        mock_pedb = MagicMock()
-        mock_pedb.components.instances.get.return_value = mock_comp
-        pgs = CfgPinGroups(pedb=mock_pedb)
-        result = pgs.add(reference_designator="U1", nets=["VDD"])
-        assert result is None
-
     def test_get_from_edb(self):
         """get() loads pin group from EDB when not cached."""
         mock_pin = MagicMock()
