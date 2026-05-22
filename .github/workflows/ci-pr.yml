@@ -121,7 +121,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
-          enable-cache: true
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --extra tests --extra dotnet
@@ -176,7 +176,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
-          enable-cache: true
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --extra tests
@@ -233,7 +233,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
-          enable-cache: true
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --extra tests --extra dotnet
@@ -295,7 +295,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
-          enable-cache: true
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --extra tests
@@ -364,7 +364,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
-          enable-cache: true
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --extra tests --extra dotnet
@@ -433,7 +433,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
-          enable-cache: true
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --extra tests
