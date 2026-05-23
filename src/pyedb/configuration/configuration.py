@@ -127,10 +127,10 @@ class Configuration:
         --------
         Retrieve an existing component and modify its solder-ball geometry:
 
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> u1 = cfg.components.get("U1")  # looks up U1 from EDB
-        >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
-        >>> edb.configuration.run(cfg)
+        cfg = edb.configuration.create_config_builder()
+        u1 = cfg.components.get("U1")  # looks up U1 from EDB
+        u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        edb.configuration.run(cfg)
 
         Traditional workflow (creating new component entries) still works:
 
@@ -174,10 +174,10 @@ class Configuration:
         --------
         Pass a :class:`~pyedb.configuration.cfg_data.CfgData` directly:
 
-        >>> from pyedb.configuration.cfg_data import CfgData
-        >>> cfg = CfgData()
-        >>> cfg.general.anti_pads_always_on = False
-        >>> edb.configuration.load(cfg, apply_file=True)
+        from pyedb.configuration.cfg_data import CfgData
+        cfg = CfgData()
+        cfg.general.anti_pads_always_on = False
+        edb.configuration.load(cfg, apply_file=True)
 
         """
         # Accept CfgData directly – convert to dict transparently.
@@ -240,11 +240,11 @@ class Configuration:
         --------
         Pass a builder directly — no ``load`` call needed:
 
-        >>> from pyedb.configuration.cfg_data import CfgData
-        >>> cfg = CfgData()
-        >>> cfg.general.anti_pads_always_on = False
-        >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
-        >>> edb.configuration.run(cfg)
+        from pyedb.configuration.cfg_data import CfgData
+        cfg = CfgData()
+        cfg.general.anti_pads_always_on = False
+        cfg.nets.add_signal_nets(["SIG1", "CLK"])
+        edb.configuration.run(cfg)
 
         Use the existing workflow unchanged:
 
