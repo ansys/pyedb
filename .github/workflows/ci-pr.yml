@@ -242,12 +242,12 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            source .venv/bin/activate
+            .venv\Scripts\activate
             pytest tests/system --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          source .venv/bin/activate
+          .venv\Scripts\activate
           python -m coverage html -d .cov\system-html
           python -m coverage xml -o .cov\system.xml
 
@@ -303,13 +303,13 @@ jobs:
           max_attempts: 3
           retry_on: error
           timeout_minutes: 70
-          command: |
-            source .venv/bin/activate
+          command: |  
+            .venv\Scripts\activate
             pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          source .venv/bin/activate
+          .venv\Scripts\activate
           python -m coverage html -d .cov\system-html
           python -m coverage xml -o .cov\system.xml
 
