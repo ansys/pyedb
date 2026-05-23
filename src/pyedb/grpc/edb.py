@@ -63,6 +63,7 @@ Examples
 
 from itertools import combinations
 import os
+from pathlib import Path
 import re
 import shutil
 import subprocess  # nosec B404
@@ -226,6 +227,8 @@ class Edb(EdbInit):
         restart_rpc_server=False,
         remove_existing_aedt: bool = False,
     ):
+        if isinstance(edbpath, Path):
+            edbpath = str(edbpath)
         edbversion = get_string_version(version)
         self._clean_variables()
         EdbInit.__init__(self, version=version)
