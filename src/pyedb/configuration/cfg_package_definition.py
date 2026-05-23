@@ -41,9 +41,15 @@ class CfgHeatSink(CfgBaseModel):
     fin_spacing: Optional[Any] = None
     fin_thickness: Optional[Any] = None
 
-    def get_attributes(self):
-        """Return non-null attribute dict (CfgBase compatibility)."""
-        return self.model_dump(exclude_none=True)
+    def get_attributes(self, exclude=None):
+        """Return non-null attribute dict (CfgBase compatibility).
+
+        Parameters
+        ----------
+        exclude : list, optional
+            List of field names to exclude from the result.
+        """
+        return self.model_dump(exclude_none=True, exclude=set(exclude) if exclude else None)
 
 
 class CfgPackage(CfgBaseModel):
