@@ -442,11 +442,8 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        .. code-block:: python
-
             r1 = cfg.components.add("R1", part_type="resistor")
             r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
-
         """
         self.pin_pair_model.append(
             CfgPinPairModel(
@@ -476,10 +473,7 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        .. code-block:: python
-
             u1.set_s_parameter_model("cap_100nF", "/snp/cap.s2p", "GND")
-
         """
         self.s_parameter_model = {"model_name": model_name, "model_path": model_path, "reference_net": reference_net}
 
@@ -499,10 +493,7 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        .. code-block:: python
-
             u1.set_spice_model("ic_spice", "/spice/ic.sp", sub_circuit="IC_TOP")
-
         """
         self.spice_model = {
             "model_name": model_name,

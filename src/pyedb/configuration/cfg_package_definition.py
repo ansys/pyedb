@@ -41,7 +41,7 @@ class CfgHeatSink(CfgBaseModel):
     fin_spacing: Optional[Any] = None
     fin_thickness: Optional[Any] = None
 
-    def get_attributes(self, exclude=None):
+    def get_attributes(self):
         """Return non-null attribute dict (CfgBase compatibility)."""
         return self.model_dump(exclude_none=True)
 
@@ -95,7 +95,7 @@ class CfgPackage(CfgBaseModel):
         fin_spacing=None,
         fin_thickness=None,
     ):
-        """Attach heat-sink fin geometry to this package definition.
+        """Attach heat sink fin geometry to this package definition.
 
         Parameters
         ----------
@@ -106,24 +106,24 @@ class CfgPackage(CfgBaseModel):
         fin_orientation : str, optional
             Fin orientation: ``"x_oriented"`` or ``"y_oriented"``.
         fin_spacing : str, optional
-            Centre-to-centre fin spacing, e.g. ``"1mm"``.
+            Center-to-center fin spacing, e.g. ``"1mm"``.
         fin_thickness : str, optional
             Fin thickness, e.g. ``"0.2mm"``.
 
         Returns
         -------
         CfgHeatSink
-            The newly created heat-sink object.
+            The newly created heat sink object.
 
         Examples
         --------
-        >>> pkg.set_heatsink(
-        ...     fin_base_height="0.5mm",
-        ...     fin_height="3mm",
-        ...     fin_orientation="x_oriented",
-        ...     fin_spacing="1mm",
-        ...     fin_thickness="0.2mm",
-        ... )
+            pkg.set_heatsink(
+                fin_base_height="0.5mm",
+                fin_height="3mm",
+                fin_orientation="x_oriented",
+                fin_spacing="1mm",
+                fin_thickness="0.2mm"
+            )
         """
         hs = CfgHeatSink(
             fin_base_height=fin_base_height,
@@ -257,16 +257,16 @@ class CfgPackageDefinitions:
 
         Examples
         --------
-        >>> pkg = cfg.package_definitions.add(
-        ...     "PKG_U1",
-        ...     component_definition="IC_U1",
-        ...     apply_to_all=True,
-        ...     maximum_power="5W",
-        ...     theta_jb="10C/W",
-        ...     theta_jc="5C/W",
-        ...     height="1mm",
-        ... )
-        >>> pkg.set_heatsink(fin_base_height="0.5mm", fin_height="3mm")
+            pkg = cfg.package_definitions.add(
+                "PKG_U1",
+                component_definition="IC_U1",
+                apply_to_all=True,
+                maximum_power="5W",
+                theta_jb="10C/W",
+                theta_jc="5C/W",
+                height="1mm",
+            )
+            pkg.set_heatsink(fin_base_height="0.5mm", fin_height="3mm")
         """
         pkg = CfgPackage(
             name=name,

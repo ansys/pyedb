@@ -79,14 +79,12 @@ class CfgData:
     --------
     Standalone construction (no EDB session):
 
-
         from pyedb.configuration.cfg_data import CfgData
         cfg = CfgData()
         cfg.nets.add_signal_nets(["SIG1", "CLK"])
         cfg.to_json("my_config.json")
 
     From an open EDB session (recommended):
-
 
         cfg = edb.configuration.create_config_builder()
         cfg.general.anti_pads_always_on = False
@@ -260,7 +258,6 @@ class CfgData:
 
         Examples
         --------
-
             cfg = CfgData()
             cfg.nets.add_signal_nets(["SIG"])
             cfg.to_dict()
@@ -284,7 +281,6 @@ class CfgData:
 
         Examples
         --------
-
             cfg.to_json("my_project_config.json")
         """
         file_path = Path(file_path)
@@ -313,7 +309,6 @@ class CfgData:
 
         Examples
         --------
-
             cfg.to_toml("my_project_config.toml")
         """
         if not _TOML_AVAILABLE:
@@ -342,7 +337,6 @@ class CfgData:
 
         Examples
         --------
-
             cfg = CfgData.from_dict({"nets": {"signal_nets": ["CLK"]}})
             cfg.nets.signal_nets
         """
@@ -366,7 +360,6 @@ class CfgData:
 
         Examples
         --------
-
             cfg = CfgData.from_json("base_config.json")
             cfg.general.suppress_pads = True
             cfg.to_json("modified_config.json")
@@ -398,7 +391,6 @@ class CfgData:
 
         Examples
         --------
-
             cfg = CfgData.from_toml("base_config.toml")
         """
         if not _TOML_AVAILABLE:
