@@ -26,7 +26,8 @@ import os
 
 import pytest
 
-from tests.conftest import local_path, test_subfolder
+from pyedb.grpc.database.definition.wirebond_def import ApdBondwireDef, Jedec4BondwireDef, Jedec5BondwireDef
+from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -82,6 +83,7 @@ class TestClass(BaseTestClass):
         assert edbapp.components["J5"].package_def.name == "package_2"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
     def test_wirebond_definitions(self):
         edbapp = self.edb_examples.get_wirebond_jedec4_project()
         assert list(edbapp.definitions.jedec4_bondwires.keys())[0] == "Default"
@@ -89,4 +91,132 @@ class TestClass(BaseTestClass):
         jedec4_bw = list(edbapp.definitions.jedec4_bondwires.values())[0]
         jedec4_bw.height = 20e-6
         assert jedec4_bw.height == 20e-6
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    def test_jedec5_set_parameters(self):
+        """Regression: Jedec5BondwireDef.set_parameters must accept height + two angles."""
+        edbapp = self.edb_examples.get_wirebond_jedec4_project()
+        jedec5_bw = list(edbapp.definitions.jedec5_bondwires.values())[0]
+
+        # set_parameters must accept three arguments without raising TypeError
+        jedec5_bw.set_parameters(100e-6, 90.0, 45.0)
+        height, die_pad_angle, lead_pad_angle = jedec5_bw.get_parameters()
+        assert height == 100e-6
+        assert die_pad_angle == 90.0
+        assert lead_pad_angle == 45.0
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    def test_jedec5_height_property_preserves_angles(self):
+        """Regression: setting height via property must not reset die/lead pad angles."""
+        edbapp = self.edb_examples.get_wirebond_jedec4_project()
+        jedec5_bw = list(edbapp.definitions.jedec5_bondwires.values())[0]
+
+        # Establish a known state first
+        jedec5_bw.set_parameters(50e-6, 80.0, 40.0)
+        # Now change only the height through the property
+        jedec5_bw.height = 120e-6
+        height, die_pad_angle, lead_pad_angle = jedec5_bw.get_parameters()
+        assert height == 120e-6
+        assert die_pad_angle == 80.0  # must be preserved
+        assert lead_pad_angle == 40.0  # must be preserved
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    def test_create_and_find_jedec4_bondwire_def(self):
+        """Create a Jedec4 bondwire definition, set its height, and find it by name."""
+        edbapp = self.edb_examples.create_empty_edb()
+        name = "J4_system_test"
+
+        j4 = Jedec4BondwireDef.create(edbapp, name)
+        assert j4 is not None
+        assert j4.name == name
+
+        j4.set_parameters(75e-6)
+        assert j4.height == 75e-6
+
+        found = Jedec4BondwireDef.find_by_name(edbapp, name)
+        assert found is not None
+        assert found.name == name
+        assert found.height == 75e-6
+
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    def test_create_and_find_jedec5_bondwire_def(self):
+        """Create a Jedec5 bondwire definition, set all three parameters, and find it by name."""
+        edbapp = self.edb_examples.create_empty_edb()
+        name = "J5_system_test"
+
+        j5 = Jedec5BondwireDef.create(edbapp, name)
+        assert j5 is not None
+        assert j5.name == name
+
+        j5.set_parameters(100e-6, 90.0, 45.0)
+        height, die_pad_angle, lead_pad_angle = j5.get_parameters()
+        assert height == 100e-6
+        assert die_pad_angle == 90.0
+        assert lead_pad_angle == 45.0
+
+        found = Jedec5BondwireDef.find_by_name(edbapp, name)
+        assert found is not None
+        assert found.name == name
+
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    def test_create_and_find_apd_bondwire_def(self):
+        """Create an APD bondwire definition, read its parameter block, and find it by name."""
+        edbapp = self.edb_examples.create_empty_edb()
+        name = "APD_system_test"
+
+        apd = ApdBondwireDef.create(edbapp, name)
+        assert apd is not None
+        assert apd.name == name
+
+        # get_parameters returns the bwd descriptor block (non-empty string)
+        params = apd.get_parameters()
+        assert isinstance(params, str)
+        assert len(params) > 0
+
+        # parameter_block property exposes the same value
+        assert apd.parameter_block == params
+
+        # set_parameters round-trips the same block back
+        apd.set_parameters(params)
+        assert apd.get_parameters() == params
+
+        # Verify height raises AttributeError for APD definitions
+        with pytest.raises(AttributeError):
+            _ = apd.height
+
+        found = ApdBondwireDef.find_by_name(edbapp, name)
+        assert found is not None
+        assert found.name == name
+
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    def test_jedec4_find_by_name_returns_none_for_missing(self):
+        """find_by_name must return None when definition does not exist."""
+        edbapp = self.edb_examples.create_empty_edb()
+        result = Jedec4BondwireDef.find_by_name(edbapp, "does_not_exist")
+        assert result is None
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    def test_jedec5_find_by_name_returns_none_for_missing(self):
+        """find_by_name must return None when definition does not exist."""
+        edbapp = self.edb_examples.create_empty_edb()
+        result = Jedec5BondwireDef.find_by_name(edbapp, "does_not_exist")
+        assert result is None
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    def test_apd_find_by_name_returns_none_for_missing(self):
+        """find_by_name must return None when definition does not exist."""
+        edbapp = self.edb_examples.create_empty_edb()
+        result = ApdBondwireDef.find_by_name(edbapp, "does_not_exist")
+        assert result is None
         edbapp.close(terminate_rpc_session=False)
