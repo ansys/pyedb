@@ -101,7 +101,7 @@ class CfgBoundaries(CfgBaseModel):
     )
     base_polygon: Optional[str] = Field(
         default=None,
-        description=("Base polygon name for the extent region, used when the extent type is `Polygon`. "),
+        description="Base polygon name for the extent region, used when the extent type is `Polygon`. ",
     )
     truncate_air_box_at_ground: Optional[bool] = Field(
         default=None,
