@@ -120,8 +120,7 @@ class CfgPinGroups:
         """Return pins for *net_name* on *reference_designator*, or ``None`` to skip.
 
         Raises ``KeyError`` if the component is not found, ``ValueError`` if no
-        pins exist.  Logs a warning and returns ``None`` when fewer than 2 pins
-        are found (a pin group requires at least 2).
+        pins exist on the net.
         """
         comp = self._pedb.components.instances.get(reference_designator)
         if comp is None:
@@ -129,13 +128,6 @@ class CfgPinGroups:
         pins = [p for p, obj in comp.pins.items() if obj.net_name == net_name]
         if not pins:
             raise ValueError(f"No pins found for net '{net_name}' on component '{reference_designator}'.")
-        if len(pins) <= 1:
-            self._pedb.logger.warning(
-                f"Skipping pin group '{group_name}': only {len(pins)} pin(s) found "
-                f"for net '{net_name}' on component '{reference_designator}'. "
-                "A pin group requires at least 2 pins."
-            )
-            return None
         return pins
 
     def add(self, name=None, reference_designator=None, pins=None, nets=None, net=None):

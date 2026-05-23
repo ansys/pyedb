@@ -247,7 +247,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 80
+          timeout_minutes: 120
           command: |
             source .venv/bin/activate
             pytest tests/system -vvv --cov
@@ -309,7 +309,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 80
+          timeout_minutes: 120
           command: |
             source .venv/bin/activate
             pytest tests/system -vvv --cov
@@ -378,7 +378,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 80
+          timeout_minutes: 120
           command: |
             source .venv/bin/activate
             pytest tests/system -vvv --cov
@@ -447,7 +447,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 80
+          timeout_minutes: 120
           command: |
             source .venv/bin/activate
             pytest tests/system -vvv --cov

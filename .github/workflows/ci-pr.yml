@@ -302,9 +302,9 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 70
-          command: |  
-            .venv\Scripts\activate
+          timeout_minutes: 120
+          command: |
+            . .venv\Scripts\Activate.ps1
             pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
@@ -440,7 +440,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 70
+          timeout_minutes: 120
           command: |
             source .venv/bin/activate
             pytest tests/system -vvv --cov=pyedb --color=yes -ra

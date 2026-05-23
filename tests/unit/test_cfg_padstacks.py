@@ -402,3 +402,92 @@ class TestCfgBackdrillParameters:
         d = bd.model_dump(exclude_none=True)
         assert d["from_bottom"]["drill_to_layer"] == "L3"
         assert "from_top" not in d
+
+
+class TestCfgPadstacksGetDefinitionFromEdb:
+    def test_get_definition_cached(self):
+        ps = CfgPadstacks()
+        ps.add_definition("via_0.2", material="copper")
+        result = ps.get_definition("via_0.2")
+        assert result.name == "via_0.2"
+
+    def test_get_definition_raises_without_pedb(self):
+        ps = CfgPadstacks()
+        with pytest.raises(KeyError, match="missing"):
+            ps.get_definition("missing")
+
+    def test_get_definition_from_edb(self):
+        mock_pdef = MagicMock()
+        mock_pdef.name = "via_0.2"
+        mock_pdef.hole_plating_thickness = "25um"
+        mock_pdef.material = "copper"
+        mock_pdef.hole_range = "through"
+        mock_pdef.get_pad_parameters.return_value = {}
+        mock_pdef.get_hole_parameters.return_value = {}
+        mock_pdef.get_solder_parameters.return_value = {}
+        mock_pedb = MagicMock()
+        mock_pedb.padstacks.definitions = {"via_0.2": mock_pdef}
+        ps = CfgPadstacks.create(pedb=mock_pedb)
+        pdef = ps.get_definition("via_0.2")
+        assert pdef.name == "via_0.2"
+
+    def test_get_definition_not_found_in_edb_raises(self):
+        mock_pedb = MagicMock()
+        mock_pedb.padstacks.definitions = {}
+        ps = CfgPadstacks.create(pedb=mock_pedb)
+        with pytest.raises(KeyError, match="missing"):
+            ps.get_definition("missing")
+
+    def test_get_instance_cached(self):
+        ps = CfgPadstacks()
+        ps.add_instance(name="via_A1", net_name="GND")
+        result = ps.get_instance("via_A1")
+        assert result.name == "via_A1"
+
+    def test_get_instance_raises_without_pedb(self):
+        ps = CfgPadstacks()
+        with pytest.raises(KeyError, match="missing"):
+            ps.get_instance("missing")
+
+    def test_get_instance_from_edb(self):
+        mock_inst = MagicMock()
+        mock_inst.aedt_name = "via_A1"
+        mock_inst.is_pin = False
+        mock_inst.padstack_definition = "via_0.2"
+        mock_inst.backdrill_parameters = None
+        mock_inst.position_and_rotation = [0.001, 0.002, 0.0]
+        mock_inst.get_hole_overrides.return_value = (False, "0")
+        mock_inst.solderball_layer = None
+        mock_inst.start_layer = "top"
+        mock_inst.stop_layer = "bot"
+        mock_pedb = MagicMock()
+        mock_pedb.padstacks.instances_by_name = {"via_A1": mock_inst}
+        ps = CfgPadstacks.create(pedb=mock_pedb)
+        inst = ps.get_instance("via_A1")
+        assert inst.name == "via_A1"
+
+    def test_get_instance_not_found_in_edb_raises(self):
+        mock_pedb = MagicMock()
+        mock_pedb.padstacks.instances_by_name = {}
+        ps = CfgPadstacks.create(pedb=mock_pedb)
+        with pytest.raises(KeyError, match="missing"):
+            ps.get_instance("missing")
+
+    def test_build_pad_params_no_stackup_no_layers(self):
+        """_build_pad_parameters uses empty layers list when no pad_layers and no _cfg_stackup."""
+        ps = CfgPadstacks()
+        result = ps._build_pad_parameters(
+            pad_layers=None,
+            pad_shape="circle",
+            pad_diameter="0.2mm",
+            pad_x_size=None,
+            pad_y_size=None,
+            pad_offset_x="0",
+            pad_offset_y="0",
+            pad_rotation="0",
+            anti_pad_shape=None,
+            anti_pad_diameter=None,
+            anti_pad_x_size=None,
+            anti_pad_y_size=None,
+        )
+        assert result == {}
