@@ -442,8 +442,8 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-            r1 = cfg.components.add("R1", part_type="resistor")
-            r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
+        r1 = cfg.components.add("R1", part_type="resistor")
+        r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
         """
         self.pin_pair_model.append(
             CfgPinPairModel(
@@ -473,7 +473,7 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-            u1.set_s_parameter_model("cap_100nF", "/snp/cap.s2p", "GND")
+        u1.set_s_parameter_model("cap_100nF", "/snp/cap.s2p", "GND")
         """
         self.s_parameter_model = {"model_name": model_name, "model_path": model_path, "reference_net": reference_net}
 
@@ -493,7 +493,7 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-            u1.set_spice_model("ic_spice", "/spice/ic.sp", sub_circuit="IC_TOP")
+        u1.set_spice_model("ic_spice", "/spice/ic.sp", sub_circuit="IC_TOP")
         """
         self.spice_model = {
             "model_name": model_name,
@@ -528,10 +528,7 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        .. code-block:: python
-
-            u1.set_ic_die_properties("flip_chip", orientation="chip_down")
-
+        u1.set_ic_die_properties("flip_chip", orientation="chip_down")
         """
         data = {"type": die_type}
         if die_type != "no_die":
@@ -581,10 +578,8 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        .. code-block:: python
-
-            u1.set_solder_ball_properties("cylinder", "150um", "100um")
-            u1.set_solder_ball_properties()  # auto-sizes from pin pads
+        u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        u1.set_solder_ball_properties()  # auto-sizes from pin pads
 
         """
         refdes = reference_designator or self.reference_designator
@@ -633,10 +628,7 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        .. code-block:: python
-
-            u1.set_port_properties(reference_height="50um")
-
+        u1.set_port_properties(reference_height="50um")
         """
         self.port_properties = {
             "reference_height": reference_height,
@@ -728,13 +720,10 @@ class CfgComponents:
 
         Examples
         --------
-        .. code-block:: python
-
-            cfg = edb.configuration.create_config_builder()
-            u1 = cfg.components.get("U1")
-            u1.set_solder_ball_properties("cylinder", "150um", "100um")
-            edb.configuration.run(cfg)
-
+        cfg = edb.configuration.create_config_builder()
+        u1 = cfg.components.get("U1")
+        u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        edb.configuration.run(cfg)
         """
         # Return cached entry if already present
         cached = next((c for c in self.components if c.reference_designator == reference_designator), None)
@@ -787,11 +776,8 @@ class CfgComponents:
 
         Examples
         --------
-        .. code-block:: python
-
-            r1 = cfg.components.add("R1", part_type="resistor", enabled=True)
-            r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
-
+        r1 = cfg.components.add("R1", part_type="resistor", enabled=True)
+        r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
         """
         comp = CfgComponent(
             self._pedb,

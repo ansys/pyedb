@@ -79,16 +79,16 @@ class CfgData:
     --------
     Standalone construction (no EDB session):
 
-        from pyedb.configuration.cfg_data import CfgData
-        cfg = CfgData()
-        cfg.nets.add_signal_nets(["SIG1", "CLK"])
-        cfg.to_json("my_config.json")
+    from pyedb.configuration.cfg_data import CfgData
+    cfg = CfgData()
+    cfg.nets.add_signal_nets(["SIG1", "CLK"])
+    cfg.to_json("my_config.json")
 
     From an open EDB session (recommended):
 
-        cfg = edb.configuration.create_config_builder()
-        cfg.general.anti_pads_always_on = False
-        edb.configuration.run(cfg)
+    cfg = edb.configuration.create_config_builder()
+    cfg.general.anti_pads_always_on = False
+    edb.configuration.run(cfg)
 
     Attributes
     ----------
@@ -258,9 +258,9 @@ class CfgData:
 
         Examples
         --------
-            cfg = CfgData()
-            cfg.nets.add_signal_nets(["SIG"])
-            cfg.to_dict()
+        cfg = CfgData()
+        cfg.nets.add_signal_nets(["SIG"])
+        cfg.to_dict()
         """
         return {key: value for key, value in self._serialized_sections() if value not in ({}, [], None)}
 
@@ -281,7 +281,7 @@ class CfgData:
 
         Examples
         --------
-            cfg.to_json("my_project_config.json")
+        cfg.to_json("my_project_config.json")
         """
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -309,7 +309,7 @@ class CfgData:
 
         Examples
         --------
-            cfg.to_toml("my_project_config.toml")
+        cfg.to_toml("my_project_config.toml")
         """
         if not _TOML_AVAILABLE:
             raise ImportError("The 'toml' package is required to write TOML files. Install it with: pip install toml")
@@ -337,8 +337,8 @@ class CfgData:
 
         Examples
         --------
-            cfg = CfgData.from_dict({"nets": {"signal_nets": ["CLK"]}})
-            cfg.nets.signal_nets
+        cfg = CfgData.from_dict({"nets": {"signal_nets": ["CLK"]}})
+        cfg.nets.signal_nets
         """
         return cls(pedb=pedb, **data)
 
@@ -360,9 +360,9 @@ class CfgData:
 
         Examples
         --------
-            cfg = CfgData.from_json("base_config.json")
-            cfg.general.suppress_pads = True
-            cfg.to_json("modified_config.json")
+        cfg = CfgData.from_json("base_config.json")
+        cfg.general.suppress_pads = True
+        cfg.to_json("modified_config.json")
         """
         with open(file_path, "r", encoding="utf-8") as fh:
             data = json.load(fh)
@@ -391,7 +391,7 @@ class CfgData:
 
         Examples
         --------
-            cfg = CfgData.from_toml("base_config.toml")
+        cfg = CfgData.from_toml("base_config.toml")
         """
         if not _TOML_AVAILABLE:
             raise ImportError("The 'toml' package is required to read TOML files. Install it with: pip install toml")

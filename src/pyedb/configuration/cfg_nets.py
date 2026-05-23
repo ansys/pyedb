@@ -140,10 +140,10 @@ class CfgNets:
 
         Examples
         --------
-            cfg = edb.configuration.create_config_builder()
-            net = cfg.nets.get("GND")
-            if net:
-                print(net.classification)  # 'power_ground'
+        cfg = edb.configuration.create_config_builder()
+        net = cfg.nets.get("GND")
+        if net:
+            print(net.classification)  # 'power_ground'
         """
         if self._pedb is None:
             raise KeyError(

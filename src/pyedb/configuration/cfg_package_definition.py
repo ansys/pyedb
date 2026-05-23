@@ -117,13 +117,13 @@ class CfgPackage(CfgBaseModel):
 
         Examples
         --------
-            pkg.set_heatsink(
-                fin_base_height="0.5mm",
-                fin_height="3mm",
-                fin_orientation="x_oriented",
-                fin_spacing="1mm",
-                fin_thickness="0.2mm"
-            )
+        pkg.set_heatsink(
+            fin_base_height="0.5mm",
+            fin_height="3mm",
+            fin_orientation="x_oriented",
+            fin_spacing="1mm",
+            fin_thickness="0.2mm"
+        )
         """
         hs = CfgHeatSink(
             fin_base_height=fin_base_height,
@@ -257,16 +257,16 @@ class CfgPackageDefinitions:
 
         Examples
         --------
-            pkg = cfg.package_definitions.add(
-                "PKG_U1",
-                component_definition="IC_U1",
-                apply_to_all=True,
-                maximum_power="5W",
-                theta_jb="10C/W",
-                theta_jc="5C/W",
-                height="1mm",
-            )
-            pkg.set_heatsink(fin_base_height="0.5mm", fin_height="3mm")
+        pkg = cfg.package_definitions.add(
+            "PKG_U1",
+            component_definition="IC_U1",
+            apply_to_all=True,
+            maximum_power="5W",
+            theta_jb="10C/W",
+            theta_jc="5C/W",
+            height="1mm",
+        )
+        pkg.set_heatsink(fin_base_height="0.5mm", fin_height="3mm")
         """
         pkg = CfgPackage(
             name=name,

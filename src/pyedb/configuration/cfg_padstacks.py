@@ -179,7 +179,7 @@ class CfgPadstackInstance(CfgBase):
 
         Examples
         --------
-            via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+        via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
         """
         if self.backdrill_parameters is None:
             self.backdrill_parameters = CfgBackdrillParameters()
@@ -273,10 +273,10 @@ class CfgPadstacks(CfgBase):
 
         Examples
         --------
-            cfg = edb.configuration.create_config_builder()
-            via_def = cfg.padstacks.get_definition("via_0.2")
-            via_def.hole_plating_thickness = "30um"
-            edb.configuration.run(cfg)
+        cfg = edb.configuration.create_config_builder()
+        via_def = cfg.padstacks.get_definition("via_0.2")
+        via_def.hole_plating_thickness = "30um"
+        edb.configuration.run(cfg)
         """
         for d in self.definitions:
             if d.name == name:
@@ -326,10 +326,10 @@ class CfgPadstacks(CfgBase):
 
         Examples
         --------
-            cfg = edb.configuration.create_config_builder()
-            via = cfg.padstacks.get_instance("via_A1")
-            via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
-            edb.configuration.run(cfg)
+        cfg = edb.configuration.create_config_builder()
+        via = cfg.padstacks.get_instance("via_A1")
+        via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+        edb.configuration.run(cfg)
         """
         for inst in self.instances:
             if inst.name == name:
@@ -509,14 +509,14 @@ class CfgPadstacks(CfgBase):
         --------
         Simple circular via on all signal layers (requires live session):
 
-            cfg.padstacks.add_definition(
-                "via_0.2",
-                material="copper",
-                hole_plating_thickness="25um",
-                hole_diameter="0.2mm",
-                pad_diameter="0.5mm",
-                anti_pad_diameter="0.8mm"
-            )
+        cfg.padstacks.add_definition(
+            "via_0.2",
+            material="copper",
+            hole_plating_thickness="25um",
+            hole_diameter="0.2mm",
+            pad_diameter="0.5mm",
+            anti_pad_diameter="0.8mm"
+        )
 
         Blind via with explicit layers:
 
@@ -732,8 +732,8 @@ class CfgPadstacks(CfgBase):
 
         Examples
         --------
-            via = cfg.padstacks.add_instance(name="v1", net_name="GND", layer_range=["1_Top", "16_Bottom"])
-            via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+        via = cfg.padstacks.add_instance(name="v1", net_name="GND", layer_range=["1_Top", "16_Bottom"])
+        via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
         """
         obj = CfgPadstackInstance(
             name=name,
