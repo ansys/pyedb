@@ -67,30 +67,11 @@ class TestBondwireDefBase:
 
     def test_name_setter(self):
         self.bwd.name = "wire2"
-        self.core.__setattr__  # just verify the attr path exists
         self.pedb.value.assert_called_with("wire2")
-
-    def test_height_getter_delegates_to_get_parameters(self):
-        self.core.get_parameters.return_value = _make_value(42e-6)
-        assert self.bwd.height == 42e-6
-
-    def test_height_setter_delegates_to_set_parameters(self):
-        self.bwd.height = 50e-6
-        self.core.set_parameters.assert_called_once()
 
     def test_delete(self):
         self.bwd.delete()
         self.core.delete.assert_called_once()
-
-    def test_get_parameters_returns_float(self):
-        self.core.get_parameters.return_value = _make_value(1e-4)
-        assert self.bwd.get_parameters() == 1e-4
-
-    def test_set_parameters_calls_core(self):
-        self.bwd.set_parameters(1e-4)
-        self.core.set_parameters.assert_called_once()
-        args = self.core.set_parameters.call_args[0]
-        assert args[0].value == 1e-4
 
 
 # Jedec4BondwireDef

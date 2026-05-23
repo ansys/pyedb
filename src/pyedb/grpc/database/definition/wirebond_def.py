@@ -42,18 +42,25 @@ class BondwireDef:
         """Set the name of the bondwire definition."""
         self.core.name = self._pedb.value(value)
 
+    def delete(self):
+        self.core.delete()
+
+
+class Jedec4BondwireDef(BondwireDef):
+    """Class representing a JEDEC 4 bondwire definition."""
+
+    def __init__(self, pedb, core=None):
+        super().__init__(pedb, core)
+
     @property
     def height(self):
-        """Get the bondwire top-to-die distance of the bondwire definition."""
+        """Get the bondwire top-to-die distance of the JEDEC 4 bondwire definition."""
         return self.get_parameters()
 
     @height.setter
     def height(self, value):
-        """Set the bondwire top-to-die distance of the bondwire definition."""
+        """Set the bondwire top-to-die distance of the JEDEC 4 bondwire definition."""
         self.set_parameters(value)
-
-    def delete(self):
-        self.core.delete()
 
     def get_parameters(self):
         """Get the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
@@ -65,24 +72,15 @@ class BondwireDef:
         """
         return self.core.get_parameters().value
 
-    def set_parameters(self, parameters):
+    def set_parameters(self, height):
         """Set the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
 
         Parameters
         ----------
-        parameters : float
+        height : float
             Bondwire top-to-die distance.
         """
-        self.core.set_parameters(self._pedb.value(parameters))
-
-
-class Jedec4BondwireDef(BondwireDef):
-    """Class representing a JEDEC 4 bondwire definition."""
-
-    def __init__(self, pedb, core=None):
-        super().__init__(pedb, core)
-        self._pedb = pedb
-        self.core = core
+        self.core.set_parameters(self._pedb.value(height))
 
     @classmethod
     def create(cls, edb, name):
@@ -130,8 +128,6 @@ class Jedec5BondwireDef(BondwireDef):
 
     def __init__(self, pedb, core=None):
         super().__init__(pedb, core)
-        self._pedb = pedb
-        self.core = core
 
     @property
     def height(self):
@@ -219,8 +215,6 @@ class ApdBondwireDef(BondwireDef):
 
     def __init__(self, pedb, core=None):
         super().__init__(pedb, core)
-        self._pedb = pedb
-        self.core = core
 
     @property
     def height(self):
