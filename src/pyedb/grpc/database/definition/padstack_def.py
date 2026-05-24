@@ -319,7 +319,7 @@ class PadstackDef:
         return [
             j
             for j in list(self._pedb.padstacks.instances.values())
-            if not j.is_null and j.padstack_def.name == self.core.name
+            if not j.is_null and not j.padstack_def.is_null and j.padstack_def.name == self.core.name
         ]
 
     @property
