@@ -165,3 +165,17 @@ class TestClass(BaseTestClass):
         assert edbapp.layout.get_polygon_points(polygon_to_test)
 
         edbapp.close(terminate_rpc_session=False)
+
+    def test_layout_bounding_box(self):
+        """Evaluate layout bounding box."""
+        import ansys.edb.core
+
+        from tests.conftest import config
+
+        if config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6":
+            pytest.skip("Test skipped for ansys-edb-core version 0.2.6")
+        edbapp = self.edb_examples.get_si_verse()
+        assert len(edbapp.get_bounding_box()) == 2
+        bbox = [[round(i, 6) for i in j] for j in edbapp.get_bounding_box()]
+        assert bbox == [[-0.014260, -0.004550], [0.150105, 0.080000]]
+        edbapp.close(terminate_rpc_session=False)
