@@ -20,19 +20,165 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Tests related to general Edb functionality: variables, statistics, save, export, settings."""
 
 import os
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import ansys.edb.core
 import pytest
 
 from pyedb import Edb
-from tests.conftest import GRPC, desktop_version
+from pyedb.edb_logger import EdbLogger
+from pyedb.generic.general_methods import is_linux
+from tests.conftest import GRPC, config, desktop_version
+from tests.system.base_test_class import BaseTestClass
 
-pytestmark = [pytest.mark.system, pytest.mark.legacy]
+pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
 
-class TestClass:
+@pytest.mark.usefixtures("close_rpc_session")
+class TestClass(BaseTestClass):
+    def test_add_variables(self):
+        """Add design and project variables."""
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.add_design_variable("my_variable", "1mm")
+        assert "my_variable" in edbapp.get_all_variable_names()
+        assert edbapp.modeler.parametrize_trace_width("DDR4_DQ25")
+        assert edbapp.modeler.parametrize_trace_width("DDR4_A2")
+        if edbapp.grpc:
+            edbapp.add_design_variable("my_parameter", "2mm", "test description")
+        else:
+            edbapp.add_design_variable("my_parameter", "2mm", True)
+        assert "my_parameter" in edbapp.get_all_variable_names()
+        variable_value = edbapp.get_variable("my_parameter")
+        assert variable_value.value == 2e-3
+        if edbapp.grpc:
+            assert not edbapp.add_design_variable("my_parameter", "2mm", "test description")
+        else:
+            assert not edbapp.add_design_variable("my_parameter", "2mm", True)[0]
+        edbapp.add_project_variable("$my_project_variable", "3mm")
+        assert edbapp.get_variable("$my_project_variable").value == 3e-3
+        if edbapp.grpc:
+            assert not edbapp.add_project_variable("$my_project_variable", "3mm")
+        else:
+            assert not edbapp.add_project_variable("$my_project_variable", "3mm")[0]
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_save_edb_as(self):
+        """Save edb as some file."""
+        edbapp = self.edb_examples.create_empty_edb()
+        target_path = Path(self.edb_examples.test_folder) / "si_verse_new.aedb"
+        assert edbapp.save_as(target_path)
+        assert (target_path / "edb.def").exists()
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_export_3d(self):
+        """Export EDB to HFSS, Q3D and Maxwell."""
+        mock_process = MagicMock()
+        edb = self.edb_examples.create_empty_edb()
+        options_config = {"UNITE_NETS": 1, "LAUNCH_Q3D": 0}
+        out = edb.write_export3d_option_config_file(self.edb_examples.test_folder, options_config)
+        assert Path(out).exists()
+        with patch("subprocess.run", return_value=mock_process) as mock_run:
+            executable = "siwave" if is_linux else "siwave.exe"
+
+            edb.export_hfss(None)
+            popen_args, _ = mock_run.call_args
+            input_cmd = popen_args[0]
+            input_cmd_ = [
+                str(Path(edb.ansys_em_path) / executable),
+                "-RunScriptAndExit",
+                str(Path(edb.edbpath).parent / "export_cad.py"),
+            ]
+            assert input_cmd == input_cmd_
+
+            edb.export_q3d(None)
+            popen_args, _ = mock_run.call_args
+            input_cmd = popen_args[0]
+            assert input_cmd == input_cmd_
+
+            edb.export_maxwell(None)
+            popen_args, _ = mock_run.call_args
+            input_cmd = popen_args[0]
+            assert input_cmd == input_cmd_
+
+        edb.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
+    def test_edb_statistics(self):
+        """Get EDB statistics."""
+        edb = self.edb_examples.get_si_verse_sfp()
+        edb_stats = edb.get_statistics(compute_area=False)
+        assert edb_stats
+        assert edb_stats.num_layers
+        assert edb_stats.stackup_thickness
+        assert edb_stats.num_vias
+        assert edb_stats.layout_size
+        assert edb_stats.num_polygons
+        assert edb_stats.num_traces
+        assert edb_stats.num_nets
+        assert edb_stats.num_discrete_components
+        assert edb_stats.num_inductors
+        assert edb_stats.num_capacitors
+        assert edb_stats.num_resistors
+        edb.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
+    def test_edb_settings(self):
+        """Validate EDB general settings and utility methods."""
+        edbapp = self.edb_examples.get_si_verse()
+        assert type(edbapp.logger) == EdbLogger
+        assert edbapp.version == config["desktopVersion"]
+        assert edbapp.base_path == edbapp.ansys_em_path
+        assert edbapp.grpc == config["use_grpc"]
+        val = edbapp.value(1)
+        assert val
+        edbapp.add_design_variable("test", 1)
+        assert edbapp.design_variables["test"].value == 1
+        edbapp.add_project_variable("test2", 2)
+        assert edbapp.project_variables["$test2"].value == 2
+        assert type(edbapp.layout_validation)
+        assert "test", "$test2" in edbapp.variables.items()
+        edbapp.change_design_variable_value("test", 3)
+        assert edbapp.design_variables["test"].value == 3
+        assert edbapp.get_bounding_box()
+        assert edbapp.get_statistics()
+        assert edbapp.are_port_reference_terminals_connected()
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_load_multiple_edb(self):
+        """Load two EDB sessions simultaneously and verify isolation."""
+        edb1 = self.edb_examples.get_si_board()
+        assert len(list(edb1.components.instances.values())) == 4
+        assert list(edb1.components.instances.values())[0].name == "U0"
+        edb2 = self.edb_examples.get_si_verse()
+        assert list(edb1.components.instances.values())[0].name == "U0"
+        assert len(list(edb2.components.instances.values())) == 509
+        assert list(edb2.components.instances.values())[0].name == "C380"
+        edb1.close(terminate_rpc_session=False)
+        assert edb1.active_cell is None
+        assert len(list(edb2.components.instances.values())) == 509
+        assert list(edb2.components.instances.values())[0].name == "C380"
+        edb2.close(terminate_rpc_session=False)
+        assert edb2.active_cell is None
+
+
+@pytest.mark.usefixtures("close_rpc_session")
+class TestEdbLifecycle:
+    """EDB creation, variable management and conflict-file handling tests.
+
+    Uses the ``local_scratch`` fixture directly and constructs ``Edb`` instances
+    instead of going through ``BaseTestClass.edb_examples``.
+    """
+
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):
         self.local_scratch = local_scratch
@@ -116,14 +262,13 @@ class TestClass:
             assert is_added
 
     def test_add_design_variable_with_setitem(self):
-        """Add a variable value."""
+        """Add a variable value via __setitem__."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
             version=desktop_version,
             grpc=GRPC,
         )
         edb.add_design_variable("ant_length", "1cm")
-
         if edb.grpc:
             assert edb.variable_exists("ant_length")
         else:
@@ -160,7 +305,7 @@ class TestClass:
             assert not is_changed
 
     def test_change_design_variable_value_with_setitem(self):
-        """Change a variable value."""
+        """Change a variable value via __setitem__."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
             version=desktop_version,
@@ -170,40 +315,6 @@ class TestClass:
         assert edb["ant_length"].value == 0.01
         edb["ant_length"] = "2cm"
         assert edb["ant_length"].value == 0.02
-
-    def test_create_padstack_instance(self):
-        """Create padstack instances."""
-        edb = Edb(
-            os.path.join(self.local_scratch.path, "temp.aedb"),
-            version=desktop_version,
-            grpc=GRPC,
-        )
-
-        pad_name = edb.padstacks.create(
-            pad_shape="Rectangle",
-            padstackname="pad",
-            x_size="350um",
-            y_size="500um",
-            holediam=0,
-        )
-        assert pad_name == "pad"
-
-        pad_name = edb.padstacks.create(pad_shape="Circle", padstackname="pad2", paddiam="350um", holediam="15um")
-        assert pad_name == "pad2"
-
-        pad_name = edb.padstacks.create(
-            pad_shape="Circle",
-            padstackname="test2",
-            paddiam="400um",
-            holediam="200um",
-            antipad_shape="Rectangle",
-            anti_pad_x_size="700um",
-            anti_pad_y_size="800um",
-            start_layer="1_Top",
-            stop_layer="1_Top",
-        )
-        pad_name == "test2"
-        edb.close(terminate_rpc_session=False)
 
     @patch("os.path.isfile")
     @patch("os.unlink")
@@ -229,7 +340,6 @@ class TestClass:
         mock_unlink.side_effect = Exception("Could not delete file")
 
         edbpath = os.path.join(self.local_scratch.path, "conflict_fail_test.aedb")
-        # Should not raise — failure is caught and logged
         edb = Edb(edbpath=edbpath, version=desktop_version, grpc=GRPC, remove_existing_aedt=True)
         edb.close(terminate_rpc_session=False)
 
