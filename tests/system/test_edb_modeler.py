@@ -1112,7 +1112,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — open_solder_mask no material triggers default")
-    @pytest.mark.xfail(reason="Bug in source:  does not exist in grpc backend (should be add_dielectric_material).")
     def test_modeler_open_solder_mask_no_material_default(self):
         """open_solder_mask creates default SolderMask material when none provided."""
         edbapp = self.edb_examples.get_si_verse_sfp()
