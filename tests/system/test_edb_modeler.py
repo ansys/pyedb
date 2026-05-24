@@ -850,7 +850,7 @@ class TestClass(BaseTestClass):
             end_y=0,
             net="SIG",
         )
-        # create_bondwire returns a Bondwire object (may be null when no cell instance defined)
+        # create_bondwire returns a Bondwire object
         assert bw is not None
         edbapp.close(terminate_rpc_session=False)
 
