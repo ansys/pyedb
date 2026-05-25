@@ -32,11 +32,6 @@ from pyedb.grpc.database.simulation_setups import SimulationSetups
 pytestmark = [pytest.mark.unit, pytest.mark.grpc]
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
 def _make_setup_stub(name: str, type_name: str):
     """Return a minimal stub that mimics a gRPC SimulationSetup object."""
     stub = SimpleNamespace()
@@ -60,11 +55,6 @@ def _make_pedb(setups_list=None, existing_setups_names=None):
 def _patch_raw(ss, setups_list):
     """Patch _raw_simulation_setups on a SimulationSetups instance."""
     return patch.object(ss, "_raw_simulation_setups", return_value=setups_list if setups_list is not None else [])
-
-
-# ---------------------------------------------------------------------------
-# Property: hfss
-# ---------------------------------------------------------------------------
 
 
 class TestHfssProperty:
@@ -111,11 +101,6 @@ class TestHfssProperty:
             assert ss.hfss == {}
 
 
-# ---------------------------------------------------------------------------
-# Property: siwave
-# ---------------------------------------------------------------------------
-
-
 class TestSiwaveProperty:
     def test_returns_empty_dict_when_no_setups(self):
         pedb = _make_pedb()
@@ -138,11 +123,6 @@ class TestSiwaveProperty:
 
         assert "setup_si" in result
         assert "setup_hfss" not in result
-
-
-# ---------------------------------------------------------------------------
-# Property: siwave_dcir
-# ---------------------------------------------------------------------------
 
 
 class TestSiwaveDcirProperty:
@@ -169,11 +149,6 @@ class TestSiwaveDcirProperty:
         assert "setup_other" not in result
 
 
-# ---------------------------------------------------------------------------
-# Property: raptor_x
-# ---------------------------------------------------------------------------
-
-
 class TestRaptorXProperty:
     def test_returns_empty_dict_when_no_setups(self):
         pedb = _make_pedb()
@@ -196,11 +171,6 @@ class TestRaptorXProperty:
         assert "setup_rx" in result
 
 
-# ---------------------------------------------------------------------------
-# Property: q3d
-# ---------------------------------------------------------------------------
-
-
 class TestQ3dProperty:
     def test_returns_empty_dict_when_no_setups(self):
         pedb = _make_pedb()
@@ -221,11 +191,6 @@ class TestQ3dProperty:
                 result = ss.q3d
 
         assert "setup_q3d" in result
-
-
-# ---------------------------------------------------------------------------
-# Property: hfss_pi
-# ---------------------------------------------------------------------------
 
 
 class TestHfsspiProperty:
@@ -257,11 +222,6 @@ class TestHfsspiProperty:
         ss = SimulationSetups(pedb)
         with _patch_raw(ss, [stub]):
             assert ss.hfss_pi == {}
-
-
-# ---------------------------------------------------------------------------
-# Property: siwave_cpa
-# ---------------------------------------------------------------------------
 
 
 class TestSiwaveCpaProperty:
@@ -302,11 +262,6 @@ class TestSiwaveCpaProperty:
         assert "my_cpa" in result
 
 
-# ---------------------------------------------------------------------------
-# Property: setups (aggregator)
-# ---------------------------------------------------------------------------
-
-
 class TestSetupsProperty:
     def test_merges_all_solver_dicts(self):
         pedb = _make_pedb()
@@ -341,11 +296,6 @@ class TestSetupsProperty:
 
         assert "my_hfss" in result
         assert "my_si" in result
-
-
-# ---------------------------------------------------------------------------
-# Method: create
-# ---------------------------------------------------------------------------
 
 
 class TestCreate:
@@ -450,11 +400,6 @@ class TestCreate:
         assert result is fake_setup
 
 
-# ---------------------------------------------------------------------------
-# Method: _raw_simulation_setups
-# ---------------------------------------------------------------------------
-
-
 class TestRawSimulationSetups:
     def test_falls_back_to_public_api_when_stub_not_accessible(self):
         """If the private Cell stub is not accessible, fall back to active_cell.simulation_setups."""
@@ -482,11 +427,6 @@ class TestRawSimulationSetups:
         ss = SimulationSetups(pedb)
         result = ss._raw_simulation_setups()
         assert len(result) == 1
-
-
-# ---------------------------------------------------------------------------
-# Method: create_hfss_setup
-# ---------------------------------------------------------------------------
 
 
 class TestCreateHfssSetup:
@@ -522,11 +462,6 @@ class TestCreateHfssSetup:
         assert fake_setup.my_custom_attr == 42
 
 
-# ---------------------------------------------------------------------------
-# Method: create_hfss_pi_setup
-# ---------------------------------------------------------------------------
-
-
 class TestCreateHfsspiSetup:
     def test_creates_without_sweep(self):
         pedb = _make_pedb()
@@ -560,11 +495,6 @@ class TestCreateHfsspiSetup:
         assert fake_setup.extra_param == "hello"
 
 
-# ---------------------------------------------------------------------------
-# Method: create_siwave_setup
-# ---------------------------------------------------------------------------
-
-
 class TestCreateSiwaveSetup:
     def test_creates_without_sweep(self):
         pedb = _make_pedb()
@@ -590,11 +520,6 @@ class TestCreateSiwaveSetup:
         fake_setup.add_sweep.assert_called_once()
 
 
-# ---------------------------------------------------------------------------
-# Method: create_siwave_dcir_setup
-# ---------------------------------------------------------------------------
-
-
 class TestCreateSiwaveDcirSetup:
     def test_creates_dcir_setup(self):
         pedb = _make_pedb()
@@ -611,11 +536,6 @@ class TestCreateSiwaveDcirSetup:
         with patch.object(ss, "create", return_value=fake_setup):
             ss.create_siwave_dcir_setup(name="my_dcir", foo="bar")
         assert fake_setup.foo == "bar"
-
-
-# ---------------------------------------------------------------------------
-# Method: create_siwave_cpa_setup
-# ---------------------------------------------------------------------------
 
 
 class TestCreateSiwaveCpaSetup:
@@ -678,11 +598,6 @@ class TestCreateSiwaveCpaSetup:
         assert fake_cpa.my_kwarg == "value"
 
 
-# ---------------------------------------------------------------------------
-# Method: create_raptor_x_setup
-# ---------------------------------------------------------------------------
-
-
 class TestCreateRaptorXSetup:
     def test_creates_without_sweep(self):
         pedb = _make_pedb()
@@ -715,11 +630,6 @@ class TestCreateRaptorXSetup:
         with patch.object(ss, "create", return_value=fake_setup):
             ss.create_raptor_x_setup(name="my_rx", start_freq=1e9)
         fake_setup.add_sweep.assert_not_called()
-
-
-# ---------------------------------------------------------------------------
-# Method: create_q3d_setup
-# ---------------------------------------------------------------------------
 
 
 class TestCreateQ3dSetup:
