@@ -24,6 +24,7 @@
 from typing import cast
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
+from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as CoreSimulationSetup
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_pi_simulation_setup import HFSSPISimulationSetup
@@ -51,6 +52,52 @@ class SimulationSetups:
         self._siwave_cpa_setup: dict[str, SIWaveCPASimulationSetup] = {}
         self._hfss_pi_setups: dict[str, HFSSPISimulationSetup] = {}
 
+    def _raw_simulation_setups(self) -> list:
+        """Return raw (uncast) core SimulationSetup objects from the active cell.
+
+        This helper exists to work around a limitation in the public
+        ``ansys-edb-core`` API.  ``Cell.simulation_setups`` internally calls
+        ``.cast()`` on every object it returns.  The ``cast()`` implementation
+        in the core library only handles a subset of solver types (HFSS,
+        SI_WAVE, SI_WAVE_DCIR, RAPTOR_X) and returns ``None`` for any type it
+        does not recognise — most notably ``HFSS_PI``.  Those ``None`` values
+        are then silently discarded during the usual None-filtering step,
+        making the ``hfss_pi`` property (and the ``setups`` aggregator) always
+        return an empty dict even after a valid HFSS PI setup has been created.
+
+        To avoid this, this method bypasses ``.cast()`` entirely: it calls the
+        underlying gRPC stub (``_Cell__stub.GetSimulationSetups``) directly and
+        wraps the raw protobuf messages in plain ``CoreSimulationSetup``
+        objects.  The type is then read via ``setup.type.name`` inside each
+        property and the correct PyEDB wrapper class is instantiated there.
+
+        If the private stub attribute is not accessible for any reason (e.g. a
+        future API refactor), the method falls back to the public
+        ``active_cell.simulation_setups`` call so that HFSS, SI_WAVE and other
+        already-handled types remain functional.
+
+        Returns
+        -------
+        list[CoreSimulationSetup]
+            All simulation setups present in the active cell, including
+            ``HFSS_PI`` and any other types not covered by ``.cast()``.
+        """
+        try:
+            # Access the private name-mangled gRPC stub on Cell directly so we
+            # can call GetSimulationSetups without going through .cast(), which
+            # would drop HFSS_PI setups (see docstring above).
+            stub = self._pedb.active_cell._Cell__stub
+            msgs = stub.GetSimulationSetups(self._pedb.active_cell.msg).items
+            return [CoreSimulationSetup(msg) for msg in msgs]
+        except Exception:
+            # Fall back to the public API if the private stub is not accessible.
+            # Note: HFSS_PI setups will be missing in this path due to the
+            # .cast() issue described above, but all other solver types work.
+            setups = self._pedb.active_cell.simulation_setups
+            if isinstance(setups, list):
+                return [s for s in setups if s is not None]
+            return []
+
     @property
     def hfss(self) -> dict[str, HfssSimulationSetup]:
         """HFSS simulation setups.
@@ -61,10 +108,7 @@ class SimulationSetups:
         hfss_simulation_setup.HFSSSimulationSetup>`]
         """
         self._hfss_setups = {}
-        setups = self._pedb.active_cell.simulation_setups
-        # grpc returns list of None
-        if isinstance(setups, list):
-            setups = [s for s in setups if s is not None]
+        setups = self._raw_simulation_setups()
         if not setups:
             return self._hfss_setups
         self._hfss_setups = {
@@ -84,10 +128,7 @@ class SimulationSetups:
         siwave_simulation_setup.SIWaveSimulationSetup>`]
         """
         self._siwave_setups = {}
-        setups = self._pedb.active_cell.simulation_setups
-        # grpc returns list of None
-        if isinstance(setups, list):
-            setups = [s for s in setups if s is not None]
+        setups = self._raw_simulation_setups()
         if not setups:
             return self._siwave_setups
         self._siwave_setups = {
@@ -107,10 +148,7 @@ class SimulationSetups:
         siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup>`]
         """
         self._siwave_dcir_setups = {}
-        setups = self._pedb.active_cell.simulation_setups
-        # grpc returns list of None
-        if isinstance(setups, list):
-            setups = [s for s in setups if s is not None]
+        setups = self._raw_simulation_setups()
         if not setups:
             return self._siwave_dcir_setups
         self._siwave_dcir_setups = {
@@ -154,10 +192,7 @@ class SimulationSetups:
         raptor_x_simulation_setup.RaptorXSimulationSetup>`]
         """
         self._raptorx_setups = {}
-        setups = self._pedb.active_cell.simulation_setups
-        # grpc returns list of None
-        if isinstance(setups, list):
-            setups = [s for s in setups if s is not None]
+        setups = self._raw_simulation_setups()
         if not setups:
             return self._raptorx_setups
         self._raptorx_setups = {
@@ -177,10 +212,7 @@ class SimulationSetups:
         q3d_simulation_setup.Q3DSimulationSetup>`]
         """
         self._q3d_setups = {}
-        setups = self._pedb.active_cell.simulation_setups
-        # grpc returns list of None
-        if isinstance(setups, list):
-            setups = [s for s in setups if s is not None]
+        setups = self._raw_simulation_setups()
         if not setups:
             return self._q3d_setups
         self._q3d_setups = {
@@ -200,10 +232,7 @@ class SimulationSetups:
         hfss_pi_simulation_setup.HFSSPISimulationSetup>`]
         """
         self._hfss_pi_setups = {}
-        setups = self._pedb.active_cell.simulation_setups
-        # grpc returns list of None
-        if isinstance(setups, list):
-            setups = [s for s in setups if s is not None]
+        setups = self._raw_simulation_setups()
         if not setups:
             return self._hfss_pi_setups
         self._hfss_pi_setups = {

@@ -40,6 +40,8 @@ class SiwaveSimulationSetup(SimulationSetup):
 
     def __init__(self, pedb, core: "CoreSIWaveSimulationSetup"):
         super().__init__(pedb, core)
+        if not isinstance(core, CoreSIWaveSimulationSetup):
+            core = CoreSIWaveSimulationSetup(core.msg)
         self.core: CoreSIWaveSimulationSetup = core
         self._pedb = pedb
 
