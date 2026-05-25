@@ -761,3 +761,55 @@ class TestPadstackInstanceEMProperties(BaseTestClass):
         assert via1.name == "PlanarEMVia"
         assert len(via1.instances) == 4
         edbapp.close(terminate_rpc_session=False)
+
+    def test_set_all_antipad_values(self):
+        """Set all anti-pads from all pad-stack definition to the given value."""
+        edb = self.edb_examples.get_si_verse()
+        assert edb.padstacks.set_all_antipad_value(0.0)
+        edb.close(terminate_rpc_session=False)
+
+
+@pytest.mark.usefixtures("close_rpc_session")
+class TestPadstackCreation:
+    """Padstack creation tests using local_scratch fixture and direct Edb construction."""
+
+    @pytest.fixture(autouse=True)
+    def init(self, local_scratch):
+        self.local_scratch = local_scratch
+
+    def test_create_padstack_instance(self):
+        """Create padstack instances."""
+        from pyedb import Edb
+        from tests.conftest import desktop_version
+
+        edb = Edb(
+            os.path.join(self.local_scratch.path, "temp.aedb"),
+            version=desktop_version,
+            grpc=GRPC,
+        )
+
+        pad_name = edb.padstacks.create(
+            pad_shape="Rectangle",
+            padstackname="pad",
+            x_size="350um",
+            y_size="500um",
+            holediam=0,
+        )
+        assert pad_name == "pad"
+
+        pad_name = edb.padstacks.create(pad_shape="Circle", padstackname="pad2", paddiam="350um", holediam="15um")
+        assert pad_name == "pad2"
+
+        pad_name = edb.padstacks.create(
+            pad_shape="Circle",
+            padstackname="test2",
+            paddiam="400um",
+            holediam="200um",
+            antipad_shape="Rectangle",
+            anti_pad_x_size="700um",
+            anti_pad_y_size="800um",
+            start_layer="1_Top",
+            stop_layer="1_Top",
+        )
+        assert pad_name == "test2"
+        edb.close(terminate_rpc_session=False)

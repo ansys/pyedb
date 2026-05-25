@@ -74,7 +74,7 @@ class CfgPinGroups:
         """Return the :class:`CfgPinGroup` for an existing pin group.
 
         If the group has already been registered via :meth:`add` the cached
-        entry is returned.  Otherwise the group is looked up in the live EDB
+        entry is returned, otherwise the group is looked up in the live EDB
         session and a new entry is created from its current pin membership.
 
         Parameters
@@ -94,9 +94,9 @@ class CfgPinGroups:
 
         Examples
         --------
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> pg = cfg.pin_groups.get("pg_VDD")
-        >>> print(pg.pins)
+        cfg = edb.configuration.create_config_builder()
+        pg = cfg.pin_groups.get("pg_VDD")
+        print(pg.pins)
         """
         for pg in self.pin_groups:
             if pg.name == name:
@@ -169,9 +169,9 @@ class CfgPinGroups:
 
         Examples
         --------
-        >>> cfg.pin_groups.add("pg_VDD", "U1", nets="VDD")
-        >>> cfg.pin_groups.add("pg_GND", "U1", pins=["A1", "A2", "B1"])
-        >>> cfg.pin_groups.add("", "U1", nets=["VDD", "GND"])
+        cfg.pin_groups.add("pg_VDD", "U1", nets="VDD")
+        cfg.pin_groups.add("pg_GND", "U1", pins=["A1", "A2", "B1"])
+        cfg.pin_groups.add("", "U1", nets=["VDD", "GND"])
         """
         if nets is None and net is not None and pins is None:
             nets = net

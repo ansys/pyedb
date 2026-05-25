@@ -61,8 +61,11 @@ Examples
     edb.export_hfss("output_dir")
 """
 
+from __future__ import annotations
+
 from itertools import combinations
 import os
+from pathlib import Path as PathLib  # prevent conflict with Edb Path
 import re
 import shutil
 import subprocess  # nosec B404
@@ -70,7 +73,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional
 
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
 from typing_extensions import deprecated
@@ -166,8 +169,9 @@ class Edb(EdbInit):
 
     Parameters
     ----------
-    edbpath : str or Path, optional
-        Full path to AEDB folder or layout file to import. Supported formats:
+    edbpath : str or pathlib.Path, optional
+        Full path to AEDB folder or layout file to import. Accepts both string paths
+        and ``pathlib.Path`` objects. Supported formats:
         BRD, MCM, XML (IPC2581), GDS, ODB++ (TGZ/ZIP), DXF.
         Default creates new AEDB in documents folder.
     cellname : str, optional
@@ -201,6 +205,10 @@ class Edb(EdbInit):
     >>> # Open existing AEDB:
     >>> edb = Edb("myproject.aedb")
 
+    >>> # Open using pathlib.Path:
+    >>> from pathlib import Path
+    >>> edb = Edb(Path("myproject.aedb"))
+
     >>> # Import board file:
     >>> edb = Edb("my_board.brd")
     """
@@ -212,7 +220,7 @@ class Edb(EdbInit):
     @deprecate_argument_name({"edbversion": "version"})
     def __init__(
         self,
-        edbpath: Union[str, Path] = None,
+        edbpath: str | PathLib = None,
         cellname: str = None,
         isreadonly: bool = False,
         version: str = None,
@@ -226,6 +234,8 @@ class Edb(EdbInit):
         restart_rpc_server=False,
         remove_existing_aedt: bool = False,
     ):
+        if isinstance(edbpath, PathLib):
+            edbpath = str(edbpath)
         edbversion = get_string_version(version)
         self._clean_variables()
         EdbInit.__init__(self, version=version)
