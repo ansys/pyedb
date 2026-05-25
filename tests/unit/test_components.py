@@ -40,9 +40,6 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
 _grpc_only = pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 def _make_pedb(grpc: bool = True):
     """Return a minimal fake pedb object."""
     pedb = MagicMock()
@@ -62,9 +59,6 @@ def _make_pyedb_obj(comp_type: str = "ic"):
     return obj
 
 
-# ---------------------------------------------------------------------------
-# CfgComponent – construction
-# ---------------------------------------------------------------------------
 class TestCfgComponentConstruction:
     def test_part_type_is_lowercased(self):
         c = CfgComponent(None, None, reference_designator="U1", part_type="IC")
@@ -127,9 +121,6 @@ class TestCfgComponentConstruction:
         assert c.pins == []
 
 
-# ---------------------------------------------------------------------------
-# CfgComponent – set_parameters_to_edb
-# ---------------------------------------------------------------------------
 class TestCfgComponentSetParametersToEdb:
     def test_sets_type_on_pyedb_obj(self):
         pedb = _make_pedb(grpc=True)
@@ -222,9 +213,6 @@ class TestCfgComponentSetParametersToEdb:
         assert c.enabled is None
 
 
-# ---------------------------------------------------------------------------
-# CfgComponent – _set_solder_ball_properties_to_edb (grpc path)
-# ---------------------------------------------------------------------------
 class TestCfgComponentSolderBallGrpc:
     def test_cylinder_sets_shape_and_diameter(self):
         pedb = _make_pedb(grpc=True)
@@ -340,9 +328,6 @@ class TestCfgComponentSolderBallGrpc:
             c._set_solder_ball_properties_to_edb()
 
 
-# ---------------------------------------------------------------------------
-# CfgComponent – _set_ic_die_properties_to_edb (grpc path)
-# ---------------------------------------------------------------------------
 class TestCfgComponentIcDiePropertiesGrpc:
     def _make_comp(self, die_type="no_die", orientation=None, height=None):
         pedb = _make_pedb(grpc=True)
@@ -387,9 +372,6 @@ class TestCfgComponentIcDiePropertiesGrpc:
         c._set_ic_die_properties_to_edb()
 
 
-# ---------------------------------------------------------------------------
-# CfgComponent – _set_port_properties_to_edb (grpc path)
-# ---------------------------------------------------------------------------
 class TestCfgComponentPortPropertiesGrpc:
     def _make_comp(self, port_props):
         pedb = _make_pedb(grpc=True)
@@ -426,9 +408,6 @@ class TestCfgComponentPortPropertiesGrpc:
         c._set_port_properties_to_edb()  # Should not raise
 
 
-# ---------------------------------------------------------------------------
-# CfgComponent – _set_model_properties_to_edb
-# ---------------------------------------------------------------------------
 class TestCfgComponentSetModelProperties:
     def test_netlist_model_calls_assign_netlist(self):
         pedb = _make_pedb(grpc=True)
@@ -505,9 +484,6 @@ class TestCfgComponentSetModelProperties:
         obj.assign_spice_model.assert_not_called()
 
 
-# ---------------------------------------------------------------------------
-# CfgComponent – retrieve_model_properties_from_edb
-# ---------------------------------------------------------------------------
 class TestCfgComponentRetrieveModelProperties:
     def test_netlist_model_type(self):
         pedb = _make_pedb(grpc=True)
@@ -594,9 +570,6 @@ class TestCfgComponentRetrieveModelProperties:
         assert c.spice_model["terminal_pairs"] == [["p1", 1]]
 
 
-# ---------------------------------------------------------------------------
-# CfgComponent – retrieve_parameters_from_edb
-# ---------------------------------------------------------------------------
 class TestCfgComponentRetrieve:
     def _make_ic_obj(self):
         obj = MagicMock()
@@ -727,9 +700,6 @@ class TestCfgComponentRetrieve:
         assert "height" not in c.ic_die_properties
 
 
-# ---------------------------------------------------------------------------
-# CfgComponent – _retrieve_port_properties_from_edb (type guard)
-# ---------------------------------------------------------------------------
 class TestRetrievePortPropertiesTypeGuard:
     def test_capacitor_type_skips_port_properties(self):
         pedb = _make_pedb(grpc=True)
@@ -758,9 +728,6 @@ class TestRetrievePortPropertiesTypeGuard:
         assert "reference_size_auto" in c.port_properties
 
 
-# ---------------------------------------------------------------------------
-# CfgComponents (collection)
-# ---------------------------------------------------------------------------
 class TestCfgComponents:
     def test_init_empty(self):
         cc = CfgComponents(None, None)
@@ -862,12 +829,6 @@ class TestCfgComponents:
         assert "C1" in refdes
 
 
-# ---------------------------------------------------------------------------
-# gRPC Components tests (merged from test_grpc_components.py)
-# ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-# Helpers (grpc-specific)
-# ---------------------------------------------------------------------------
 def _make_component(name: str, comp_type: str = "resistor", nets=None, num_pins: int = 2):
     """Return a minimal fake Component mock."""
     cmp = MagicMock()
@@ -914,9 +875,6 @@ def _make_components(extra_instances: dict | None = None):
     return comps
 
 
-# ---------------------------------------------------------------------------
-# resistor_value_parser (module-level helper)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestResistorValueParser:
     def test_float_passthrough(self):
@@ -945,9 +903,6 @@ class TestResistorValueParser:
         assert resistor_value_parser("1 0") == pytest.approx(10.0)
 
 
-# ---------------------------------------------------------------------------
-# Components – basic properties
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestComponentsProperties:
     def test_instances_returns_cmp_dict(self):
@@ -1034,9 +989,6 @@ class TestComponentsProperties:
         assert len(result["CAP10U"]) == 1
 
 
-# ---------------------------------------------------------------------------
-# Components – refresh_components
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestRefreshComponents:
     def test_refresh_populates_resistors(self):
@@ -1132,9 +1084,6 @@ class TestRefreshComponents:
         assert "BAD1" in comps._others
 
 
-# ---------------------------------------------------------------------------
-# Components – get_component_by_name / find_by_reference_designator
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetComponent:
     def test_get_component_by_name(self):
@@ -1148,9 +1097,6 @@ class TestGetComponent:
         assert comps.find_by_reference_designator("C1") is cmp
 
 
-# ---------------------------------------------------------------------------
-# Components – get_pin_from_component
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetPinFromComponent:
     def _make_pin(self, name: str, net_name: str):
@@ -1206,9 +1152,6 @@ class TestGetPinFromComponent:
         assert len(result) == 1
 
 
-# ---------------------------------------------------------------------------
-# Components – get_components_from_nets
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetComponentsFromNets:
     def test_single_net_string(self):
@@ -1230,9 +1173,6 @@ class TestGetComponentsFromNets:
         assert "U1" in result
 
 
-# ---------------------------------------------------------------------------
-# Components – _get_edb_pin_from_pin_name (static)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetEdbPinFromPinName:
     def test_returns_false_for_non_component(self):
@@ -1264,9 +1204,6 @@ class TestGetEdbPinFromPinName:
         assert result is False
 
 
-# ---------------------------------------------------------------------------
-# Components – get_solder_ball_height
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetSolderBallHeight:
     def test_by_name(self):
@@ -1284,9 +1221,6 @@ class TestGetSolderBallHeight:
         assert comps.get_solder_ball_height(cmp) == 1e-3
 
 
-# ---------------------------------------------------------------------------
-# Components – get_aedt_pin_name
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetAedtPinName:
     def test_returns_aedt_name(self):
@@ -1296,9 +1230,6 @@ class TestGetAedtPinName:
         assert comps.get_aedt_pin_name(pin) == "U1-1"
 
 
-# ---------------------------------------------------------------------------
-# Components – get_pins
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetPins:
     def _make_pin(self, name, net_name):
@@ -1331,9 +1262,6 @@ class TestGetPins:
         assert "B" not in result
 
 
-# ---------------------------------------------------------------------------
-# Components – get_nets_from_pin_list
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetNetsFromPinList:
     def test_deduplicated_net_list(self):
@@ -1348,9 +1276,6 @@ class TestGetNetsFromPinList:
         assert set(result) == {"GND", "VCC"}
 
 
-# ---------------------------------------------------------------------------
-# Components – get_component_net_connection_info
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetComponentNetConnectionInfo:
     def test_returns_correct_structure(self):
@@ -1377,9 +1302,6 @@ class TestGetComponentNetConnectionInfo:
         assert result["pin_name"] == []
 
 
-# ---------------------------------------------------------------------------
-# Components – get_rats
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetRats:
     def test_returns_list_per_component(self):
@@ -1395,9 +1317,6 @@ class TestGetRats:
         assert result[0]["refdes"] == ["R1"]
 
 
-# ---------------------------------------------------------------------------
-# Components – get_through_resistor_list
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetThroughResistorList:
     def test_below_threshold_included(self):
@@ -1423,9 +1342,6 @@ class TestGetThroughResistorList:
         assert "R1" not in result
 
 
-# ---------------------------------------------------------------------------
-# Components – delete
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestDelete:
     def test_delete_existing_component(self):
@@ -1444,9 +1360,6 @@ class TestDelete:
         assert result is False
 
 
-# ---------------------------------------------------------------------------
-# Components – get_pins_name_from_net
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetPinsNameFromNet:
     def test_finds_pins_on_net(self):
@@ -1479,9 +1392,6 @@ class TestGetPinsNameFromNet:
         assert "R1-1" in result
 
 
-# ---------------------------------------------------------------------------
-# Components – delete_single_pin_rlc
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestDeleteSinglePinRlc:
     def test_deactivate_only(self):
@@ -1514,9 +1424,6 @@ class TestDeleteSinglePinRlc:
         assert "R2" not in result
 
 
-# ---------------------------------------------------------------------------
-# Components – disable_rlc_component
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestDisableRlcComponent:
     def test_disable_rlc_component(self):
@@ -1549,9 +1456,6 @@ class TestDisableRlcComponent:
         assert result is False
 
 
-# ---------------------------------------------------------------------------
-# Components – export_bom / import_bom round-trip
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestExportBom:
     def test_export_writes_csv(self):
@@ -1597,9 +1501,6 @@ class TestExportBom:
             os.unlink(fname)
 
 
-# ---------------------------------------------------------------------------
-# Components – export_definition / import_definition
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestExportImportDefinition:
     def test_export_definition_rlc(self):
@@ -1688,9 +1589,6 @@ class TestExportImportDefinition:
             os.unlink(fname)
 
 
-# ---------------------------------------------------------------------------
-# Components – create_pin_group_on_net
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestCreatePinGroupOnNet:
     def test_delegates_to_create_pin_group(self):
@@ -1706,9 +1604,6 @@ class TestCreatePinGroupOnNet:
             mock_cpg.assert_called_once_with("U1", ["1"], "my_group")
 
 
-# ---------------------------------------------------------------------------
-# Components – deactivate_rlc_component
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestDeactivateRlcComponent:
     def test_returns_false_no_component(self):
@@ -1735,9 +1630,6 @@ class TestDeactivateRlcComponent:
         assert result is True
 
 
-# ---------------------------------------------------------------------------
-# Components – replace_rlc_by_gap_boundaries
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestReplaceRlcByGapBoundaries:
     def test_returns_false_no_component(self):
@@ -1763,9 +1655,6 @@ class TestReplaceRlcByGapBoundaries:
         comps._pedb.excitation_manager.add_rlc_boundary.assert_called_once()
 
 
-# ---------------------------------------------------------------------------
-# Components – add_port_on_rlc_component
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestAddPortOnRlcComponent:
     def test_delegates_to_excitation_manager(self):
@@ -1778,9 +1667,6 @@ class TestAddPortOnRlcComponent:
         assert result is True
 
 
-# ---------------------------------------------------------------------------
-# Components – set_component_rlc (no-value → disable)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestSetComponentRlc:
     def test_no_values_disables_component(self):
@@ -1798,9 +1684,6 @@ class TestSetComponentRlc:
         assert result is False
 
 
-# ---------------------------------------------------------------------------
-# Components – _is_top_component
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestIsTopComponent:
     def test_top_component(self):
@@ -1824,9 +1707,6 @@ class TestIsTopComponent:
         assert comps._is_top_component(cmp) is False
 
 
-# ---------------------------------------------------------------------------
-# Components – __init__ (via mock Padstacks)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestComponentsInit:
     def test_init_populates_via_refresh(self):
@@ -1839,9 +1719,6 @@ class TestComponentsInit:
         assert "R1" in comps._res
 
 
-# ---------------------------------------------------------------------------
-# Components – export_bom all types
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestExportBomAllTypes:
     def _make_cmp(self, name, ctype, value):
@@ -1910,9 +1787,6 @@ class TestExportBomAllTypes:
             os.unlink(fname)
 
 
-# ---------------------------------------------------------------------------
-# Components – export_definition (SParameterModel / SPICEModel branches)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestExportDefinitionModels:
     def test_export_s_parameter_model(self):
@@ -2011,9 +1885,6 @@ class TestExportDefinitionModels:
             os.unlink(fname)
 
 
-# ---------------------------------------------------------------------------
-# Components – import_definition (SParameterModel / SPICEModel branches)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestImportDefinitionModels:
     def test_import_s_parameter_model(self):
@@ -2068,9 +1939,6 @@ class TestImportDefinitionModels:
             os.unlink(fname)
 
 
-# ---------------------------------------------------------------------------
-# Components – set_component_rlc (2-pin path)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestSetComponentRlcTwoPin:
     def test_res_value_set(self):
@@ -2144,9 +2012,6 @@ class TestSetComponentRlcTwoPin:
         assert result is True
 
 
-# ---------------------------------------------------------------------------
-# Components – update_rlc_from_bom
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestUpdateRlcFromBom:
     def _write_bom(self, content: str) -> str:
@@ -2215,9 +2080,6 @@ class TestUpdateRlcFromBom:
         os.unlink(fname)
 
 
-# ---------------------------------------------------------------------------
-# Components – get_component_placement_vector (guard branches)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetComponentPlacementVector:
     def test_returns_false_for_non_component_mounted(self):
@@ -2234,9 +2096,6 @@ class TestGetComponentPlacementVector:
         assert result[0] is False
 
 
-# ---------------------------------------------------------------------------
-# Components – get_pin_position
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetPinPosition:
     def test_null_component_returns_raw_position(self):
@@ -2277,9 +2136,6 @@ class TestGetPinPosition:
         assert len(result) == 2
 
 
-# ---------------------------------------------------------------------------
-# Components – _get_closest_pin_from
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestGetClosestPinFrom:
     def test_returns_closest_pin(self):
@@ -2297,9 +2153,6 @@ class TestGetClosestPinFrom:
         assert result is pin_close
 
 
-# ---------------------------------------------------------------------------
-# Components – create_pin_group (no-op cases)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestCreatePinGroup:
     def test_returns_false_when_no_pins_found(self):
@@ -2334,9 +2187,6 @@ class TestCreatePinGroup:
         mock_pg.create.assert_called_once()
 
 
-# ---------------------------------------------------------------------------
-# Components – create_pingroup_from_pins
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestCreatePingroupFromPins:
     def test_returns_false_no_pins(self):
@@ -2374,9 +2224,6 @@ class TestCreatePingroupFromPins:
         mock_pg.create.assert_called_once()
 
 
-# ---------------------------------------------------------------------------
-# Components – deactivate_rlc_component (component object path)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestDeactivateRlcComponentObjectPath:
     def test_component_object_with_io_type_returns_false(self):
@@ -2390,9 +2237,6 @@ class TestDeactivateRlcComponentObjectPath:
         assert result is False
 
 
-# ---------------------------------------------------------------------------
-# Components – replace_rlc_by_gap_boundaries (component object path)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestReplaceRlcByGapBoundariesObjectPath:
     def test_component_object_other_type_returns_false(self):
@@ -2406,9 +2250,6 @@ class TestReplaceRlcByGapBoundariesObjectPath:
         assert result is False
 
 
-# ---------------------------------------------------------------------------
-# Components – structures_3d property
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestStructures3d:
     def test_structures_3d_filters_core_structure3d(self):
@@ -2432,9 +2273,6 @@ class TestStructures3d:
         mock_s3d.assert_called_once_with(pedb, struct_core)
 
 
-# ---------------------------------------------------------------------------
-# Components – set_component_model (Spice path – wrong pin count)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestSetComponentModel:
     def test_component_not_found_returns_false(self):
@@ -2461,9 +2299,6 @@ class TestSetComponentModel:
             os.unlink(fname)
 
 
-# ---------------------------------------------------------------------------
-# Components – import_bom (basic happy path)
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestImportBom:
     def test_import_bom_sets_component_type(self):
@@ -2510,9 +2345,6 @@ class TestImportBom:
             os.unlink(fname)
 
 
-# ---------------------------------------------------------------------------
-# Additional coverage tests
-# ---------------------------------------------------------------------------
 @_grpc_only
 class TestImportDefinitionNoReferenceNet:
     def test_import_s_parameter_model_without_reference_net(self):
