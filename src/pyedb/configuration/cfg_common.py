@@ -105,8 +105,8 @@ class CfgVariables(BaseModel):
 
         Examples
         --------
-        >>> cfg.variables.add("trace_width", "0.15mm", "Default trace width")
-        >>> cfg.variables.add("$project_temp", "25cel")
+        cfg.variables.add("trace_width", "0.15mm", "Default trace width")
+        cfg.variables.add("$project_temp", "25cel")
         """
         self.variables.append(CfgVar(name=name, value=value, description=description))
 
