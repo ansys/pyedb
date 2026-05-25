@@ -720,8 +720,7 @@ def _assert_inside(rect, pad):
     )
 
 
-@pytest.mark.grpc
-@pytest.mark.skipif(not use_grpc, reason="gRPC backend only")
+@pytest.mark.skipif(not GRPC, reason="gRPC backend only")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPadstacksCoverage(BaseTestClass):
     """Additional tests to push coverage above 90 % (gRPC backend only)."""
