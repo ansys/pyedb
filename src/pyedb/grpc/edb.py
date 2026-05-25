@@ -478,6 +478,9 @@ class Edb(EdbInit):
 
     def _value_setter(self, val) -> Value | float | str:
         """Helper for setting variable values with unit handling."""
+        if isinstance(val, Value):
+            # Value already wraps a CoreValue expression — pass through as-is
+            return val
         try:
             float(val)
             return float(val) if isinstance(val, float) else val  # Return numeric values as-is
@@ -2589,7 +2592,7 @@ class Edb(EdbInit):
                 >>> # Self-contained example showing end-to-end usage
                 >>> edb_file = "path_to_zone_aedb.aedb"
                 >>> edb = Edb(edb_file)
-                >>> edb_zones = edb.copy_zones(r"C:\Temp\test")
+                >>> edb_zones = edb.copy_zones(r"C:\\Temp\\test")
                 >>> common_reference_net = "GND"
                 >>> defined_ports, terminals_info = edb.cutout_multizone_layout(edb_zones, common_reference_net)
                 >>> project_connexions = Edb._get_connected_ports_from_multizone_cutout(terminals_info)
@@ -2821,7 +2824,7 @@ class Edb(EdbInit):
                 _layers = {k: v for k, v in self.stackup.layers.items() if k in layer_filter}
             for layer_name, layer in _layers.items():
                 var, val = _apply_variable(f"${layer_name}", layer.thickness)
-                layer.thickness = Value(var, self.active_db)
+                layer.thickness = var
                 parameters.append(val)
         if materials:
             if not material_filter:
@@ -2831,14 +2834,14 @@ class Edb(EdbInit):
             for mat_name, material in _materials.items():
                 if not material.conductivity or material.conductivity < 1e4:
                     var, val = _apply_variable(f"$epsr_{mat_name}", material.permittivity)
-                    material.permittivity = Value(var, self.active_db)
+                    material.permittivity = var
                     parameters.append(val)
                     var, val = _apply_variable(f"$loss_tangent_{mat_name}", material.dielectric_loss_tangent)
-                    material.dielectric_loss_tangent = Value(var, self.active_db)
+                    material.dielectric_loss_tangent = var
                     parameters.append(val)
                 else:
                     var, val = _apply_variable(f"$sigma_{mat_name}", material.conductivity)
-                    material.conductivity = Value(var, self.active_db)
+                    material.conductivity = var
                     parameters.append(val)
         if traces:
             if not trace_net_filter:
@@ -2854,7 +2857,7 @@ class Edb(EdbInit):
                 else:
                     trace_width_variable = f"{path.aedt_name}"
                 var, val = _apply_variable(trace_width_variable, path.width)
-                path.width = Value(var, self.active_cell)
+                path.width = var
                 parameters.append(val)
         if not padstack_definition_filter:
             if trace_net_filter:
@@ -2881,7 +2884,7 @@ class Edb(EdbInit):
                         hole_variable = f"${def_name}_hole_diameter"
                     if padstack_def.hole_diameter:
                         var, val = _apply_variable(hole_variable, padstack_def.hole_diameter)
-                        padstack_def.hole_properties = Value(var, self.active_db)
+                        padstack_def.hole_diameter = var
                         parameters.append(val)
             if pads:
                 for layer, pad in padstack_def.pad_by_layer.items():
