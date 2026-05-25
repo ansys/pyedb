@@ -906,3 +906,13 @@ class TestClass(BaseTestClass):
         # Returns empty list in deactivate mode
         assert result == []
         edb.close(terminate_rpc_session=False)
+
+    def test_create_rlc_component(self):
+        """Create RLC components from pins."""
+        edb = self.edb_examples.get_si_verse()
+        pins = edb.components.get_pin_from_component("U1", "1V0")
+        ref_pins = edb.components.get_pin_from_component("U1", "GND")
+        assert edb.components.create([pins[0], ref_pins[0]], "test_0rlc", r_value=1.67, l_value=1e-13, c_value=1e-11)
+        assert edb.components.create([pins[0], ref_pins[0]], "test_1rlc", r_value=None, l_value=1e-13, c_value=1e-11)
+        assert edb.components.create([pins[0], ref_pins[0]], "test_2rlc", r_value=None, c_value=1e-13)
+        edb.close(terminate_rpc_session=False)
