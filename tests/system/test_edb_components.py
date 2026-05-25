@@ -355,19 +355,6 @@ class TestClass(BaseTestClass):
         assert cap.type.lower() == "capacitor"
         cap.type = "resistor"
         assert cap.type.lower() == "resistor"
-
-        # export_path = os.path.join(self.local_scratch.path, "comp_definition.csv")
-        # TODO check config file 2.0
-        # assert edbapp.components.export_definition(export_path)
-        # assert edbapp.components.import_definition(export_path)
-
-        # assert edbapp.components.definitions["CAPC3216X180X20ML20"].assign_rlc_model(1, 2, 3)
-        # sparam_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC_series.s2p")
-        # assert edbapp.components.definitions["CAPC3216X180X55ML20T25"].assign_s_param_model(sparam_path)
-        # ref_file = edbapp.components.definitions["CAPC3216X180X55ML20T25"].reference_file
-        # assert ref_file
-        # spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
-        # assert edbapp.components.definitions["CAPMP7343X31N"].assign_spice_model(spice_path)
         edbapp.close(terminate_rpc_session=False)
 
     def test_rlc_component_values_getter_setter(self):
@@ -563,10 +550,6 @@ class TestClass(BaseTestClass):
         assert edb.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_solder_ball_getter_setter(self):
         edb = self.edb_examples.get_si_verse()
         cmp = edb.components.instances["X1"]
@@ -630,7 +613,6 @@ class TestClass(BaseTestClass):
         assert os.path.isfile(os.path.join(edbapp.edbpath, "test_export.s2p"))
 
     def test_properties(self):
-        # TODO check with config file 2.0
         edbapp = self.edb_examples.get_si_verse()
         pp = {
             "pin_pair_model": [
@@ -691,10 +673,6 @@ class TestClass(BaseTestClass):
         assert edbapp.export_gds_comp_xml(["U1", "U2", "C2", "R1"], control_path=xml_output)
         assert os.path.isfile(xml_output)
         edbapp.close(terminate_rpc_session=False)
-
-    # -----------------------------------------------------------------------
-    # gRPC-only tests added to increase components.py coverage
-    # -----------------------------------------------------------------------
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
     def test_grpc_find_by_reference_designator(self):
