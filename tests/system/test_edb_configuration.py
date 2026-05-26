@@ -991,6 +991,40 @@ class TestClassTerminals(BaseTestClass):
         }
         edbapp.close(terminate_rpc_session=False)
 
+    def test_padstack_instance_terminal_b(self):
+        terminal = {
+            "name": "terminal1",
+            "impedance": 1,
+            "is_circuit_port": False,
+            "boundary_type": "PortBoundary",
+            "hfss_type": "Gap",
+            "terminal_type": "padstack_instance",
+            "padstack_instance_id": 4294971660,
+            "layer": None,
+        }
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.configuration.load({"terminals": [terminal]}, append=False)
+        edbapp.configuration.run()
+        terminal1 = edbapp.ports["terminal1"]
+        assert terminal1.impedance == 1
+        assert terminal1.padstack_instance.aedt_name == "U7-M7"
+
+        exported = edbapp.configuration.get_data_from_db(terminals=True)["terminals"]
+        assert exported[0] == {
+            "name": "terminal1",
+            "impedance": 1.0,
+            "is_circuit_port": False,
+            "amplitude": 1.0,
+            "phase": 0.0,
+            "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
+            "boundary_type": "port" if edbapp.grpc else "PortBoundary",
+            "hfss_type": "Wave",
+            "terminal_type": "padstack_instance",
+            "padstack_instance": "U7-M7",
+            "padstack_instance_id": 4294971660,
+        }
+        edbapp.close(terminate_rpc_session=False)
+
     def test_pin_group_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"pin_groups": [self.pin_group2]})
