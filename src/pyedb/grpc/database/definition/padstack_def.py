@@ -136,7 +136,7 @@ class PadProperties:
             )
 
     @property
-    def parameters_values(self) -> list[float] | None:
+    def parameters_values(self) -> list[float | int] | None:
         """Parameters.
 
         Returns
@@ -154,6 +154,38 @@ class PadProperties:
         if isinstance(value, (float, str)):
             value = [value]
         self._update_pad_parameters_parameters(params=value)
+
+    @property
+    def parameters(self):
+        """Pad parameters.
+
+        For single-parameter shapes (e.g. Circle, Square) returns a single float value.
+        For multi-parameter shapes returns a list of float values.
+
+        Returns
+        -------
+        float or list[float]
+            Pad parameter value(s).
+        """
+        vals = self.parameters_values
+        if vals is None:
+            return None
+        if len(vals) == 1:
+            return vals[0]
+        return vals
+
+    @parameters.setter
+    def parameters(self, value):
+        """Set pad parameters.
+
+        Parameters
+        ----------
+        value : float, str, list, or dict
+            Pad parameter value(s). A dict maps parameter names to values (e.g. ``{"Diameter": 0.5}``).
+        """
+        if isinstance(value, dict):
+            value = list(value.values())
+        self.parameters_values = value
 
     @property
     def parameters_values_string(self) -> list[str] | None:
