@@ -281,8 +281,8 @@ class CfgTerminals(CfgBaseModel):
     def add_padstack_instance_terminal(
         self,
         name: str,
-        padstack_instance: str|None = None,
-        impedance: float | int | str=50,
+        padstack_instance: str | None = None,
+        impedance: float | int | str = 50,
         boundary_type: Literal[
             "port",
             "dc_terminal",
@@ -291,7 +291,7 @@ class CfgTerminals(CfgBaseModel):
             "current_source",
             "rlc",
             "pec",
-        ]="port",
+        ] = "port",
         hfss_type: Literal["Wave", "Gap"] | None = None,
         is_circuit_port: bool = False,
         reference_terminal: str | None = None,
