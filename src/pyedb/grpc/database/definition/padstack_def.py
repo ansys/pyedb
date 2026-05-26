@@ -957,51 +957,54 @@ class PadstackDef:
                 new_padstack_definition.data.add_layers(included)
                 for layer in included:
                     pl = self.pad_by_layer[layer]
-                    new_padstack_definition.data.set_pad_parameters(
-                        layer=layer,
-                        pad_type=CorePadType.REGULAR_PAD,
-                        offset_x=self._pedb._value_setter(
-                            pl.offset_x,
-                        ),
-                        offset_y=self._pedb._value_setter(
-                            pl.offset_y,
-                        ),
-                        rotation=self._pedb._value_setter(
-                            pl.rotation,
-                        ),
-                        type_geom=pl._edb_geometry_type,
-                        sizes=pl.parameters_values,
-                    )
-                    antipads = self.antipad_by_layer
-                    if layer in antipads:
-                        pl = antipads[layer]
+                    if pl._edb_geometry_type is not None:
                         new_padstack_definition.data.set_pad_parameters(
                             layer=layer,
-                            pad_type=CorePadType.ANTI_PAD,
-                            offset_x=self._pedb._value_setter(
-                                pl.offset_x,
-                            ),
-                            offset_y=self._pedb._value_setter(pl.offset_y),
-                            rotation=self._pedb._value_setter(pl.rotation),
-                            type_geom=pl._edb_geometry_type,
-                            sizes=pl.parameters_values,
-                        )
-                    thermal_pads = self.thermalpad_by_layer
-                    if layer in thermal_pads:
-                        pl = thermal_pads[layer]
-                        new_padstack_definition.data.set_pad_parameters(
-                            layer=layer,
-                            pad_type=CorePadType.THERMAL_PAD,
+                            pad_type=CorePadType.REGULAR_PAD,
                             offset_x=self._pedb._value_setter(
                                 pl.offset_x,
                             ),
                             offset_y=self._pedb._value_setter(
                                 pl.offset_y,
                             ),
-                            rotation=self._pedb._value_setter(pl.rotation),
+                            rotation=self._pedb._value_setter(
+                                pl.rotation,
+                            ),
                             type_geom=pl._edb_geometry_type,
                             sizes=pl.parameters_values,
                         )
+                    antipads = self.antipad_by_layer
+                    if layer in antipads:
+                        pl = antipads[layer]
+                        if pl._edb_geometry_type is not None:
+                            new_padstack_definition.data.set_pad_parameters(
+                                layer=layer,
+                                pad_type=CorePadType.ANTI_PAD,
+                                offset_x=self._pedb._value_setter(
+                                    pl.offset_x,
+                                ),
+                                offset_y=self._pedb._value_setter(pl.offset_y),
+                                rotation=self._pedb._value_setter(pl.rotation),
+                                type_geom=pl._edb_geometry_type,
+                                sizes=pl.parameters_values,
+                            )
+                    thermal_pads = self.thermalpad_by_layer
+                    if layer in thermal_pads:
+                        pl = thermal_pads[layer]
+                        if pl._edb_geometry_type is not None:
+                            new_padstack_definition.data.set_pad_parameters(
+                                layer=layer,
+                                pad_type=CorePadType.THERMAL_PAD,
+                                offset_x=self._pedb._value_setter(
+                                    pl.offset_x,
+                                ),
+                                offset_y=self._pedb._value_setter(
+                                    pl.offset_y,
+                                ),
+                                rotation=self._pedb._value_setter(pl.rotation),
+                                type_geom=pl._edb_geometry_type,
+                                sizes=pl.parameters_values,
+                            )
                 new_padstack_definition.data.set_hole_parameters(
                     offset_x=self.hole_offset_x,
                     offset_y=self.hole_offset_y,
