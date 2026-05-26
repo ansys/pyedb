@@ -84,7 +84,9 @@ class PadProperties:
 
     @property
     def _pad_parameter_value(self):
-        p_val = self._edb_padstack.get_pad_parameters(self.layer_name, CorePadType.REGULAR_PAD)
+        p_val = self._edb_padstack.get_pad_parameters(self.layer_name, self.pad_type)
+        if not p_val:
+            return None
         if isinstance(p_val[0], ansys.edb.core.geometry.polygon_data.PolygonData):
             p_val = [CorePadGeometryType.PADGEOMTYPE_POLYGON] + [i for i in p_val]
         return p_val
@@ -98,11 +100,15 @@ class PadProperties:
         int
             Type of the geometry.
         """
-        return self._pad_parameter_value[0].value
+        p_val = self._pad_parameter_value
+        if p_val is None:
+            return 0
+        return p_val[0].value
 
     @property
     def _edb_geometry_type(self):
-        return self._pad_parameter_value[0]
+        p_val = self._pad_parameter_value
+        return p_val[0] if p_val is not None else None
 
     @property
     def shape(self) -> str:
@@ -113,7 +119,10 @@ class PadProperties:
         str
             pad shape.
         """
-        return self._pad_parameter_value[0].name.split("_")[-1].lower()
+        p_val = self._pad_parameter_value
+        if p_val is None:
+            return "no_shape"
+        return p_val[0].name.split("_")[-1].lower()
 
     @shape.setter
     def shape(self, value: str):
@@ -145,7 +154,10 @@ class PadProperties:
             List of parameters.
         """
         try:
-            return [Value(i) for i in self._pad_parameter_value[1]]
+            p_val = self._pad_parameter_value
+            if p_val is None:
+                return None
+            return [Value(i) for i in p_val[1]]
         except TypeError:
             return None
 
@@ -159,9 +171,54 @@ class PadProperties:
     def parameters_values_string(self) -> list[str] | None:
         """Parameters value in string format."""
         try:
-            return [str(i) for i in self._pad_parameter_value[1]]
+            p_val = self._pad_parameter_value
+            if p_val is None:
+                return None
+            return [str(i) for i in p_val[1]]
         except TypeError:
             return None
+
+    @property
+    def parameters(self) -> dict:
+        """Pad parameters as a dictionary keyed by parameter name.
+
+        Returns
+        -------
+        dict
+            Mapping of parameter name to value string, e.g. ``{"Diameter": "0.5mm"}``.
+        """
+        from collections import OrderedDict
+
+        values = self.parameters_values_string
+        if values is None:
+            return OrderedDict()
+        geom_type = self.geometry_type
+        if geom_type == 1:  # Circle
+            return OrderedDict({"Diameter": values[0]})
+        elif geom_type == 2:  # Square/Rectangle single dim
+            return OrderedDict({"Size": values[0]})
+        elif geom_type == 3:  # Rectangle two dims
+            return OrderedDict({"XSize": values[0], "YSize": values[1]})
+        else:
+            return OrderedDict({f"param_{i}": v for i, v in enumerate(values)})
+
+    @parameters.setter
+    def parameters(self, value):
+        """Set pad parameters from a dictionary.
+
+        Parameters
+        ----------
+        value : dict
+            Mapping of parameter name to value string or float.
+            Supported keys: ``"Diameter"``, ``"Size"``, ``"XSize"``/``"YSize"``.
+        """
+        if isinstance(value, dict):
+            ordered = list(value.values())
+        elif isinstance(value, list):
+            ordered = value
+        else:
+            ordered = [value]
+        self._update_pad_parameters_parameters(params=ordered)
 
     @property
     def polygon_data(self) -> CorePolygonData:
@@ -172,7 +229,10 @@ class PadProperties:
         PolygonData
             PolygonData object.
         """
-        p = self._pad_parameter_value[1]
+        p_val = self._pad_parameter_value
+        if p_val is None:
+            return None
+        p = p_val[1]
         return p if isinstance(p, ansys.edb.core.geometry.polygon_data.PolygonData) else None
 
     @property
@@ -184,7 +244,8 @@ class PadProperties:
         str
             Offset for the X axis.
         """
-        return Value(self._pad_parameter_value[2])
+        p_val = self._pad_parameter_value
+        return Value(p_val[2]) if p_val is not None else Value(0.0)
 
     @property
     def offset_y(self) -> float:
@@ -195,7 +256,8 @@ class PadProperties:
         str
             Offset for the Y axis.
         """
-        return Value(self._pad_parameter_value[3])
+        p_val = self._pad_parameter_value
+        return Value(p_val[3]) if p_val is not None else Value(0.0)
 
     @offset_x.setter
     def offset_x(self, value):
@@ -214,7 +276,8 @@ class PadProperties:
         str
             Value for the rotation.
         """
-        return Value(self._pad_parameter_value[4])
+        p_val = self._pad_parameter_value
+        return Value(p_val[4]) if p_val is not None else Value(0.0)
 
     @rotation.setter
     def rotation(self, value):
@@ -233,26 +296,30 @@ class PadProperties:
         if layer_name is None:
             layer_name = self.layer_name
         if pad_type is None:
-            pad_type = CorePadType.REGULAR_PAD
+            pad_type = self.pad_type
         if geom_type is None:
             geom_type = self.geometry_type
         for k in CorePadGeometryType:
             if k.value == geom_type:
                 geom_type = k
         if params is None:
-            params = self._pad_parameter_value[1]
+            p_val = self._pad_parameter_value
+            params = p_val[1] if p_val is not None else []
         elif isinstance(params, list):
-            offsetx = [self._pedbpadstack._pedb._value_setter(i) for i in params]
+            params = [self._pedbpadstack._pedb._value_setter(i) for i in params]
         if rotation is None:
-            rotation = self._pad_parameter_value[4]
+            p_val = self._pad_parameter_value
+            rotation = p_val[4] if p_val is not None else 0.0
         elif isinstance(rotation, (str, float, int)):
             rotation = self._pedbpadstack._pedb._value_setter(rotation)
         if offsetx is None:
-            offsetx = self._pad_parameter_value[2]
+            p_val = self._pad_parameter_value
+            offsetx = p_val[2] if p_val is not None else 0.0
         elif isinstance(offsetx, (str, float, int)):
             offsetx = self._pedbpadstack._pedb._value_setter(offsetx)
         if offsety is None:
-            offsety = self._pad_parameter_value[3]
+            p_val = self._pad_parameter_value
+            offsety = p_val[3] if p_val is not None else 0.0
         elif isinstance(offsety, (str, float, int)):
             offsety = self._pedbpadstack._pedb._value_setter(offsety)
         self._edb_padstack.set_pad_parameters(
