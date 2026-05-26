@@ -189,7 +189,7 @@ class TestClass(BaseTestClass):
         pad.pad_by_layer[pad.via_stop_layer].offset_x = offset_x
         pad.pad_by_layer[pad.via_stop_layer].offset_y = offset_y
         if edbapp.grpc:
-            assert pad.pad_by_layer[pad.via_stop_layer].parameters == 7.0
+            assert float(pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"]) == 7.0
             assert pad.pad_by_layer[pad.via_stop_layer].offset_x == offset_x
             assert pad.pad_by_layer[pad.via_stop_layer].offset_y == offset_y
         else:
@@ -201,7 +201,7 @@ class TestClass(BaseTestClass):
         else:
             pad.pad_by_layer[pad.via_stop_layer].parameters = {"Diameter": 8.0}
         if edbapp.grpc:
-            assert pad.pad_by_layer[pad.via_stop_layer].parameters == 8.0
+            assert float(pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"]) == 8.0
         else:
             assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 8.0
         if not edbapp.grpc:  # not implemented in grpc

@@ -168,49 +168,6 @@ class PadProperties:
         self._update_pad_parameters_parameters(params=value)
 
     @property
-    def parameters(self):
-        """Pad parameters.
-
-        For single-parameter shapes (e.g. Circle, Square) returns a single float value.
-        For multi-parameter shapes returns a list of float values.
-
-        Returns
-        -------
-        float or list[float]
-            Pad parameter value(s).
-        """
-        vals = self.parameters_values
-        if vals is None:
-            return None
-        if len(vals) == 1:
-            return vals[0]
-        return vals
-
-    @parameters.setter
-    def parameters(self, value):
-        """Set pad parameters.
-
-        Parameters
-        ----------
-        value : float, str, list, or dict
-            Pad parameter value(s). A dict maps parameter names to values (e.g. ``{"Diameter": 0.5}``).
-        """
-        if isinstance(value, dict):
-            value = list(value.values())
-        self.parameters_values = value
-
-    @property
-    def parameters_values_string(self) -> list[str] | None:
-        """Parameters value in string format."""
-        try:
-            p_val = self._pad_parameter_value
-            if p_val is None:
-                return None
-            return [str(i) for i in p_val[1]]
-        except TypeError:
-            return None
-
-    @property
     def parameters(self) -> dict:
         """Pad parameters as a dictionary keyed by parameter name.
 
@@ -240,9 +197,10 @@ class PadProperties:
 
         Parameters
         ----------
-        value : dict
+        value : dict or list or float or str
             Mapping of parameter name to value string or float.
             Supported keys: ``"Diameter"``, ``"Size"``, ``"XSize"``/``"YSize"``.
+            Can also be a list or a single float/str value.
         """
         if isinstance(value, dict):
             ordered = list(value.values())
@@ -251,6 +209,17 @@ class PadProperties:
         else:
             ordered = [value]
         self._update_pad_parameters_parameters(params=ordered)
+
+    @property
+    def parameters_values_string(self) -> list[str] | None:
+        """Parameters value in string format."""
+        try:
+            p_val = self._pad_parameter_value
+            if p_val is None:
+                return None
+            return [str(i) for i in p_val[1]]
+        except TypeError:
+            return None
 
     @property
     def polygon_data(self) -> CorePolygonData:
