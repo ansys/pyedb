@@ -897,7 +897,6 @@ class TestClassTerminals(BaseTestClass):
         "impedance": 1,
         "is_circuit_port": False,
         "boundary_type": "PortBoundary",
-        "hfss_type": "Gap",
         "terminal_type": "padstack_instance",
         "padstack_instance": "U7-M7",
         "layer": None,
@@ -966,7 +965,6 @@ class TestClassTerminals(BaseTestClass):
         "name": "bundle_terminal",
     }
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet always return Wave-port type.")
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
@@ -984,7 +982,7 @@ class TestClassTerminals(BaseTestClass):
             "phase": 0.0,
             "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
             "boundary_type": "port" if edbapp.grpc else "PortBoundary",
-            "hfss_type": "Gap",
+            "hfss_type": "Wave",
             "terminal_type": "padstack_instance",
             "padstack_instance": "U7-M7",
             "padstack_instance_id": 4294971660,
@@ -997,7 +995,6 @@ class TestClassTerminals(BaseTestClass):
             "impedance": 1,
             "is_circuit_port": False,
             "boundary_type": "PortBoundary",
-            "hfss_type": "Gap",
             "terminal_type": "padstack_instance",
             "padstack_instance_id": 4294971660,
             "layer": None,
