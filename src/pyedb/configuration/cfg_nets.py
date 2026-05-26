@@ -113,7 +113,7 @@ class CfgNets:
         return {"signal_nets": list(self.signal_nets), "power_ground_nets": list(self.power_nets)}
 
     def __init__(self, pedb=None, signal_nets=None, power_nets=None, reference_nets=None):
-        """Initialize the nets configuration."""
+        """Initialize the net configuration."""
         self._pedb = pedb
         self.signal_nets = list(signal_nets or [])
         self.power_nets = list(power_nets or [])
@@ -140,10 +140,10 @@ class CfgNets:
 
         Examples
         --------
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> net = cfg.nets.get("GND")
-        >>> if net:
-        ...     print(net.classification)  # 'power_ground'
+        cfg = edb.configuration.create_config_builder()
+        net = cfg.nets.get("GND")
+        if net:
+            print(net.classification)  # 'power_ground'
         """
         if self._pedb is None:
             raise KeyError(
