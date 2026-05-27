@@ -1824,7 +1824,9 @@ class Modeler(object):
         """
         if not solder_mask_material in self._pedb.materials:
             solder_mask_material = "SolderMask"
-            self._pedb.materials.add_dielectric(permittivity=4, name=solder_mask_material)
+            self._pedb.materials.add_dielectric_material(
+                name=solder_mask_material, permittivity=4, dielectric_loss_tangent=0.02
+            )
             self._pedb.logger.warning(f"No Material name provided or found for {solder_mask_material}.")
             self._pedb.logger.warning(f"Creating default solder mask material {solder_mask_material} with epsr=4.")
         if not reference_signal_layer:
