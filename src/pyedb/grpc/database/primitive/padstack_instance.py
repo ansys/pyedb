@@ -1518,8 +1518,10 @@ class PadstackInstance(conn_obj.ConnObj):
                 padstack_pad = PadstackDef(self._pedb, self.padstack_def).pad_by_layer[
                     PadstackDef(self._pedb, self.padstack_def).start_layer
                 ]
-            except KeyError:  # pragma: no cover
+            except (KeyError, Exception):  # pragma: no cover
                 return False
+        except Exception:
+            return False
 
         try:
             pad_shape = padstack_pad.geometry_type
