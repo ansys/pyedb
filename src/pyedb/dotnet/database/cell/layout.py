@@ -548,6 +548,26 @@ class Layout(ObjBase, PrimitivesQuery):
         super().__init__(pedb, edb_object)
         PrimitivesQuery.__init__(self, pedb)
 
+        self.__use_cache = False
+        self.__padstack_instances = None
+
+    @property
+    def use_cache(self):
+        return self.__use_cache
+
+    @use_cache.setter
+    def use_cache(self, value:bool):
+        self.__use_cache = value
+        if self.__use_cache:
+            self.refresh_cache()
+
+    def refresh_cache(self):
+        del self.__padstack_instances
+
+        self._pedb.logger.info("Caching layout...")
+        self.__padstack_instances = [EDBPadstackInstance(i, self._pedb) for i in self.core.PadstackInstances]
+        self._pedb.logger.info("Caching finished.")
+
     @property
     def cell(self):
         """:class:`Cell <ansys.edb.layout.Cell>`: Owning cell for this layout.
@@ -705,7 +725,10 @@ class Layout(ObjBase, PrimitivesQuery):
     @property
     def padstack_instances(self) -> list[EDBPadstackInstance]:
         """Get all padstack instances in a list."""
-        return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
+        if self.__use_cache:
+            return self.__padstack_instances
+        else:
+            return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
 
     @property
     def voltage_regulators(self) -> list[VoltageRegulator]:

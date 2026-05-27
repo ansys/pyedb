@@ -450,7 +450,7 @@ class Edb:
         self._layout_instance = None
         self._variables = None
         self._active_cell = None
-        self._layout = None
+        self.__layout = None
         self._configuration = None
         self._source_excitation = None
 
@@ -458,6 +458,7 @@ class Edb:
         # NOTE: Adding import here to avoid making shapely a direct dependency of pyedb.
         from pyedb.dotnet.database.nets import EdbNets
 
+        self.__layout = Layout(self, self._active_cell.GetLayout())
         self._components = Components(self)
         self._stackup = Stackup(self, self.layout.layer_collection)
         self._padstack = EdbPadstacks(self)
@@ -468,6 +469,7 @@ class Edb:
         self._stackup2 = self._stackup
         self._materials = Materials(self)
         self._source_excitation = SourceExcitation(self)
+
 
     @property
     def pedb_class(self):
@@ -1255,7 +1257,7 @@ class Edb:
         -------
         :class:`legacy.database.dotnet.layout.Layout`
         """
-        return Layout(self, self._active_cell.GetLayout())
+        return self.__layout
 
     @property
     def active_layout(self) -> Any:
