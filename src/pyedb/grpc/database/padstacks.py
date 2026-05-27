@@ -689,8 +689,7 @@ class Padstacks(object):
 
         for p_id, p in self.instances.items():
             if p.net_name in net_names:
-                if not p.core.delete():  # pragma: no cover
-                    return False
+                p.delete()
         return True
 
     @deprecate_argument_name(
@@ -816,7 +815,7 @@ class Padstacks(object):
                     for pin in self._pedb.components.instances[refdes].pins.values():
                         pinlist.append(pin)
             elif netname:
-                for pin in self._pedb.pins:
+                for pin in self.pins.values():
                     if pin.net_name == netname:
                         pinlist.append(pin)
             else:
@@ -1438,7 +1437,7 @@ class Padstacks(object):
         pad_geo = CorePadGeometryType.PADGEOMTYPE_CIRCLE
         vals = 0
         params = [0]
-        new_padstack_definition_data = CorePadstackDefData(self.definitions[padstack_name].data.core)
+        new_padstack_definition_data = self.definitions[padstack_name].data
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
         elif isinstance(layer_name, str):
