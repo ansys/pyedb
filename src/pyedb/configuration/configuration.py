@@ -1197,7 +1197,7 @@ class Configuration:
                     phase=i.source_phase,
                     terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
-                    hfss_type=i.hfss_type if i.hfss_type else "Wave",
+                    hfss_type=i.hfss_type if i.hfss_type else "Gap",
                 )
             elif i.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                 manager.add_pin_group_terminal(
