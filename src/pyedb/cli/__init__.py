@@ -448,7 +448,7 @@ def exec_code(
         with common.managed_edb(edb_path=path) as (db, context):
             namespace = common.build_console_namespace(db)
             if code_snippet:
-                exec(compile(code_snippet, "<pyedb-cli>", "exec"), namespace, namespace)  # nosec B102
+                exec(compile(code_snippet, "<pyedb-cli>", "exec"), namespace, namespace)  # nosec
                 executed = "<inline>"
             else:
                 script_file = Path(script_path).expanduser()
