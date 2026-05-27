@@ -43,6 +43,8 @@ class Q3DSimulationSetup(SimulationSetup):
 
     def __init__(self, pedb, core: "GrpcQ3DSimulationSetup"):
         super().__init__(pedb, core)
+        if not isinstance(core, CoreQ3DSimulationSetup):
+            core = CoreQ3DSimulationSetup(core.msg)
         self.core: CoreQ3DSimulationSetup = core
         self._pedb = pedb
 
