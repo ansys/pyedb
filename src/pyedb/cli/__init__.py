@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import code
 from pathlib import Path
+import runpy
 
 try:
     import typer
@@ -447,13 +448,13 @@ def exec_code(
         with common.managed_edb(edb_path=path) as (db, context):
             namespace = common.build_console_namespace(db)
             if code_snippet:
-                exec(compile(code_snippet, "<pyedb-cli>", "exec"), namespace, namespace)
+                exec(compile(code_snippet, "<pyedb-cli>", "exec"), namespace, namespace)  # nosec B102
                 executed = "<inline>"
             else:
                 script_file = Path(script_path).expanduser()
                 if not script_file.exists():
                     raise RuntimeError(f"Script file '{script_file}' does not exist.")
-                exec(compile(script_file.read_text(encoding="utf-8"), str(script_file), "exec"), namespace, namespace)
+                runpy.run_path(str(script_file), init_globals=namespace, run_name="__main__")
                 executed = str(script_file.resolve())
 
             if save_on_success:
