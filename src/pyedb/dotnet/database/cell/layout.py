@@ -553,21 +553,40 @@ class Layout(ObjBase, PrimitivesQuery):
 
     @property
     def use_cache(self):
+        """bool: Enable or disable layout caching.
+
+        When enabled, caches padstack instances and primitives for faster access.
+        """
         return self.__use_cache
 
     @use_cache.setter
     def use_cache(self, value:bool):
+        """Set cache usage and refresh if enabled.
+
+        Parameters
+        ----------
+        value : bool
+            Whether to enable caching.
+        """
         self.__use_cache = value
         if self.__use_cache:
             self.refresh_cache()
 
     def refresh_cache(self):
+        """Refresh the layout cache.
+
+        Caches padstack instances and primitives from the core object.
+        """
         self._pedb.logger.info("Caching layout...")
         self.__padstack_instances = [EDBPadstackInstance(i, self._pedb) for i in self.core.PadstackInstances]
         self._primitives = [primitive_cast(self._pedb, p) for p in self.core.Primitives]
         self._pedb.logger.info("Caching finished.")
 
     def clear_cache(self):
+        """Clear the layout cache.
+
+        Clears cached padstack instances and primitives.
+        """
         self.__padstack_instances = []
         self._primitives = []
 
