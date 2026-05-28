@@ -1555,7 +1555,7 @@ class Stackup:
             edb_cell = list_cells[0]
         self._pedb.active_cell.is_blackbox = True
         cell_inst2 = CoreCellInstance.create(
-            layout=edb_cell.layout, name=self._pedb.active_cell.name, ref=self._pedb.active_layout
+            layout=edb_cell.layout, name=self._pedb.active_cell.name, ref=self._pedb.active_layout.core
         )
         cell_trans = cell_inst2.transform
         cell_trans.rotation = _angle
