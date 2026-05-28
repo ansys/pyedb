@@ -333,11 +333,7 @@ class CfgComponent(CfgBase):
         die_props = self.pyedb_obj.ic_die_properties
         die_type = die_props.die_type
         temp = {"type": "no_die" if die_type in _NO_DIE_TYPES else die_type}
-        if die_type in _NO_DIE_TYPES:
-            if self._pedb and self._pedb.grpc:
-                orientation = die_props.die_orientation
-                temp["orientation"] = orientation if orientation is not None else "chip_up"
-        else:
+        if die_type not in _NO_DIE_TYPES:
             temp["orientation"] = die_props.die_orientation
             if die_type == "wire_bond":
                 temp["height"] = str(die_props.height)
