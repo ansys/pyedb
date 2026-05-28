@@ -266,6 +266,7 @@ class Edb(EdbInit):
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
         self._setups = {}
+        self._simulation_setups = None
         if cellname:
             self.cellname = cellname
         else:
@@ -2367,7 +2368,9 @@ class Edb(EdbInit):
     @property
     def simulation_setups(self) -> SimulationSetups:
         """Get all simulation setups object."""
-        return SimulationSetups(self)
+        if not hasattr(self, "_simulation_setups") or self._simulation_setups is None:
+            self._simulation_setups = SimulationSetups(self)
+        return self._simulation_setups
 
     @property
     @deprecated("Use simulation_setups.hfss property instead.", category=None)
@@ -3439,3 +3442,5 @@ class Edb(EdbInit):
         # Materials and source excitation
         self._materials = Materials(self)
         self._source_excitation = SourceExcitation(self)
+        # Reset simulation setups cache so it is re-created for the new active cell
+        self._simulation_setups = None
