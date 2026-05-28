@@ -2214,6 +2214,8 @@ class EDBPadstackInstance(Connectable):
                 else:
                     aedt_name = "Via_{}".format(self.id)
                 self.aedt_name = aedt_name
+            else:
+                self.__aedt_name = aedt_name
         return self.__aedt_name
 
     @aedt_name.setter

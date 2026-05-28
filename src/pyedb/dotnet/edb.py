@@ -1267,12 +1267,12 @@ class Edb:
         -------
         Instance of EDB API Layout Class.
         """
-        return self.layout._edb_object
+        return self.layout.core
 
     @property
     def layout_instance(self):  # -> Any:
         """Edb Layout Instance."""
-        return self.layout._edb_object.GetLayoutInstance()
+        return self.layout.core.GetLayoutInstance()
 
     @property
     def layout_bounding_box(self) -> list[float]:

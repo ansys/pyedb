@@ -291,7 +291,9 @@ class Configuration:
         self.__apply_with_logging("Applying package definitions", self.cfg_data.package_definitions.apply)
         self.__apply_with_logging("Applying modeler", self.apply_modeler)
         self.__apply_with_logging("Placing ports", self.cfg_data.ports.apply)
+        self._pedb.layout.use_cache = True
         self.apply_terminals()
+        self._pedb.layout.use_cache = False
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
         self.apply_operations()
         self.apply_setups()
