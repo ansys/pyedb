@@ -572,7 +572,7 @@ class Layout(PrimitivesQuery):
         self.core = core
         self._pedb = pedb
         self.__primitives = []
-        
+        self.__use_cache = False
         self.__padstack_instances = {}
 
     @property
