@@ -71,17 +71,17 @@ name = "pyedb"
 compile-bytecode = true
 
 [dependency-groups]
+dev = [
+    "ruff>=0.4.0",
+    { include-group = "doc" },
+    { include-group = "tests" },
+]
 tests = [
     "mock>=5.1.0,<5.3",
     "pytest>=7.4.0,<9.1",
     "pytest-cov>=4.0.0,<7.2",
     "pytest-xdist>=3.5.0,<3.7",
     "pytest-rerunfailures>=14.0,<17",
-]
-dev = [
-    "ruff>=0.4.0",
-    { include-group = "doc" },
-    { include-group = "tests" },
 ]
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.9",
