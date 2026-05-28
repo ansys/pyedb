@@ -560,7 +560,7 @@ class Layout(ObjBase, PrimitivesQuery):
         return self.__use_cache
 
     @use_cache.setter
-    def use_cache(self, value:bool):
+    def use_cache(self, value: bool):
         """Set cache usage and refresh if enabled.
 
         Parameters

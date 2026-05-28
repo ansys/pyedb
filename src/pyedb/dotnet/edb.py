@@ -470,7 +470,6 @@ class Edb:
         self._materials = Materials(self)
         self._source_excitation = SourceExcitation(self)
 
-
     @property
     def pedb_class(self):
         return pyedb.dotnet

@@ -588,7 +588,7 @@ class Layout(PrimitivesQuery):
         return self.__use_cache
 
     @use_cache.setter
-    def use_cache(self, value:bool):
+    def use_cache(self, value: bool):
         """Set cache usage and refresh if enabled.
 
         Parameters
@@ -607,7 +607,6 @@ class Layout(PrimitivesQuery):
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-            
         self._pedb.logger.info("Caching layout...")
         self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
