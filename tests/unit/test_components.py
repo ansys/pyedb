@@ -2253,14 +2253,18 @@ class TestReplaceRlcByGapBoundariesObjectPath:
 @_grpc_only
 class TestStructures3d:
     def test_structures_3d_filters_core_structure3d(self):
-        from ansys.edb.core.hierarchy.structure3d import Structure3D as CoreStructure3D
+        class FakeCoreStructure3D:
+            pass
+
+        non_struct_core = MagicMock()  # NOT an instance of FakeCoreStructure3D
+
+        struct_core = FakeCoreStructure3D()
+        struct_core.name = "S3D_1"
 
         non_struct = MagicMock()
-        non_struct.core = MagicMock()
+        non_struct.core = non_struct_core
 
         struct = MagicMock()
-        struct_core = MagicMock(spec=CoreStructure3D)
-        struct_core.name = "S3D_1"
         struct.core = struct_core
 
         pedb = _make_grpc_pedb()
@@ -2268,8 +2272,9 @@ class TestStructures3d:
         comps = _make_components()
         comps._pedb = pedb
 
-        with patch("pyedb.grpc.database.components.Structure3D") as mock_s3d:
-            result = comps.structures_3d
+        with patch("pyedb.grpc.database.components.CoreStructure3D", FakeCoreStructure3D):
+            with patch("pyedb.grpc.database.components.Structure3D") as mock_s3d:
+                result = comps.structures_3d
         mock_s3d.assert_called_once_with(pedb, struct_core)
 
 
