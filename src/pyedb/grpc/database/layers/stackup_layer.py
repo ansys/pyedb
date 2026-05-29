@@ -119,6 +119,9 @@ class StackupLayer:
             self.core.type = value
 
     def update(self, **kwargs):
+        # Normalise layer_type (Python field name) to type (property name on this object)
+        if "layer_type" in kwargs and "type" not in kwargs:
+            kwargs["type"] = kwargs.pop("layer_type")
         for k, v in kwargs.items():
             if k in dir(self):
                 self.__setattr__(k, v)

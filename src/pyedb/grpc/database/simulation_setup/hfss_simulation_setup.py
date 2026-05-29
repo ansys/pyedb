@@ -49,6 +49,8 @@ class HfssSimulationSetup(SimulationSetup):
 
     def __init__(self, pedb, core: "CoreHfssSimulationSetup", name: str = None):
         super().__init__(pedb, core)
+        if not isinstance(core, CoreHfssSimulationSetup):
+            core = CoreHfssSimulationSetup(core.msg)
         self.core = core
         self._pedb = pedb
         self._name = name

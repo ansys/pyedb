@@ -160,14 +160,19 @@ class LayerCollection:
         if "thickness" in kwargs:
             thickness = self._pedb._value_setter(kwargs["thickness"])
         elevation = 0.0
+        if "type" in kwargs:
+            layer_type = kwargs["type"]
+        material = kwargs.get("material", "copper")
         layer = StackupLayer.create(
             layout=self._pedb.layout,
             name=name,
             layer_type=layer_type,
             thickness=thickness,
-            material="copper",
+            material=material,
             elevation=elevation,
         )
+        if "fill_material" in kwargs:
+            layer.core.set_fill_material(kwargs["fill_material"])
         return self.core.add_layer_top(layer.core)
 
     def add_layer_bottom(self, name: str, layer_type: str = "signal", **kwargs) -> Union["Layer", None]:
@@ -269,6 +274,8 @@ class LayerCollection:
             material=material,
             elevation=elevation,
         )
+        if "fill_material" in kwargs:
+            layer.core.set_fill_material(kwargs["fill_material"])
         return self.core.add_layer_below(layer.core, base_layer_name)
 
     def add_layer_above(
@@ -1555,7 +1562,7 @@ class Stackup:
             edb_cell = list_cells[0]
         self._pedb.active_cell.is_blackbox = True
         cell_inst2 = CoreCellInstance.create(
-            layout=edb_cell.layout, name=self._pedb.active_cell.name, ref=self._pedb.active_layout
+            layout=edb_cell.layout, name=self._pedb.active_cell.name, ref=self._pedb.active_layout.core
         )
         cell_trans = cell_inst2.transform
         cell_trans.rotation = _angle
