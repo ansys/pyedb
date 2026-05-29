@@ -842,7 +842,7 @@ class Configuration:
         layers_ = list()
         layers_.extend(self.cfg_data.stackup.layers)
         for l_attrs in layers_:
-            attrs = l_attrs.model_dump(exclude_none=True, by_alias=True)
+            attrs = l_attrs.model_dump(exclude_none=True, by_alias=False)
             self._pedb.stackup.add_layer_bottom(**attrs)
 
     def __update_stackup(self):
@@ -880,7 +880,7 @@ class Configuration:
             if l.type == "signal":
                 layer_id = lc_signal_layers[signal_idx]
                 layer_name = id_name[layer_id]
-                attrs = l.model_dump(exclude_none=True, by_alias=True)
+                attrs = l.model_dump(exclude_none=True, by_alias=False)
                 self._pedb.stackup.layers[layer_name].update(**attrs)
                 signal_idx = signal_idx + 1
 
@@ -890,11 +890,11 @@ class Configuration:
         if l.type == "signal":
             prev_layer_clone = self._pedb.stackup.layers[l.name]
         else:
-            attrs = l.model_dump(exclude_none=True, by_alias=True)
+            attrs = l.model_dump(exclude_none=True, by_alias=False)
             prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
         for idx, l in enumerate(layers):
             if l.type == "dielectric":
-                attrs = l.model_dump(exclude_none=True, by_alias=True)
+                attrs = l.model_dump(exclude_none=True, by_alias=False)
                 prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **attrs)
             elif l.type == "signal":
                 prev_layer_clone = self._pedb.stackup.layers[l.name]
