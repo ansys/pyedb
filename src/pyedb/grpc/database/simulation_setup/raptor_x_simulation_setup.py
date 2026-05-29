@@ -41,6 +41,8 @@ class RaptorXSimulationSetup(SimulationSetup):
 
     def __init__(self, pedb, core: "CoreRaptorXSimulationSetup"):
         super().__init__(pedb, core)
+        if not isinstance(core, CoreRaptorXSimulationSetup):
+            core = CoreRaptorXSimulationSetup(core.msg)
         self.core = core
         self._pedb = pedb
 
