@@ -61,8 +61,11 @@ Examples
     edb.export_hfss("output_dir")
 """
 
+from __future__ import annotations
+
 from itertools import combinations
 import os
+from pathlib import Path as PathLib  # prevent conflict with Edb Path
 import re
 import shutil
 import subprocess  # nosec B404
@@ -70,7 +73,7 @@ import sys
 import tempfile
 import time
 import traceback
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional
 
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
 from typing_extensions import deprecated
@@ -166,8 +169,9 @@ class Edb(EdbInit):
 
     Parameters
     ----------
-    edbpath : str or Path, optional
-        Full path to AEDB folder or layout file to import. Supported formats:
+    edbpath : str or pathlib.Path, optional
+        Full path to AEDB folder or layout file to import. Accepts both string paths
+        and ``pathlib.Path`` objects. Supported formats:
         BRD, MCM, XML (IPC2581), GDS, ODB++ (TGZ/ZIP), DXF.
         Default creates new AEDB in documents folder.
     cellname : str, optional
@@ -201,6 +205,10 @@ class Edb(EdbInit):
     >>> # Open existing AEDB:
     >>> edb = Edb("myproject.aedb")
 
+    >>> # Open using pathlib.Path:
+    >>> from pathlib import Path
+    >>> edb = Edb(Path("myproject.aedb"))
+
     >>> # Import board file:
     >>> edb = Edb("my_board.brd")
     """
@@ -212,7 +220,7 @@ class Edb(EdbInit):
     @deprecate_argument_name({"edbversion": "version"})
     def __init__(
         self,
-        edbpath: Union[str, Path] = None,
+        edbpath: str | PathLib = None,
         cellname: str = None,
         isreadonly: bool = False,
         version: str = None,
@@ -226,6 +234,8 @@ class Edb(EdbInit):
         restart_rpc_server=False,
         remove_existing_aedt: bool = False,
     ):
+        if isinstance(edbpath, PathLib):
+            edbpath = str(edbpath)
         edbversion = get_string_version(version)
         self._clean_variables()
         EdbInit.__init__(self, version=version)
@@ -256,6 +266,7 @@ class Edb(EdbInit):
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
         self._setups = {}
+        self._simulation_setups = None
         if cellname:
             self.cellname = cellname
         else:
@@ -307,7 +318,7 @@ class Edb(EdbInit):
                 self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
 
-        elif edbpath[-3:] in ["brd", "mcm", "gds", "xml", "dxf", "tgz"]:
+        elif edbpath[-3:] in settings.SUPPORTED_EDB_IMPORT_FORMATS:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             if not self.import_layout_file(
@@ -478,6 +489,9 @@ class Edb(EdbInit):
 
     def _value_setter(self, val) -> Value | float | str:
         """Helper for setting variable values with unit handling."""
+        if isinstance(val, Value):
+            # Value already wraps a CoreValue expression — pass through as-is
+            return val
         try:
             float(val)
             return float(val) if isinstance(val, float) else val  # Return numeric values as-is
@@ -2354,7 +2368,9 @@ class Edb(EdbInit):
     @property
     def simulation_setups(self) -> SimulationSetups:
         """Get all simulation setups object."""
-        return SimulationSetups(self)
+        if not hasattr(self, "_simulation_setups") or self._simulation_setups is None:
+            self._simulation_setups = SimulationSetups(self)
+        return self._simulation_setups
 
     @property
     @deprecated("Use simulation_setups.hfss property instead.", category=None)
@@ -2589,7 +2605,7 @@ class Edb(EdbInit):
                 >>> # Self-contained example showing end-to-end usage
                 >>> edb_file = "path_to_zone_aedb.aedb"
                 >>> edb = Edb(edb_file)
-                >>> edb_zones = edb.copy_zones(r"C:\Temp\test")
+                >>> edb_zones = edb.copy_zones(r"C:\\Temp\\test")
                 >>> common_reference_net = "GND"
                 >>> defined_ports, terminals_info = edb.cutout_multizone_layout(edb_zones, common_reference_net)
                 >>> project_connexions = Edb._get_connected_ports_from_multizone_cutout(terminals_info)
@@ -2821,7 +2837,7 @@ class Edb(EdbInit):
                 _layers = {k: v for k, v in self.stackup.layers.items() if k in layer_filter}
             for layer_name, layer in _layers.items():
                 var, val = _apply_variable(f"${layer_name}", layer.thickness)
-                layer.thickness = Value(var, self.active_db)
+                layer.thickness = var
                 parameters.append(val)
         if materials:
             if not material_filter:
@@ -2831,14 +2847,14 @@ class Edb(EdbInit):
             for mat_name, material in _materials.items():
                 if not material.conductivity or material.conductivity < 1e4:
                     var, val = _apply_variable(f"$epsr_{mat_name}", material.permittivity)
-                    material.permittivity = Value(var, self.active_db)
+                    material.permittivity = var
                     parameters.append(val)
                     var, val = _apply_variable(f"$loss_tangent_{mat_name}", material.dielectric_loss_tangent)
-                    material.dielectric_loss_tangent = Value(var, self.active_db)
+                    material.dielectric_loss_tangent = var
                     parameters.append(val)
                 else:
                     var, val = _apply_variable(f"$sigma_{mat_name}", material.conductivity)
-                    material.conductivity = Value(var, self.active_db)
+                    material.conductivity = var
                     parameters.append(val)
         if traces:
             if not trace_net_filter:
@@ -2854,7 +2870,7 @@ class Edb(EdbInit):
                 else:
                     trace_width_variable = f"{path.aedt_name}"
                 var, val = _apply_variable(trace_width_variable, path.width)
-                path.width = Value(var, self.active_cell)
+                path.width = var
                 parameters.append(val)
         if not padstack_definition_filter:
             if trace_net_filter:
@@ -2881,7 +2897,7 @@ class Edb(EdbInit):
                         hole_variable = f"${def_name}_hole_diameter"
                     if padstack_def.hole_diameter:
                         var, val = _apply_variable(hole_variable, padstack_def.hole_diameter)
-                        padstack_def.hole_properties = Value(var, self.active_db)
+                        padstack_def.hole_diameter = var
                         parameters.append(val)
             if pads:
                 for layer, pad in padstack_def.pad_by_layer.items():
@@ -3426,3 +3442,5 @@ class Edb(EdbInit):
         # Materials and source excitation
         self._materials = Materials(self)
         self._source_excitation = SourceExcitation(self)
+        # Reset simulation setups cache so it is re-created for the new active cell
+        self._simulation_setups = None

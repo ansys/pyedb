@@ -34,7 +34,7 @@ class CfgBoundaries(CfgBaseModel):
     class PaddingData(CfgBaseModel):
         """Represent padding data for extent regions."""
 
-        size: float | str
+        size: float | int | str
         is_multiple: bool
 
     use_open_region: Optional[bool] = Field(default=None, description="Whether to enable the use of an open region")
@@ -55,7 +55,7 @@ class CfgBoundaries(CfgBaseModel):
             "This parameter influences how thick the PML layer is calculated. "
         ),
     )
-    radiation_level: Optional[float] = Field(
+    radiation_level: Optional[float | int] = Field(
         default=None,
         description=(
             "Radiation factor for PML, controlling the relative thickness of the PML boundary. "
@@ -101,7 +101,7 @@ class CfgBoundaries(CfgBaseModel):
     )
     base_polygon: Optional[str] = Field(
         default=None,
-        description=("Base polygon name for the extent region, used when the extent type is `Polygon`. "),
+        description="Base polygon name for the extent region, used when the extent type is `Polygon`. ",
     )
     truncate_air_box_at_ground: Optional[bool] = Field(
         default=None,
@@ -149,7 +149,7 @@ class CfgBoundaries(CfgBaseModel):
         self.use_open_region = use_open_region
         self.open_region_type = "radiation"
 
-    def set_pml_boundary(self, operating_freq, radiation_level: float = 20, is_pml_visible: bool = False):
+    def set_pml_boundary(self, operating_freq, radiation_level: float | int = 20, is_pml_visible: bool = False):
         """Configure a perfectly matched layer boundary."""
         self.use_open_region = True
         self.open_region_type = "pml"
@@ -159,11 +159,11 @@ class CfgBoundaries(CfgBaseModel):
 
     def set_air_box_extents(
         self,
-        horizontal_size: float = 0.15,
+        horizontal_size: float | int = 0.15,
         horizontal_is_multiple: bool = False,
-        positive_vertical_size: float = 0.15,
+        positive_vertical_size: float | int = 0.15,
         positive_vertical_is_multiple: bool = False,
-        negative_vertical_size: float = 0.15,
+        negative_vertical_size: float | int = 0.15,
         negative_vertical_is_multiple: bool = False,
         sync: bool = False,
         truncate_at_ground: bool = False,
@@ -197,7 +197,7 @@ class CfgBoundaries(CfgBaseModel):
     def set_dielectric_extent(
         self,
         extent_type: str = "BoundingBox",
-        expansion_size: int = 0,
+        expansion_size: float | int = 0,
         is_multiple: bool = False,
         base_polygon: Optional[str] = None,
         honor_user_dielectric: bool = False,

@@ -59,36 +59,36 @@ class CfgData:
     """Runtime container and programmatic builder for pyedb configuration.
 
     Can be instantiated **with or without** a live EDB session.  When
-    ``pedb`` is ``None`` the object works as a standalone builder for
+    `pedb` is `None` the object works as a standalone builder for
     constructing configuration payloads in Python.
 
     Parameters
     ----------
     pedb : Edb, optional
         Live EDB session.  When supplied, section objects can resolve
-        existing database objects via ``get`` helpers.
+        existing database objects via `get` helpers.
     **kwargs
-        Configuration section data.  Recognised keys: ``general``,
-        ``boundaries``, ``nets``, ``components``, ``padstacks``,
-        ``pin_groups``, ``terminals``, ``ports``, ``sources``, ``setups``,
-        ``stackup``, ``s_parameters``, ``spice_models``,
-        ``package_definitions``, ``operations``, ``modeler``, ``variables``,
-        ``probes``.  Unknown keys trigger a ``UserWarning``.
+        Configuration section data.  Recognised keys: `general`,
+        `boundaries`, `nets`, `components`, `padstacks`,
+        `pin_groups`, `terminals`, `ports`, `sources`, `setups`,
+        `stackup`, `s_parameters`, `spice_models`,
+        `package_definitions`, `operations`, `modeler`, `variables`,
+        `probes`.  Unknown keys trigger a `UserWarning`.
 
     Examples
     --------
     Standalone construction (no EDB session):
 
-    >>> from pyedb.configuration.cfg_data import CfgData
-    >>> cfg = CfgData()
-    >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
-    >>> cfg.to_json("my_config.json")
+    from pyedb.configuration.cfg_data import CfgData
+    cfg = CfgData()
+    cfg.nets.add_signal_nets(["SIG1", "CLK"])
+    cfg.to_json("my_config.json")
 
     From an open EDB session (recommended):
 
-    >>> cfg = edb.configuration.create_config_builder()
-    >>> cfg.general.anti_pads_always_on = False
-    >>> edb.configuration.run(cfg)
+    cfg = edb.configuration.create_config_builder()
+    cfg.general.anti_pads_always_on = False
+    edb.configuration.run(cfg)
 
     Attributes
     ----------
@@ -249,7 +249,7 @@ class CfgData:
         """Serialize the full configuration to a plain Python dictionary.
 
         Only sections that contain at least one value are included;
-        empty sections (``{}``, ``[]``, ``None``) are silently omitted.
+        empty sections (`{}`, `[]`, `None`) are silently omitted.
 
         Returns
         -------
@@ -258,10 +258,9 @@ class CfgData:
 
         Examples
         --------
-        >>> cfg = CfgData()
-        >>> cfg.nets.add_signal_nets(["SIG"])
-        >>> cfg.to_dict()
-        {'nets': {'signal_nets': ['SIG']}}
+        cfg = CfgData()
+        cfg.nets.add_signal_nets(["SIG"])
+        cfg.to_dict()
         """
         return {key: value for key, value in self._serialized_sections() if value not in ({}, [], None)}
 
@@ -273,7 +272,7 @@ class CfgData:
         file_path : str or Path
             Destination file path.
         indent : int, optional
-            JSON indentation level.  Default is ``4``.
+            JSON indentation level.  Default is `4`.
 
         Returns
         -------
@@ -282,7 +281,7 @@ class CfgData:
 
         Examples
         --------
-        >>> cfg.to_json("my_project_config.json")
+        cfg.to_json("my_project_config.json")
         """
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -306,11 +305,11 @@ class CfgData:
         Raises
         ------
         ImportError
-            If the ``toml`` package is not installed.
+            If the `toml` package is not installed.
 
         Examples
         --------
-        >>> cfg.to_toml("my_project_config.toml")
+        cfg.to_toml("my_project_config.toml")
         """
         if not _TOML_AVAILABLE:
             raise ImportError("The 'toml' package is required to write TOML files. Install it with: pip install toml")
@@ -338,9 +337,8 @@ class CfgData:
 
         Examples
         --------
-        >>> cfg = CfgData.from_dict({"nets": {"signal_nets": ["CLK"]}})
-        >>> cfg.nets.signal_nets
-        ['CLK']
+        cfg = CfgData.from_dict({"nets": {"signal_nets": ["CLK"]}})
+        cfg.nets.signal_nets
         """
         return cls(pedb=pedb, **data)
 
@@ -362,9 +360,9 @@ class CfgData:
 
         Examples
         --------
-        >>> cfg = CfgData.from_json("base_config.json")
-        >>> cfg.general.suppress_pads = True
-        >>> cfg.to_json("modified_config.json")
+        cfg = CfgData.from_json("base_config.json")
+        cfg.general.suppress_pads = True
+        cfg.to_json("modified_config.json")
         """
         with open(file_path, "r", encoding="utf-8") as fh:
             data = json.load(fh)
@@ -389,11 +387,11 @@ class CfgData:
         Raises
         ------
         ImportError
-            If the ``toml`` package is not installed.
+            If the `toml` package is not installed.
 
         Examples
         --------
-        >>> cfg = CfgData.from_toml("base_config.toml")
+        cfg = CfgData.from_toml("base_config.toml")
         """
         if not _TOML_AVAILABLE:
             raise ImportError("The 'toml' package is required to read TOML files. Install it with: pip install toml")

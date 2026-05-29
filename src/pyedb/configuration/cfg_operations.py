@@ -45,7 +45,7 @@ class CfgCutout(BaseModel):
         default=None, validation_alias=AliasChoices("reference_nets", "reference_list")
     )
     extent_type: Optional[str] = "ConvexHull"
-    expansion_size: Optional[float | str] = 0.002
+    expansion_size: Optional[float | int | str] = 0.002
     number_of_threads: Optional[int] = 1
     custom_extent: Optional[Any] = None
     custom_extent_units: str = Field(default="meter")
@@ -107,12 +107,12 @@ class CfgOperations(BaseModel):
         signal_nets=None,
         reference_nets=None,
         extent_type: str = "ConvexHull",
-        expansion_size: float | str = 0.002,
-        expansion_factor: float = 0,
+        expansion_size: float | int | str = 0.002,
+        expansion_factor: float | int = 0,
         auto_identify_nets_enabled: bool = False,
-        resistor_below: float = 100,
-        inductor_below: float = 1,
-        capacitor_above: float | str = "10nF",
+        resistor_below: float | int = 100,
+        inductor_below: float | int = 1,
+        capacitor_above: float | int | str = "10nF",
         **kwargs,
     ):
         """Create and store a cutout operation."""

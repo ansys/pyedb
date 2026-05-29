@@ -159,8 +159,8 @@ class CfgSetupAC(CfgSetupDC):
 
             Examples
             --------
-            >>> sw = hfss.add_frequency_sweep("sw")
-            >>> sw.add_linear_count_frequencies("1GHz", "10GHz", 100)
+            sw = hfss.add_frequency_sweep("sw")
+            sw.add_linear_count_frequencies("1GHz", "10GHz", 100)
             """
             self.frequencies.append(
                 CfgFrequencies(start=start, stop=stop, increment=count, distribution="linear_count")
@@ -242,7 +242,7 @@ class CfgSetupAC(CfgSetupDC):
 
             Examples
             --------
-            >>> sw.add_single_frequency("0Hz")
+            sw.add_single_frequency("0Hz")
             """
             self.frequencies.append(CfgFrequencies(start=freq, stop=freq, increment=1, distribution="single"))
             return self
@@ -318,13 +318,13 @@ class CfgSIwaveACSetup(CfgSetupAC):
         --------
         Inline (single call):
 
-        >>> siwave_ac.add_frequency_sweep(
-        ...     "sw1",
-        ...     start="1kHz",
-        ...     stop="1GHz",
-        ...     step_or_count=100,
-        ...     distribution="log_count",
-        ... )
+        siwave_ac.add_frequency_sweep(
+            "sw1",
+            start="1kHz",
+            stop="1GHz",
+            step_or_count=100,
+            distribution="log_count"
+        )
 
         Chained ranges:
 
@@ -409,9 +409,9 @@ class CfgHFSSSetup(CfgSetupAC):
 
             Examples
             --------
-            >>> sol = hfss.multi_frequency_adaptive_solution
-            >>> sol.add_adaptive_frequency("5GHz", max_passes=20, max_delta=0.02)
-            >>> sol.add_adaptive_frequency("10GHz", max_passes=20, max_delta=0.02)
+            sol = hfss.multi_frequency_adaptive_solution
+            sol.add_adaptive_frequency("5GHz", max_passes=20, max_delta=0.02)
+            sol.add_adaptive_frequency("10GHz", max_passes=20, max_delta=0.02)
             """
             adapt_freq = CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency(
                 adaptive_frequency=frequency,
@@ -478,7 +478,7 @@ class CfgHFSSSetup(CfgSetupAC):
 
         Examples
         --------
-        >>> hfss.set_single_frequency_adaptive("10GHz", max_passes=15, max_delta=0.01)
+        hfss.set_single_frequency_adaptive("10GHz", max_passes=15, max_delta=0.01)
         """
         self.adapt_type = "single"
         self.single_frequency_adaptive_solution = self.CfgSingleFrequencyAdaptiveSolution(
@@ -519,7 +519,7 @@ class CfgHFSSSetup(CfgSetupAC):
 
         Examples
         --------
-        >>> hfss.set_broadband_adaptive("1GHz", "20GHz", max_passes=25, max_delta=0.01)
+        hfss.set_broadband_adaptive("1GHz", "20GHz", max_passes=25, max_delta=0.01)
         """
         self.adapt_type = "broadband"
         self.broadband_adaptive_solution = self.CfgBroadbandAdaptiveSolution(
@@ -553,8 +553,8 @@ class CfgHFSSSetup(CfgSetupAC):
 
         Examples
         --------
-        >>> hfss.add_multi_frequency_adaptive("5GHz")
-        >>> hfss.add_multi_frequency_adaptive("10GHz", max_passes=30)
+        hfss.add_multi_frequency_adaptive("5GHz")
+        hfss.add_multi_frequency_adaptive("10GHz", max_passes=30)
         """
         self.adapt_type = "multi_frequencies"
         self.multi_frequency_adaptive_solution.adapt_frequencies.append(
@@ -592,7 +592,7 @@ class CfgHFSSSetup(CfgSetupAC):
 
         Examples
         --------
-        >>> hfss.set_auto_mesh_operation(enabled=True, trace_ratio_seeding=4.0)
+        hfss.set_auto_mesh_operation(enabled=True, trace_ratio_seeding=4.0)
         """
         self.auto_mesh_operation = self.CfgAutoMeshOperation(
             enabled=enabled,
@@ -646,11 +646,11 @@ class CfgHFSSSetup(CfgSetupAC):
 
         Examples
         --------
-        >>> hfss.add_length_mesh_operation(
-        ...     name="mesh_sig",
-        ...     nets_layers_list={"SIG": ["top"]},
-        ...     max_length="0.5mm",
-        ... )
+        hfss.add_length_mesh_operation(
+            name="mesh_sig",
+            nets_layers_list={"SIG": ["top"]},
+            max_length="0.5mm"
+        )
         """
         if isinstance(mesh_op, str):
             name = mesh_op
@@ -713,14 +713,14 @@ class CfgHFSSSetup(CfgSetupAC):
         --------
         Inline — single call describes a complete sweep:
 
-        >>> hfss.add_frequency_sweep(
-        ...     "sweep1",
-        ...     start="1GHz",
-        ...     stop="20GHz",
-        ...     step_or_count=100,
-        ...     distribution="linear_count",
-        ...     enforce_passivity=True,
-        ... )
+        hfss.add_frequency_sweep(
+            "sweep1",
+            start="1GHz",
+            stop="20GHz",
+            step_or_count=100,
+            distribution="linear_count",
+            enforce_passivity=True
+        )
 
         Chained — add multiple ranges to one sweep:
 
@@ -796,8 +796,8 @@ class CfgSetups(CfgBaseModel):
 
         Examples
         --------
-        >>> hfss = cfg.setups.add_hfss_setup(name="hfss_1", adapt_type="broadband")
-        >>> hfss.set_broadband_adaptive("1GHz", "20GHz")
+        hfss = cfg.setups.add_hfss_setup(name="hfss_1", adapt_type="broadband")
+        hfss.set_broadband_adaptive("1GHz", "20GHz")
         """
         if config:
             hfss_setup = config
@@ -843,8 +843,8 @@ class CfgSetups(CfgBaseModel):
 
         Examples
         --------
-        >>> siw = cfg.setups.add_siwave_ac_setup(name="siw_ac", si_slider_position=2)
-        >>> siw.add_frequency_sweep("sw1", start="1kHz", stop="1GHz", step_or_count=100)
+        siw = cfg.setups.add_siwave_ac_setup(name="siw_ac", si_slider_position=2)
+        siw.add_frequency_sweep("sw1", start="1kHz", stop="1GHz", step_or_count=100)
         """
         if config is not None:
             siwave_ac_setup = config
@@ -891,7 +891,7 @@ class CfgSetups(CfgBaseModel):
 
         Examples
         --------
-        >>> cfg.setups.add_siwave_dc_setup(name="siw_dc", dc_slider_position=1, export_dc_thermal_data=True)
+        cfg.setups.add_siwave_dc_setup(name="siw_dc", dc_slider_position=1, export_dc_thermal_data=True)
         """
         if config is not None:
             siwave_dc_setup = config
@@ -929,11 +929,11 @@ class CfgSetups(CfgBaseModel):
 
         Examples
         --------
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> cfg.setups.add_hfss_setup("hfss_bb", adapt_type="broadband")
-        >>> # ... later, retrieve and modify:
-        >>> setup = cfg.setups.get("hfss_bb")
-        >>> setup.add_frequency_sweep("sweep2", start="1GHz", stop="20GHz", step_or_count=100)
+        cfg = edb.configuration.create_config_builder()
+        cfg.setups.add_hfss_setup("hfss_bb", adapt_type="broadband")
+        # ... later, retrieve and modify:
+        setup = cfg.setups.get("hfss_bb")
+        setup.add_frequency_sweep("sweep2", start="1GHz", stop="20GHz", step_or_count=100)
         """
         for setup in self.setups:
             if setup.name == name:

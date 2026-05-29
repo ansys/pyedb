@@ -813,14 +813,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @position_and_rotation.setter
     def position_and_rotation(self, value):
-        pos = []
-        for v in value:
-            if isinstance(v, (float, int, str)):
-                pos.append(self._pedb._value_setter(v))
-            else:
-                pos.append(v)
-        point_data = CorePointData(pos[0], pos[1])
-        self.core.set_position_and_rotation(x=point_data.x, y=point_data.y, rotation=self._pedb._value_setter(pos[2]))
+        pos = [self._pedb._value_setter(v) for v in value]
+        self.core.set_position_and_rotation(x=pos[0], y=pos[1], rotation=pos[2])
 
     @property
     def name(self) -> str:
@@ -1524,8 +1518,10 @@ class PadstackInstance(conn_obj.ConnObj):
                 padstack_pad = PadstackDef(self._pedb, self.padstack_def).pad_by_layer[
                     PadstackDef(self._pedb, self.padstack_def).start_layer
                 ]
-            except KeyError:  # pragma: no cover
+            except (KeyError, Exception):  # pragma: no cover
                 return False
+        except Exception:
+            return False
 
         try:
             pad_shape = padstack_pad.geometry_type

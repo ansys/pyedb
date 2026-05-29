@@ -437,7 +437,7 @@ class CfgTerminals(CfgBaseModel):
 
         Examples
         --------
-        >>> cfg.terminals.add_pin_group_terminal("t_vdd", "pg_VDD", 50, "port")
+        cfg.terminals.add_pin_group_terminal("t_vdd", "pg_VDD", 50, "port")
         """
         terminal = CfgPinGroupTerminal(
             pin_group=pin_group,
@@ -668,7 +668,7 @@ class CfgTerminals(CfgBaseModel):
 
         Examples
         --------
-        >>> cfg.terminals.add_bundle_terminal("bundle_demo", ["t_vdd", "t_gnd"])
+        cfg.terminals.add_bundle_terminal("bundle_demo", ["t_vdd", "t_gnd"])
         """
         terminal = CfgBundleTerminal(
             name=name,

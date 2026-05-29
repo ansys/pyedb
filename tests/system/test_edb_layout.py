@@ -106,6 +106,123 @@ class TestClass(BaseTestClass):
             assert path_obj.center_line[0] == [0, 0]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    def test_layout_collections(self):
+        """Verify Layout collection properties, layout_instance, terminals type, polygons, primitives_by_net."""
+        edbapp = self.edb_examples.get_si_verse()
+        # --- collection properties return lists ---
+        assert isinstance(edbapp.layout.terminals, list)
+        assert isinstance(edbapp.layout.nets, list)
+        assert len(edbapp.layout.nets) > 0
+        assert isinstance(edbapp.layout.groups, list)
+        assert isinstance(edbapp.layout.pin_groups, list)
+        assert isinstance(edbapp.layout.net_classes, list)
+        assert isinstance(edbapp.layout.extended_nets, list)
+        assert isinstance(edbapp.layout.differential_pairs, list)
+        assert isinstance(edbapp.layout.padstack_instances, list)
+        assert len(edbapp.layout.padstack_instances) > 0
+        assert isinstance(edbapp.layout.voltage_regulators, list)
+        assert isinstance(edbapp.layout.zone_primitives, list)
+        # --- layout_instance is accessible ---
+        assert edbapp.layout.layout_instance is not None
+        # terminals already verified as list above; no assumption on terminal types present in si_verse
+        # --- polygons property returns only polygon-type primitives ---
+        polygons = edbapp.layout.polygons
+        assert len(polygons) > 0
+        assert all(p.primitive_type == "polygon" for p in polygons)
+        # --- primitives_by_net has a key for every net ---
+        by_net = edbapp.layout.primitives_by_net
+        for net_name in edbapp.nets.nets:
+            assert net_name in by_net
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    def test_filter_primitives_prim_type_and_is_void(self):
+        """filter_primitives prim_type/is_void filters, primitives_by_aedt_name and find_object_by_id."""
+        edbapp = self.edb_examples.get_si_verse()
+        # --- prim_type filter ---
+        polygons = edbapp.layout.filter_primitives(layer_name="1_Top", prim_type="polygon")
+        assert all(p.primitive_type == "polygon" for p in polygons)
+        # --- is_void=False: no void in result ---
+        non_voids = edbapp.layout.filter_primitives(layer_name="1_Top", is_void=False)
+        assert all(not p.is_void for p in non_voids)
+        # --- is_void=True: must provide a layer so voids are included via primitives_by_layer ---
+        void_layer = next(poly.layer_name for poly in edbapp.layout.polygons if poly.has_voids)
+        voids = edbapp.layout.filter_primitives(layer_name=void_layer, is_void=True)
+        assert len(voids) > 0
+        assert all(p.is_void for p in voids)
+        # --- primitives_by_aedt_name round-trip ---
+        prim = edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128")[0]
+        lookup = edbapp.layout.primitives_by_aedt_name
+        assert prim.aedt_name in lookup
+        assert lookup[prim.aedt_name].id == prim.id
+        # --- find_object_by_id with padstack instance ---
+        pi = edbapp.layout.padstack_instances[0]
+        assert edbapp.layout.find_object_by_id(pi.id).id == pi.id
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    def test_find_primitive_variants(self):
+        """find_primitive: by name only, is_void filter, list of layers, prim_type filter."""
+        edbapp = self.edb_examples.get_si_verse()
+        # --- name only ---
+        result = edbapp.layout.find_primitive(name="poly_4128")
+        assert len(result) > 0
+        assert all(p.aedt_name == "poly_4128" for p in result)
+        # --- is_void=True: must provide a layer so _iter_primitives_with_voids is used ---
+        void_layer = next(poly.layer_name for poly in edbapp.layout.polygons if poly.has_voids)
+        voids = edbapp.layout.find_primitive(layer_name=void_layer, is_void=True)
+        assert len(voids) > 0
+        assert all(p.is_void for p in voids)
+        # --- is_void=False ---
+        non_voids = edbapp.layout.find_primitive(layer_name="1_Top", is_void=False)
+        assert len(non_voids) > 0
+        assert all(not p.is_void for p in non_voids)
+        # --- list of layer names ---
+        result = edbapp.layout.find_primitive(layer_name=["1_Top", "16_Bot"], net_name="GND")
+        assert len(result) > 0
+        assert all(p.layer_name in {"1_Top", "16_Bot"} for p in result)
+        assert all(p.net_name == "GND" for p in result)
+        # --- prim_type='path' ---
+        paths = edbapp.layout.find_primitive(prim_type="path")
+        assert len(paths) > 0
+        assert all(p.primitive_type == "path" for p in paths)
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    def test_find_padstack_instances_variants(self):
+        """find_padstack_instances: list of aedt_names, list of net_names, list of component_names."""
+        edbapp = self.edb_examples.get_si_verse()
+        # --- list of aedt_names ---
+        results = edbapp.layout.find_padstack_instances(aedt_name=["U7-T7", "U7-R7"])
+        aedt_names = {p.aedt_name for p in results}
+        assert "U7-T7" in aedt_names
+        assert "U7-R7" in aedt_names
+        # --- list of net_names ---
+        results = edbapp.layout.find_padstack_instances(net_name=["DDR4_A9", "DDR4_A10"])
+        assert {p.net_name for p in results}.intersection({"DDR4_A9", "DDR4_A10"})
+        # --- list of component_names ---
+        results = edbapp.layout.find_padstack_instances(component_name=["U7", "U1"])
+        assert {p.component.name for p in results if p.component}.intersection({"U7", "U1"})
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    def test_get_primitive_by_layer_and_point_edge_cases(self):
+        """get_primitive_by_layer_and_point: invalid point, unknown net, and no layer filter."""
+        edbapp = self.edb_examples.get_si_verse()
+        # --- invalid point format → returns False ---
+        assert edbapp.layout.get_primitive_by_layer_and_point(point=[0], layer="1_Top") is False
+        # --- unknown net → returns empty list ---
+        assert (
+            edbapp.layout.get_primitive_by_layer_and_point(
+                point=[10e-3, 10e-3], layer="1_Top", nets="__nonexistent_net__"
+            )
+            == []
+        )
+        # --- no layer filter → returns a list ---
+        assert isinstance(edbapp.layout.get_primitive_by_layer_and_point(point=[10e-3, 10e-3]), list)
+        edbapp.close(terminate_rpc_session=False)
+
     @pytest.mark.skipif(
         config["use_grpc"] and platform.system() == "Linux",
         reason="Known issue in ansys-edb-core layout instance server on Linux",
@@ -164,4 +281,18 @@ class TestClass(BaseTestClass):
         assert edbapp.layout.get_polygon_bounding_box(polygon_to_test)
         assert edbapp.layout.get_polygon_points(polygon_to_test)
 
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_layout_bounding_box(self):
+        """Evaluate layout bounding box."""
+        import ansys.edb.core
+
+        from tests.conftest import config
+
+        if config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6":
+            pytest.skip("Test skipped for ansys-edb-core version 0.2.6")
+        edbapp = self.edb_examples.get_si_verse()
+        assert len(edbapp.get_bounding_box()) == 2
+        bbox = [[round(i, 6) for i in j] for j in edbapp.get_bounding_box()]
+        assert bbox == [[-0.014260, -0.004550], [0.150105, 0.080000]]
         edbapp.close(terminate_rpc_session=False)

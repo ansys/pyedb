@@ -127,10 +127,10 @@ class Configuration:
         --------
         Retrieve an existing component and modify its solder-ball geometry:
 
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> u1 = cfg.components.get("U1")  # looks up U1 from EDB
-        >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
-        >>> edb.configuration.run(cfg)
+        cfg = edb.configuration.create_config_builder()
+        u1 = cfg.components.get("U1")  # looks up U1 from EDB
+        u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        edb.configuration.run(cfg)
 
         Traditional workflow (creating new component entries) still works:
 
@@ -174,10 +174,10 @@ class Configuration:
         --------
         Pass a :class:`~pyedb.configuration.cfg_data.CfgData` directly:
 
-        >>> from pyedb.configuration.cfg_data import CfgData
-        >>> cfg = CfgData()
-        >>> cfg.general.anti_pads_always_on = False
-        >>> edb.configuration.load(cfg, apply_file=True)
+        from pyedb.configuration.cfg_data import CfgData
+        cfg = CfgData()
+        cfg.general.anti_pads_always_on = False
+        edb.configuration.load(cfg, apply_file=True)
 
         """
         # Accept CfgData directly – convert to dict transparently.
@@ -240,11 +240,11 @@ class Configuration:
         --------
         Pass a builder directly — no ``load`` call needed:
 
-        >>> from pyedb.configuration.cfg_data import CfgData
-        >>> cfg = CfgData()
-        >>> cfg.general.anti_pads_always_on = False
-        >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
-        >>> edb.configuration.run(cfg)
+        from pyedb.configuration.cfg_data import CfgData
+        cfg = CfgData()
+        cfg.general.anti_pads_always_on = False
+        cfg.nets.add_signal_nets(["SIG1", "CLK"])
+        edb.configuration.run(cfg)
 
         Use the existing workflow unchanged:
 
@@ -842,7 +842,7 @@ class Configuration:
         layers_ = list()
         layers_.extend(self.cfg_data.stackup.layers)
         for l_attrs in layers_:
-            attrs = l_attrs.model_dump(exclude_none=True, by_alias=True)
+            attrs = l_attrs.model_dump(exclude_none=True, by_alias=False)
             self._pedb.stackup.add_layer_bottom(**attrs)
 
     def __update_stackup(self):
@@ -880,7 +880,7 @@ class Configuration:
             if l.type == "signal":
                 layer_id = lc_signal_layers[signal_idx]
                 layer_name = id_name[layer_id]
-                attrs = l.model_dump(exclude_none=True, by_alias=True)
+                attrs = l.model_dump(exclude_none=True, by_alias=False)
                 self._pedb.stackup.layers[layer_name].update(**attrs)
                 signal_idx = signal_idx + 1
 
@@ -890,11 +890,11 @@ class Configuration:
         if l.type == "signal":
             prev_layer_clone = self._pedb.stackup.layers[l.name]
         else:
-            attrs = l.model_dump(exclude_none=True, by_alias=True)
+            attrs = l.model_dump(exclude_none=True, by_alias=False)
             prev_layer_clone = self._pedb.stackup.add_layer_top(**attrs)
         for idx, l in enumerate(layers):
             if l.type == "dielectric":
-                attrs = l.model_dump(exclude_none=True, by_alias=True)
+                attrs = l.model_dump(exclude_none=True, by_alias=False)
                 prev_layer_clone = self._pedb.stackup.add_layer_below(base_layer_name=prev_layer_clone.name, **attrs)
             elif l.type == "signal":
                 prev_layer_clone = self._pedb.stackup.layers[l.name]

@@ -27,7 +27,7 @@ materials, layers, roughness, and etching definitions.
 
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field
 
 
 class CfgMaterialPropertyThermalModifier(BaseModel):
@@ -111,7 +111,11 @@ class CfgLayer(BaseModel):
     """Represent one signal or dielectric layer entry."""
 
     name: Optional[str] = None
-    layer_type: Optional[str] = Field("signal", alias="type")
+    layer_type: Optional[str] = Field(
+        "signal",
+        validation_alias=AliasChoices("layer_type", "type"),
+        serialization_alias="type",
+    )
     material: Optional[str] = None
     fill_material: Optional[str] = None
     thickness: Optional[float | int | str] = None
@@ -159,7 +163,7 @@ class CfgLayer(BaseModel):
 
         Examples
         --------
-        >>> layer.set_huray_roughness("0.1um", "2.9", top=True, bottom=False)
+        layer.set_huray_roughness("0.1um", "2.9", top=True, bottom=False)
         """
         huray = CfgHurayRoughnessModel(nodule_radius=nodule_radius, surface_ratio=surface_ratio)
         self.roughness = CfgRoughnessModel(
@@ -231,7 +235,7 @@ class CfgLayer(BaseModel):
 
         Examples
         --------
-        >>> layer.set_etching(factor=0.4, etch_power_ground_nets=True)
+        layer.set_etching(factor=0.4, etch_power_ground_nets=True)
         """
         self.etching = EtchingModel(
             factor=factor,
@@ -261,7 +265,7 @@ class CfgStackup(BaseModel):
 
         If the layer has already been registered (via :meth:`add_signal_layer`,
         :meth:`add_dielectric_layer`, or :meth:`add_layer`) the cached entry is
-        returned.  Otherwise the layer is looked up in the live EDB session and
+        returned, otherwise the layer is looked up in the live EDB session and
         a new :class:`CfgLayer` is created from its current properties.
 
         Parameters
@@ -281,10 +285,10 @@ class CfgStackup(BaseModel):
 
         Examples
         --------
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> top = cfg.stackup.get_layer("top")
-        >>> top.set_huray_roughness("0.1um", "2.9")
-        >>> edb.configuration.run(cfg)
+        cfg = edb.configuration.create_config_builder()
+        top = cfg.stackup.get_layer("top")
+        top.set_huray_roughness("0.1um", "2.9")
+        edb.configuration.run(cfg)
         """
         cached = next((layer for layer in self.layers if layer.name == name), None)
         if cached:
@@ -325,9 +329,9 @@ class CfgStackup(BaseModel):
 
         Examples
         --------
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> for layer in cfg.stackup.get_layers():
-        ...     print(layer.name, layer.type)
+        cfg = edb.configuration.create_config_builder()
+        for layer in cfg.stackup.get_layers():
+            print(layer.name, layer.type)
         """
         if self._pedb is None:
             raise KeyError(
@@ -356,9 +360,9 @@ class CfgStackup(BaseModel):
 
         Examples
         --------
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> for layer in cfg.stackup.get_signal_layers():
-        ...     print(layer.name, layer.thickness)
+        cfg = edb.configuration.create_config_builder()
+        for layer in cfg.stackup.get_signal_layers():
+            print(layer.name, layer.thickness)
         """
         if self._pedb is None:
             raise KeyError(
@@ -373,7 +377,7 @@ class CfgStackup(BaseModel):
         """Return the :class:`CfgMaterial` for *name*, loading it from EDB if needed.
 
         If the material has already been registered via :meth:`add_material`
-        the cached entry is returned.  Otherwise the material is looked up in
+        the cached entry is returned, otherwise the material is looked up in
         the live EDB session and a new :class:`CfgMaterial` is created from its
         current properties.
 
@@ -394,10 +398,10 @@ class CfgStackup(BaseModel):
 
         Examples
         --------
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> cu = cfg.stackup.get_material("copper")
-        >>> cu.conductivity = 5.6e7
-        >>> edb.configuration.run(cfg)
+        cfg = edb.configuration.create_config_builder()
+        cu = cfg.stackup.get_material("copper")
+        cu.conductivity = 5.6e7
+        edb.configuration.run(cfg)
         """
         cached = next((mat for mat in self.materials if mat.name == name), None)
         if cached:
@@ -489,8 +493,8 @@ class CfgStackup(BaseModel):
 
         Examples
         --------
-        >>> cfg.stackup.add_material("copper", conductivity=5.8e7)
-        >>> cfg.stackup.add_material("fr4", permittivity=4.4, dielectric_loss_tangent=0.02)
+        cfg.stackup.add_material("copper", conductivity=5.8e7)
+        cfg.stackup.add_material("fr4", permittivity=4.4, dielectric_loss_tangent=0.02)
         """
         if config is not None:
             payload = config.model_dump(exclude_none=True) if isinstance(config, CfgMaterial) else dict(config)
@@ -659,7 +663,7 @@ class CfgStackup(BaseModel):
 
         Examples
         --------
-        >>> cfg.stackup.normalize_thickness("um")
+        cfg.stackup.normalize_thickness("um")
         """
         _unit_to_m = {"mm": 1e-3, "cm": 1e-2, "um": 1e-6, "mil": 25.4e-6, "in": 0.0254, "m": 1}
         _m_to_unit = {"mm": 1e3, "cm": 1e2, "um": 1e6, "mil": 1 / 25.4e-6, "in": 1 / 0.0254, "m": 1}

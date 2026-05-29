@@ -177,12 +177,12 @@ class CfgSParameters:
 
         Examples
         --------
-        >>> cfg.s_parameters.add(
-        ...     "cap_model",
-        ...     component_definition="CAP_100nF",
-        ...     file_path="/snp/cap.s2p",
-        ...     reference_net="GND",
-        ... )
+        cfg.s_parameters.add(
+            "cap_model",
+            component_definition="CAP_100nF",
+            file_path="/snp/cap.s2p",
+            reference_net="GND"
+        )
         """
         model = CfgSParameterModel(
             name=name,

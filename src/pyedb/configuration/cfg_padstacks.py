@@ -68,7 +68,7 @@ class CfgBackdrillParameters(CfgBase):
     from_bottom: DrillParameters | DrillParametersByLayer | DrillParametersByLayerWithStub | None = None
 
     def add_backdrill_to_layer(
-        self, drill_to_layer: str, diameter: str, stub_length: str = None, drill_from_bottom: bool = True
+        self, drill_to_layer: str, diameter: str, stub_length: str = "", drill_from_bottom: bool = True
     ):
         """Configure a backdrill stopping at a named layer.
 
@@ -179,7 +179,7 @@ class CfgPadstackInstance(CfgBase):
 
         Examples
         --------
-        >>> via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+        via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
         """
         if self.backdrill_parameters is None:
             self.backdrill_parameters = CfgBackdrillParameters()
@@ -253,7 +253,7 @@ class CfgPadstacks(CfgBase):
         """Return a :class:`CfgPadstackDefinition` for an existing padstack definition.
 
         If the definition has already been registered via :meth:`add_definition`
-        the cached entry is returned.  Otherwise the definition is looked up in
+        the cached entry is returned, otherwise the definition is looked up in
         the live EDB session and a new entry is created from its current properties.
 
         Parameters
@@ -273,10 +273,10 @@ class CfgPadstacks(CfgBase):
 
         Examples
         --------
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> via_def = cfg.padstacks.get_definition("via_0.2")
-        >>> via_def.hole_plating_thickness = "30um"
-        >>> edb.configuration.run(cfg)
+        cfg = edb.configuration.create_config_builder()
+        via_def = cfg.padstacks.get_definition("via_0.2")
+        via_def.hole_plating_thickness = "30um"
+        edb.configuration.run(cfg)
         """
         for d in self.definitions:
             if d.name == name:
@@ -305,7 +305,7 @@ class CfgPadstacks(CfgBase):
         """Return a :class:`CfgPadstackInstance` for an existing padstack instance.
 
         If the instance has already been registered via :meth:`add_instance`
-        the cached entry is returned.  Otherwise the instance is looked up in
+        the cached entry is returned, otherwise the instance is looked up in
         the live EDB session and a new entry is created from its current
         properties.
 
@@ -326,10 +326,10 @@ class CfgPadstacks(CfgBase):
 
         Examples
         --------
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> via = cfg.padstacks.get_instance("via_A1")
-        >>> via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
-        >>> edb.configuration.run(cfg)
+        cfg = edb.configuration.create_config_builder()
+        via = cfg.padstacks.get_instance("via_A1")
+        via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+        edb.configuration.run(cfg)
         """
         for inst in self.instances:
             if inst.name == name:
@@ -509,61 +509,61 @@ class CfgPadstacks(CfgBase):
         --------
         Simple circular via on all signal layers (requires live session):
 
-        >>> cfg.padstacks.add_definition(
-        ...     "via_0.2",
-        ...     material="copper",
-        ...     hole_plating_thickness="25um",
-        ...     hole_diameter="0.2mm",
-        ...     pad_diameter="0.5mm",
-        ...     anti_pad_diameter="0.8mm",
-        ... )
+        cfg.padstacks.add_definition(
+            "via_0.2",
+            material="copper",
+            hole_plating_thickness="25um",
+            hole_diameter="0.2mm",
+            pad_diameter="0.5mm",
+            anti_pad_diameter="0.8mm"
+        )
 
         Blind via with explicit layers:
 
-        >>> cfg.padstacks.add_definition(
-        ...     "via_blind",
-        ...     hole_range="begin_on_upper_pad",
-        ...     hole_diameter="0.15mm",
-        ...     pad_diameter="0.35mm",
-        ...     anti_pad_diameter="0.6mm",
-        ...     pad_layers=["1_Top", "DE1"],
-        ... )
+            cfg.padstacks.add_definition(
+                "via_blind",
+                hole_range="begin_on_upper_pad",
+                hole_diameter="0.15mm",
+                pad_diameter="0.35mm",
+                anti_pad_diameter="0.6mm",
+                pad_layers=["1_Top", "DE1"]
+            )
 
         Raw dict form for full control:
 
-        >>> cfg.padstacks.add_definition(
-        ...     "via_custom",
-        ...     pad_parameters={
-        ...         "regular_pad": [
-        ...             {
-        ...                 "layer_name": "1_Top",
-        ...                 "shape": "rectangle",
-        ...                 "x_size": "0.5mm",
-        ...                 "y_size": "0.3mm",
-        ...                 "offset_x": "0",
-        ...                 "offset_y": "0",
-        ...                 "rotation": "0",
-        ...             },
-        ...         ],
-        ...         "anti_pad": [
-        ...             {
-        ...                 "layer_name": "1_Top",
-        ...                 "shape": "circle",
-        ...                 "diameter": "0.8mm",
-        ...                 "offset_x": "0",
-        ...                 "offset_y": "0",
-        ...                 "rotation": "0",
-        ...             },
-        ...         ],
-        ...     },
-        ...     hole_parameters={
-        ...         "shape": "circle",
-        ...         "diameter": "0.2mm",
-        ...         "offset_x": "0",
-        ...         "offset_y": "0",
-        ...         "rotation": "0",
-        ...     },
-        ... )
+            cfg.padstacks.add_definition(
+                "via_custom",
+                pad_parameters={
+                    "regular_pad": [
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "rectangle",
+                            "x_size": "0.5mm",
+                            "y_size": "0.3mm",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                        },
+                    ],
+                    "anti_pad": [
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "diameter": "0.8mm",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                        },
+                    ],
+                },
+                hole_parameters={
+                    "shape": "circle",
+                    "diameter": "0.2mm",
+                    "offset_x": "0",
+                    "offset_y": "0",
+                    "rotation": "0",
+                }
+            )
         """
         if hole_parameters is None and hole_diameter is not None:
             hole_parameters = {
@@ -732,8 +732,8 @@ class CfgPadstacks(CfgBase):
 
         Examples
         --------
-        >>> via = cfg.padstacks.add_instance(name="v1", net_name="GND", layer_range=["1_Top", "16_Bottom"])
-        >>> via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+        via = cfg.padstacks.add_instance(name="v1", net_name="GND", layer_range=["1_Top", "16_Bottom"])
+        via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
         """
         obj = CfgPadstackInstance(
             name=name,

@@ -164,6 +164,32 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close(terminate_rpc_session=False)
 
+    def test_differential_pairs_queries(self):
+        """Evaluate differential pairs queries"""
+        # Done
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.differential_pairs.auto_identify()
+        diff_pair = edbapp.differential_pairs.create("new_pair1", "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N")
+        assert diff_pair.positive_net.name == "PCIe_Gen4_RX1_P"
+        assert diff_pair.negative_net.name == "PCIe_Gen4_RX1_N"
+        assert edbapp.differential_pairs.items["new_pair1"]
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_extended_nets_queries(self):
+        """Evaluate nets queries"""
+        edbapp = self.edb_examples.get_si_verse()
+        assert edbapp.extended_nets.auto_identify_signal()
+        assert edbapp.extended_nets.auto_identify_power()
+        extended_net_name, _ = next(iter(edbapp.extended_nets.items.items()))
+        assert edbapp.extended_nets.items[extended_net_name]
+        assert edbapp.extended_nets.items[extended_net_name].nets
+        assert edbapp.extended_nets.items[extended_net_name].components
+        assert edbapp.extended_nets.items[extended_net_name].rlc
+        assert edbapp.extended_nets.items[extended_net_name].serial_rlc
+        assert edbapp.extended_nets.items["1V0"].serial_rlc
+        assert edbapp.extended_nets.create("new_ex_net", "DDR4_A1")
+        edbapp.close(terminate_rpc_session=False)
+
     def test_layout_auto_parametrization_0(self):
         # Done
         edbapp = self.edb_examples.get_package()

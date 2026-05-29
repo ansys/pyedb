@@ -47,7 +47,9 @@ def _smallest_pin_pad_size(comp) -> float | None:
         p0, p1 = bbox[0], bbox[1]
         if not p0 or not p1 or len(p0) < 2 or len(p1) < 2:
             continue
-        size: float = min(abs(p1[0] - p0[0]), abs(p1[1] - p0[1]))
+        dx: float | int = abs(float(p1[0]) - float(p0[0]))
+        dy: float | int = abs(float(p1[1]) - float(p0[1]))
+        size: float | int = dx if dx < dy else dy
         if size > 0 and (min_size is None or size < min_size):
             min_size = size
     return min_size
@@ -101,9 +103,9 @@ class CfgPinPairModel(BaseModel):
 
     first_pin: str
     second_pin: str
-    resistance: str | float | None = None
-    inductance: str | float | None = None
-    capacitance: str | float | None = None
+    resistance: str | float | int | None = None
+    inductance: str | float | int | None = None
+    capacitance: str | float | int | None = None
     is_parallel: bool = False
     resistance_enabled: bool = False
     inductance_enabled: bool = False
@@ -169,7 +171,7 @@ class CfgComponent(CfgBase):
                     capacitance=str(rlc.C.ToDouble()),
                     capacitance_enabled=rlc.CEnabled,
                 )
-            except Exception:
+            except (AttributeError, ValueError, TypeError):
                 rlc_enable = c_p.rlc_enable or [False, False, False]
                 temp.update(
                     is_parallel=False,
@@ -202,10 +204,10 @@ class CfgComponent(CfgBase):
         grpc = self._pedb.grpc
         ic_die_prop = cp.die_property if grpc else cp.GetDieProperty().Clone()
         die_type = (self.ic_die_properties.get("type") or "").lower() or None
+        s2p = _get_snake_to_pascal() if not grpc else None
         if grpc:
-            ic_die_prop.die_type = _die_type_mapping[die_type]
+            ic_die_prop.die_type = _die_type_mapping[die_type or "none"]
         else:
-            s2p = _get_snake_to_pascal()
             ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, s2p(die_type)))
         if die_type not in _NO_DIE_TYPES:
             orientation = self.ic_die_properties.get("orientation")
@@ -406,9 +408,9 @@ class CfgComponent(CfgBase):
         self,
         first_pin: str,
         second_pin: str,
-        resistance=None,
-        inductance=None,
-        capacitance=None,
+        resistance: str | float | int | None = None,
+        inductance: str | float | int | None = None,
+        capacitance: str | float | int | None = None,
         is_parallel: bool = False,
         resistance_enabled: bool = False,
         inductance_enabled: bool = False,
@@ -440,9 +442,8 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        >>> r1 = cfg.components.add("R1", part_type="resistor")
-        >>> r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
-
+        r1 = cfg.components.add("R1", part_type="resistor")
+        r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
         """
         self.pin_pair_model.append(
             CfgPinPairModel(
@@ -472,8 +473,7 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        >>> u1.set_s_parameter_model("cap_100nF", "/snp/cap.s2p", "GND")
-
+        u1.set_s_parameter_model("cap_100nF", "/snp/cap.s2p", "GND")
         """
         self.s_parameter_model = {"model_name": model_name, "model_path": model_path, "reference_net": reference_net}
 
@@ -493,8 +493,7 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        >>> u1.set_spice_model("ic_spice", "/spice/ic.sp", sub_circuit="IC_TOP")
-
+        u1.set_spice_model("ic_spice", "/spice/ic.sp", sub_circuit="IC_TOP")
         """
         self.spice_model = {
             "model_name": model_name,
@@ -529,8 +528,7 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        >>> u1.set_ic_die_properties("flip_chip", orientation="chip_down")
-
+        u1.set_ic_die_properties("flip_chip", orientation="chip_down")
         """
         data = {"type": die_type}
         if die_type != "no_die":
@@ -543,12 +541,12 @@ class CfgComponent(CfgBase):
     def set_solder_ball_properties(
         self,
         shape: str = "cylinder",
-        diameter: str = None,
-        height: str = None,
+        diameter: str | None = None,
+        height: str | None = None,
         material: str = "solder",
         mid_diameter=None,
         orientation: str = "chip_down",
-        reference_designator: str = None,
+        reference_designator: str | None = None,
     ):
         """Configure solder-ball geometry for this component.
 
@@ -580,8 +578,8 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
-        >>> u1.set_solder_ball_properties()  # auto-sizes from pin pads
+        u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        u1.set_solder_ball_properties()  # auto-sizes from pin pads
 
         """
         refdes = reference_designator or self.reference_designator
@@ -630,8 +628,7 @@ class CfgComponent(CfgBase):
 
         Examples
         --------
-        >>> u1.set_port_properties(reference_height="50um")
-
+        u1.set_port_properties(reference_height="50um")
         """
         self.port_properties = {
             "reference_height": reference_height,
@@ -641,7 +638,7 @@ class CfgComponent(CfgBase):
         }
 
     def _is_default_ic_die(self, key, val) -> bool:
-        """Return True if *val* is the auto-populated default ic_die payload."""
+        """Return True if *val* is the autopopulated default ic_die payload."""
         return (
             key == "ic_die_properties"
             and val == {"type": "no_die"}
@@ -698,7 +695,7 @@ class CfgComponents:
 
         The component is looked up by *reference_designator* in the live EDB
         session and its current properties (type, model, die, solder-ball,
-        port) are pre-loaded into the returned builder.  Mutate the returned
+        port) are preloaded into the returned builder.  Mutate the returned
         object and then call ``edb.configuration.run(cfg)`` to push the
         changes back to the database.
 
@@ -723,11 +720,10 @@ class CfgComponents:
 
         Examples
         --------
-        >>> cfg = edb.configuration.create_config_builder()
-        >>> u1 = cfg.components.get("U1")
-        >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
-        >>> edb.configuration.run(cfg)
-
+        cfg = edb.configuration.create_config_builder()
+        u1 = cfg.components.get("U1")
+        u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        edb.configuration.run(cfg)
         """
         # Return cached entry if already present
         cached = next((c for c in self.components if c.reference_designator == reference_designator), None)
@@ -780,9 +776,8 @@ class CfgComponents:
 
         Examples
         --------
-        >>> r1 = cfg.components.add("R1", part_type="resistor", enabled=True)
-        >>> r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
-
+        r1 = cfg.components.add("R1", part_type="resistor", enabled=True)
+        r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
         """
         comp = CfgComponent(
             self._pedb,

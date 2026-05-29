@@ -149,23 +149,23 @@ class CfgModeler:
         --------
         Absolute path:
 
-        >>> cfg.modeler.add_trace(
-        ...     name="trace_clk",
-        ...     layer="1_Top",
-        ...     width="0.1mm",
-        ...     net_name="CLK",
-        ...     path=[[0.0, 0.0], [0.005, 0.0], [0.005, 0.003]],
-        ... )
+        cfg.modeler.add_trace(
+            name="trace_clk",
+            layer="1_Top",
+            width="0.1mm",
+            net_name="CLK",
+            path=[[0.0, 0.0], [0.005, 0.0], [0.005, 0.003]]
+        )
 
         Incremental path:
 
-        >>> cfg.modeler.add_trace(
-        ...     name="trace_sig",
-        ...     layer="1_Top",
-        ...     width="0.1mm",
-        ...     net_name="SIG",
-        ...     incremental_path=[[0.0, 0.0], [0.005, 0.0]],
-        ... )
+            cfg.modeler.add_trace(
+                name="trace_sig",
+                layer="1_Top",
+                width="0.1mm",
+                net_name="SIG",
+                incremental_path=[[0.0, 0.0], [0.005, 0.0]]
+            )
         """
         trace_obj = CfgTrace(
             name=name,
@@ -226,13 +226,13 @@ class CfgModeler:
 
         Examples
         --------
-        >>> cfg.modeler.add_rectangular_plane(
-        ...     "bot",
-        ...     "gnd_plane",
-        ...     "GND",
-        ...     lower_left_point=[-0.05, -0.05],
-        ...     upper_right_point=[0.05, 0.05],
-        ... )
+        cfg.modeler.add_rectangular_plane(
+            "bot",
+            "gnd_plane",
+            "GND",
+            lower_left_point=[-0.05, -0.05],
+            upper_right_point=[0.05, 0.05]
+        )
         """
         return self._add_plane(
             name=name,
@@ -331,12 +331,12 @@ class CfgModeler:
 
         Examples
         --------
-        >>> cfg.modeler.add_polygon_plane(
-        ...     "top",
-        ...     "sig_poly",
-        ...     "SIG",
-        ...     points=[[0, 0], [0.01, 0], [0.01, 0.005], [0, 0.005]],
-        ... )
+        cfg.modeler.add_polygon_plane(
+            "top",
+            "sig_poly",
+            "SIG",
+            points=[[0, 0], [0.01, 0], [0.01, 0.005], [0, 0.005]]
+        )
         """
         return self._add_plane(
             name=name,

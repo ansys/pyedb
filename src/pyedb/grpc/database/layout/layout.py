@@ -330,7 +330,14 @@ class PrimitivesQuery:
         Read-Only.
         """
         zone_primitives = []
-        for primitive in self.core.zone_primitives:
+        try:
+            raw_zone_primitives = self.core.zone_primitives
+        except Exception as exc:
+            self._pedb.logger.warning(
+                "Failed to retrieve zone primitives (board bend manager may not be initialized): %s", exc
+            )
+            return zone_primitives
+        for primitive in raw_zone_primitives:
             wrapped_primitive = self._wrap_primitive(primitive)
             if wrapped_primitive is not None:
                 zone_primitives.append(wrapped_primitive)

@@ -9,6 +9,165 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.76.0 <https://github.com/ansys/pyedb/releases/tag/v0.76.0>`_ - May 22, 2026
+==============================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Configuration API and documentation
+          - `#2181 <https://github.com/ansys/pyedb/pull/2181>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Rpc session start issue #2105
+          - `#2119 <https://github.com/ansys/pyedb/pull/2119>`_
+
+        * - Layer type
+          - `#2121 <https://github.com/ansys/pyedb/pull/2121>`_
+
+        * - Bug in cfg padstack backdrill
+          - `#2130 <https://github.com/ansys/pyedb/pull/2130>`_
+
+        * - Bug cfg backdrill
+          - `#2131 <https://github.com/ansys/pyedb/pull/2131>`_
+
+        * - Siwave DC setup fix
+          - `#2143 <https://github.com/ansys/pyedb/pull/2143>`_
+
+        * - Run ruff select D
+          - `#2154 <https://github.com/ansys/pyedb/pull/2154>`_
+
+        * - Issue #2151 fix
+          - `#2156 <https://github.com/ansys/pyedb/pull/2156>`_
+
+        * - Ruff rules
+          - `#2173 <https://github.com/ansys/pyedb/pull/2173>`_
+
+        * - Unpin dependencies
+          - `#2180 <https://github.com/ansys/pyedb/pull/2180>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update \`\`CONTRIBUTORS.md\`\` with the latest contributors
+          - `#2122 <https://github.com/ansys/pyedb/pull/2122>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ansys/actions from 10.2.12 to 10.3.0
+          - `#2132 <https://github.com/ansys/pyedb/pull/2132>`_
+
+        * - Bump actions/labeler from 6.0.1 to 6.1.0
+          - `#2153 <https://github.com/ansys/pyedb/pull/2153>`_
+
+        * - Update ansys-sphinx-theme requirement from <1.8,>=1.0.0 to >=1.0.0,<1.9
+          - `#2178 <https://github.com/ansys/pyedb/pull/2178>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.75.0
+          - `#2116 <https://github.com/ansys/pyedb/pull/2116>`_
+
+        * - Bump dev version and cleanup
+          - `#2117 <https://github.com/ansys/pyedb/pull/2117>`_
+
+        * - Fixing random test failing
+          - `#2120 <https://github.com/ansys/pyedb/pull/2120>`_
+
+        * - Typo fix
+          - `#2127 <https://github.com/ansys/pyedb/pull/2127>`_
+
+        * - Pre-commit automatic update
+          - `#2174 <https://github.com/ansys/pyedb/pull/2174>`_
+
+        * - Configuration coverage improved
+          - `#2183 <https://github.com/ansys/pyedb/pull/2183>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Configuration stackup
+          - `#2124 <https://github.com/ansys/pyedb/pull/2124>`_
+
+        * - Cfg boundaries
+          - `#2133 <https://github.com/ansys/pyedb/pull/2133>`_
+
+        * - Cfg common
+          - `#2134 <https://github.com/ansys/pyedb/pull/2134>`_
+
+        * - Cfg general refactoring
+          - `#2136 <https://github.com/ansys/pyedb/pull/2136>`_
+
+        * - Cfg modeler refactoring
+          - `#2137 <https://github.com/ansys/pyedb/pull/2137>`_
+
+        * - Cfg nets refactoring
+          - `#2138 <https://github.com/ansys/pyedb/pull/2138>`_
+
+        * - Cfg_operations refactoring
+          - `#2139 <https://github.com/ansys/pyedb/pull/2139>`_
+
+        * - Cfg_package_definition refactoring
+          - `#2140 <https://github.com/ansys/pyedb/pull/2140>`_
+
+        * - Cfg_padstack
+          - `#2141 <https://github.com/ansys/pyedb/pull/2141>`_
+
+        * - Cfg pingroup refactoring
+          - `#2144 <https://github.com/ansys/pyedb/pull/2144>`_
+
+        * - Cfg ports refactoring
+          - `#2145 <https://github.com/ansys/pyedb/pull/2145>`_
+
+        * - Cfg s parameters refactoring
+          - `#2146 <https://github.com/ansys/pyedb/pull/2146>`_
+
+        * - Cfg setups refactoring
+          - `#2147 <https://github.com/ansys/pyedb/pull/2147>`_
+
+        * - Cfg spice refactoring
+          - `#2148 <https://github.com/ansys/pyedb/pull/2148>`_
+
+        * - Cfg stackup refactoring
+          - `#2149 <https://github.com/ansys/pyedb/pull/2149>`_
+
+        * - Cfg terminal refactoring
+          - `#2150 <https://github.com/ansys/pyedb/pull/2150>`_
+
+        * - Cfg components refactoring
+          - `#2157 <https://github.com/ansys/pyedb/pull/2157>`_
+
+
 `0.75.0 <https://github.com/ansys/pyedb/releases/tag/v0.75.0>`_ - May 05, 2026
 ==============================================================================
 

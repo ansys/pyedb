@@ -55,7 +55,7 @@ class CfgTerminalInfo(CfgBase):
 
         Examples
         --------
-        >>> TerminalInfo.pin("A1", reference_designator="U1")
+        TerminalInfo.pin("A1", reference_designator="U1")
         {'pin': 'A1', 'reference_designator': 'U1'}
         """
         d = {"pin": pin_name}
@@ -81,7 +81,7 @@ class CfgTerminalInfo(CfgBase):
 
         Examples
         --------
-        >>> TerminalInfo.net("VDD", reference_designator="U1")
+        TerminalInfo.net("VDD", reference_designator="U1")
         {'net': 'VDD', 'reference_designator': 'U1'}
         """
         d = {"net": net_name}
@@ -105,7 +105,7 @@ class CfgTerminalInfo(CfgBase):
 
         Examples
         --------
-        >>> TerminalInfo.pin_group("pg_VDD")
+        TerminalInfo.pin_group("pg_VDD")
         {'pin_group': 'pg_VDD'}
         """
         return {"pin_group": pin_group_name}
@@ -128,7 +128,7 @@ class CfgTerminalInfo(CfgBase):
 
         Examples
         --------
-        >>> TerminalInfo.padstack("via_A1")
+        TerminalInfo.padstack("via_A1")
         {'padstack': 'via_A1'}
         """
         return {"padstack": padstack_instance_name}
@@ -155,7 +155,7 @@ class CfgTerminalInfo(CfgBase):
 
         Examples
         --------
-        >>> TerminalInfo.coordinates("top", 0.001, 0.002, "SIG")
+        TerminalInfo.coordinates("top", 0.001, 0.002, "SIG")
         {'coordinates': {'layer': 'top', 'point': [0.001, 0.002], 'net': 'SIG'}}
         """
         return {"coordinates": {"layer": layer, "point": [x, y], "net": net}}
@@ -182,7 +182,7 @@ class CfgTerminalInfo(CfgBase):
 
         Examples
         --------
-        >>> TerminalInfo.nearest_pin("GND", search_radius="3mm")
+        TerminalInfo.nearest_pin("GND", search_radius="3mm")
         {'nearest_pin': {'reference_net': 'GND', 'search_radius': '3mm'}}
         """
         return {"nearest_pin": {"reference_net": reference_net, "search_radius": search_radius}}
@@ -338,12 +338,12 @@ class CfgSources:
 
         Examples
         --------
-        >>> cfg.sources.add_current_source(
-        ...     "isrc1",
-        ...     positive_terminal=TerminalInfo.pin_group("pg_VDD"),
-        ...     negative_terminal=TerminalInfo.pin_group("pg_GND"),
-        ...     magnitude=0.5,
-        ... )
+        cfg.sources.add_current_source(
+            "isrc1",
+            positive_terminal=TerminalInfo.pin_group("pg_VDD"),
+            negative_terminal=TerminalInfo.pin_group("pg_GND"),
+            magnitude=0.5
+        )
         """
         src = CfgSource(
             self._pedb,
@@ -396,12 +396,12 @@ class CfgSources:
 
         Examples
         --------
-        >>> cfg.sources.add_voltage_source(
-        ...     "vsrc1",
-        ...     positive_terminal=TerminalInfo.net("VDD"),
-        ...     negative_terminal=TerminalInfo.net("GND"),
-        ...     magnitude=1.8,
-        ... )
+        cfg.sources.add_voltage_source(
+            "vsrc1",
+            positive_terminal=TerminalInfo.net("VDD"),
+            negative_terminal=TerminalInfo.net("GND"),
+            magnitude=1.8
+        )
         """
         src = CfgSource(
             self._pedb,
@@ -594,19 +594,19 @@ class CfgPorts:
 
         Examples
         --------
-        >>> cfg.ports.add_circuit_port(
-        ...     "port_U1",
-        ...     positive_terminal=CfgTerminalInfo.pin_group("pg_VDD"),
-        ...     negative_terminal=CfgTerminalInfo.pin_group("pg_GND"),
-        ...     impedance=50,
-        ... )
-        >>> # positive_net / negative_net take priority – terminal args are ignored
-        >>> cfg.ports.add_circuit_port(
-        ...     "port_U1_auto",
-        ...     reference_designator="U1",
-        ...     positive_net="VDD",
-        ...     negative_net="GND",
-        ... )
+         cfg.ports.add_circuit_port(
+             "port_U1",
+             positive_terminal=CfgTerminalInfo.pin_group("pg_VDD"),
+             negative_terminal=CfgTerminalInfo.pin_group("pg_GND"),
+             impedance=50
+            )
+         # positive_net / negative_net take priority – terminal args are ignored
+         cfg.ports.add_circuit_port(
+            "port_U1_auto",
+            reference_designator="U1",
+            positive_net="VDD",
+            negative_net="GND"
+        )
         """
         if positive_net is not None and self._pedb is not None:
             if reference_designator is None:
@@ -723,15 +723,15 @@ class CfgPorts:
 
         Examples
         --------
-        >>> cfg.ports.add_coax_port("coax_via", padstack="via_A1")
-        >>> cfg.ports.add_coax_port("coax_vdd", net="VDD", reference_designator="U1")
-        >>> cfg.ports.add_coax_port("coax_a1", pin="A1", reference_designator="U1", impedance=50)
-        >>> # Discover all pins of U1 whose net is PCIe_TX0_P or PCIe_TX0_N:
-        >>> cfg.ports.add_coax_port(
-        ...     "coax_pcie",
-        ...     reference_designator="U1",
-        ...     net_list=["PCIe_TX0_P", "PCIe_TX0_N"],
-        ... )
+        cfg.ports.add_coax_port("coax_via", padstack="via_A1")
+        cfg.ports.add_coax_port("coax_vdd", net="VDD", reference_designator="U1")
+        cfg.ports.add_coax_port("coax_a1", pin="A1", reference_designator="U1", impedance=50)
+        # Discover all pins of U1 whose net is PCIe_TX0_P or PCIe_TX0_N:
+        cfg.ports.add_coax_port(
+                "coax_pcie",
+                reference_designator="U1",
+                net_list=["PCIe_TX0_P", "PCIe_TX0_N"]
+        )
         """
         # net_list + reference_designator path: EDB-assisted pin discovery
         if net_list is not None:
@@ -854,7 +854,7 @@ class CfgPorts:
 
         Examples
         --------
-        >>> cfg.ports.add_wave_port("wport1", "trace1", [0.001, 0.002], horizontal_extent_factor=6)
+        cfg.ports.add_wave_port("wport1", "trace1", [0.001, 0.002], horizontal_extent_factor=6)
         """
         return self._add_edge_port(
             port_type="wave_port",
@@ -967,23 +967,23 @@ class CfgPorts:
 
         Examples
         --------
-        Dict form:
+        # Dict form:
 
-        >>> cfg.ports.add_diff_wave_port(
-        ...     "diff1",
-        ...     positive_terminal={"primitive_name": "trace_p", "point_on_edge": [0.001, 0.0]},
-        ...     negative_terminal={"primitive_name": "trace_n", "point_on_edge": [0.001, 0.0002]},
-        ... )
+        cfg.ports.add_diff_wave_port(
+                "diff1",
+                positive_terminal={"primitive_name": "trace_p", "point_on_edge": [0.001, 0.0]},
+                negative_terminal={"primitive_name": "trace_n", "point_on_edge": [0.001, 0.0002]}
+        )
 
-        Flat form:
+        # Flat form:
 
-        >>> cfg.ports.add_diff_wave_port(
-        ...     "diff1",
-        ...     positive_primitive="trace_p",
-        ...     positive_terminal_point=[0.001, 0.0],
-        ...     negative_primitive="trace_n",
-        ...     negative_terminal_point=[0.001, 0.0002],
-        ... )
+        cfg.ports.add_diff_wave_port(
+            "diff1",
+            positive_primitive="trace_p",
+            positive_terminal_point=[0.001, 0.0],
+            negative_primitive="trace_n",
+            negative_terminal_point=[0.001, 0.0002]
+        )
         """
 
         # Build terminal dicts from flat arguments when dict form not supplied
@@ -1137,11 +1137,11 @@ class CfgProbes:
 
         Examples
         --------
-        >>> cfg.probes.add(
-        ...     "probe1",
-        ...     positive_terminal=TerminalInfo.net("DDR4_DQ0"),
-        ...     negative_terminal=TerminalInfo.net("GND"),
-        ... )
+        cfg.probes.add(
+            "probe1",
+            positive_terminal=TerminalInfo.net("DDR4_DQ0"),
+            negative_terminal=TerminalInfo.net("GND")
+        )
         """
         probe = CfgProbe(
             self._pedb,
