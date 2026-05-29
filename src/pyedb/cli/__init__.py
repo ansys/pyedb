@@ -45,7 +45,6 @@ _JSON_OPTION = typer.Option(False, "--json", help="Output results as JSON.")
 
 def _set_json(json_output: bool) -> None:
     common.json_mode = json_output
-       
 
 
 @app.callback()
