@@ -65,13 +65,29 @@ class Value(float, CoreValue):
             return self
         return super().value
 
+    @staticmethod
+    def _format_operand(operand, owner=None):
+        """Format an operand for use in an expression string."""
+        if isinstance(operand, Value):
+            if operand._Value__core is not None:
+                return str(operand._Value__core)
+            # Pure numeric Value - format without trailing .0
+            val = float(operand)
+            return str(int(val)) if val == int(val) else str(val)
+        elif isinstance(operand, CoreValue):
+            return str(operand)
+        else:
+            # Format numeric values without trailing .0 for integers
+            val = float(operand)
+            return str(int(val)) if val == int(val) else str(val)
+
     def __add__(self, other):
         """Adds two Edb Values."""
         if self.__core is None and (
             (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
         ):
             return self.__class__(float(self) + float(other))
-        core = CoreValue(f"({str(self.core)})+({str(other)})", self.owner)
+        core = CoreValue(f"({str(self.core)})+({self._format_operand(other, self.owner)})", self.owner)
         return self.__class__(core, self.owner)
 
     def __radd__(self, other):
@@ -79,7 +95,7 @@ class Value(float, CoreValue):
             (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
         ):
             return self.__class__(float(self) + float(other))
-        core = CoreValue(f"({str(other)})+({str(self.core)})", self.owner)
+        core = CoreValue(f"({self._format_operand(other, self.owner)})+({str(self.core)})", self.owner)
         return self.__class__(core, self.owner)
 
     def __sub__(self, other):
@@ -88,7 +104,7 @@ class Value(float, CoreValue):
             (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
         ):
             return self.__class__(float(self) - float(other))
-        core = CoreValue(f"({str(self.core)})-({str(other)})", self.owner)
+        core = CoreValue(f"({str(self.core)})-({self._format_operand(other, self.owner)})", self.owner)
         return self.__class__(core, self.owner)
 
     def __rsub__(self, other):
@@ -96,7 +112,7 @@ class Value(float, CoreValue):
             (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
         ):
             return self.__class__(float(other) - float(self))
-        core = CoreValue(f"({str(other)})-({str(self.core)})", self.owner)
+        core = CoreValue(f"({self._format_operand(other, self.owner)})-({str(self.core)})", self.owner)
         return self.__class__(core, self.owner)
 
     def __mul__(self, other):
@@ -105,7 +121,7 @@ class Value(float, CoreValue):
             (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
         ):
             return self.__class__(float(self) * float(other))
-        core = CoreValue(f"({str(self.core)})*({str(other)})", self.owner)
+        core = CoreValue(f"({str(self.core)})*({self._format_operand(other, self.owner)})", self.owner)
         return self.__class__(core, self.owner)
 
     def __rmul__(self, other):
@@ -113,7 +129,7 @@ class Value(float, CoreValue):
             (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
         ):
             return self.__class__(float(other) * float(self))
-        core = CoreValue(f"({str(other)})*({str(self.core)})", self.owner)
+        core = CoreValue(f"({self._format_operand(other, self.owner)})*({str(self.core)})", self.owner)
         return self.__class__(core, self.owner)
 
     def __truediv__(self, other):
@@ -122,7 +138,7 @@ class Value(float, CoreValue):
             (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
         ):
             return self.__class__(float(self) / float(other))
-        core = CoreValue(f"({str(self.core)})/({str(other)})", self.owner)
+        core = CoreValue(f"({str(self.core)})/({self._format_operand(other, self.owner)})", self.owner)
         return self.__class__(core, self.owner)
 
     def __rtruediv__(self, other):
@@ -130,7 +146,7 @@ class Value(float, CoreValue):
             (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
         ):
             return self.__class__(float(other) / float(self))
-        core = CoreValue(f"({str(other)})/({str(self.core)})", self.owner)
+        core = CoreValue(f"({self._format_operand(other, self.owner)})/({str(self.core)})", self.owner)
         return self.__class__(core, self.owner)
 
     def __pow__(self, other):
@@ -144,7 +160,7 @@ class Value(float, CoreValue):
             (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
         ):
             return self.__class__(float(self) ** float(other))
-        core = CoreValue(f"({str(self.core)})**({str(other)})", self.owner)
+        core = CoreValue(f"({str(self.core)})**({self._format_operand(other, self.owner)})", self.owner)
         return self.__class__(core, self.owner)
 
     @property

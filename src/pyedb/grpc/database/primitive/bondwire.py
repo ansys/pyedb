@@ -26,6 +26,7 @@ from ansys.edb.core.primitive.bondwire import (
     BondwireType as CoreBondWireType,
 )
 
+from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
@@ -125,7 +126,7 @@ class Bondwire(Primitive):
             end_layer_name=end_layer_name,
             end_x=layout._pedb._value_setter(end_x),
             end_y=layout._pedb._value_setter(end_y),
-            net=net,
+            net=net.core if isinstance(net, Net) else net,
             end_context=end_cell_inst,
             start_context=start_cell_inst,
         )
