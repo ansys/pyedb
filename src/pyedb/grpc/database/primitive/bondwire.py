@@ -20,15 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from ansys.edb.core.primitive.bondwire import (
     Bondwire as CoreBondWire,
     BondwireCrossSectionType as CoreBondwireCrossSectionType,
     BondwireType as CoreBondWireType,
 )
 
-from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
 
 
 class Bondwire(Primitive):
@@ -113,6 +119,10 @@ class Bondwire(Primitive):
         if material not in layout._pedb.materials.materials:
             layout._pedb.materials.add_conductor_material(material)
             layout._pedb.logger("Material {material} not found. Added to the material library.")
+
+        from pyedb.grpc.database.net.net import Net
+
+        core_net = net.core if isinstance(net, Net) else net
         core_bondwire = CoreBondWire.create(
             layout=layout.core,
             bondwire_type=bondwire_type,
@@ -126,7 +136,7 @@ class Bondwire(Primitive):
             end_layer_name=end_layer_name,
             end_x=layout._pedb._value_setter(end_x),
             end_y=layout._pedb._value_setter(end_y),
-            net=net.core if isinstance(net, Net) else net,
+            net=core_net,
             end_context=end_cell_inst,
             start_context=start_cell_inst,
         )
