@@ -37,7 +37,11 @@ except ImportError as e:  # pragma: no cover
     ) from e
 
 json_mode = False
-
+def reset_state() -> None:
+    """Reset module-level state. Call between CLI invocations (e.g. in tests)."""
+    global json_mode
+    json_mode = False
+    
 CONFIG_EXPORT_FLAGS = {
     "general": True,
     "variables": True,

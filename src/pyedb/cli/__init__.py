@@ -44,8 +44,8 @@ _JSON_OPTION = typer.Option(False, "--json", help="Output results as JSON.")
 
 
 def _set_json(json_output: bool) -> None:
-    if json_output:
-        common.json_mode = True
+    common.json_mode = json_output
+       
 
 
 @app.callback()
@@ -442,7 +442,7 @@ def exec_code(
     """Open an EDB, execute Python code, then close it."""
 
     def _run() -> None:
-        if bool(script_path) == bool(code_snippet):
+        if (script_path is not None) == (code_snippet is not None):
             raise RuntimeError("Provide either a script path or --code.")
 
         with common.managed_edb(edb_path=path) as (db, context):
