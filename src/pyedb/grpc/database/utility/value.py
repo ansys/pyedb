@@ -78,8 +78,11 @@ class Value(float, CoreValue):
             return str(operand)
         else:
             # Format numeric values without trailing .0 for integers
-            val = float(operand)
-            return str(int(val)) if val == int(val) else str(val)
+            try:
+                val = float(operand)
+                return str(int(val)) if val == int(val) else str(val)
+            except (ValueError, TypeError):
+                return str(operand)
 
     def __add__(self, other):
         """Adds two Edb Values."""

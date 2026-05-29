@@ -96,20 +96,20 @@ class PointData:
         .PointData or :obj:`None`
             PointData after rotating or :obj:`None` if either point is an arc.
         """
-        cx = self._pedb.value(center[0])
-        cy = self._pedb.value(center[1])
-        angle = self._pedb.value(angle)
+        import math
 
-        if float(cx) == 0 and float(cy) == 0:
-            dx = self.x
-            dy = self.y
-            xi = dx * angle.cos() - dy * angle.sin()
-            yi = dx * angle.sin() + dy * angle.cos()
-        else:
-            dx = self.x - cx
-            dy = self.y - cy
-            xi = dx * angle.cos() - dy * angle.sin() + cx
-            yi = dx * angle.sin() + dy * angle.cos() + cy
+        cx = float(self._pedb.value(center[0]))
+        cy = float(self._pedb.value(center[1]))
+        angle_val = float(self._pedb.value(angle))
+        x = float(self.x)
+        y = float(self.y)
+
+        dx = x - cx
+        dy = y - cy
+        cos_a = math.cos(angle_val)
+        sin_a = math.sin(angle_val)
+        xi = dx * cos_a - dy * sin_a + cx
+        yi = dx * sin_a + dy * cos_a + cy
         return PointData.create(self._pedb, str(xi), str(yi))
 
     def move(self, dx: str | float, dy: str | float) -> "PointData":
