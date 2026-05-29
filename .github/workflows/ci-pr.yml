@@ -116,21 +116,15 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: ${{ env.TESTS_VERSION }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-
-      - name: Update pip
-        run: |
-          source .venv/bin/activate
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          source .venv/bin/activate
-          python -m pip install .[all,tests,dotnet]
+        run: uv sync --frozen --extra all --group tests --extra dotnet
 
       - name: Run unit tests
         run: |
@@ -179,19 +173,13 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-
-      - name: Update pip
-        run: |
-          source .venv/bin/activate
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          source .venv/bin/activate
-          python -m pip install .[all,tests]
+        run: uv sync --frozen --extra all --group tests
 
       - name: Run unit tests
         run: |
@@ -242,20 +230,13 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-          . .venv\Scripts\Activate.ps1
-
-      - name: Update pip
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install .[all,tests,dotnet]
+        run: uv sync --frozen --extra all --group tests --extra dotnet
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -264,12 +245,12 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            . .venv\Scripts\Activate.ps1
+            .venv\Scripts\activate
             pytest tests/system --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          . .venv\Scripts\Activate.ps1
+          .venv\Scripts\activate
           python -m coverage html -d .cov\system-html
           python -m coverage xml -o .cov\system.xml
 
@@ -311,20 +292,13 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-          . .venv\Scripts\Activate.ps1
-
-      - name: Update pip
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install .[all,tests]
+        run: uv sync --frozen --extra all --group tests
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -338,7 +312,7 @@ jobs:
 
       - name: Create coverage files
         run: |
-          . .venv\Scripts\Activate.ps1
+          .venv\Scripts\activate
           python -m coverage html -d .cov\system-html
           python -m coverage xml -o .cov\system.xml
 
@@ -377,29 +351,23 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
       - name: Install os packages
         run: |
           sudo apt update
           sudo apt install libgl1-mesa-glx -y
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Update pip
-        run: |
-          . .venv/bin/activate
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          . .venv/bin/activate
-          python -m pip install .[all,tests,dotnet]
+        run: uv sync --frozen --extra all --group tests --extra dotnet
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -408,12 +376,12 @@ jobs:
           retry_on: error
           timeout_minutes: 40
           command: |
-            . .venv/bin/activate
+            source .venv/bin/activate
             pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          . .venv/bin/activate
+          source .venv/bin/activate
           python -m coverage html -d .cov/system-html
           python -m coverage xml -o .cov/system.xml
 
@@ -452,29 +420,23 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-
       - name: Install os packages
         run: |
           sudo apt update
           sudo apt install libgl1-mesa-glx -y
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Update pip
-        run: |
-          . .venv/bin/activate
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          . .venv/bin/activate
-          python -m pip install .[all,tests]
+        run: uv sync --frozen --extra all --group tests
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -483,12 +445,12 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv/bin/activate
+            source .venv/bin/activate
             pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
-          . .venv/bin/activate
+          source .venv/bin/activate
           python -m coverage html -d .cov/system-html
           python -m coverage xml -o .cov/system.xml
 
@@ -520,6 +482,7 @@ jobs:
           sphinxopts: '-j 1 --color -w build_errors.txt'
           check-links: false
           needs-quarto: true
+          group-dependencies-name: 'doc'
 
   package:
     name: Package library

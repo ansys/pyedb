@@ -62,14 +62,27 @@ all = [
     "Rtree>=1.2.0",
     "shapely"
 ]
+
+[tool.flit.module]
+name = "pyedb"
+
+# uv configuration
+[tool.uv]
+compile-bytecode = true
+
+[dependency-groups]
+dev = [
+    "ruff>=0.4.0",
+    { include-group = "doc" },
+    { include-group = "tests" },
+]
 tests = [
     "mock>=5.1.0,<5.3",
     "pytest>=7.4.0,<9.1",
     "pytest-cov>=4.0.0,<7.2",
     "pytest-xdist>=3.5.0,<3.7",
-    "pytest-rerunfailures>=14.0,<17"
+    "pytest-rerunfailures>=14.0,<17",
 ]
-
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.9",
     "ezdxf>=1.4.2",
@@ -82,7 +95,6 @@ doc = [
     "numpydoc>=1.10.0",
     "pandas>=1.1.0,<2.4",
     "pypandoc>=1.10.0,<1.18",
-    # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
     "Rtree>=1.2.0",
     "shapely",
@@ -90,11 +102,8 @@ doc = [
     "sphinx-autobuild>=2024.10.3",
     "sphinx-copybutton>=0.5.0,<0.6",
     "sphinx-gallery>=0.14.0,<0.22",
-    "sphinx_design>=0.4.0,<0.7"
+    "sphinx_design>=0.4.0,<0.7",
 ]
-
-[tool.flit.module]
-name = "pyedb"
 
 [project.urls]
 Bugs = "https://github.com/ansys/pyedb/issues"
@@ -233,9 +242,9 @@ combine-as-imports = true
 max-complexity = 10
 
 [tool.codespell]
-skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,*.a3dcomp,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,*.cdb,*.CDB,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*,pyproject.toml'
+skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,*.a3dcomp,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,*.cdb,*.CDB,build,./factory/*,PKG-INFO,*.mypy_cache/*,./_unused/*,pyproject.toml,uv.lock'
 ignore-words = "doc/styles/config/vocabularies/ANSYS/accept.txt"
-ignore-words-list = "renabled, sie, mot"
+ignore-words-list = "renabled, sie, mot, astroid"
 enable-colors = true
 
 [tool.coverage.run]
