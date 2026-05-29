@@ -34,6 +34,7 @@ jobs:
           sphinxopts: '-j 1 --color -w build_errors.txt'
           check-links: false
           needs-quarto: true
+          group-dependencies-name: 'doc'
 
   upload-dev-doc:
     name: Upload dev documentation
