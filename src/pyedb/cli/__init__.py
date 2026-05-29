@@ -273,29 +273,32 @@ def export_siwave_dc_results(
     def _run() -> None:
         project_path = str(Path(siwave_project).expanduser().resolve())
         reports_folder = str(Path(output_folder).expanduser().resolve()) if output_folder else None
-        with common.managed_edb(edb_path=path) as (db, _):
-            exported = db.export_siwave_dc_results(
-                project_path,
-                solution_name,
-                output_folder=reports_folder,
-                html_report=html_report,
-                vias=vias,
-                voltage_probes=voltage_probes,
-                current_sources=current_sources,
-                voltage_sources=voltage_sources,
-                power_tree=power_tree,
-                loop_res=loop_res,
-            )
-            data = {
-                "exported": True,
-                "edb_path": db.edbpath,
-                "export_type": "siwave-dc-results",
-                "files": exported,
-            }
-            if common.json_mode:
-                common.print_output(data=data)
-            else:
-                typer.secho(f"SIwave DC results exported ({len(exported)} files)", fg="green")
+        # and do NOT wrap in managed_edb to avoid a double-close
+        existing_path = common.ensure_existing_edb_path(path)
+        Edb = common.get_edb_class()
+        db = Edb(existing_path, version=common.resolve_version(None))
+        exported = db.export_siwave_dc_results(
+            project_path,
+            solution_name,
+            output_folder=reports_folder,
+            html_report=html_report,
+            vias=vias,
+            voltage_probes=voltage_probes,
+            current_sources=current_sources,
+            voltage_sources=voltage_sources,
+            power_tree=power_tree,
+            loop_res=loop_res,
+        )
+        data = {
+            "exported": True,
+            "edb_path": existing_path,
+            "export_type": "siwave-dc-results",
+            "files": exported,
+        }
+        if common.json_mode:
+            common.print_output(data=data)
+        else:
+            typer.secho(f"SIwave DC results exported ({len(exported)} files)", fg="green")
 
     common.run_with_error_handling(_run)
 
