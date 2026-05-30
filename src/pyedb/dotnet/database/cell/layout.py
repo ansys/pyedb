@@ -172,7 +172,7 @@ class PrimitivesQuery:
     def _get_polygon_data_object(polygon):
         if hasattr(polygon, "polygon_data"):
             polygon_data = polygon.polygon_data
-            return polygon_data._edb_object if hasattr(polygon_data, "_edb_object") else polygon_data
+            return polygon_data.core if hasattr(polygon_data, "core") else polygon_data
         return polygon.GetPolygonData()
 
     @staticmethod
@@ -247,7 +247,7 @@ class PrimitivesQuery:
         -------
         list of :class:`dotnet.database.dotnet.primitive.PrimitiveDotNet` cast objects.
         """
-        primitives = list(self._edb_object.Primitives)
+        primitives = list(self.core.Primitives)
         if len(primitives) != len(self._primitives):
             self._primitives = [primitive_cast(self._pedb, p) for p in primitives]
         return [p for p in self._primitives if p is not None]
@@ -259,7 +259,7 @@ class PrimitivesQuery:
 
         Read-Only.
         """
-        return list(self._edb_object.GetZonePrimitives())
+        return list(self.core.GetZonePrimitives())
 
     @property
     def bondwires(self) -> list[Bondwire]:
@@ -284,7 +284,7 @@ class PrimitivesQuery:
         if object_by_id is not None:
             return object_by_id
 
-        obj = self._pedb._edb.Cell.Connectable.FindById(self._edb_object, value)
+        obj = self._pedb._edb.Cell.Connectable.FindById(self.core, value)
         if obj is None:
             raise RuntimeError(f"Object Id {value} not found")
 
@@ -548,6 +548,48 @@ class Layout(ObjBase, PrimitivesQuery):
         super().__init__(pedb, edb_object)
         PrimitivesQuery.__init__(self, pedb)
 
+        self.__use_cache = False
+        self.__padstack_instances = []
+
+    @property
+    def use_cache(self):
+        """bool: Enable or disable layout caching.
+
+        When enabled, caches padstack instances and primitives for faster access.
+        """
+        return self.__use_cache
+
+    @use_cache.setter
+    def use_cache(self, value: bool):
+        """Set cache usage and refresh if enabled.
+
+        Parameters
+        ----------
+        value : bool
+            Whether to enable caching.
+        """
+        self.__use_cache = value
+        if self.__use_cache:
+            self.refresh_cache()
+
+    def refresh_cache(self):
+        """Refresh the layout cache.
+
+        Caches padstack instances and primitives from the core object.
+        """
+        self._pedb.logger.info("Caching layout...")
+        self.__padstack_instances = [EDBPadstackInstance(i, self._pedb) for i in self.core.PadstackInstances]
+        self._primitives = [primitive_cast(self._pedb, p) for p in self.core.Primitives]
+        self._pedb.logger.info("Caching finished.")
+
+    def clear_cache(self):
+        """Clear the layout cache.
+
+        Clears cached padstack instances and primitives.
+        """
+        self.__padstack_instances = []
+        self._primitives = []
+
     @property
     def cell(self):
         """:class:`Cell <ansys.edb.layout.Cell>`: Owning cell for this layout.
@@ -559,12 +601,12 @@ class Layout(ObjBase, PrimitivesQuery):
     @property
     def layer_collection(self):
         """:class:`LayerCollection <ansys.edb.layer.LayerCollection>` : Layer collection of this layout."""
-        return self._edb_object.GetLayerCollection()
+        return self.core.GetLayerCollection()
 
     @layer_collection.setter
     def layer_collection(self, layer_collection):
         """Set layer collection."""
-        self._edb_object.SetLayerCollection(layer_collection)
+        self.core.SetLayerCollection(layer_collection)
 
     @property
     def _edb(self):
@@ -599,11 +641,8 @@ class Layout(ObjBase, PrimitivesQuery):
         -----
         Method returns the expansion of the contour, so any voids within expanded objects are ignored.
         """
-        if isinstance(nets, list) and all(isinstance(item, str) for item in nets):
-            nets = [self._pedb.nets.nets[i] for i in nets if i in self.nets]
-
-        nets = [i._edb_object for i in nets]
-        return self._edb_object.GetExpandedExtentFromNets(
+        nets = [i.core for i in nets]
+        return self.core.GetExpandedExtentFromNets(
             convert_py_list_to_net_list(nets),
             extent,
             expansion_factor,
@@ -622,16 +661,16 @@ class Layout(ObjBase, PrimitivesQuery):
         is_pins : bool, optional
             True for pins, false for vias (default).
         """
-        self._edb_object.ConvertPrimitivestoVias(convert_py_list_to_net_list(primitives), is_pins)
+        self.core.ConvertPrimitivestoVias(convert_py_list_to_net_list(primitives), is_pins)
 
     @property
     def fixed_zone_primitive(self):
         """:class:`Primitive <ansys.edb.primitive.Primitive>` : Fixed :term:`zones <Zone>` primitive."""
-        return list(self._edb_object.GetFixedZonePrimitive())
+        return list(self.core.GetFixedZonePrimitive())
 
     @fixed_zone_primitive.setter
     def fixed_zone_primitive(self, value):
-        self._edb_object.SetFixedZonePrimitives(value)
+        self.core.SetFixedZonePrimitives(value)
 
     @property
     def terminals(self):
@@ -642,7 +681,7 @@ class Layout(ObjBase, PrimitivesQuery):
         Terminal dictionary : Dict[str, pyedb.dotnet.database.edb_data.terminals.Terminal]
         """
         temp = []
-        for i in list(self._edb_object.Terminals):
+        for i in list(self.core.Terminals):
             terminal_type = i.ToString().split(".")[-1]
             if terminal_type == "PinGroupTerminal":
                 temp.append(PinGroupTerminal(self._pedb, i))
@@ -663,7 +702,7 @@ class Layout(ObjBase, PrimitivesQuery):
 
         Read-Only.
         """
-        return list(self._edb_object.CellInstances)
+        return list(self.core.CellInstances)
 
     @property
     def layout_instance(self):
@@ -671,7 +710,7 @@ class Layout(ObjBase, PrimitivesQuery):
 
         Read-Only.
         """
-        return self._edb_object.GetLayoutInstance()
+        return self.core.GetLayoutInstance()
 
     @property
     def nets(self):
@@ -680,36 +719,39 @@ class Layout(ObjBase, PrimitivesQuery):
         Returns
         -------
         """
-        return [EDBNetsData(net, self._pedb) for net in self._edb_object.Nets if net]
+        return [EDBNetsData(net, self._pedb) for net in self.core.Nets if net]
 
     @property
     def groups(self):
-        return [EDBComponent(self._pedb, i) for i in self._edb_object.Groups if i.ToString().endswith(".Component")]
+        return [EDBComponent(self._pedb, i) for i in self.core.Groups if i.ToString().endswith(".Component")]
 
     @property
     def pin_groups(self) -> list[PinGroup]:
-        return [PinGroup(pedb=self._pedb, edb_pin_group=i, name=i.GetName()) for i in self._edb_object.PinGroups]
+        return [PinGroup(pedb=self._pedb, edb_pin_group=i, name=i.GetName()) for i in self.core.PinGroups]
 
     @property
     def net_classes(self) -> list[EDBNetClassData]:
-        return [EDBNetClassData(self._pedb, i) for i in list(self._edb_object.NetClasses)]
+        return [EDBNetClassData(self._pedb, i) for i in list(self.core.NetClasses)]
 
     @property
     def extended_nets(self) -> list[EDBExtendedNetData]:
-        return [EDBExtendedNetData(self._pedb, i) for i in self._edb_object.ExtendedNets]
+        return [EDBExtendedNetData(self._pedb, i) for i in self.core.ExtendedNets]
 
     @property
     def differential_pairs(self) -> list[EDBDifferentialPairData]:
-        return [EDBDifferentialPairData(self._pedb, i) for i in list(self._edb_object.DifferentialPairs)]
+        return [EDBDifferentialPairData(self._pedb, i) for i in list(self.core.DifferentialPairs)]
 
     @property
     def padstack_instances(self) -> list[EDBPadstackInstance]:
         """Get all padstack instances in a list."""
-        return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
+        if self.__use_cache:
+            return self.__padstack_instances
+        else:
+            return [EDBPadstackInstance(i, self._pedb) for i in self.core.PadstackInstances]
 
     @property
     def voltage_regulators(self) -> list[VoltageRegulator]:
-        return [VoltageRegulator(self._pedb, i) for i in list(self._edb_object.VoltageRegulators)]
+        return [VoltageRegulator(self._pedb, i) for i in list(self.core.VoltageRegulators)]
 
     @property
     def port_reference_terminals_connected(self) -> bool:
@@ -718,7 +760,7 @@ class Layout(ObjBase, PrimitivesQuery):
         True if they are connected, False otherwise.
         Read-Only.
         """
-        return self._edb_object.ArePortReferenceTerminalsConnected()
+        return self.core.ArePortReferenceTerminalsConnected()
 
     def find_net_by_name(self, value: str):
         """Find a net object by name
@@ -732,7 +774,7 @@ class Layout(ObjBase, PrimitivesQuery):
         -------
 
         """
-        obj = self._pedb._edb.Cell.Net.FindByName(self._edb_object, value)
+        obj = self._pedb._edb.Cell.Net.FindByName(self.core, value)
         if obj.IsNull():
             return None
         else:
@@ -750,7 +792,7 @@ class Layout(ObjBase, PrimitivesQuery):
         -------
 
         """
-        obj = self._pedb.core.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
+        obj = self._pedb.core.Cell.Hierarchy.Component.FindByName(self.core, value)
         return EDBComponent(self._pedb, obj) if not obj.IsNull() else None
 
     def find_padstack_instances(

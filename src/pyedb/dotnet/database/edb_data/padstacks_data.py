@@ -1447,6 +1447,8 @@ class EDBPadstackInstance(Connectable):
         self._position = []
         self._pdef = None
 
+        self.__aedt_name = None
+
     @property
     def layer_map(self):
         """Edb layer map."""
@@ -2202,20 +2204,24 @@ class EDBPadstackInstance(Connectable):
         >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
 
         """
-        val = String("")
-        _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.core.ProductId.Designer, 11, val)
-        aedt_name = str(name).strip("'")
-        if aedt_name == "":
-            if self.component_name:
-                aedt_name = f"{self.component_name}-{self.name}"
+        if self.__aedt_name is None:
+            val = String("")
+            _, name = self._edb_padstackinstance.GetProductProperty(self._pedb.core.ProductId.Designer, 11, val)
+            aedt_name = str(name).strip("'")
+            if aedt_name == "":
+                if self.component_name:
+                    aedt_name = f"{self.component_name}-{self.name}"
+                else:
+                    aedt_name = "Via_{}".format(self.id)
+                self.aedt_name = aedt_name
             else:
-                aedt_name = "Via_{}".format(self.id)
-            self.aedt_name = aedt_name
-        return aedt_name
+                self.__aedt_name = aedt_name
+        return self.__aedt_name
 
     @aedt_name.setter
     def aedt_name(self, value):
-        self._edb_object.SetProductProperty(self._pedb.core.ProductId.Designer, 11, value)
+        self.__aedt_name = value
+        self.core.SetProductProperty(self._pedb.core.ProductId.Designer, 11, value)
 
     def parametrize_position(self, prefix=None) -> list[str]:
         """Parametrize the instance position.

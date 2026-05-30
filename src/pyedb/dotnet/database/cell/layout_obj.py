@@ -29,6 +29,7 @@ class LayoutObj(ObjBase):
 
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
+        self.__id = None
 
     @property
     def _edb(self):
@@ -68,12 +69,17 @@ class LayoutObj(ObjBase):
         -------
         int
         """
-        return self._edb_object.GetId()
+        if self.__id is None:
+            self.__id = self.core.GetId()
+        return self.__id
 
     def delete(self):
         """Delete this primitive."""
-        self._edb_object.Delete()
+        self.core.Delete()
         self._pedb.modeler._primitives = []
         self._pedb.padstacks._instances = {}
         self._pedb.padstacks._definitions = {}
+
+        self._pedb.layout.clear_cache()
+        del self
         return True

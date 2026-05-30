@@ -22,7 +22,7 @@
 
 """Build explicit low-level terminal entries for configuration payloads."""
 
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import Field
 
@@ -149,9 +149,9 @@ class CfgTerminal(CfgBaseModel):
     name: str
     impedance: float | int | str
     is_circuit_port: bool = False
-    reference_terminal: Optional[str] = None
-    amplitude: Optional[float | int | str] = 1
-    phase: Optional[float | int | str] = 0
+    reference_terminal: str | None = None
+    amplitude: float | int | str | None = 1
+    phase: float | int | str | None = 0
     terminal_to_ground: (
         Literal[
             "kNoGround",
@@ -191,9 +191,9 @@ class CfgPadstackInstanceTerminal(CfgTerminal):
     """Represent a terminal created from a named padstack instance."""
 
     terminal_type: str = "padstack_instance"
-    padstack_instance: str
-    padstack_instance_id: Optional[int] = None
-    layer: Optional[str | None] = None
+    padstack_instance: str | None = None
+    padstack_instance_id: int | None = None
+    layer: str | None = None
 
 
 class CfgPinGroupTerminal(CfgTerminal):
@@ -281,19 +281,9 @@ class CfgTerminals(CfgBaseModel):
     def add_padstack_instance_terminal(
         self,
         name: str,
-        padstack_instance: str,
-        impedance: float | int | str,
+        padstack_instance: str | None = None,
+        impedance: float | int | str = 50,
         boundary_type: Literal[
-            "PortBoundary",
-            "PecBoundary",
-            "RlcBoundary",
-            "kCurrentSource",
-            "kVoltageSource",
-            "kNexximGround",
-            "kNexximPort",
-            "kDcTerminal",
-            "kVoltageProbe",
-            "InvalidBoundary",
             "port",
             "dc_terminal",
             "voltage_probe",
@@ -301,22 +291,17 @@ class CfgTerminals(CfgBaseModel):
             "current_source",
             "rlc",
             "pec",
-        ],
+        ] = "port",
         hfss_type: Literal["Wave", "Gap"] | None = None,
         is_circuit_port: bool = False,
         reference_terminal: str | None = None,
         amplitude: float | int | str = 1,
         phase: float | int | str = 0,
         terminal_to_ground: Literal[
-            "kNoGround",
-            "kNegative",
-            "kNegativeNode",
-            "kPositive",
-            "kPositiveNode",
             "no_ground",
             "negative",
             "positive",
-        ] = "kNoGround",
+        ] = "no_ground",
         padstack_instance_id: int | None = None,
         layer: str | None = None,
     ):
