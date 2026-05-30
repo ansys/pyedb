@@ -42,18 +42,25 @@ class BondwireDef:
         """Set the name of the bondwire definition."""
         self.core.name = self._pedb.value(value)
 
+    def delete(self):
+        self.core.delete()
+
+
+class Jedec4BondwireDef(BondwireDef):
+    """Class representing a JEDEC 4 bondwire definition."""
+
+    def __init__(self, pedb, core=None):
+        super().__init__(pedb, core)
+
     @property
     def height(self):
-        """Get the bondwire top-to-die distance of the bondwire definition."""
+        """Get the bondwire top-to-die distance of the JEDEC 4 bondwire definition."""
         return self.get_parameters()
 
     @height.setter
     def height(self, value):
-        """Set the bondwire top-to-die distance of the bondwire definition."""
+        """Set the bondwire top-to-die distance of the JEDEC 4 bondwire definition."""
         self.set_parameters(value)
-
-    def delete(self):
-        self.core.delete()
 
     def get_parameters(self):
         """Get the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
@@ -65,24 +72,15 @@ class BondwireDef:
         """
         return self.core.get_parameters().value
 
-    def set_parameters(self, parameters):
+    def set_parameters(self, height):
         """Set the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
 
         Parameters
         ----------
-        parameters : float
+        height : float
             Bondwire top-to-die distance.
         """
-        self.core.set_parameters(self._pedb.value(parameters))
-
-
-class Jedec4BondwireDef(BondwireDef):
-    """Class representing a JEDEC 4 bondwire definition."""
-
-    def __init__(self, pedb, core=None):
-        super().__init__(pedb, core)
-        self._pedb = pedb
-        self.core = core
+        self.core.set_parameters(self._pedb.value(height))
 
     @classmethod
     def create(cls, edb, name):
@@ -120,7 +118,7 @@ class Jedec4BondwireDef(BondwireDef):
             The found JEDEC 4 bondwire definition or None if not found.
         """
         core_bondwire_def = CoreJedec4BondwireDef.find_by_name(edb._db, name)
-        if core_bondwire_def:
+        if core_bondwire_def and not core_bondwire_def.is_null:
             return Jedec4BondwireDef(edb, core_bondwire_def)
         return None
 
@@ -130,8 +128,46 @@ class Jedec5BondwireDef(BondwireDef):
 
     def __init__(self, pedb, core=None):
         super().__init__(pedb, core)
-        self._pedb = pedb
-        self.core = core
+
+    @property
+    def height(self):
+        """Get the bondwire top-to-die distance of the JEDEC 5 bondwire definition."""
+        return self.get_parameters()[0]
+
+    @height.setter
+    def height(self, value):
+        """Set the bondwire top-to-die distance, keeping existing angles."""
+        _, die_pad_angle, lead_pad_angle = self.get_parameters()
+        self.set_parameters(value, die_pad_angle, lead_pad_angle)
+
+    def get_parameters(self):
+        """Get the parameters of the JEDEC 5 bondwire definition.
+
+        Returns
+        -------
+        tuple[float, float, float]
+            Tuple of (top_to_die_distance, die_pad_angle, lead_pad_angle).
+        """
+        result = self.core.get_parameters()
+        return result[0].value, result[1].value, result[2].value
+
+    def set_parameters(self, top_to_die_distance, die_pad_angle, lead_pad_angle):
+        """Set the parameters of the JEDEC 5 bondwire definition.
+
+        Parameters
+        ----------
+        top_to_die_distance : float
+            Bondwire top-to-die distance.
+        die_pad_angle : float
+            Die pad angle in degrees.
+        lead_pad_angle : float
+            Lead pad angle in degrees.
+        """
+        self.core.set_parameters(
+            self._pedb.value(top_to_die_distance),
+            self._pedb.value(die_pad_angle),
+            self._pedb.value(lead_pad_angle),
+        )
 
     @classmethod
     def create(cls, edb, name):
@@ -169,7 +205,7 @@ class Jedec5BondwireDef(BondwireDef):
             The found JEDEC 5 bondwire definition or None if not found.
         """
         grpc_bondwire_def = CoreJedec5BondwireDef.find_by_name(edb._db, name)
-        if grpc_bondwire_def:
+        if grpc_bondwire_def and not grpc_bondwire_def.is_null:
             return Jedec5BondwireDef(edb, grpc_bondwire_def)
         return None
 
@@ -179,8 +215,52 @@ class ApdBondwireDef(BondwireDef):
 
     def __init__(self, pedb, core=None):
         super().__init__(pedb, core)
-        self._pedb = pedb
-        self.core = core
+
+    @property
+    def height(self):
+        """Not applicable for APD bondwire definitions. Raises AttributeError."""
+        raise AttributeError("APD bondwire definitions do not have a height parameter. Use 'parameter_block' instead.")
+
+    @height.setter
+    def height(self, value):
+        raise AttributeError("APD bondwire definitions do not have a height parameter. Use 'set_parameters()' instead.")
+
+    @property
+    def parameter_block(self):
+        """Get the APD bondwire parameter block string.
+
+        Returns
+        -------
+        str
+            APD bondwire parameter block (bwd descriptor string).
+        """
+        return self.get_parameters()
+
+    @parameter_block.setter
+    def parameter_block(self, value):
+        """Set the APD bondwire parameter block string."""
+        self.set_parameters(value)
+
+    def get_parameters(self):
+        """Get the APD bondwire parameter block string.
+
+        Returns
+        -------
+        str
+            APD bondwire parameter block (bwd descriptor string).
+        """
+        result = self.core.get_parameters()
+        return result.value if hasattr(result, "value") else result
+
+    def set_parameters(self, parameter_block):
+        """Set the APD bondwire parameter block string.
+
+        Parameters
+        ----------
+        parameter_block : str
+            APD bondwire parameter block (bwd descriptor string).
+        """
+        self.core.set_parameters(parameter_block)
 
     @classmethod
     def create(cls, edb, name):
@@ -218,6 +298,6 @@ class ApdBondwireDef(BondwireDef):
             The found Apd bondwire definition or None if not found.
         """
         grpc_bondwire_def = CoreApdBondwireDef.find_by_name(edb._db, name)
-        if grpc_bondwire_def:
+        if grpc_bondwire_def and not grpc_bondwire_def.is_null:
             return ApdBondwireDef(edb, grpc_bondwire_def)
         return None
