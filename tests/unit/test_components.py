@@ -714,14 +714,16 @@ class TestCfgComponentRetrieve:
         assert c.ic_die_properties["type"] == "wire_bond"
         assert "height" in c.ic_die_properties
 
-    def test_no_die_type_skips_orientation_and_height(self):
+    def test_no_die_type_skips_height_but_includes_orientation(self):
         pedb = _make_pedb(grpc=True)
         obj = self._make_ic_obj()
         obj.ic_die_properties.die_type = "no_die"
         c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic")
         c.retrieve_parameters_from_edb()
         assert c.ic_die_properties["type"] == "no_die"
-        assert "orientation" not in c.ic_die_properties
+        # gRPC always exposes orientation; height is only for wire_bond
+        assert "orientation" in c.ic_die_properties
+        assert "height" not in c.ic_die_properties
 
 
 # ---------------------------------------------------------------------------
