@@ -291,7 +291,9 @@ class Configuration:
         self.__apply_with_logging("Applying package definitions", self.cfg_data.package_definitions.apply)
         self.__apply_with_logging("Applying modeler", self.apply_modeler)
         self.__apply_with_logging("Placing ports", self.cfg_data.ports.apply)
+        self._pedb.layout.use_cache = True
         self.apply_terminals()
+        self._pedb.layout.use_cache = False
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
         self.apply_operations()
         self.apply_setups()
@@ -1197,7 +1199,7 @@ class Configuration:
                     phase=i.source_phase,
                     terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
-                    hfss_type=i.hfss_type if i.hfss_type else "Wave",
+                    hfss_type=i.hfss_type if i.hfss_type else "Gap",
                 )
             elif i.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                 manager.add_pin_group_terminal(
