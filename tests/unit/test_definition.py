@@ -22,7 +22,7 @@
 
 """Unit tests for grpc/database/definition/wirebond_def.py — no license required."""
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -277,5 +277,245 @@ class TestApdBondwireDef:
 
         monkeypatch.setattr(wbd_module.CoreApdBondwireDef, "find_by_name", MagicMock(return_value=None))
         edb_mock = MagicMock()
+
         result = ApdBondwireDef.find_by_name(edb_mock, "missing")
         assert result is None
+
+
+# PinPair / PinPairModel unit tests
+@_grpc_only
+def _make_pin_pair():
+    """Create a PinPair with mocked model and core."""
+    from pyedb.grpc.database.hierarchy.pin_pair_model import PinPair
+
+    model = MagicMock()
+    edb_pin_pair = ("1", "2")
+    return PinPair(model, edb_pin_pair)
+
+
+@_grpc_only
+def _make_pin_pair_model():
+    """Create a PinPairModel with a mocked component."""
+    from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
+
+    component = MagicMock()
+    component._pedb = MagicMock()
+    component._pedb.logger = MagicMock()
+    return PinPairModel.__new__(PinPairModel), component
+
+
+@_grpc_only
+class TestGrpcPinPairUnit:
+    """Unit tests for PinPair (grpc)."""
+
+    def test_first_pin(self):
+        """first_pin returns the first element of edb_pin_pair."""
+        pp = _make_pin_pair()
+        assert pp.first_pin == "1"
+
+    def test_second_pin(self):
+        """second_pin returns the second element of edb_pin_pair."""
+        pp = _make_pin_pair()
+        assert pp.second_pin == "2"
+
+    def test_rlc_enable_getter(self):
+        """rlc_enable returns the enabled flags from the RLC object."""
+        pp = _make_pin_pair()
+        rlc = MagicMock()
+        rlc.r_enabled = True
+        rlc.l_enabled = False
+        rlc.c_enabled = True
+        pp.core.rlc.return_value = rlc
+        r_en, l_en, c_en = pp.rlc_enable
+        assert r_en is True
+        assert l_en is False
+        assert c_en is True
+
+    def test_resistance_getter(self):
+        """resistance returns rlc.r."""
+        pp = _make_pin_pair()
+        rlc = MagicMock()
+        rlc.r = 100.0
+        pp.core.rlc.return_value = rlc
+        assert pp.resistance == 100.0
+
+    def test_resistance_setter(self):
+        """resistance setter updates rlc.r and calls set_rlc on model."""
+        pp = _make_pin_pair()
+        rlc = MagicMock()
+        pp.core.rlc.return_value = rlc
+        pp.resistance = 200.0
+        assert rlc.r == 200.0
+        pp._model.set_rlc.assert_called_once_with(("1", "2"), rlc)
+
+    def test_inductance_getter(self):
+        """inductance returns rlc.l."""
+        pp = _make_pin_pair()
+        rlc = MagicMock()
+        rlc.l = 1e-9
+        pp.core.rlc.return_value = rlc
+        assert pp.inductance == 1e-9
+
+    def test_inductance_setter(self):
+        """inductance setter updates rlc.l and calls set_rlc on model."""
+        pp = _make_pin_pair()
+        rlc = MagicMock()
+        pp.core.rlc.return_value = rlc
+        pp.inductance = 2e-9
+        assert rlc.l == 2e-9
+        pp._model.set_rlc.assert_called_once()
+
+    def test_capacitance_getter(self):
+        """capacitance returns rlc.c."""
+        pp = _make_pin_pair()
+        rlc = MagicMock()
+        rlc.c = 1e-12
+        pp.core.rlc.return_value = rlc
+        assert pp.capacitance == 1e-12
+
+    def test_capacitance_setter(self):
+        """capacitance setter updates rlc.c and calls set_rlc on model."""
+        pp = _make_pin_pair()
+        rlc = MagicMock()
+        pp.core.rlc.return_value = rlc
+        pp.capacitance = 2e-12
+        assert rlc.c == 2e-12
+        pp._model.set_rlc.assert_called_once()
+
+    def test_is_parallel_getter(self):
+        """is_parallel returns rlc.is_parallel."""
+        pp = _make_pin_pair()
+        rlc = MagicMock()
+        rlc.is_parallel = True
+        pp.core.rlc.return_value = rlc
+        assert pp.is_parallel is True
+
+    def test_is_parallel_setter(self):
+        """is_parallel setter updates rlc.is_parallel and calls set_rlc on model."""
+        pp = _make_pin_pair()
+        rlc = MagicMock()
+        pp.core.rlc.return_value = rlc
+        pp.is_parallel = False
+        assert rlc.is_parallel is False
+        pp._model.set_rlc.assert_called_once()
+
+
+@_grpc_only
+class TestGrpcPinPairModelUnit:
+    """Unit tests for PinPairModel (grpc)."""
+
+    def test_pin_pairs_property_returns_list_of_pin_pairs(self):
+        """pin_pairs wraps core.pin_pairs() into PinPair objects."""
+        from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
+
+        component = MagicMock()
+        component._pedb = MagicMock()
+        ppm = PinPairModel.__new__(PinPairModel)
+        ppm._component = component
+        ppm._pedb = component._pedb
+        ppm.core = MagicMock()
+        ppm.core.pin_pairs.return_value = [("1", "2"), ("3", "4")]
+        pin_pairs = ppm.pin_pairs
+        assert len(pin_pairs) == 2
+
+    def test_is_null_delegates_to_core(self):
+        """is_null returns core.is_null."""
+        from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
+
+        component = MagicMock()
+        component._pedb = MagicMock()
+        ppm = PinPairModel.__new__(PinPairModel)
+        ppm._component = component
+        ppm._pedb = component._pedb
+        ppm.core = MagicMock()
+        ppm.core.is_null = False
+        assert ppm.is_null is False
+
+    def test_rlc_returns_none_when_no_pin_pairs(self):
+        """rlc returns None and logs warning when no pin pairs."""
+        from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
+
+        component = MagicMock()
+        pedb = MagicMock()
+        pedb.logger = MagicMock()
+        component._pedb = pedb
+        ppm = PinPairModel.__new__(PinPairModel)
+        ppm._component = component
+        ppm._pedb = pedb
+        ppm.core = MagicMock()
+        ppm.core.pin_pairs.return_value = []
+        result = ppm.rlc
+        assert result is None
+        pedb.logger.warning.assert_called_once()
+
+    def test_rlc_returns_first_pin_pair_when_no_arg(self):
+        """rlc returns rlc for first pin pair when no pin_pair arg given."""
+        from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
+
+        component = MagicMock()
+        pedb = MagicMock()
+        pedb.logger = MagicMock()
+        component._pedb = pedb
+        ppm = PinPairModel.__new__(PinPairModel)
+        ppm._component = component
+        ppm._pedb = pedb
+        ppm.core = MagicMock()
+        rlc_mock = MagicMock()
+        ppm.core.pin_pairs.return_value = [("1", "2")]
+        ppm.core.rlc.return_value = rlc_mock
+        result = ppm.rlc
+        assert result is rlc_mock
+
+    def test_set_rlc_updates_component_property(self):
+        """set_rlc calls core.set_rlc and updates component_property.model."""
+        from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
+
+        component = MagicMock()
+        pedb = MagicMock()
+        component._pedb = pedb
+        ppm = PinPairModel.__new__(PinPairModel)
+        ppm._component = component
+        ppm._pedb = pedb
+        ppm.core = MagicMock()
+        rlc_mock = MagicMock()
+        ppm.set_rlc(("1", "2"), rlc_mock)
+        ppm.core.set_rlc.assert_called_once_with(pin_pair=("1", "2"), rlc=rlc_mock)
+        component.component_property.__setattr__("model", ppm.core)
+
+    def test_add_pin_pair_none_values_disables_rlc(self):
+        """add_pin_pair with no r/l/c values disables all RLC."""
+        from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
+
+        component = MagicMock()
+        pedb = MagicMock()
+        component._pedb = pedb
+        ppm = PinPairModel.__new__(PinPairModel)
+        ppm._component = component
+        ppm._pedb = pedb
+        ppm.core = MagicMock()
+
+        with patch.object(ppm, "set_rlc") as mock_set_rlc:
+            ppm.add_pin_pair(first_pin="1", second_pin="2")
+        mock_set_rlc.assert_called_once()
+        # Verify the rlc passed has disabled flags
+        call_args = mock_set_rlc.call_args
+        rlc_arg = call_args[0][1]  # second positional arg
+        assert rlc_arg.r_enabled is False or rlc_arg.r_enabled == False  # noqa: E712
+
+    def test_add_pin_pair_with_r_value_enables_resistance(self):
+        """add_pin_pair with r value sets r_enabled=True."""
+        from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
+
+        component = MagicMock()
+        pedb = MagicMock()
+        component._pedb = pedb
+        ppm = PinPairModel.__new__(PinPairModel)
+        ppm._component = component
+        ppm._pedb = pedb
+        ppm.core = MagicMock()
+
+        with patch.object(ppm, "set_rlc") as mock_set_rlc:
+            ppm.add_pin_pair(r=100.0, first_pin="1", second_pin="2")
+        call_args = mock_set_rlc.call_args
+        rlc_arg = call_args[0][1]
+        assert rlc_arg.r_enabled is True

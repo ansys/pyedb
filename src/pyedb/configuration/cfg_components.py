@@ -29,6 +29,7 @@ from ansys.edb.core.definition.solder_ball_property import SolderballShape as Co
 from pydantic import BaseModel
 
 from pyedb.configuration.cfg_common import CfgBase
+from pyedb.grpc.database.components import _EDB_CORE_TYPED_COMPONENT_PROPERTY
 
 
 def _smallest_pin_pad_size(comp) -> float | None:
@@ -313,6 +314,10 @@ class CfgComponent(CfgBase):
             sbp.height = self._pedb.value(height)
             if material is not None:
                 sbp.material_name = material
+            if not _EDB_CORE_TYPED_COMPONENT_PROPERTY:
+                # Old API: mutations are local — must write back via SetComponentProperty.
+                cp.solder_ball_property = sbp
+                self.pyedb_obj.component_property = cp
         else:
             if not shape:
                 return
