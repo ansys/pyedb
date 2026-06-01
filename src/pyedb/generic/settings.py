@@ -32,6 +32,7 @@ class Settings(object):
     """Manages all PyEDB environment variables and global settings."""
 
     CURRENT_STABLE_AEDT_VERSION = 2026.1
+    SUPPORTED_EDB_IMPORT_FORMATS = ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]
     INSTALLED_VERSIONS = None
     INSTALLED_STUDENT_VERSIONS = None
     INSTALLED_CLIENT_VERSIONS = None

@@ -189,7 +189,7 @@ class TestClass(BaseTestClass):
         pad.pad_by_layer[pad.via_stop_layer].offset_x = offset_x
         pad.pad_by_layer[pad.via_stop_layer].offset_y = offset_y
         if edbapp.grpc:
-            assert pad.pad_by_layer[pad.via_stop_layer].parameters == 7.0
+            assert float(pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"]) == 7.0
             assert pad.pad_by_layer[pad.via_stop_layer].offset_x == offset_x
             assert pad.pad_by_layer[pad.via_stop_layer].offset_y == offset_y
         else:
@@ -201,7 +201,7 @@ class TestClass(BaseTestClass):
         else:
             pad.pad_by_layer[pad.via_stop_layer].parameters = {"Diameter": 8.0}
         if edbapp.grpc:
-            assert pad.pad_by_layer[pad.via_stop_layer].parameters == 8.0
+            assert float(pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"]) == 8.0
         else:
             assert pad.pad_by_layer[pad.via_stop_layer].parameters["Diameter"].tofloat == 8.0
         if not edbapp.grpc:  # not implemented in grpc
@@ -718,6 +718,157 @@ def _assert_inside(rect, pad):
     assert math.isclose(round(result[0].Area(), 4), round(rect.Area(), 4)), (
         f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"
     )
+
+
+@pytest.mark.skipif(not GRPC, reason="gRPC backend only")
+@pytest.mark.usefixtures("close_rpc_session")
+class TestPadstacksCoverage(BaseTestClass):
+    """Additional tests to push coverage above 90 % (gRPC backend only)."""
+
+    def test_instances_by_net(self):
+        """instances_by_net groups padstack instances by net name."""
+        edbapp = self.edb_examples.get_si_verse()
+        by_net = edbapp.padstacks.instances_by_net
+        assert isinstance(by_net, dict)
+        assert len(by_net) > 0
+        # Every value should be a non-empty list
+        for net_name, insts in by_net.items():
+            assert isinstance(insts, list)
+            assert len(insts) > 0
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_pins_and_vias_properties(self):
+        """pins returns only pin instances; vias returns via instances."""
+        edbapp = self.edb_examples.get_si_verse()
+        all_pins = edbapp.padstacks.pins
+        all_vias = edbapp.padstacks.vias
+        assert isinstance(all_pins, dict)
+        assert isinstance(all_vias, dict)
+        # Every pin must have a component
+        for pin in all_pins.values():
+            assert pin.is_pin
+            assert pin.component is not None
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_find_instance_by_id(self):
+        """find_instance_by_id returns the correct padstack instance."""
+        edbapp = self.edb_examples.get_si_verse()
+        all_instances = edbapp.padstacks.instances
+        first_id = next(iter(all_instances))
+        found = edbapp.padstacks.find_instance_by_id(first_id)
+        assert found.id == first_id
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_clear_instances_cache(self):
+        """clear_instances_cache resets the internal caches without errors."""
+        edbapp = self.edb_examples.get_si_verse()
+        # Populate caches first
+        _ = edbapp.padstacks.instances_by_net
+        _ = edbapp.padstacks.instances_by_name
+        edbapp.padstacks.clear_instances_cache()
+        # After clearing, re-fetching should still work
+        assert isinstance(edbapp.padstacks.instances_by_net, dict)
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_delete_padstack_instances_by_net(self):
+        """delete_padstack_instances removes all instances on the specified net."""
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.padstacks.create(padstackname="tmpVia_del")
+        edbapp.padstacks.place([0, 0], "tmpVia_del", net_name="tmp_net")
+        count_before = sum(1 for i in edbapp.padstacks.instances.values() if i.net_name == "tmp_net")
+        assert count_before >= 1
+        result = edbapp.padstacks.delete_padstack_instances("tmp_net")
+        assert result is True
+        count_after = sum(1 for i in edbapp.padstacks.instances.values() if i.net_name == "tmp_net")
+        assert count_after == 0
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_remove_pads_from_padstack(self):
+        """remove_pads_from_padstack zeroes pads on all signal layers."""
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.padstacks.create(padstackname="tmpVia_rempad")
+        result = edbapp.padstacks.remove_pads_from_padstack("tmpVia_rempad")
+        assert result is True
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_set_all_antipad_value(self):
+        """set_all_antipad_value updates all circular anti-pads without errors."""
+        edbapp = self.edb_examples.get_si_verse()
+        result = edbapp.padstacks.set_all_antipad_value("0.5mm")
+        assert result is True
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_get_pin_from_component_and_net(self):
+        """get_pin_from_component_and_net returns matching pin instances."""
+        edbapp = self.edb_examples.get_si_verse()
+        # With both refdes and netname
+        pins = edbapp.padstacks.get_pin_from_component_and_net(refdes="U1", netname="GND")
+        assert isinstance(pins, list)
+        assert len(pins) > 0
+        # With only refdes
+        all_u1_pins = edbapp.padstacks.get_pin_from_component_and_net(refdes="U1")
+        assert len(all_u1_pins) > len(pins)
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_set_solderball(self):
+        """set_solderball assigns a solder ball to a padstack instance."""
+        edbapp = self.edb_examples.get_si_verse()
+        # Find a component pin on the top layer to attach a solder ball
+        top_layer = list(edbapp.stackup.signal_layers.keys())[0]
+        pin = next(
+            (p for p in edbapp.padstacks.pins.values() if p.start_layer == top_layer),
+            None,
+        )
+        if pin is None:
+            pytest.skip("No suitable pin found on top layer")
+        result = edbapp.padstacks.set_solderball(
+            padstack_instance=pin,
+            solder_ball_layer=top_layer,
+            top_placed=True,
+            solder_ball_diameter=150e-6,
+        )
+        assert result is True
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_delete_batch_instances(self):
+        """delete_batch_instances removes all supplied instances."""
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.padstacks.create(padstackname="tmpVia_batch")
+        via1 = edbapp.padstacks.place([0, 0], "tmpVia_batch", net_name="test_batch_net")
+        via2 = edbapp.padstacks.place([1e-3, 0], "tmpVia_batch", net_name="test_batch_net")
+        count_before = sum(1 for i in edbapp.padstacks.instances.values() if i.net_name == "test_batch_net")
+        assert count_before == 2
+        edbapp.padstacks.delete_batch_instances([via1, via2])
+        count_after = sum(1 for i in edbapp.padstacks.instances.values() if i.net_name == "test_batch_net")
+        assert count_after == 0
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_pingroups_deprecated_property(self):
+        """pingroups deprecated property still returns the layout pin groups list."""
+        edbapp = self.edb_examples.get_si_verse()
+        import warnings
+
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("always")
+            groups = edbapp.padstacks.pingroups
+        assert isinstance(groups, list)
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_pad_type_property(self):
+        """pad_type returns the CorePadType enumerator class."""
+        edbapp = self.edb_examples.get_si_verse()
+        from ansys.edb.core.definition.padstack_def_data import PadType as CorePadType
+
+        assert edbapp.padstacks.pad_type is CorePadType
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_get_pin_from_component_and_net_only_net(self):
+        """get_pin_from_component_and_net with only netname searches across all pins."""
+        edbapp = self.edb_examples.get_si_verse()
+        # refdes is a component not present, triggers net-only branch
+        pins = edbapp.padstacks.get_pin_from_component_and_net(refdes="NONEXISTENT_REFDES", netname="GND")
+        assert isinstance(pins, list)
+        edbapp.close(terminate_rpc_session=False)
 
 
 @pytest.mark.usefixtures("close_rpc_session")
