@@ -47,7 +47,6 @@ from ansys.edb.core.hierarchy.cell_instance import CellInstance as CoreCellInsta
 from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
 from ansys.edb.core.layer.layer import (
     Layer as _CoreLayer,
-    LayerType as CoreLayerType,
     TopBottomAssociation as CoreTopBottomAssociation,
 )
 from ansys.edb.core.layer.layer_collection import (
@@ -59,7 +58,7 @@ from ansys.edb.core.layer.stackup_layer import StackupLayer as CoreStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as CoreMcadModel
 import numpy as np
 
-# Monkey-patch ansys-edb-core Layer.cast to gracefully handle null layer objects.
+# Cast to gracefully handle null layer objects.
 # On Linux, get_layers() may return null layer objects that cause an
 # InvalidArgumentException when cast() tries to determine the layer type.
 _original_layer_cast = _CoreLayer.cast
@@ -889,9 +888,17 @@ class Stackup:
         >>> edb = Edb()
         >>> outline_layer = edb.stackup.add_document_layer("Outline", layer_type="outline")
         """
-        added_layer = self.add_layer_top(name)
-        added_layer.type = CoreLayerType.USER_LAYER
-        return added_layer
+        # NOTE: A document (non-stackup) layer must be created through the dedicated
+        # ``_create_nonstackup_layer`` helper. The previous implementation routed the
+        # call through ``add_layer_top`` (which inserts a *stackup* signal layer) and
+        # then mutated the layer type to ``USER_LAYER``. Doing so corrupts the layer
+        # collection — every subsequent operation that relies on the stackup
+        # (e.g. ``cutout``) ended up wiping all stackup layers because the freshly
+        # inserted USER layer was mis-registered as a stackup layer.
+        # See test ``test_cfg_builder_3`` which exercises this code path right after
+        # a cutout.
+        self._create_nonstackup_layer(name, layer_type)
+        return self.non_stackup_layers.get(name)
 
     @deprecate_argument_name({"fillMaterial": "filling_material"})
     def add_layer(
