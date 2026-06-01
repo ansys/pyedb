@@ -36,6 +36,8 @@ class HFSSPISimulationSetup(SimulationSetup):
 
     def __init__(self, pedb, core: "CoreHFSSPISimulationSetup"):
         super().__init__(pedb, core)
+        if not isinstance(core, CoreHFSSPISimulationSetup):
+            core = CoreHFSSPISimulationSetup(core.msg)
         self.core = core
         self._pedb = pedb
 

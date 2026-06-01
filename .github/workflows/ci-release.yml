@@ -122,19 +122,13 @@ jobs:
         with:
           python-version: ${{ env.TESTS_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-
-      - name: Update pip
-        run: |
-          source .venv/bin/activate
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          source .venv/bin/activate
-          python -m pip install .[all,tests,dotnet]
+        run: uv sync --frozen --extra all --extra tests --extra dotnet
 
       - name: Run unit tests
         run: |
@@ -156,7 +150,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -183,19 +177,13 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-
-      - name: Update pip
-        run: |
-          source .venv/bin/activate
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          source .venv/bin/activate
-          python -m pip install .[all,tests]
+        run: uv sync --frozen --extra all --extra tests
 
       - name: Run unit tests
         run: |
@@ -217,7 +205,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -246,20 +234,13 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-          . .venv\Scripts\Activate.ps1
-
-      - name: Update pip
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install .[all,tests,dotnet]
+        run: uv sync --frozen --extra all --extra tests --extra dotnet
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -268,12 +249,12 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv\Scripts\Activate.ps1
+            source .venv/bin/activate
             pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
-          . .venv\Scripts\Activate.ps1
+          source .venv/bin/activate
           python -m coverage html -d .cov\system-html
           python -m coverage xml -o .cov\system.xml
 
@@ -286,7 +267,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -315,20 +296,13 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-          . .venv\Scripts\Activate.ps1
-
-      - name: Update pip
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install .[all,tests]
+        run: uv sync --frozen --extra all --extra tests
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -337,12 +311,12 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv\Scripts\Activate.ps1
+            source .venv/bin/activate
             pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
-          . .venv\Scripts\Activate.ps1
+          source .venv/bin/activate
           python -m coverage html -d .cov\system-html
           python -m coverage xml -o .cov\system.xml
 
@@ -355,7 +329,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -391,19 +365,13 @@ jobs:
           sudo apt update
           sudo apt install libgl1-mesa-glx -y
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-
-      - name: Update pip
-        run: |
-          . .venv/bin/activate
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          . .venv/bin/activate
-          python -m pip install .[all,tests,dotnet]
+        run: uv sync --frozen --extra all --extra tests --extra dotnet
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -412,12 +380,12 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv/bin/activate
+            source .venv/bin/activate
             pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
-          . .venv/bin/activate
+          source .venv/bin/activate
           python -m coverage html -d .cov/system-html
           python -m coverage xml -o .cov/system.xml
 
@@ -430,7 +398,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -466,19 +434,13 @@ jobs:
           sudo apt update
           sudo apt install libgl1-mesa-glx -y
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-
-      - name: Update pip
-        run: |
-          . .venv/bin/activate
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: |
-          . .venv/bin/activate
-          python -m pip install .[all,tests]
+        run: uv sync --frozen --extra all --extra tests
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -487,12 +449,12 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv/bin/activate
+            source .venv/bin/activate
             pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
-          . .venv/bin/activate
+          source .venv/bin/activate
           python -m coverage html -d .cov/system-html
           python -m coverage xml -o .cov/system.xml
 
@@ -505,7 +467,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -534,15 +496,10 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-          . .venv\Scripts\Activate.ps1
-
-      - name: Update pip
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Clone PyAEDT on main branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -559,9 +516,7 @@ jobs:
           pip install --no-cache-dir --group tests .[all]
 
       - name: Install PyEDB
-        run: |
-          . .venv\Scripts\Activate.ps1
-          python -m pip install .[all]
+        run: uv sync --frozen --extra all
 
       - name: Run PyAEDT general and layout tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -573,7 +528,7 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            .venv\Scripts\Activate.ps1
+            source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
             pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
@@ -591,7 +546,7 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            .venv\Scripts\Activate.ps1
+            source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
@@ -604,7 +559,7 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            .venv\Scripts\Activate.ps1
+            source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
             pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
             pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
@@ -645,14 +600,10 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Create Python venv
-        run: |
-          python -m venv .venv
-
-      - name: Update pip
-        run: |
-          . .venv/bin/activate
-          python -m pip install -U pip
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
 
       - name: Clone PyAEDT on main branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -666,15 +617,14 @@ jobs:
         env:
           ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
         run: |
-          . .venv/bin/activate
+          source .venv/bin/activate
           cd external/pyaedt
           pip install --no-cache-dir --group tests .[all]
 
       - name: Install PyEDB
         env:
           ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
-        run: |
-          python -m pip install .[all]
+        run: uv sync --frozen --extra all
 
       - name: Run PyAEDT general and layout tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -686,7 +636,8 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv/bin/activate
+
+            source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
             pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
@@ -704,7 +655,7 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv/bin/activate
+            source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
@@ -717,7 +668,7 @@ jobs:
           retry_on: error
           timeout_minutes: 120
           command: |
-            . .venv/bin/activate
+            source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
             pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
             pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
@@ -740,6 +691,7 @@ jobs:
           sphinxopts: '-j 1 --color -w build_errors.txt'
           check-links: false
           needs-quarto: true
+          group-dependencies-name: 'doc'
 
   package:
     name: Package library

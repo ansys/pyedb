@@ -1168,6 +1168,7 @@ class Modeler(object):
                 )
             else:
                 end_cell_inst = cell_instances[end_cell_instance_name]
+        net_obj = self._pedb.nets.find_or_create_net(net)
         bw = Bondwire.create(
             layout=self._pedb.active_layout,
             bondwire_type=bondwire_type,
@@ -1181,7 +1182,7 @@ class Modeler(object):
             end_layer_name=end_layer_name,
             end_x=self._pedb.value(end_x),
             end_y=self._pedb.value(end_y),
-            net=net,
+            net=net_obj,
             end_cell_inst=end_cell_inst,
             start_cell_inst=start_cell_inst,
         )
@@ -1656,35 +1657,50 @@ class Modeler(object):
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
             Created taper polygon object.
         """
-        p0_x, p0_y = self._pedb.value(start_point[0]), self._pedb.value(start_point[1])
-        p1_x, p1_y = self._pedb.value(end_point[0]), self._pedb.value(end_point[1])
-        angle = ((p1_y - p0_y) / (p1_x - p0_x)).atan()
-        w0 = self._pedb.value(start_width)
-        w1 = self._pedb.value(end_width)
+        p0_x, p0_y = float(self._pedb.value(start_point[0])), float(self._pedb.value(start_point[1]))
+        p1_x, p1_y = float(self._pedb.value(end_point[0])), float(self._pedb.value(end_point[1]))
+        w0 = float(self._pedb.value(start_width))
+        w1 = float(self._pedb.value(end_width))
 
-        h = ((p0_x - p1_x) ** 2 + (p0_y - p1_y) ** 2) ** 0.5
+        # Compute length of the taper
 
-        t_p0_y = w0 / 2
-        t_p1_y = w0 / -2
-        t_p0_x = t_p1_x = 0
+        h = math.sqrt((p0_x - p1_x) ** 2 + (p0_y - p1_y) ** 2)
 
-        t_p2_y = w1 / -2
-        t_p3_y = w1 / 2
-        t_p2_x = t_p3_x = h
+        # Direction unit vector along the taper (from p0 to p1)
+        ux = (p1_x - p0_x) / h
+        uy = (p1_y - p0_y) / h
+
+        # Normal unit vector (perpendicular, rotated 90 degrees CCW)
+        nx = -uy
+        ny = ux
+
+        # Compute 4 corner points directly:
+        half_w0 = w0 / 2
+        half_w1 = w1 / 2
+
+        # p0 + half_w0 * n
+        t_p0_x = p0_x + half_w0 * nx
+        t_p0_y = p0_y + half_w0 * ny
+        # p0 - half_w0 * n
+        t_p1_x = p0_x - half_w0 * nx
+        t_p1_y = p0_y - half_w0 * ny
+        # p1 - half_w1 * n
+        t_p2_x = p1_x - half_w1 * nx
+        t_p2_y = p1_y - half_w1 * ny
+        # p1 + half_w1 * n
+        t_p3_x = p1_x + half_w1 * nx
+        t_p3_y = p1_y + half_w1 * ny
 
         point_data = []
-        for i in [
+        for coords in [
             [t_p0_x, t_p0_y],
             [t_p1_x, t_p1_y],
             [t_p2_x, t_p2_y],
             [t_p3_x, t_p3_y],
-            # [t_p0_x, t_p0_y],
         ]:
-            temp = PointData.create(self._pedb, x=str(i[0]), y=str(i[1]))
-            temp = temp.rotate(angle=str(angle), center=(0, 0))
-            temp = temp.move(p0_x, p0_y)
+            temp = PointData.create(self._pedb, x=str(coords[0]), y=str(coords[1]))
             point_data.append(temp)
-            poly_data = PolygonData.create(self._pedb, point_data, closed=True)
+        poly_data = PolygonData.create(self._pedb, point_data, closed=True)
         _voids = [] if voids is None else voids
         return self.create_polygon(poly_data, layer_name=layer_name, voids=_voids, net_name=net_name)
 
@@ -1824,7 +1840,9 @@ class Modeler(object):
         """
         if not solder_mask_material in self._pedb.materials:
             solder_mask_material = "SolderMask"
-            self._pedb.materials.add_dielectric(permittivity=4, name=solder_mask_material)
+            self._pedb.materials.add_dielectric_material(
+                name=solder_mask_material, permittivity=4, dielectric_loss_tangent=0.02
+            )
             self._pedb.logger.warning(f"No Material name provided or found for {solder_mask_material}.")
             self._pedb.logger.warning(f"Creating default solder mask material {solder_mask_material} with epsr=4.")
         if not reference_signal_layer:

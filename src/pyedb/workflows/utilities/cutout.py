@@ -1251,7 +1251,8 @@ class DotNetCutout:
         GrpcPolygonData
             Extent polygon data.
         """
-        signal_nets = [self._edb.nets.nets[n] for n in self.signals]
+        temp = {i.name: i for i in self._edb.layout.nets}
+        signal_nets = [temp[n] for n in self.signals]
 
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
             _poly = self._create_conformal(

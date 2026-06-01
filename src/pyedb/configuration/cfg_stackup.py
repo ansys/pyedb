@@ -27,7 +27,7 @@ materials, layers, roughness, and etching definitions.
 
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field
 
 
 class CfgMaterialPropertyThermalModifier(BaseModel):
@@ -111,7 +111,11 @@ class CfgLayer(BaseModel):
     """Represent one signal or dielectric layer entry."""
 
     name: Optional[str] = None
-    layer_type: Optional[str] = Field("signal", alias="type")
+    layer_type: Optional[str] = Field(
+        "signal",
+        validation_alias=AliasChoices("layer_type", "type"),
+        serialization_alias="type",
+    )
     material: Optional[str] = None
     fill_material: Optional[str] = None
     thickness: Optional[float | int | str] = None

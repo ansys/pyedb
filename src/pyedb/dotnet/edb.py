@@ -299,7 +299,7 @@ class Edb:
             if settings.enable_local_log_file and self.log_name:
                 self.logger.add_file_logger(self.log_name, "Edb")
             self.logger.info("EDB %s was created correctly from %s file.", self.edbpath, edbpath)
-        elif edbpath[-3:] in ["brd", "mcm", "sip", "gds", "xml", "dxf", "tgz", "anf"]:
+        elif edbpath[-3:] in settings.SUPPORTED_EDB_IMPORT_FORMATS:
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
             if not self.import_layout_file(
@@ -450,7 +450,7 @@ class Edb:
         self._layout_instance = None
         self._variables = None
         self._active_cell = None
-        self._layout = None
+        self.__layout = None
         self._configuration = None
         self._source_excitation = None
 
@@ -458,6 +458,7 @@ class Edb:
         # NOTE: Adding import here to avoid making shapely a direct dependency of pyedb.
         from pyedb.dotnet.database.nets import EdbNets
 
+        self.__layout = Layout(self, self._active_cell.GetLayout())
         self._components = Components(self)
         self._stackup = Stackup(self, self.layout.layer_collection)
         self._padstack = EdbPadstacks(self)
@@ -1255,7 +1256,7 @@ class Edb:
         -------
         :class:`legacy.database.dotnet.layout.Layout`
         """
-        return Layout(self, self._active_cell.GetLayout())
+        return self.__layout
 
     @property
     def active_layout(self) -> Any:
@@ -1265,12 +1266,12 @@ class Edb:
         -------
         Instance of EDB API Layout Class.
         """
-        return self.layout._edb_object
+        return self.layout.core
 
     @property
     def layout_instance(self):  # -> Any:
         """Edb Layout Instance."""
-        return self.layout._edb_object.GetLayoutInstance()
+        return self.layout.core.GetLayoutInstance()
 
     @property
     def layout_bounding_box(self) -> list[float]:

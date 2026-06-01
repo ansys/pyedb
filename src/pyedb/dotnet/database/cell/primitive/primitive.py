@@ -260,7 +260,7 @@ class Primitive(Connectable):
         if self.type == "Path":
             polygon_data = self.core.GetPolygonData()
             polygon = self._app.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name)
-            self.core.Delete()
+            self.delete()
             return polygon
         else:
             return False

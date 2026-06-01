@@ -1239,7 +1239,7 @@ class CfgCircuitElement(CfgBase):
                 self.name, net_name, [pti.point_x, pti.point_y], pti.layer
             )
         elif pos_type == "padstack":
-            pds_obj = next((pds for pds in self._pedb.padstacks.instances.values() if pds.aedt_name == pos_value), None)
+            pds_obj = next((pds for pds in self._pedb.layout.padstack_instances if pds.aedt_name == pos_value), None)
             if pds_obj is None:
                 raise ValueError(f"Padstack instance {pos_value} does not exist")
             pos_objs[pos_value] = pds_obj
