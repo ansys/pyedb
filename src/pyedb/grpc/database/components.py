@@ -273,6 +273,8 @@ class Components(object):
                 if model_type == "RLC":
                     comp_definition.assign_rlc_model(p["Res"], p["Ind"], p["Cap"], p["Is_parallel"])
                 else:
+                    if "Model_name" not in p:
+                        continue
                     model_name = p["Model_name"]
                     file_path = data[model_type][model_name]
                     if model_type == "SParameterModel":
@@ -336,7 +338,8 @@ class Components(object):
                             data["SPICEModel"][model.name] = model.file_path
                     else:
                         model = comp.netlist_model
-                        data["Definitions"][part_name]["Model_name"] = model.netlist
+                        if model is not None:
+                            data["Definitions"][part_name]["Model_name"] = model.netlist
 
         with codecs.open(file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
