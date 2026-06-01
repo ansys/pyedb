@@ -77,14 +77,15 @@ class CfgSpiceModel(CfgBaseModel):
         """Apply Spice model on layout."""
         if self._pedb is None:
             return self.model_dump(exclude_none=True)
+        if not Path(self.file_path).anchor:
+            if self._path_libraries:
+                base = Path(self._path_libraries)
+            else:
+                base = Path(self._pedb.edbpath).parent
+            fpath = str(base / self.file_path)
+        else:
+            fpath = self.file_path
 
-        path = Path(self.file_path)
-
-        # Reject relative paths
-        if not path.is_absolute():
-            raise ValueError(f"Relative paths are not supported: {self.file_path}")
-
-        fpath = str(path)
         comps = self._pedb.components.definitions[self.component_definition].components
         if self.apply_to_all:
             for ref_des, comp in comps.items():
