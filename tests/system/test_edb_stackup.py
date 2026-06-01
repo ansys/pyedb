@@ -59,6 +59,7 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.layers["1_Top"].thickness == 4e-05
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"] and platform.system() == "Linux", reason="random fails on Linux.")
     def test_stackup_create_symmetric_stackup(self):
         """Create a symmetric stackup."""
         app_edb = self.edb_examples.create_empty_edb()

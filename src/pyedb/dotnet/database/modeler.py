@@ -1141,7 +1141,7 @@ class Modeler:
 
     @property
     def _active_layout(self):
-        return self._pedb.active_layout
+        return self._pedb.layout.core
 
     @property
     def _layout(self):

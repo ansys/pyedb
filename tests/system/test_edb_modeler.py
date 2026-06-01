@@ -238,7 +238,7 @@ class TestClass(BaseTestClass):
         edbapp.modeler.create_polygon(
             points=[[0.0, 0.0], [0.0, 10e-3], [10e-3, 10e-3], [10e-3, 0]], layer_name="1_Top", net_name="test"
         )
-        poly_test = [poly for poly in edbapp.modeler.polygons if poly.net_name == "test"]
+        poly_test = [poly for poly in edbapp.layout.polygons if poly.net_name == "test"]
         assert len(poly_test) == 1
         assert poly_test[0].center == [0.005, 0.005] or poly_test[0].center == (0.005, 0.005)
         assert poly_test[0].bbox == [0.0, 0.0, 0.01, 0.01] or poly_test[0].bbox == ((0.0, 0.0), (0.01, 0.01))

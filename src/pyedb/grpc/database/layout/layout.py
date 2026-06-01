@@ -572,11 +572,59 @@ class Layout(PrimitivesQuery):
         self.core = core
         self._pedb = pedb
         self.__primitives = []
+        self.__use_cache = False
         self.__padstack_instances = {}
 
     @property
     def layout_instance(self) -> Any:
         return self.core.layout_instance
+
+    @property
+    def use_cache(self):
+        """bool: Enable or disable layout caching.
+
+        When enabled, caches padstack instances and primitives for faster access.
+        """
+        return self.__use_cache
+
+    @use_cache.setter
+    def use_cache(self, value: bool):
+        """Set cache usage and refresh if enabled.
+
+        Parameters
+        ----------
+        value : bool
+            Whether to enable caching.
+        """
+        self.__use_cache = value
+        if self.__use_cache:
+            self.refresh_cache()
+
+    def refresh_cache(self):
+        """Refresh the layout cache.
+
+        Caches padstack instances and primitives from the core object.
+        """
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
+        self._pedb.logger.info("Caching layout...")
+        self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
+
+        self.__primitives = []
+        for primitive in self.core.primitives:
+            wrapped_primitive = self._wrap_primitive(primitive)
+            if wrapped_primitive is not None:
+                self.__primitives.append(wrapped_primitive)
+
+        self._pedb.logger.info("Caching finished.")
+
+    def clear_cache(self):
+        """Clear the layout cache.
+
+        Clears cached padstack instances and primitives.
+        """
+        self.__padstack_instances = []
+        self.__primitives = []
 
     @property
     def terminals(
@@ -695,9 +743,12 @@ class Layout(PrimitivesQuery):
     @property
     def padstack_instances(self) -> list[PadstackInstance]:
         """Get all padstack instances in a list."""
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+        if self.__use_cache:
+            return self.__padstack_instances
+        else:
+            from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-        return [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
+            return [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
     @property
     def voltage_regulators(self) -> list[VoltageRegulator]:
