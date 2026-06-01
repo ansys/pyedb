@@ -888,15 +888,6 @@ class Stackup:
         >>> edb = Edb()
         >>> outline_layer = edb.stackup.add_document_layer("Outline", layer_type="outline")
         """
-        # NOTE: A document (non-stackup) layer must be created through the dedicated
-        # ``_create_nonstackup_layer`` helper. The previous implementation routed the
-        # call through ``add_layer_top`` (which inserts a *stackup* signal layer) and
-        # then mutated the layer type to ``USER_LAYER``. Doing so corrupts the layer
-        # collection — every subsequent operation that relies on the stackup
-        # (e.g. ``cutout``) ended up wiping all stackup layers because the freshly
-        # inserted USER layer was mis-registered as a stackup layer.
-        # See test ``test_cfg_builder_3`` which exercises this code path right after
-        # a cutout.
         self._create_nonstackup_layer(name, layer_type)
         return self.non_stackup_layers.get(name)
 
