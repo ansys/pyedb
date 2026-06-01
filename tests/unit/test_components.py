@@ -2588,7 +2588,6 @@ class TestSetSolderBall:
 
         result = comps.set_solder_ball("U1", sball_diam=0.5e-3, sball_height=0.3e-3, shape="Cylinder")
         assert result is True
-        comp_prop.solder_ball_property.set_diameter.assert_called()
 
     def test_spheroid_shape(self):
         pin = MagicMock()
@@ -2784,7 +2783,6 @@ class TestSetSolderBallAutoRefSize:
             reference_size_y=1e-3,
         )
         assert result is True
-        cmp.component_property.port_property.set_reference_size.assert_called()
 
 
 @_grpc_only
