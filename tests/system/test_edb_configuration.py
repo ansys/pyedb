@@ -1880,11 +1880,7 @@ class TestComponent(BaseTestClass):
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
         component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
         assert component["ic_die_properties"]["type"] in ["none", "no_die", "flip_chip", "flipchip"]
-        if db.grpc:
-            # grpc does have this property not DotNet.
-            assert "orientation" in component["ic_die_properties"]
-        else:
-            assert "orientation" not in component["ic_die_properties"]
+        assert "orientation" in component["ic_die_properties"]
         assert "height" not in component["ic_die_properties"]
         db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
