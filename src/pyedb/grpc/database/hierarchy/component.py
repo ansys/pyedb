@@ -1218,7 +1218,15 @@ class Component:
         str
             Component part name.
         """
-        return self.core.component_def.name
+        from ansys.edb.core.inner.exceptions import InvalidArgumentException
+
+        try:
+            return self.core.component_def.name
+        except InvalidArgumentException:
+            self._pedb.logger.warning(
+                f"Component '{self.name}' has no component definition. Returning empty part name."
+            )
+            return ""
 
     @part_name.setter
     def part_name(self, name):  # pragma: no cover
