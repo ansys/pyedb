@@ -375,7 +375,29 @@ class EdbInit(object):
             EDB version to save to. Empty string means current version.
         """
         path = str(path) if isinstance(path, Path) else path
+        origin_log_name = getattr(self, "log_name", None)
+        origin_name = None
+        if origin_log_name:
+            origin_name = "pyedb_" + os.path.splitext(os.path.split(getattr(self, "edbpath", ""))[-1])[0]
         self._db.save_as(path, version)
+        self._wait_for_file_release(file_to_release=path)
+        # Update edbpath to point to the new location
+        new_directory = self._db.directory
+        if hasattr(self, "edbpath"):
+            self.edbpath = new_directory
+        # Update log file to the new location
+        if hasattr(self, "log_name"):
+            new_log_name = os.path.join(
+                os.path.dirname(path),
+                "pyedb_" + os.path.splitext(os.path.split(path)[-1])[0] + ".log",
+            )
+            from pyedb.generic.settings import settings
+
+            if settings.enable_local_log_file:
+                self.logger.add_file_logger(new_log_name, "Edb")
+                if origin_name:
+                    self.logger.remove_file_logger(origin_name)
+            self.log_name = new_log_name
         if os.path.exists(path):
             return True
         return False
