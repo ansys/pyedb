@@ -122,3 +122,31 @@ def test_save_as_updates_log_name(tmp_path):
 
     expected_log = os.path.join(str(tmp_path), "pyedb_renamed.log")
     assert edb.log_name == expected_log, f"log_name was not updated: expected {expected_log!r}, got {edb.log_name!r}"
+
+
+@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+def test_save_as_updates_local_file_loggers(tmp_path, monkeypatch):
+    """save_as() must rotate local file logger names to match the new AEDB path."""
+    original = str(tmp_path / "original.aedb")
+    copy_dir = tmp_path / "renamed.aedb"
+    copy_dir.mkdir()
+    copy_path = str(copy_dir)
+
+    edb = _make_edb_init(original, copy_path)
+    edb.log_name = os.path.join(str(tmp_path), "pyedb_original.log")
+    edb._wait_for_file_release = lambda file_to_release=None, **kw: True
+
+    added = []
+    removed = []
+    edb.logger = SimpleNamespace(
+        add_file_logger=lambda log_name, logger_name: added.append((log_name, logger_name)),
+        remove_file_logger=lambda logger_name: removed.append(logger_name),
+    )
+    monkeypatch.setattr(settings, "enable_local_log_file", True)
+
+    edb.save_as(copy_path)
+
+    expected_log = os.path.join(str(tmp_path), "pyedb_renamed.log")
+    assert edb.log_name == expected_log
+    assert added == [(expected_log, "Edb")]
+    assert removed == ["pyedb_original"]

@@ -378,27 +378,22 @@ class EdbInit(object):
         origin_log_name = getattr(self, "log_name", None)
         origin_name = None
         if origin_log_name:
-            origin_name = "pyedb_" + os.path.splitext(os.path.split(getattr(self, "edbpath", ""))[-1])[0]
+            origin_name = f"pyedb_{Path(getattr(self, 'edbpath', '')).stem}"
         self._db.save_as(path, version)
         self._wait_for_file_release(file_to_release=path)
         # Update edbpath to point to the new location
         new_directory = self._db.directory
-        if hasattr(self, "edbpath"):
-            self.edbpath = new_directory
+        self.edbpath = new_directory
         # Update log file to the new location
         if hasattr(self, "log_name"):
-            new_log_name = os.path.join(
-                os.path.dirname(path),
-                "pyedb_" + os.path.splitext(os.path.split(path)[-1])[0] + ".log",
-            )
-            from pyedb.generic.settings import settings
-
+            target_path = Path(path)
+            new_log_name = str(target_path.with_name(f"pyedb_{target_path.stem}.log"))
             if settings.enable_local_log_file:
                 self.logger.add_file_logger(new_log_name, "Edb")
                 if origin_name:
                     self.logger.remove_file_logger(origin_name)
             self.log_name = new_log_name
-        if os.path.exists(path):
+        if Path(path).exists():
             return True
         return False
 
