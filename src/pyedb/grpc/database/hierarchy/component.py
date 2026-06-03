@@ -1389,7 +1389,7 @@ class Component:
                 pname, pnumber = pair
                 if pname not in pin_names_sp:  # pragma: no cover
                     raise ValueError(f"Pin name {pname} doesn't exist in {file_path}.")
-                model.core.add_terminal(str(pnumber), pname)
+                model.core.add_terminal(pname, str(pnumber))
         else:
             for idx, pname in enumerate(pin_names_sp):
                 model.core.add_terminal(pname, str(idx + 1))

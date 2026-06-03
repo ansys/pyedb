@@ -54,7 +54,11 @@ class CfgSParameters:
         for s_param in self.models:
             fpath = s_param.file_path
             if not Path(fpath).anchor:
-                fpath = str(Path(self.path_libraries) / fpath)
+                if self.path_libraries:
+                    base = Path(self.path_libraries)
+                else:
+                    base = Path(self._pedb.edbpath).parent
+                fpath = str(base / fpath)
             comp_def = self._pedb.definitions.component[s_param.component_definition]
             if s_param.pin_order:
                 comp_def.set_properties(pin_order=s_param.pin_order)
