@@ -8,11 +8,11 @@ on:
 
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
-  PYEDB_CI_NO_DISPLAY: '1'
-  MAIN_PYTHON_VERSION: '3.10'
-  PACKAGE_NAME: 'pyedb'
   DOCUMENTATION_CNAME: 'edb.docs.pyansys.com'
+  MAIN_PYTHON_VERSION: '3.14'
   ON_CI: True
+  PACKAGE_NAME: 'pyedb'
+  PYEDB_CI_NO_DISPLAY: '1'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
