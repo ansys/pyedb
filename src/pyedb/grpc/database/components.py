@@ -2165,7 +2165,7 @@ class Components(object):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb_file = r"C:\my_edb_file.aedb"
+        >>> edb_file = r"C:\\my_edb_file.aedb"
         >>> edb = Edb(edb_file)
         >>> for cmp in list(edb.components.instances.keys()):
         >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)

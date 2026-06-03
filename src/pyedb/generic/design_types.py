@@ -24,11 +24,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, overload
 import warnings
 
-from pyedb.generic.grpc_warnings import GRPC_BETA_WARNING, GRPC_NOT_SUPPORTED_WARNING
+from pyedb.generic.grpc_warnings import GRPC_NOT_SUPPORTED_WARNING
 from pyedb.generic.settings import settings
 from pyedb.misc.decorators import deprecate_argument_name
 
 DEFAULT_GRPC_VERSION = 2026.1
+GRPC_DEFAULT_MESSAGE = (
+    "gRPC is now the default mode starting with Ansys release 26.1.2 (June 10th). "
+    "gRPC introduces Fast Mode, which significantly increases speed. "
+    "Make sure you are using the latest PyEDB and AEDT versions."
+)
 
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb as EdbDotnet
@@ -371,8 +376,8 @@ def Edb(
     settings.is_grpc = grpc
 
     if grpc:
-        if 2025.2 <= float(settings.specified_version) <= 2027.1:
-            warnings.warn(GRPC_BETA_WARNING, UserWarning)
+        if float(settings.specified_version) >= 2025.2:
+            warnings.warn(GRPC_DEFAULT_MESSAGE, UserWarning)
             from pyedb.grpc.edb import Edb
 
             return Edb(
@@ -395,11 +400,6 @@ def Edb(
                 f"gRPC is not supported for AEDT version {settings.specified_version}. "
                 f"Please use version 2025.2 or later."
             )
-
-        raise RuntimeError(
-            f"gRPC backend selection is only supported for AEDT versions between 2025.2 and 2027.1. "
-            f"Got {settings.specified_version}."
-        )
 
     else:
         from pyedb.dotnet.edb import Edb

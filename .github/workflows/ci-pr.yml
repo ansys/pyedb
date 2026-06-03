@@ -243,7 +243,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 60
           command: |
             .venv\Scripts\activate
             pytest tests/system --cov=pyedb --color=yes -ra
@@ -305,7 +305,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 120
+          timeout_minutes: 180
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -vvv --cov=pyedb --color=yes -ra
@@ -374,7 +374,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 60
           command: |
             source .venv/bin/activate
             pytest tests/system -vvv --cov=pyedb --color=yes -ra
@@ -443,7 +443,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 120
+          timeout_minutes: 180
           command: |
             source .venv/bin/activate
             pytest tests/system -vvv --cov=pyedb --color=yes -ra

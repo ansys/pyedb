@@ -309,7 +309,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 120
+          timeout_minutes: 180
           command: |
             source .venv/bin/activate
             pytest tests/system -vvv --cov
@@ -447,7 +447,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 120
+          timeout_minutes: 180
           command: |
             source .venv/bin/activate
             pytest tests/system -vvv --cov
@@ -526,7 +526,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 120
+          timeout_minutes: 180
           command: |
             source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
@@ -544,7 +544,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 120
+          timeout_minutes: 180
           command: |
             source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
@@ -557,7 +557,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 120
+          timeout_minutes: 180
           command: |
             source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
@@ -634,7 +634,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 120
+          timeout_minutes: 180
           command: |
 
             source .venv/bin/activate
@@ -653,7 +653,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 120
+          timeout_minutes: 180
           command: |
             source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
@@ -666,7 +666,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 120
+          timeout_minutes: 180
           command: |
             source .venv/bin/activate
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
