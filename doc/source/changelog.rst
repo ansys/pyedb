@@ -9,6 +9,136 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.77.0 <https://github.com/ansys/pyedb/releases/tag/v0.77.0>`_ - June 04, 2026
+===============================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Sp2 preparation
+          - `#2221 <https://github.com/ansys/pyedb/pull/2221>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Pathlib.path support
+          - `#2189 <https://github.com/ansys/pyedb/pull/2189>`_
+
+        * - Issue #2003 fix
+          - `#2190 <https://github.com/ansys/pyedb/pull/2190>`_
+
+        * - Auto parametrize grpc fix
+          - `#2197 <https://github.com/ansys/pyedb/pull/2197>`_
+
+        * - HFSS-PI simulation setup cast failing
+          - `#2199 <https://github.com/ansys/pyedb/pull/2199>`_
+
+        * - EDB CFG terminal improvement padstack instance id
+          - `#2205 <https://github.com/ansys/pyedb/pull/2205>`_
+
+        * - Issue 2210 fix
+          - `#2212 <https://github.com/ansys/pyedb/pull/2212>`_
+
+        * - Issue #2214 fixed
+          - `#2215 <https://github.com/ansys/pyedb/pull/2215>`_
+
+        * - Edb cfg efficiency and terminal support
+          - `#2216 <https://github.com/ansys/pyedb/pull/2216>`_
+
+        * - Issue #2213 fixed
+          - `#2217 <https://github.com/ansys/pyedb/pull/2217>`_
+
+        * - Issue #2211 fixed
+          - `#2218 <https://github.com/ansys/pyedb/pull/2218>`_
+
+        * - Add missing parameter to the action
+          - `#2223 <https://github.com/ansys/pyedb/pull/2223>`_
+
+        * - Issue #2224 fix
+          - `#2225 <https://github.com/ansys/pyedb/pull/2225>`_
+
+        * - Issue #2020 fix
+          - `#2228 <https://github.com/ansys/pyedb/pull/2228>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ansys/actions from 10.3.0 to 10.3.1
+          - `#2203 <https://github.com/ansys/pyedb/pull/2203>`_
+
+        * - Bump codecov/codecov-action from 6.0.0 to 6.0.1
+          - `#2219 <https://github.com/ansys/pyedb/pull/2219>`_
+
+        * - Bump ansys/actions from 10.3.1 to 10.3.2
+          - `#2229 <https://github.com/ansys/pyedb/pull/2229>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Uv support added
+          - `#2182 <https://github.com/ansys/pyedb/pull/2182>`_
+
+        * - Update CHANGELOG for v0.76.0
+          - `#2187 <https://github.com/ansys/pyedb/pull/2187>`_
+
+        * - Bump release 0.77.dev0
+          - `#2188 <https://github.com/ansys/pyedb/pull/2188>`_
+
+        * - Layout primitive test coverage
+          - `#2191 <https://github.com/ansys/pyedb/pull/2191>`_
+
+        * - Modeler test coverage
+          - `#2192 <https://github.com/ansys/pyedb/pull/2192>`_
+
+        * - Components coverage increase
+          - `#2193 <https://github.com/ansys/pyedb/pull/2193>`_
+
+        * - Padstack coverage
+          - `#2194 <https://github.com/ansys/pyedb/pull/2194>`_
+
+        * - Nets test coverage
+          - `#2195 <https://github.com/ansys/pyedb/pull/2195>`_
+
+        * - System test reorganized
+          - `#2196 <https://github.com/ansys/pyedb/pull/2196>`_
+
+        * - Source-excitation coverage increase
+          - `#2201 <https://github.com/ansys/pyedb/pull/2201>`_
+
+        * - Stackup coverage increase
+          - `#2202 <https://github.com/ansys/pyedb/pull/2202>`_
+
+        * - Pre-commit automatic update
+          - `#2204 <https://github.com/ansys/pyedb/pull/2204>`_
+
+        * - More unit test added
+          - `#2222 <https://github.com/ansys/pyedb/pull/2222>`_
+
+        * - Cleanup workflows and leverage python 3.14
+          - `#2231 <https://github.com/ansys/pyedb/pull/2231>`_
+
+        * - Adding grpc message
+          - `#2232 <https://github.com/ansys/pyedb/pull/2232>`_
+
+
 `0.76.0 <https://github.com/ansys/pyedb/releases/tag/v0.76.0>`_ - May 22, 2026
 ==============================================================================
 
