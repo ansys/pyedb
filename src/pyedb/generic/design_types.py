@@ -29,9 +29,7 @@ from pyedb.generic.settings import settings
 from pyedb.misc.decorators import deprecate_argument_name
 
 DEFAULT_GRPC_VERSION = 2026.1
-GRPC_DEFAULT_MESSAGE = (
-    "gRPC is the default mode starting with Ansys release 26.1.2. Use recent PyEDB and AEDT versions for compatibility."
-)
+GRPC_DEFAULT_MESSAGE = "gRPC mode enabled."
 
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb as EdbDotnet
