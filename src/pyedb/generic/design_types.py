@@ -375,7 +375,6 @@ def Edb(
 
     if grpc:
         if float(settings.specified_version) >= 2025.2:
-            warnings.warn(GRPC_DEFAULT_MESSAGE, UserWarning)
             from pyedb.grpc.edb import Edb
 
             return Edb(
