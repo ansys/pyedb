@@ -78,7 +78,11 @@ class CfgSpiceModel(CfgBaseModel):
         if self._pedb is None:
             return self.model_dump(exclude_none=True)
         if not Path(self.file_path).anchor:
-            fpath = str(Path(self._path_libraries or "") / self.file_path)
+            if self._path_libraries:
+                base = Path(self._path_libraries)
+            else:
+                base = Path(self._pedb.edbpath).parent
+            fpath = str(base / self.file_path)
         else:
             fpath = self.file_path
 

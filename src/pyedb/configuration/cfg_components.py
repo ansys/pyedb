@@ -302,8 +302,7 @@ class CfgComponent(CfgBase):
         if self._pedb.grpc:
             if not shape:
                 raise ValueError("Solderball shape must be either cylinder or spheroid")
-            cp = self.pyedb_obj.component_property
-            sbp = cp.solder_ball_property
+            sbp = self.pyedb_obj.component_property.solder_ball_property
             shape_lower = shape.lower()
             if shape_lower == "cylinder":
                 sbp.set_diameter(self._pedb.value(diameter))
@@ -336,12 +335,8 @@ class CfgComponent(CfgBase):
         die_props = self.pyedb_obj.ic_die_properties
         die_type = die_props.die_type
         temp = {"type": "no_die" if die_type in _NO_DIE_TYPES else die_type}
-        if die_type in _NO_DIE_TYPES:
-            if self._pedb and self._pedb.grpc:
-                orientation = die_props.die_orientation
-                temp["orientation"] = orientation if orientation is not None else "chip_up"
-        else:
-            temp["orientation"] = die_props.die_orientation
+        temp["orientation"] = die_props.die_orientation
+        if die_type not in _NO_DIE_TYPES:
             if die_type == "wire_bond":
                 temp["height"] = str(die_props.height)
         self.ic_die_properties = temp
