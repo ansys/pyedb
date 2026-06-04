@@ -6,11 +6,12 @@ on:
 
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
-  PYEDB_CI_NO_DISPLAY: '1'
-  MAIN_PYTHON_VERSION: '3.10'
-  PACKAGE_NAME: 'pyedb'
   DOCUMENTATION_CNAME: 'edb.docs.pyansys.com'
+  MAIN_PYTHON_VERSION: '3.14'
   ON_CI: True
+  PACKAGE_NAME: 'pyedb'
+  PYEDB_CI_NO_DISPLAY: '1'
+  TESTS_VERSION: '3.10'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -27,7 +28,7 @@ jobs:
       contents: write # Needed to create PR for changelog
       pull-requests: write # Needed to create PR for changelog
     steps:
-      - uses: ansys/actions/doc-deploy-changelog@12ca08fd7f0caa52076cca15c5621482646f8560 # v10.3.1
+      - uses: ansys/actions/doc-deploy-changelog@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -40,7 +41,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/check-vulnerabilities@12ca08fd7f0caa52076cca15c5621482646f8560 # v10.3.1
+      - uses: ansys/actions/check-vulnerabilities@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           python-package-name: ${{ env.PACKAGE_NAME }}
@@ -53,7 +54,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/check-actions-security@12ca08fd7f0caa52076cca15c5621482646f8560 # v10.3.1
+      - uses: ansys/actions/check-actions-security@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           generate-summary: true
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,7 +67,7 @@ jobs:
       contents: read
     steps:
       - name: Check documentation style
-        uses: ansys/actions/doc-style@12ca08fd7f0caa52076cca15c5621482646f8560 # v10.3.1
+        uses: ansys/actions/doc-style@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -85,7 +86,7 @@ jobs:
     steps:
       - name: Build wheelhouse and perform smoke test
         id: build-wheelhouse
-        uses: ansys/actions/build-wheelhouse@12ca08fd7f0caa52076cca15c5621482646f8560 # v10.3.1
+        uses: ansys/actions/build-wheelhouse@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
@@ -175,7 +176,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
@@ -232,7 +233,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
@@ -294,7 +295,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
@@ -358,7 +359,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install os packages
         run: |
@@ -427,7 +428,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install os packages
         run: |
@@ -494,7 +495,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
@@ -684,7 +685,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build documentation
-        uses: ansys/actions/doc-build@12ca08fd7f0caa52076cca15c5621482646f8560 # v10.3.1
+        uses: ansys/actions/doc-build@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -707,7 +708,7 @@ jobs:
       id-token: write # Required for OIDC token generation (for provenance signing)
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@12ca08fd7f0caa52076cca15c5621482646f8560 # v10.3.1
+        uses: ansys/actions/build-library@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -739,7 +740,7 @@ jobs:
           skip-existing: false
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@12ca08fd7f0caa52076cca15c5621482646f8560 # v10.3.1
+        uses: ansys/actions/release-github@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -753,7 +754,7 @@ jobs:
       contents: write # Needed to update files on the gh-pages branch
     steps:
       - name: Deploy the stable documentation
-        uses: ansys/actions/doc-deploy-stable@12ca08fd7f0caa52076cca15c5621482646f8560 # v10.3.1
+        uses: ansys/actions/doc-deploy-stable@d946b24b9a765f4169bcc94afdb27bd1a0533741 # v10.3.2
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}

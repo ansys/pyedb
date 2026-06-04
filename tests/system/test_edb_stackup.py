@@ -25,6 +25,7 @@
 import math
 import os
 import platform
+import time
 
 import pytest
 
@@ -36,6 +37,43 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
+    @staticmethod
+    def _wait_until_ready(path, attempts=20, delay=0.25):
+        """Wait until a file path exists and is non-empty."""
+        for _ in range(attempts):
+            if os.path.exists(path) and os.path.getsize(path) > 0:
+                return True
+            time.sleep(delay)
+        return os.path.exists(path) and os.path.getsize(path) > 0
+
+    def _load_stackup_with_retries(self, source_path, stackup_path, **kwargs):
+        """Open an EDB and import stackup with bounded retries for CI filesystem/server races."""
+        last_error = None
+        for _ in range(3):
+            edbapp = None
+            try:
+                edbapp = self.edb_examples.load_edb(source_path)
+                assert edbapp.stackup.load(stackup_path, **kwargs)
+                return
+            except Exception as e:
+                last_error = e
+                time.sleep(0.5)
+            finally:
+                if edbapp:
+                    edbapp.close(terminate_rpc_session=False)
+        raise AssertionError(f"Failed to load stackup after retries: {last_error}")
+
+    def _get_si_verse_with_retries(self):
+        """Open the SI-Verse example with retries to reduce transient CI failures."""
+        last_error = None
+        for _ in range(3):
+            try:
+                return self.edb_examples.get_si_verse()
+            except Exception as e:
+                last_error = e
+                time.sleep(0.5)
+        raise AssertionError(f"Failed to open SI-Verse example after retries: {last_error}")
+
     def test_stackup_get_signal_layers(self):
         """Report residual copper area per layer."""
         edbapp = self.edb_examples.get_si_verse()
@@ -287,7 +325,6 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.add_layer("new_bottom", "1_Top", "add_at_elevation", "dielectric", elevation=0.0003)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and platform.system() == "Linux", reason="random fails on Linux.")
     def test_stackup_properties_1(self):
         """Evaluate various stackup properties."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -295,10 +332,14 @@ class TestClass(BaseTestClass):
         export_method = edbapp.stackup.export
 
         csv_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0]
-        # Verify the file is fully written before importing (guards against
-        # Linux filesystem flush races that caused intermittent failures).
-        assert os.path.exists(csv_path) and os.path.getsize(csv_path) > 0, f"CSV file not ready: {csv_path}"
-        assert import_method(csv_path)
+        assert self._wait_until_ready(csv_path), f"CSV file not ready: {csv_path}"
+        import_ok = False
+        for _ in range(3):
+            import_ok = import_method(csv_path)
+            if import_ok:
+                break
+            time.sleep(0.5)
+        assert import_ok
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
         export_stackup_path = os.path.join(self.edb_examples.test_folder, "export_stackup.csv")
@@ -307,7 +348,6 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and platform.system() == "Linux", reason="random fails on Linux.")
     def test_stackup_properties_2(self):
         """Evaluate various stackup properties (JSON export round-trip)."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -315,8 +355,14 @@ class TestClass(BaseTestClass):
         export_method = edbapp.stackup.export
 
         csv_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0]
-        assert os.path.exists(csv_path) and os.path.getsize(csv_path) > 0, f"CSV file not ready: {csv_path}"
-        assert import_method(csv_path)
+        assert self._wait_until_ready(csv_path), f"CSV file not ready: {csv_path}"
+        import_ok = False
+        for _ in range(3):
+            import_ok = import_method(csv_path)
+            if import_ok:
+                break
+            time.sleep(0.5)
+        assert import_ok
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
         export_stackup_path = os.path.join(self.edb_examples.test_folder, "export_stackup_2.csv")
@@ -329,13 +375,10 @@ class TestClass(BaseTestClass):
         source_path, fpath = self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/ANSYS-HSD_V1.aedb", "TEDB/stackup.json"]
         )
-        # On Linux, shutil.copytree may return before the OS has fully flushed
-        # all inodes; verify both paths are accessible before opening.
-        assert os.path.exists(source_path), f"EDB source not ready: {source_path}"
-        assert os.path.exists(fpath) and os.path.getsize(fpath) > 0, f"JSON not ready: {fpath}"
-        edbapp = self.edb_examples.load_edb(source_path)
-        assert edbapp.stackup.load(fpath)
-        edbapp.close(terminate_rpc_session=False)
+        edb_def = os.path.join(source_path, "edb.def")
+        assert self._wait_until_ready(edb_def), f"EDB source not ready: {edb_def}"
+        assert self._wait_until_ready(fpath), f"JSON not ready: {fpath}"
+        self._load_stackup_with_retries(source_path, fpath)
 
     def test_stackup_export_json(self):
         """Export stackup into a JSON file."""
@@ -406,6 +449,7 @@ class TestClass(BaseTestClass):
             edbapp = self.edb_examples.get_si_verse()
         except Exception as e:
             pytest.skip(f"Skipping test due to file access failure (possible CI instability): {e}")
+        assert self._wait_until_ready(file_path), f"XML file not ready: {file_path}"
         assert edbapp.stackup.load(file_path)
         assert "Inner1" in list(edbapp.stackup.layers.keys())  # Renamed layer
         assert "DE1" not in edbapp.stackup.layers.keys()  # Removed layer
@@ -419,13 +463,27 @@ class TestClass(BaseTestClass):
         source_path, fpath = self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/ANSYS-HSD_V1.aedb", "TEDB/stackup_renamed.json"]
         )
+        edb_def = os.path.join(source_path, "edb.def")
+        assert self._wait_until_ready(edb_def), f"EDB source not ready: {edb_def}"
+        assert self._wait_until_ready(fpath), f"JSON not ready: {fpath}"
 
-        edbapp = self.edb_examples.load_edb(source_path)
-        edbapp.stackup.load(fpath, rename=True)
-        assert "1_Top_renamed" in edbapp.stackup.layers
-        assert "DE1_renamed" in edbapp.stackup.layers
-        assert "16_Bottom_renamed" in edbapp.stackup.layers
-        edbapp.close(terminate_rpc_session=False)
+        last_error = None
+        for _ in range(3):
+            edbapp = None
+            try:
+                edbapp = self.edb_examples.load_edb(source_path)
+                assert edbapp.stackup.load(fpath, rename=True)
+                assert "1_Top_renamed" in edbapp.stackup.layers
+                assert "DE1_renamed" in edbapp.stackup.layers
+                assert "16_Bottom_renamed" in edbapp.stackup.layers
+                return
+            except Exception as e:
+                last_error = e
+                time.sleep(0.5)
+            finally:
+                if edbapp:
+                    edbapp.close(terminate_rpc_session=False)
+        raise AssertionError(f"Failed to load renamed stackup after retries: {last_error}")
 
     def test_stackup_place_in_3d_with_flipped_stackup(self):
         """Place into another cell using 3d placement method with and
@@ -1369,14 +1427,21 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
-    @pytest.mark.skipif(platform.system() == "Linux", reason="random fails on Linux.")
     def test_stackup_export_csv(self):
         """Export stackup to CSV format."""
-        edbapp = self.edb_examples.get_si_verse()
+        edbapp = self._get_si_verse_with_retries()
         csv_path = os.path.join(self.edb_examples.test_folder, "test_export_stackup.csv")
-        assert edbapp.stackup.export(csv_path)
-        assert os.path.exists(csv_path)
-        edbapp.close(terminate_rpc_session=False)
+        try:
+            export_ok = False
+            for _ in range(3):
+                export_ok = edbapp.stackup.export(csv_path)
+                if export_ok and self._wait_until_ready(csv_path):
+                    break
+                time.sleep(0.5)
+            assert export_ok
+            assert self._wait_until_ready(csv_path), f"CSV export not ready: {csv_path}"
+        finally:
+            edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
     def test_stackup_export_unsupported_format(self):
@@ -1473,20 +1538,28 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
-    @pytest.mark.skipif(platform.system() == "Linux", reason="random fails on Linux.")
     def test_stackup_export_json_with_material_in_layer(self):
         """Export stackup JSON with include_material_with_layer=True."""
         import json
 
-        edbapp = self.edb_examples.get_si_verse()
+        edbapp = self._get_si_verse_with_retries()
         json_path = os.path.join(self.edb_examples.test_folder, "stackup_with_material.json")
-        assert edbapp.stackup.export(json_path, include_material_with_layer=True)
-        with open(json_path, "r") as f:
-            data = json.load(f)
-        # When include_material_with_layer=True, there should be no top-level 'materials' key.
-        assert "materials" not in data
-        assert "layers" in data
-        edbapp.close(terminate_rpc_session=False)
+        try:
+            export_ok = False
+            for _ in range(3):
+                export_ok = edbapp.stackup.export(json_path, include_material_with_layer=True)
+                if export_ok and self._wait_until_ready(json_path):
+                    break
+                time.sleep(0.5)
+            assert export_ok
+            assert self._wait_until_ready(json_path), f"JSON export not ready: {json_path}"
+            with open(json_path, "r") as f:
+                data = json.load(f)
+            # When include_material_with_layer=True, there should be no top-level 'materials' key.
+            assert "materials" not in data
+            assert "layers" in data
+        finally:
+            edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
     def test_stackup_place_in_layout(self):
@@ -1510,10 +1583,16 @@ class TestClass(BaseTestClass):
             edb1.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
-    @pytest.mark.skipif(platform.system() == "Linux", reason="random fails on Linux.")
     def test_stackup_export_json_no_output_file(self):
         """_export_layer_stackup_to_json returns False when output_file is None."""
-        edbapp = self.edb_examples.get_si_verse()
-        result = edbapp.stackup._export_layer_stackup_to_json(output_file=None)
-        assert result is False
-        edbapp.close(terminate_rpc_session=False)
+        edbapp = self._get_si_verse_with_retries()
+        try:
+            last_result = None
+            for _ in range(3):
+                last_result = edbapp.stackup._export_layer_stackup_to_json(output_file=None)
+                if last_result is False:
+                    break
+                time.sleep(0.5)
+            assert last_result is False
+        finally:
+            edbapp.close(terminate_rpc_session=False)

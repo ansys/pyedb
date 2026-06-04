@@ -690,13 +690,15 @@ class TestCfgComponentRetrieve:
         assert c.ic_die_properties["type"] == "wire_bond"
         assert "height" in c.ic_die_properties
 
-    def test_no_die_type_skips_orientation_and_height(self):
+    def test_no_die_type_skips_height_but_includes_orientation(self):
         pedb = _make_pedb(grpc=True)
         obj = self._make_ic_obj()
         obj.ic_die_properties.die_type = "no_die"
         c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic")
         c.retrieve_parameters_from_edb()
         assert c.ic_die_properties["type"] == "no_die"
+        # gRPC always exposes orientation; height is only for wire_bond
+        assert "orientation" in c.ic_die_properties
         assert "height" not in c.ic_die_properties
 
 
@@ -2908,6 +2910,15 @@ class TestImportBomRlcValues:
         finally:
             os.unlink(fname)
 
+    def test_apply_calls_set_parameters_for_each(self):
+        cc = CfgComponents(None, None)
+        mock1 = MagicMock(spec=CfgComponent)
+        mock2 = MagicMock(spec=CfgComponent)
+        cc.components = [mock1, mock2]
+        cc.apply()
+        mock1.set_parameters_to_edb.assert_called_once()
+        mock2.set_parameters_to_edb.assert_called_once()
+
 
 @_grpc_only
 class TestShortComponentPins:
@@ -3009,3 +3020,136 @@ class TestShortComponentPins:
 
         result = comps.short_component_pins("R1", width=0.1e-3)
         assert result is True
+
+
+# ---------------------------------------------------------------------------
+# Component.assign_spice_model – terminal_pairs argument order (regression)
+# ---------------------------------------------------------------------------
+
+
+def _spice_file_content(node_names):
+    """Return minimal SPICE file text with the given subckt node names."""
+    return f".subckt MyModel {' '.join(node_names)}\n.ends\n"
+
+
+def _make_comp_for_spice(pin_layout_names, pedb=None):
+    """Build a minimal mock Component with the given pin names."""
+    comp = MagicMock()
+    comp.name = "COMP1"
+    comp.pins = {p: MagicMock() for p in pin_layout_names}
+    comp._pedb = pedb or MagicMock()
+    comp._pedb.logger = MagicMock()
+    return comp
+
+
+class TestAssignSpiceModelTerminalPairs:
+    """Regression tests for terminal_pairs argument order in Component.assign_spice_model.
+
+    Bug: add_terminal was called with swapped arguments when terminal_pairs were explicitly
+    provided, causing pin mapping to be ignored in EDB.
+    Expected call: add_terminal(spice_pin_name, component_pin)
+    Buggy call was: add_terminal(component_pin, spice_pin_name)
+    """
+
+    def _run(self, tmp_path, pin_layout_names, spice_nodes, terminal_pairs, sub_circuit_name=None):
+        """Create a fake SPICE file, mock internals, call assign_spice_model,
+        and return (add_terminal call list, result)."""
+        from unittest.mock import patch
+
+        from pyedb.grpc.database.hierarchy.component import Component
+
+        sp_file = tmp_path / "model.sp"
+        sp_file.write_text(_spice_file_content(spice_nodes))
+
+        comp = _make_comp_for_spice(pin_layout_names)
+
+        mock_spice_model = MagicMock()
+        mock_spice_model.core.is_null = False
+
+        with (
+            patch("pyedb.grpc.database.hierarchy.component.SpiceModel", return_value=mock_spice_model),
+            patch.object(Component, "_set_model", return_value=None),
+        ):
+            result = Component.assign_spice_model(
+                comp,
+                str(sp_file),
+                name="MyModel",
+                sub_circuit_name=sub_circuit_name or "",
+                terminal_pairs=terminal_pairs,
+            )
+
+        return mock_spice_model.core.add_terminal.call_args_list, result
+
+    def test_terminal_pairs_spice_node_is_first_arg(self, tmp_path):
+        """add_terminal must be called with (spice_node, layout_pin) — not reversed."""
+        from unittest.mock import call
+
+        terminal_pairs = [["n1", "A1"], ["n2", "B2"]]
+        calls, result = self._run(
+            tmp_path,
+            pin_layout_names=["A1", "B2"],
+            spice_nodes=["n1", "n2"],
+            terminal_pairs=terminal_pairs,
+        )
+
+        assert len(calls) == 2
+        assert calls[0] == call("n1", "A1"), f"Expected call('n1', 'A1') but got {calls[0]}"
+        assert calls[1] == call("n2", "B2"), f"Expected call('n2', 'B2') but got {calls[1]}"
+
+    def test_terminal_pairs_with_integer_pin_number(self, tmp_path):
+        """Layout pin numbers given as integers must be converted to str."""
+        from unittest.mock import call
+
+        terminal_pairs = [["n1", 2], ["n2", 1]]
+        calls, _ = self._run(
+            tmp_path,
+            pin_layout_names=["1", "2"],
+            spice_nodes=["n1", "n2"],
+            terminal_pairs=terminal_pairs,
+        )
+
+        assert calls[0] == call("n1", "2")
+        assert calls[1] == call("n2", "1")
+
+    def test_terminal_pairs_four_nodes(self, tmp_path):
+        """Verify the full 4-pair scenario from edb_configuration_SPICE.json."""
+        from unittest.mock import call
+
+        terminal_pairs = [["n1", "A1"], ["n2", "B2"], ["n3", "A2"], ["n4", "B1"]]
+        calls, _ = self._run(
+            tmp_path,
+            pin_layout_names=["A1", "B2", "A2", "B1"],
+            spice_nodes=["n1", "n2", "n3", "n4"],
+            terminal_pairs=terminal_pairs,
+        )
+
+        expected = [call("n1", "A1"), call("n2", "B2"), call("n3", "A2"), call("n4", "B1")]
+        assert calls == expected
+
+    def test_no_terminal_pairs_auto_index(self, tmp_path):
+        """When no terminal_pairs given, add_terminal uses (spice_node, str(idx+1))."""
+        from unittest.mock import call
+
+        calls, _ = self._run(
+            tmp_path,
+            pin_layout_names=["1", "2"],
+            spice_nodes=["n1", "n2"],
+            terminal_pairs=None,
+        )
+
+        assert calls[0] == call("n1", "1")
+        assert calls[1] == call("n2", "2")
+
+    def test_single_pair_not_nested_list(self, tmp_path):
+        """A single pair passed as a flat list [pname, pnumber] must still work."""
+        from unittest.mock import call
+
+        terminal_pairs = ["n1", "A1"]
+        calls, _ = self._run(
+            tmp_path,
+            pin_layout_names=["A1"],
+            spice_nodes=["n1"],
+            terminal_pairs=terminal_pairs,
+        )
+
+        assert calls[0] == call("n1", "A1")
