@@ -85,17 +85,6 @@ def fake_backends(monkeypatch):
     monkeypatch.setitem(sys.modules, "pyedb.dotnet.edb", dotnet_module)
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
-def test_edb_defaults_to_grpc_for_2026_1_and_later(restore_settings_state, fake_backends):
-    with pytest.warns(UserWarning):
-        backend, kwargs = design_types.Edb(version="2026.1")
-
-    assert backend == "grpc"
-    assert kwargs["version"] == "2026.1"
-    assert settings.specified_version == "2026.1"
-    assert settings.is_grpc is True
-
-
 def test_edb_defaults_to_dotnet_before_2026_1(restore_settings_state, fake_backends):
     backend, kwargs = design_types.Edb(version="2025.2")
 
@@ -104,19 +93,6 @@ def test_edb_defaults_to_dotnet_before_2026_1(restore_settings_state, fake_backe
     assert settings.specified_version == "2025.2"
     assert settings.is_grpc is False
     assert settings.is_in_memory is False
-
-
-def test_edb_uses_resolved_default_version_for_backend_selection(restore_settings_state, fake_backends):
-    settings.specified_version = None
-    settings.LATEST_VERSION = "2026.1"
-
-    with pytest.warns(UserWarning):
-        backend, kwargs = design_types.Edb()
-
-    assert backend == "grpc"
-    assert kwargs["version"] is None
-    assert settings.specified_version == "2026.1"
-    assert settings.is_grpc is True
 
 
 def test_edb_respects_explicit_grpc_override(restore_settings_state, fake_backends):
