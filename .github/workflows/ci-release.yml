@@ -129,7 +129,7 @@ jobs:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: uv sync --frozen --extra all --extra tests --extra dotnet
+        run: uv sync --frozen --extra all --group tests --extra dotnet
 
       - name: Run unit tests
         run: |
@@ -184,7 +184,7 @@ jobs:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: uv sync --frozen --extra all --extra tests
+        run: uv sync --frozen --extra all --group tests
 
       - name: Run unit tests
         run: |
@@ -241,7 +241,7 @@ jobs:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: uv sync --frozen --extra all --extra tests --extra dotnet
+        run: uv sync --frozen --extra all --group tests --extra dotnet
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -303,7 +303,7 @@ jobs:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: uv sync --frozen --extra all --extra tests
+        run: uv sync --frozen --extra all --group tests
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -372,7 +372,7 @@ jobs:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: uv sync --frozen --extra all --extra tests --extra dotnet
+        run: uv sync --frozen --extra all --group tests --extra dotnet
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -441,7 +441,7 @@ jobs:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: uv sync --frozen --extra all --extra tests
+        run: uv sync --frozen --extra all --group tests
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -510,14 +510,14 @@ jobs:
           ref: "main"
           persist-credentials: false
 
-      - name: Install PyAEDT main branch version with its test dependencies
-        run: |
-          . .venv\Scripts\Activate.ps1
-          cd external/pyaedt
-          pip install --no-cache-dir --group tests .[all]
-
       - name: Install PyEDB
         run: uv sync --frozen --extra all
+
+      - name: Install PyAEDT main branch version with its test dependencies
+        run: |
+          .venv\Scripts\activate
+          cd external/pyaedt
+          uv pip install --no-cache-dir --group tests .[all]
 
       - name: Run PyAEDT general and layout tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -614,18 +614,18 @@ jobs:
           ref: "main"
           persist-credentials: false
 
+      - name: Install PyEDB
+        env:
+          ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
+        run: uv sync --frozen --extra all
+
       - name: Install PyAEDT main branch version with its test dependencies
         env:
           ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
         run: |
           source .venv/bin/activate
           cd external/pyaedt
-          pip install --no-cache-dir --group tests .[all]
-
-      - name: Install PyEDB
-        env:
-          ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
-        run: uv sync --frozen --extra all
+          uv pip install --no-cache-dir --group tests .[all]
 
       - name: Run PyAEDT general and layout tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
