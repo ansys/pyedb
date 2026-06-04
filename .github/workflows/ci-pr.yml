@@ -308,7 +308,7 @@ jobs:
           retry_on: error
           timeout_minutes: 180
           command: |
-            . .venv\Scripts\Activate.ps1
+            .venv\Scripts\activate
             pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
