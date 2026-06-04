@@ -30,9 +30,7 @@ from pyedb.misc.decorators import deprecate_argument_name
 
 DEFAULT_GRPC_VERSION = 2026.1
 GRPC_DEFAULT_MESSAGE = (
-    "gRPC is now the default mode starting with Ansys release 26.1.2 (June 10th). "
-    "gRPC introduces Fast Mode, which significantly increases speed. "
-    "Make sure you are using the latest PyEDB and AEDT versions."
+    "gRPC is the default mode starting with Ansys release 26.1.2. Use recent PyEDB and AEDT versions for compatibility."
 )
 
 if TYPE_CHECKING:
