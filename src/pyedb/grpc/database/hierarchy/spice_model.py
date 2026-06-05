@@ -95,3 +95,34 @@ class SpiceModel:  # pragma: no cover
         """
         self.core.model_path = value
         self._component._set_model(self.core)
+
+    @property
+    def sub_circuit(self) -> str:
+        """SPICE sub-circuit name.
+
+        Returns
+        -------
+        str
+            SPICE sub-circuit name.
+        """
+        return self.core.sub_circuit
+
+    @sub_circuit.setter
+    def sub_circuit(self, value):
+        self.core.sub_circuit = value
+
+    @property
+    def pin_pairs(self) -> dict:
+        """Mapping of layout terminal names to SPICE-model pin names.
+
+        Returns
+        -------
+        dict
+            Dictionary ``{terminal_name: spice_pin_name}``.
+        """
+        return dict(self.core.terminal_pin_pairs or {})
+
+    @property
+    def terminal_pin_pairs(self) -> dict:
+        """Alias for :attr:`pin_pairs`."""
+        return self.pin_pairs

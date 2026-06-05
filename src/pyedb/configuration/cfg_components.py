@@ -24,8 +24,17 @@
 
 import re
 
-from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
-from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
+from ansys.edb.core.definition.component_property import ComponentProperty as CoreComponentProperty
+from ansys.edb.core.definition.die_property import (
+    DieOrientation as CoreDieOrientation,
+    DieProperty as CoreDieProperty,
+    DieType as CoreDieType,
+)
+from ansys.edb.core.definition.port_property import PortProperty as CorePortProperty
+from ansys.edb.core.definition.solder_ball_property import (
+    SolderBallProperty as CoreSolderBallProperty,
+    SolderballShape as CoreSolderballShape,
+)
 from pydantic import BaseModel
 
 from pyedb.configuration.cfg_common import CfgBase
@@ -97,6 +106,35 @@ _die_orientation_mapping = {
 }
 
 _NO_DIE_TYPES = ("no_die", "none", None)
+
+
+def _persist_component_property(core_component, cp) -> None:
+    """Write *cp* back to *core_component* so changes are saved to disk.
+
+    On EDB 2026.1 with the typed component property API (``ICComponentProperty``,
+    ``RLCComponentProperty``, ``IOComponentProperty``) the server-side
+    ``SetComponentProperty`` RPC silently drops sub-property mutations when the
+    value is passed as a typed subclass.  Casting to the base
+    :class:`ComponentProperty` (same underlying ``msg`` id) makes the write
+    persist correctly across save / reopen.
+
+    Additionally, sub-properties **must** be brand-new objects created via
+    ``SolderBallProperty.create()`` / ``PortProperty.create()`` /
+    ``DieProperty.create()``; mutating an instance returned by
+    ``cp.solder_ball_property`` (etc.) and re-assigning it does **not**
+    persist in 2026.1 even with the base-class cast.  Callers must therefore
+    ``create()`` the sub-property, populate it, then assign it to *cp* before
+    calling this helper.
+
+    Parameters
+    ----------
+    core_component : ansys.edb.core.hierarchy.component_group.ComponentGroup
+        The raw core component (``pyedb_obj.core``).
+    cp : ComponentProperty | ICComponentProperty | IOComponentProperty | RLCComponentProperty
+        The mutated component property previously fetched from
+        ``core_component.component_property``.
+    """
+    core_component.component_property = CoreComponentProperty(cp.msg)
 
 
 class CfgPinPairModel(BaseModel):
@@ -200,62 +238,73 @@ class CfgComponent(CfgBase):
     def _set_ic_die_properties_to_edb(self):
         if not self.ic_die_properties:
             return
-        comp_prop = self.pyedb_obj.component_property
-        cp = comp_prop.core if hasattr(comp_prop, "core") else comp_prop
         grpc = self._pedb.grpc
-        ic_die_prop = cp.die_property if grpc else cp.GetDieProperty().Clone()
         die_type = (self.ic_die_properties.get("type") or "").lower() or None
-        s2p = _get_snake_to_pascal() if not grpc else None
         if grpc:
+            # See ``_persist_component_property`` for the EDB 2026.1 quirk: each
+            # sub-property must be a freshly ``.create()``-d instance, populated
+            # locally, then assigned to the typed component property — only
+            # then does a base-class write-back persist to disk.
+            cp = self.pyedb_obj.core.component_property
+            ic_die_prop = CoreDieProperty.create()
             ic_die_prop.die_type = _die_type_mapping[die_type or "none"]
-        else:
-            ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, s2p(die_type)))
-        if die_type not in _NO_DIE_TYPES:
-            orientation = self.ic_die_properties.get("orientation")
-            if orientation:
-                if grpc:
+            if die_type not in _NO_DIE_TYPES:
+                orientation = self.ic_die_properties.get("orientation")
+                if orientation:
                     ic_die_prop.die_orientation = _die_orientation_mapping[orientation]
-                else:
-                    ic_die_prop.SetOrientation(getattr(self._pedb._edb.Definition.DieOrientation, s2p(orientation)))
-            if die_type == "wire_bond":
-                height = self.ic_die_properties.get("height")
-                if height:
-                    if grpc:
+                if die_type == "wire_bond":
+                    height = self.ic_die_properties.get("height")
+                    if height:
                         ic_die_prop.height = self._pedb.value(height)
-                    else:
-                        ic_die_prop.SetHeight(self._pedb.edb_value(height))
-        if grpc:
-            self.pyedb_obj.core.component_property.die_property = ic_die_prop
+            cp.die_property = ic_die_prop
+            _persist_component_property(self.pyedb_obj.core, cp)
         else:
+            comp_prop = self.pyedb_obj.component_property
+            cp = comp_prop.core if hasattr(comp_prop, "core") else comp_prop
+            ic_die_prop = cp.GetDieProperty().Clone()
+            s2p = _get_snake_to_pascal()
+            ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, s2p(die_type)))
+            if die_type not in _NO_DIE_TYPES:
+                orientation = self.ic_die_properties.get("orientation")
+                if orientation:
+                    ic_die_prop.SetOrientation(getattr(self._pedb._edb.Definition.DieOrientation, s2p(orientation)))
+                if die_type == "wire_bond":
+                    height = self.ic_die_properties.get("height")
+                    if height:
+                        ic_die_prop.SetHeight(self._pedb.edb_value(height))
             self.pyedb_obj.ic_die_properties = ic_die_prop
 
     def _set_port_properties_to_edb(self):
+        if not self.port_properties:
+            return
         grpc = self._pedb.grpc
+        height = self.port_properties.get("reference_height")
+        reference_size_auto = self.port_properties.get("reference_size_auto")
+        ref_x = self.port_properties.get("reference_size_x", 0)
+        ref_y = self.port_properties.get("reference_size_y", 0)
         if grpc:
-            cp = self.pyedb_obj.component_property
-            port_prop = cp.port_property
+            # See ``_persist_component_property``: we need a fresh PortProperty
+            # to make the write-back persist on EDB 2026.1.  Initial defaults
+            # for fields the user did not specify are copied from the existing
+            # port_property so we do not regress unrelated settings.
+            cp = self.pyedb_obj.core.component_property
+            existing = cp.port_property
+            port_prop = CorePortProperty.create()
+            port_prop.reference_height = self._pedb.value(height) if height is not None else existing.reference_height
+            port_prop.reference_size_auto = (
+                reference_size_auto if reference_size_auto is not None else existing.reference_size_auto
+            )
+            port_prop.set_reference_size(self._pedb.value(ref_x), self._pedb.value(ref_y))
+            cp.port_property = port_prop
+            _persist_component_property(self.pyedb_obj.core, cp)
         else:
             # Use a mutable clone to avoid ReadOnlyModificationAttemptException.
             cp = self.pyedb_obj._get_component_property_clone()
             port_prop = cp.GetPortProperty().Clone()
-        height = self.port_properties.get("reference_height")
-        if height:
-            if grpc:
-                port_prop.reference_height = self._pedb.value(height)
-            else:
+            if height is not None:
                 port_prop.SetReferenceHeight(self._pedb.edb_value(height))
-        reference_size_auto = self.port_properties.get("reference_size_auto")
-        if reference_size_auto is not None:
-            if grpc:
-                port_prop.reference_size_auto = reference_size_auto
-            else:
+            if reference_size_auto is not None:
                 port_prop.SetReferenceSizeAuto(reference_size_auto)
-        ref_x = self.port_properties.get("reference_size_x", 0)
-        ref_y = self.port_properties.get("reference_size_y", 0)
-        if grpc:
-            port_prop.set_reference_size(self._pedb.value(ref_x), self._pedb.value(ref_y))
-            cp.port_properties = port_prop
-        else:
             port_prop.SetReferenceSize(self._pedb.edb_value(ref_x), self._pedb.edb_value(ref_y))
             cp.SetPortProperty(port_prop)
             self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
@@ -293,6 +342,8 @@ class CfgComponent(CfgBase):
 
     def _set_solder_ball_properties_to_edb(self):
         sbp_data = self.solder_ball_properties
+        if not sbp_data:
+            return
         shape = sbp_data.get("shape")
         diameter = sbp_data.get("diameter")
         height = sbp_data.get("height")
@@ -302,22 +353,26 @@ class CfgComponent(CfgBase):
         if self._pedb.grpc:
             if not shape:
                 raise ValueError("Solderball shape must be either cylinder or spheroid")
-            sbp = self.pyedb_obj.component_property.solder_ball_property
             shape_lower = shape.lower()
-            if shape_lower == "cylinder":
-                sbp.set_diameter(self._pedb.value(diameter))
-            elif shape_lower == "spheroid":
-                sbp.set_diameter(self._pedb.value(diameter), self._pedb.value(mid_diameter))
-            else:
+            if shape_lower not in ("cylinder", "spheroid"):
                 raise ValueError("Solderball shape must be either cylinder or spheroid")
-            sbp.shape = shape_lower
-            sbp.height = self._pedb.value(height)
+            # See ``_persist_component_property``: we MUST instantiate a brand-
+            # new SolderBallProperty (mutating one returned from
+            # ``cp.solder_ball_property`` does not persist on EDB 2026.1, even
+            # with the base-class write-back).
+            cp = self.pyedb_obj.core.component_property
+            sbp = CoreSolderBallProperty.create()
+            if shape_lower == "cylinder":
+                sbp.set_diameter(self._pedb.value(diameter), self._pedb.value(diameter))
+            else:  # spheroid
+                sbp.set_diameter(self._pedb.value(diameter), self._pedb.value(mid_diameter))
+            sbp.shape = _solder_shape_mapping[shape_lower]
+            if height is not None:
+                sbp.height = self._pedb.value(height)
             if material is not None:
                 sbp.material_name = material
-            if not _EDB_CORE_TYPED_COMPONENT_PROPERTY:
-                # Old API: mutations are local — must write back via SetComponentProperty.
-                cp.solder_ball_property = sbp
-                self.pyedb_obj.component_property = cp
+            cp.solder_ball_property = sbp
+            _persist_component_property(self.pyedb_obj.core, cp)
         else:
             if not shape:
                 return

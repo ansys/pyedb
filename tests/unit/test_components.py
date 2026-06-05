@@ -40,6 +40,45 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
 _grpc_only = pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
 
 
+@pytest.fixture(autouse=True)
+def _mock_core_property_factories(monkeypatch):
+    """Mock the ansys-edb-core ``*.create()`` factories used by cfg_components.
+
+    The gRPC backend now creates a brand-new ``SolderBallProperty`` /
+    ``PortProperty`` / ``DieProperty`` for every write (required for the
+    EDB 2026.1 persistence fix).  Those factories perform real gRPC calls,
+    which cannot run without an active session, so unit tests must mock
+    them.  The fixture exposes ``mock.last_sbp``, ``mock.last_pp`` and
+    ``mock.last_dp`` so tests can assert against the actual mutated object.
+    """
+    import pyedb.configuration.cfg_components as mod
+
+    registry = MagicMock()
+    registry.last_sbp = None
+    registry.last_pp = None
+    registry.last_dp = None
+
+    def _factory(kind):
+        def make():
+            m = MagicMock(name=f"core_{kind}")
+            setattr(registry, f"last_{kind}", m)
+            return m
+
+        return make
+
+    monkeypatch.setattr(mod.CoreSolderBallProperty, "create", _factory("sbp"))
+    monkeypatch.setattr(mod.CorePortProperty, "create", _factory("pp"))
+    monkeypatch.setattr(mod.CoreDieProperty, "create", _factory("dp"))
+    # ``_persist_component_property`` calls ``CoreComponentProperty(cp.msg)``;
+    # stub it to just record the assignment on the mocked core component.
+    monkeypatch.setattr(
+        mod,
+        "_persist_component_property",
+        lambda core, cp: setattr(core, "_persisted_component_property", cp),
+    )
+    return registry
+
+
 def _make_pedb(grpc: bool = True):
     """Return a minimal fake pedb object."""
     pedb = MagicMock()
@@ -214,7 +253,7 @@ class TestCfgComponentSetParametersToEdb:
 
 
 class TestCfgComponentSolderBallGrpc:
-    def test_cylinder_sets_shape_and_diameter(self):
+    def test_cylinder_sets_shape_and_diameter(self, _mock_core_property_factories):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
         c = CfgComponent(
@@ -225,19 +264,35 @@ class TestCfgComponentSolderBallGrpc:
             solder_ball_properties={"shape": "cylinder", "diameter": "150um", "height": "100um"},
         )
         c._set_solder_ball_properties_to_edb()
-        cp = obj.component_property
-        sbp = cp.solder_ball_property
+        # The fix creates a brand-new SolderBallProperty.create() (required for
+        # EDB 2026.1 persistence), mutates it, and assigns it back to the typed
+        # component property.  Assert against that freshly-created instance.
+        sbp = _mock_core_property_factories.last_sbp
         sbp.set_diameter.assert_called()
 
-    def test_no_shape_raises_value_error(self):
+    def test_no_shape_raises_value_error(self, _mock_core_property_factories):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
         c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic", solder_ball_properties={})
-        # grpc path: shape=None falls through to the else → ValueError
+        # Empty dict short-circuits — no mutation, no exception (regression-safe).
+        c._set_solder_ball_properties_to_edb()
+        assert _mock_core_property_factories.last_sbp is None
+
+    def test_missing_shape_raises_value_error(self):
+        """Non-empty solder_ball_properties without 'shape' still raises."""
+        pedb = _make_pedb(grpc=True)
+        obj = _make_pyedb_obj("ic")
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={"diameter": "150um", "height": "100um"},
+        )
         with pytest.raises(ValueError, match="Solderball shape must be either cylinder or spheroid"):
             c._set_solder_ball_properties_to_edb()
 
-    def test_spheroid_uses_mid_diameter(self):
+    def test_spheroid_uses_mid_diameter(self, _mock_core_property_factories):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
         c = CfgComponent(
@@ -253,11 +308,10 @@ class TestCfgComponentSolderBallGrpc:
             },
         )
         c._set_solder_ball_properties_to_edb()
-        cp = obj.component_property
-        sbp = cp.solder_ball_property
+        sbp = _mock_core_property_factories.last_sbp
         sbp.set_diameter.assert_called_with(pedb.value("150um"), pedb.value("130um"))
 
-    def test_material_is_set(self):
+    def test_material_is_set(self, _mock_core_property_factories):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
         c = CfgComponent(
@@ -273,11 +327,10 @@ class TestCfgComponentSolderBallGrpc:
             },
         )
         c._set_solder_ball_properties_to_edb()
-        cp = obj.component_property
-        sbp = cp.solder_ball_property
+        sbp = _mock_core_property_factories.last_sbp
         assert sbp.material_name == "copper"
 
-    def test_height_is_set(self):
+    def test_height_is_set(self, _mock_core_property_factories):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
         c = CfgComponent(
@@ -292,9 +345,32 @@ class TestCfgComponentSolderBallGrpc:
             },
         )
         c._set_solder_ball_properties_to_edb()
-        cp = obj.component_property
-        sbp = cp.solder_ball_property
+        sbp = _mock_core_property_factories.last_sbp
         assert sbp.height == pedb.value("100um")
+
+    def test_shape_uses_core_enum(self, _mock_core_property_factories):
+        """Regression: shape must be assigned as a ``SolderballShape`` enum
+        (not the lowercase string).
+        """
+        from ansys.edb.core.definition.solder_ball_property import SolderballShape
+
+        pedb = _make_pedb(grpc=True)
+        obj = _make_pyedb_obj("ic")
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={
+                "shape": "spheroid",
+                "diameter": "150um",
+                "mid_diameter": "130um",
+                "height": "100um",
+            },
+        )
+        c._set_solder_ball_properties_to_edb()
+        sbp = _mock_core_property_factories.last_sbp
+        assert sbp.shape == SolderballShape.SOLDERBALL_SPHEROID
 
     def test_invalid_shape_raises_value_error(self):
         pedb = _make_pedb(grpc=True)
@@ -312,6 +388,58 @@ class TestCfgComponentSolderBallGrpc:
         )
         with pytest.raises((ValueError, KeyError)):
             c._set_solder_ball_properties_to_edb()
+
+    def test_creates_fresh_solder_ball_property(self, _mock_core_property_factories):
+        """Regression for EDB 2026.1: the code MUST create a brand-new
+        ``SolderBallProperty`` via ``.create()`` (mutating the fetched one
+        does not persist on save).
+        """
+        pedb = _make_pedb(grpc=True)
+        obj = _make_pyedb_obj("ic")
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={"shape": "cylinder", "diameter": "150um", "height": "100um"},
+        )
+        c._set_solder_ball_properties_to_edb()
+        # The fresh SolderBallProperty must have been instantiated and then
+        # assigned back to cp.solder_ball_property.
+        assert _mock_core_property_factories.last_sbp is not None
+        # And the base-class write-back helper must have been invoked
+        # (recorded as ``_persisted_component_property`` by the fixture stub).
+        assert hasattr(obj.core, "_persisted_component_property")
+
+
+class TestCfgComponentPortPropertiesGrpcRegression:
+    """Lightweight regression check that the write-back helper is invoked.
+
+    The richer behavioural coverage lives in :class:`TestCfgComponentPortPropertiesGrpc`.
+    """
+
+    def test_reference_height_is_written_to_core(self, _mock_core_property_factories):
+        pedb = _make_pedb(grpc=True)
+        obj = _make_pyedb_obj("ic")
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            port_properties={
+                "reference_height": "0.33mm",
+                "reference_size_auto": False,
+                "reference_size_x": "0.0",
+                "reference_size_y": "0.0",
+            },
+        )
+        c._set_port_properties_to_edb()
+        pp = _mock_core_property_factories.last_pp
+        assert pp.reference_height == pedb.value("0.33mm")
+        assert pp.reference_size_auto is False
+        pp.set_reference_size.assert_called_with(pedb.value("0.0"), pedb.value("0.0"))
+        # The persistence helper must have been invoked (records on obj.core).
+        assert hasattr(obj.core, "_persisted_component_property")
 
     def test_no_solder_ball_properties_shape_none_raises(self):
         """Shape key missing entirely should raise ValueError (grpc path)."""
@@ -342,70 +470,105 @@ class TestCfgComponentIcDiePropertiesGrpc:
         c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic", ic_die_properties=ic_die_props)
         return pedb, obj, c
 
-    def test_no_die_sets_die_type_only(self):
+    def test_no_die_sets_die_type_only(self, _mock_core_property_factories):
         pedb, obj, c = self._make_comp(die_type="no_die")
         c._set_ic_die_properties_to_edb()
-        cp = obj.component_property
-        # die_type should be assigned
-        assert cp.die_property.die_type is not None
+        dp = _mock_core_property_factories.last_dp
+        assert dp.die_type is not None
 
-    def test_flip_chip_sets_orientation(self):
+    def test_flip_chip_sets_orientation(self, _mock_core_property_factories):
         pedb, obj, c = self._make_comp(die_type="flip_chip", orientation="chip_down")
         c._set_ic_die_properties_to_edb()
-        cp = obj.component_property
-        assert cp.die_property.die_orientation is not None
+        dp = _mock_core_property_factories.last_dp
+        assert dp.die_orientation is not None
 
-    def test_wire_bond_with_height_sets_height(self):
+    def test_wire_bond_with_height_sets_height(self, _mock_core_property_factories):
         pedb, obj, c = self._make_comp(die_type="wire_bond", orientation="chip_up", height="200um")
         c._set_ic_die_properties_to_edb()
-        cp = obj.component_property
-        assert cp.die_property.height == pedb.value("200um")
+        dp = _mock_core_property_factories.last_dp
+        assert dp.height == pedb.value("200um")
 
-    def test_wire_bond_without_height_skips_height(self):
+    def test_wire_bond_without_height_skips_height(self, _mock_core_property_factories):
         pedb, obj, c = self._make_comp(die_type="wire_bond", orientation="chip_up")
         # Should not raise even without height
         c._set_ic_die_properties_to_edb()
 
-    def test_flip_chip_no_orientation_skips_orientation(self):
+    def test_flip_chip_no_orientation_skips_orientation(self, _mock_core_property_factories):
         pedb, obj, c = self._make_comp(die_type="flip_chip")
         # Should not raise even without orientation
         c._set_ic_die_properties_to_edb()
 
 
 class TestCfgComponentPortPropertiesGrpc:
+    """Regression: port_properties.reference_height was silently dropped because
+    the code wrote to the high-level wrapper attribute (and used the typo
+    ``port_properties`` instead of ``port_property``).  Since EDB 2026.1 the
+    write now goes through ``CorePortProperty.create()`` then a base-class
+    write-back, so assertions target the freshly-created mock instance.
+    """
+
     def _make_comp(self, port_props):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
+        # Seed default reference_height so the cfg "copy unchanged fields" path
+        # has something to read.
+        obj.core.component_property.port_property.reference_height = 0.0
+        obj.core.component_property.port_property.reference_size_auto = True
         c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic", port_properties=port_props)
         return pedb, obj, c
 
-    def test_reference_height_is_set(self):
+    def test_reference_height_is_set(self, _mock_core_property_factories):
         pedb, obj, c = self._make_comp({"reference_height": "50um"})
         c._set_port_properties_to_edb()
-        pp = obj.component_property.port_property
+        pp = _mock_core_property_factories.last_pp
         assert pp.reference_height == pedb.value("50um")
 
-    def test_reference_size_auto_is_set(self):
+    def test_reference_height_zero_is_applied(self, _mock_core_property_factories):
+        """A reference_height of "0" must still be applied (not skipped as falsy)."""
+        pedb, obj, c = self._make_comp({"reference_height": "0", "reference_size_auto": True})
+        c._set_port_properties_to_edb()
+        pp = _mock_core_property_factories.last_pp
+        assert pp.reference_height == pedb.value("0")
+
+    def test_reference_height_full_payload(self, _mock_core_property_factories):
+        """End-to-end JSON-style payload (mirrors the user's edb_configuration.json)."""
+        pedb, obj, c = self._make_comp(
+            {
+                "reference_height": "0.33mm",
+                "reference_size_auto": False,
+                "reference_size_x": "0.0",
+                "reference_size_y": "0.0",
+            }
+        )
+        c._set_port_properties_to_edb()
+        pp = _mock_core_property_factories.last_pp
+        assert pp.reference_height == pedb.value("0.33mm")
+        assert pp.reference_size_auto is False
+        pp.set_reference_size.assert_called_with(pedb.value("0.0"), pedb.value("0.0"))
+
+    def test_reference_size_auto_is_set(self, _mock_core_property_factories):
         pedb, obj, c = self._make_comp({"reference_size_auto": True})
         c._set_port_properties_to_edb()
-        pp = obj.component_property.port_property
+        pp = _mock_core_property_factories.last_pp
         assert pp.reference_size_auto is True
 
-    def test_reference_size_auto_false_is_set(self):
+    def test_reference_size_auto_false_is_set(self, _mock_core_property_factories):
         pedb, obj, c = self._make_comp({"reference_size_auto": False})
         c._set_port_properties_to_edb()
-        pp = obj.component_property.port_property
+        pp = _mock_core_property_factories.last_pp
         assert pp.reference_size_auto is False
 
-    def test_set_reference_size_called(self):
+    def test_set_reference_size_called(self, _mock_core_property_factories):
         pedb, obj, c = self._make_comp({"reference_size_x": "100um", "reference_size_y": "200um"})
         c._set_port_properties_to_edb()
-        pp = obj.component_property.port_property
+        pp = _mock_core_property_factories.last_pp
         pp.set_reference_size.assert_called_with(pedb.value("100um"), pedb.value("200um"))
 
-    def test_empty_port_properties_no_raise(self):
+    def test_empty_port_properties_no_raise(self, _mock_core_property_factories):
         pedb, obj, c = self._make_comp({})
         c._set_port_properties_to_edb()  # Should not raise
+        # And must not have created any PortProperty.
+        assert _mock_core_property_factories.last_pp is None
 
 
 class TestCfgComponentSetModelProperties:
