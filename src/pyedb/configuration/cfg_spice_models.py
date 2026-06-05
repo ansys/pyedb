@@ -111,6 +111,78 @@ class CfgSpiceModels:
         """Serialize all SPICE models to a list of dictionaries."""
         return [m.model_dump(exclude_none=True) for m in self.models]
 
+    def get_data_from_db(self, cfg_components):
+        """Read SPICE model assignments from EDB by inspecting components.
+
+        Groups components that share the same SPICE model (by model name,
+        component definition, file path, and sub-circuit) into a single
+        ``spice_models`` entry suitable for round-trip export.
+
+        Parameters
+        ----------
+        cfg_components : list of dict
+            Per-component dictionaries already retrieved by
+            :class:`CfgComponents.retrieve_parameters_from_edb`. Components
+            assigned a SPICE model carry the data under the ``spice_model``
+            key.
+
+        Returns
+        -------
+        list of dict
+            JSON-serializable SPICE model assignment entries.
+        """
+        if self._pdata is None and not self.models:
+            return [m.model_dump(exclude_none=True) for m in self.models]
+
+        # Rebuild from EDB to make the export reflect the live design state
+        # (avoids duplicating entries previously loaded from a JSON config).
+        self.models = []
+
+        # Group components by (model_name, definition, file_path, sub_circuit)
+        grouped = {}
+        for comp in cfg_components or []:
+            sm = comp.get("spice_model")
+            if not sm:
+                continue
+            key = (
+                sm.get("model_name", ""),
+                comp.get("definition", ""),
+                sm.get("model_path", ""),
+                sm.get("sub_circuit", ""),
+            )
+            entry = grouped.setdefault(
+                key,
+                {
+                    "name": key[0],
+                    "component_definition": key[1],
+                    "file_path": key[2],
+                    "sub_circuit_name": key[3],
+                    "apply_to_all": False,
+                    "components": [],
+                    "terminal_pairs": sm.get("terminal_pairs"),
+                },
+            )
+            ref_des = comp.get("reference_designator")
+            if ref_des and ref_des not in entry["components"]:
+                entry["components"].append(ref_des)
+
+        # Build CfgSpiceModel entries from grouped data.
+        for entry in grouped.values():
+            self.models.append(
+                CfgSpiceModel(
+                    pedb=getattr(self._pdata, "_pedb", None),
+                    path_lib=self.path_libraries,
+                    name=entry["name"],
+                    component_definition=entry["component_definition"],
+                    file_path=entry["file_path"],
+                    sub_circuit_name=entry["sub_circuit_name"],
+                    apply_to_all=entry["apply_to_all"],
+                    components=entry["components"],
+                    terminal_pairs=entry["terminal_pairs"],
+                )
+            )
+        return [m.model_dump(exclude_none=True) for m in self.models]
+
     def add(
         self,
         name: str,
