@@ -294,3 +294,81 @@ class TestGrpcTerminalUnit:
         result = terminal.reference_layer
         pedb.logger.error.assert_called_once()
         assert result is None
+
+
+def _make_edge_terminal():
+    """Return an EdgeTerminal instance with mocked pedb and core."""
+    from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
+
+    pedb = MagicMock()
+    pedb.logger = MagicMock()
+    core = MagicMock()
+    core.is_null = False
+    terminal = EdgeTerminal.__new__(EdgeTerminal)
+    terminal._pedb = pedb
+    terminal.core = core
+    terminal._reference_object = None
+    terminal._hfss_type = "Gap"
+    return terminal
+
+
+@pytest.mark.grpc
+class TestEdgeTerminalReferenceLayer:
+    """Tests for EdgeTerminal.reference_layer getter and setter (regression for create_edge_port_vertical bug)."""
+
+    def test_getter_returns_layer_name(self):
+        """reference_layer getter returns the layer name from core."""
+        term = _make_edge_terminal()
+        mock_layer = MagicMock()
+        mock_layer.is_null = False
+        mock_layer.name = "L2_BOT"
+        term.core.reference_layer = mock_layer
+
+        assert term.reference_layer == "L2_BOT"
+
+    def test_getter_returns_none_when_layer_is_null(self):
+        """reference_layer getter returns None when the core layer is null."""
+        term = _make_edge_terminal()
+        mock_layer = MagicMock()
+        mock_layer.is_null = True
+        term.core.reference_layer = mock_layer
+
+        assert term.reference_layer is None
+
+    def test_getter_returns_none_on_attribute_error(self):
+        """reference_layer getter returns None gracefully when core raises AttributeError."""
+        term = _make_edge_terminal()
+        type(term.core).reference_layer = property(lambda self: (_ for _ in ()).throw(AttributeError("no layer")))
+
+        assert term.reference_layer is None
+
+    def test_setter_with_stackup_layer_passes_core(self):
+        """Setting reference_layer with a StackupLayer passes its .core to the gRPC terminal."""
+        from pyedb.grpc.database.layers.stackup_layer import StackupLayer
+
+        term = _make_edge_terminal()
+        grpc_layer = MagicMock()
+        stackup_layer = StackupLayer.__new__(StackupLayer)
+        stackup_layer.core = grpc_layer
+        stackup_layer._pedb = term._pedb
+
+        term.reference_layer = stackup_layer
+
+        assert term.core.reference_layer == grpc_layer
+
+    def test_setter_with_string_passes_string(self):
+        """Setting reference_layer with a string passes the string directly to the gRPC terminal."""
+        term = _make_edge_terminal()
+
+        term.reference_layer = "L2_BOT"
+
+        assert term.core.reference_layer == "L2_BOT"
+
+    def test_setter_with_grpc_layer_passes_directly(self):
+        """Setting reference_layer with a raw gRPC Layer passes it directly to the gRPC terminal."""
+        term = _make_edge_terminal()
+        grpc_layer = MagicMock()
+
+        term.reference_layer = grpc_layer
+
+        assert term.core.reference_layer == grpc_layer
