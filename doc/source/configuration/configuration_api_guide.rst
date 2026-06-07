@@ -169,6 +169,79 @@ lists, or direct links to a specific configuration builder implementation.
        :doc:`operations <../autoapi/pyedb/configuration/cfg_operations/index>`
      - Review air-box, dielectric extent, and cutout configuration classes.
 
+Vendor library model assignment
+--------------------------------
+
+The ``vendor_library_model`` feature lets you assign an S-parameter model from
+the Ansys built-in component library directly on a ``CfgComponent`` instance.
+This is an alternative to pointing at a local ``.snp`` file with
+``set_s_parameter_model()``: PyEDB retrieves the matching ``ComponentPart``
+from the library at apply-time, exports its scikit-rf ``Network`` to a
+Touchstone file in a cache directory, and calls ``assign_s_param_model()``
+automatically.
+
+Use ``set_vendor_library_model()`` on any component builder:
+
+.. code-block:: python
+
+   c1 = cfg.components.add("C1", part_type="capacitor")
+   c1.set_vendor_library_model(
+       vendor="Murata",
+       series="GRM",
+       part_name="GRM155R61A104KA01D",
+       reference_net="GND",
+   )
+
+   l1 = cfg.components.add("L1", part_type="inductor")
+   l1.set_vendor_library_model(
+       vendor="Murata",
+       series="LQW15A",
+       part_name="LQW15AN3N9D00D",
+       reference_net="GND",
+       touchstone_cache_dir="/tmp/snp_cache",  # optional custom path
+   )
+
+The ``vendor_library_model`` dict (used for JSON round-trips) takes the same
+keys: ``vendor``, ``series``, ``part_name``, ``reference_net``, and the
+optional ``touchstone_cache_dir``.
+
+**Model assignment priority**
+
+When multiple model types are set on the same component, they are applied in
+this priority order (highest first):
+
+.. list-table::
+   :header-rows: 1
+   :widths: 10 30 60
+
+   * - Priority
+     - Key
+     - Description
+   * - 1
+     - ``netlist_model``
+     - Netlist-based (SPICE netlist format)
+   * - 2
+     - ``pin_pair_model``
+     - RLC pin-pair model
+   * - 3
+     - ``vendor_library_model``
+     - Ansys vendor component library (Capacitors / Inductors)
+   * - 4
+     - ``s_parameter_model``
+     - Local Touchstone file (``.snp``)
+   * - 5
+     - ``spice_model``
+     - Local SPICE file (``.sp``, ``.lib``, ``.mod``)
+
+Only the highest-priority model that is populated is applied; the rest are
+ignored for that component.
+
+**Cache directory**
+
+The exported Touchstone file is written to ``<aedb_dir>/component_lib_cache/``
+by default.  Pass ``touchstone_cache_dir`` to use a custom path.  The directory
+is created automatically if it does not exist.
+
 Applying a configuration
 ------------------------
 
@@ -502,6 +575,17 @@ applies the configuration with a single ``run()`` call.
        component_definition="IC_U1",
        file_path="/spice/ic.sp",
        sub_circuit_name="IC_TOP",
+   )
+
+   # Vendor library model — assign an S-parameter model from the Ansys
+   # component library directly on a specific component instance.
+   c2 = cfg.components.add("C2", part_type="capacitor")
+   c2.set_vendor_library_model(
+       vendor="Murata",
+       series="GRM",
+       part_name="GRM155R61A104KA01D",
+       reference_net="GND",
+       # touchstone_cache_dir="/models/cache"  # optional; defaults to <aedb>/component_lib_cache/
    )
 
    # ----------------------------------------------------------------

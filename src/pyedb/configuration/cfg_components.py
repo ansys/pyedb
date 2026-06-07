@@ -183,6 +183,7 @@ class CfgComponent(CfgBase):
         self.spice_model = kwargs.get("spice_model", {})
         self.s_parameter_model = kwargs.get("s_parameter_model", {})
         self.netlist_model = kwargs.get("netlist_model", {})
+        self.vendor_library_model = kwargs.get("vendor_library_model", {})
 
     def retrieve_model_properties_from_edb(self):
         """Retrieve model properties from the EDB design."""
@@ -326,6 +327,8 @@ class CfgComponent(CfgBase):
                     l_enabled=i.get("inductance_enabled", False),
                     c_enabled=i.get("capacitance_enabled", False),
                 )
+        elif self.vendor_library_model:
+            self._set_vendor_library_model_to_edb()
         elif self.s_parameter_model:
             self.pyedb_obj.assign_s_param_model(
                 self.s_parameter_model["model_path"],
@@ -339,6 +342,60 @@ class CfgComponent(CfgBase):
                 self.spice_model["sub_circuit"],
                 self.spice_model["terminal_pairs"],
             )
+
+    def _set_vendor_library_model_to_edb(self):
+        """Resolve a vendor-library model entry and assign it to this component.
+
+        Steps:
+
+        1. Call ``get_vendor_libraries()`` to obtain the :class:`ComponentLib`.
+        2. Locate the :class:`ComponentPart` via vendor → series → part_name.
+        3. Export the scikit-rf ``Network`` to a Touchstone ``.s2p`` file
+           (cached in *touchstone_cache_dir* or a ``component_lib_cache`` folder
+           next to the ``.aedb`` file).
+        4. Call :meth:`assign_s_param_model` on the component instance.
+        """
+        import os
+        from pathlib import Path
+
+        vlm = self.vendor_library_model
+        vendor = vlm.get("vendor", "")
+        series = vlm.get("series", "")
+        part_name = vlm.get("part_name", "")
+        reference_net = vlm.get("reference_net", "GND")
+        cache_dir = vlm.get("touchstone_cache_dir")
+
+        if not (vendor and series and part_name):
+            raise ValueError(f"vendor_library_model requires 'vendor', 'series', and 'part_name' keys. Got: {vlm!r}")
+
+        comp_lib = self._pedb.components.get_vendor_libraries()
+
+        # Locate the ComponentPart in capacitors or inductors
+        part = None
+        for lib_section in (comp_lib.capacitors, comp_lib.inductors):
+            if vendor in lib_section:
+                series_dict = lib_section[vendor]
+                if series in series_dict and part_name in series_dict[series]:
+                    part = series_dict[series][part_name]
+                    break
+
+        if part is None:
+            available_caps = list(comp_lib.capacitors.keys())
+            available_inds = list(comp_lib.inductors.keys())
+            raise KeyError(
+                f"Vendor '{vendor}' / series '{series}' / part '{part_name}' not found in "
+                f"vendor libraries. Available capacitor vendors: {available_caps}, "
+                f"inductor vendors: {available_inds}."
+            )
+
+        # Determine Touchstone cache directory
+        if cache_dir is None:
+            cache_dir = os.path.join(os.path.dirname(self._pedb.edbpath), "component_lib_cache")
+        Path(cache_dir).mkdir(parents=True, exist_ok=True)
+
+        snp_path = part.write_touchstone(os.path.join(cache_dir, f"{part_name}.s2p"))
+
+        self.pyedb_obj.assign_s_param_model(snp_path, part_name, reference_net)
 
     def _set_solder_ball_properties_to_edb(self):
         sbp_data = self.solder_ball_properties
@@ -530,6 +587,56 @@ class CfgComponent(CfgBase):
         """
         self.s_parameter_model = {"model_name": model_name, "model_path": model_path, "reference_net": reference_net}
 
+    def set_vendor_library_model(
+        self,
+        vendor: str,
+        series: str,
+        part_name: str,
+        reference_net: str = "GND",
+        touchstone_cache_dir: str | None = None,
+    ):
+        """Assign a vendor component-library model (capacitor or inductor) to this component.
+
+        The Ansys component library is looked up at apply-time via
+        ``edbapp.components.get_vendor_libraries()``.  The scikit-rf
+        ``Network`` is exported to a Touchstone ``.s2p`` file and then
+        registered as an S-parameter model on the component instance.
+
+        Parameters
+        ----------
+        vendor : str
+            Vendor folder name inside the Ansys component library, e.g.
+            ``"Murata"``.
+        series : str
+            Series folder name, e.g. ``"GRM15"``.
+        part_name : str
+            Exact part name as listed in the library ``index.txt``, e.g.
+            ``"GRM155R71C104KA88"``.
+        reference_net : str, optional
+            Reference (ground) net for the model assignment.  Default is
+            ``"GND"``.
+        touchstone_cache_dir : str, optional
+            Directory where exported Touchstone files are cached.  When
+            ``None`` (default) a ``component_lib_cache`` folder next to the
+            ``.aedb`` file is used.
+
+        Examples
+        --------
+        cfg = edb.configuration.create_config_builder()
+        c1 = cfg.components.add("C1", part_type="capacitor")
+        c1.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88", reference_net="GND")
+        edb.configuration.run(cfg)
+        """
+        data = {
+            "vendor": vendor,
+            "series": series,
+            "part_name": part_name,
+            "reference_net": reference_net,
+        }
+        if touchstone_cache_dir is not None:
+            data["touchstone_cache_dir"] = touchstone_cache_dir
+        self.vendor_library_model = data
+
     def set_spice_model(self, model_name: str, model_path: str, sub_circuit: str = "", terminal_pairs=None):
         """Assign a SPICE subcircuit model to this component.
 
@@ -713,6 +820,7 @@ class CfgComponent(CfgBase):
             data["pin_pair_model"] = self.pin_pair_model
         for key in (
             "s_parameter_model",
+            "vendor_library_model",
             "spice_model",
             "netlist_model",
             "ic_die_properties",

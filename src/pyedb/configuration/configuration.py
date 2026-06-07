@@ -275,6 +275,7 @@ class Configuration:
             self.__apply_with_logging("Updating nets", self.cfg_data.nets.apply)
 
         self.__apply_with_logging("Updating components", self.cfg_data.components.apply)
+        self.__apply_with_logging("Applying component libraries", self.cfg_data.component_libraries.apply)
         self.__apply_with_logging("Creating pin groups", self.cfg_data.pin_groups.apply)
         self.__apply_with_logging("Placing sources", self.cfg_data.sources.apply)
 

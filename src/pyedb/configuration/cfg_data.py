@@ -100,6 +100,8 @@ class CfgData:
         Signal and power/ground net classification.
     components : CfgComponents
         Component model and package configuration.
+    component_libraries : CfgComponentLibraries
+        Vendor library (capacitor / inductor) S-parameter assignments.
     padstacks : CfgPadstacks
         Padstack definitions and instances.
     pin_groups : CfgPinGroups
@@ -136,6 +138,7 @@ class CfgData:
             "boundaries",
             "nets",
             "components",
+            "component_libraries",
             "padstacks",
             "pin_groups",
             "terminals",
@@ -178,6 +181,8 @@ class CfgData:
         )
 
         self.components = CfgComponents(pedb=pedb, components_data=kwargs.get("components", []))
+
+        self.component_libraries = CfgComponentLibraries(pedb=pedb, data=kwargs.get("component_libraries", []))
 
         self.padstacks = CfgPadstacks.create(pedb=pedb, **kwargs.get("padstacks", {}))
 
@@ -230,6 +235,7 @@ class CfgData:
         yield "stackup", self.stackup.model_dump(exclude_none=True)
         yield "nets", self.nets.to_dict()
         yield "components", self.components.to_list()
+        yield "component_libraries", self.component_libraries.to_list()
         yield "padstacks", self.padstacks.model_dump(exclude_none=True, exclude_defaults=True, by_alias=False)
         yield "pin_groups", self.pin_groups.export_properties()
         yield "terminals", self.terminals.model_dump(exclude_none=True)["terminals"]

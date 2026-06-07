@@ -688,6 +688,84 @@ insert a new dielectric layer into the stackup.
    print(layer.thickness)  # 250e-6
    edb.close()
 
+Example 14: Assign models from the Ansys vendor component library
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use the vendor library to assign S-parameter models for discrete capacitors and
+inductors without maintaining local ``.snp`` files.  PyEDB looks up the part in
+the Ansys built-in library, converts its scikit-rf ``Network`` to a Touchstone
+file in a cache directory, and calls ``assign_s_param_model()`` automatically.
+
+.. code-block:: python
+
+   from pyedb import Edb
+
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
+   cfg = edb.configuration.create_config_builder()
+
+   # ── Bypass capacitor — model from the Murata GRM series ──────────────────
+   c1 = cfg.components.add("C1", part_type="capacitor")
+   c1.set_vendor_library_model(
+       vendor="Murata",
+       series="GRM",
+       part_name="GRM155R61A104KA01D",
+       reference_net="GND",
+       # touchstone_cache_dir is optional; defaults to <aedb>/component_lib_cache/
+   )
+
+   # ── Decoupling capacitor — another part from the same series ─────────────
+   c2 = cfg.components.add("C2", part_type="capacitor")
+   c2.set_vendor_library_model(
+       vendor="Murata",
+       series="GRM",
+       part_name="GRM188R60J226MEA0D",
+       reference_net="GND",
+   )
+
+   # ── Series inductor — Murata LQW15A series ───────────────────────────────
+   l1 = cfg.components.add("L1", part_type="inductor")
+   l1.set_vendor_library_model(
+       vendor="Murata",
+       series="LQW15A",
+       part_name="LQW15AN3N9D00D",
+       reference_net="GND",
+       touchstone_cache_dir="/tmp/snp_cache",  # custom cache path
+   )
+
+   edb.configuration.run(cfg)
+   edb.close()
+
+The configuration can also be persisted as JSON and applied without a Python
+script.  The ``vendor_library_model`` key is fully round-tripped:
+
+.. code-block:: python
+
+   from pyedb import Edb
+   from pyedb.configuration import CfgData
+
+   # Build and save
+   cfg = CfgData()
+   c1 = cfg.components.add("C1", part_type="capacitor")
+   c1.set_vendor_library_model(
+       vendor="Murata",
+       series="GRM",
+       part_name="GRM155R61A104KA01D",
+       reference_net="GND",
+   )
+   cfg.to_json("cap_model_config.json")
+
+   # Apply from file in a separate session
+   edb = Edb("ANSYS-HSD_V1.aedb", version="2026.1")
+   edb.configuration.run("cap_model_config.json")
+   edb.close()
+
+.. note::
+
+   ``vendor_library_model`` has higher priority than ``s_parameter_model`` and
+   ``spice_model``.  If all three are set on the same component, only the vendor
+   library assignment is applied.  See the priority table in
+   :doc:`configuration_api_guide` for the full ordering.
+
 Exporting the builder as JSON for review and reuse
 ---------------------------------------------------
 
