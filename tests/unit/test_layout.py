@@ -180,6 +180,49 @@ class TestFilterPrimitives:
         result = query.filter_primitives(net_name=["GND", "VCC"])
         assert all(p.net_name in {"GND", "VCC"} for p in result)
 
+    def test_filter_by_non_stackup_layer(self):
+        """Non-stackup documentation layers (e.g. ``Outline``) must be supported.
+
+        Regression test: ``filter_primitives`` previously short-circuited through
+        ``primitives_by_layer`` whose dict was initialized only with stackup-layer
+        keys, causing layer filters on layers such as ``Outline`` to return an
+        empty list even when matching primitives existed.
+        """
+        prims = [
+            _make_primitive("1_Top", "GND", "poly_1", "polygon", False, 1),
+            _make_primitive("Outline", "", "outline_poly", "polygon", False, 10),
+        ]
+        query = _make_query(prims)  # stackup layers do not include "Outline"
+        # primitives_by_layer should NOT be consulted for non-stackup layers; if it
+        # were, this test would fail because the mock would not contain "Outline".
+        with patch.object(
+            type(query), "primitives_by_layer", new_callable=PropertyMock, return_value={"1_Top": [prims[0]]}
+        ):
+            result = query.filter_primitives(layer_name="Outline")
+        assert len(result) == 1
+        assert result[0].layer_name == "Outline"
+
+    def test_filter_skips_primitives_with_null_layer(self):
+        """Primitives whose backend access raises (e.g. null Layer object) must be
+        silently skipped instead of aborting the whole filter operation.
+        """
+        bad = MagicMock()
+        type(bad).layer_name = PropertyMock(side_effect=RuntimeError("Illegal operation on a null Layer object"))
+        bad.net_name = ""
+        bad.aedt_name = "bad"
+        bad.primitive_type = "polygon"
+        bad.type = "polygon"
+        bad.is_void = False
+        bad.id = 99
+        bad.core = SimpleNamespace(voids=[])
+
+        good = _make_primitive("Outline", "", "outline_poly", "polygon", False, 10)
+        query = _make_query([bad, good])
+        with patch.object(type(query), "primitives_by_layer", new_callable=PropertyMock, return_value={}):
+            result = query.filter_primitives(layer_name="Outline")
+        assert len(result) == 1
+        assert result[0].aedt_name == "outline_poly"
+
 
 # PrimitivesQuery.primitives_by_aedt_name
 class TestPrimitivesByAedtName:
