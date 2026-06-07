@@ -692,7 +692,7 @@ Example 14: Assign models from the Ansys vendor component library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use the vendor library to assign S-parameter models for discrete capacitors and
-inductors without maintaining local ``.snp`` files.  PyEDB looks up the part in
+inductors without maintaining local ``.snp`` files. PyEDB looks up the part in
 the Ansys built-in library, converts its scikit-rf ``Network`` to a Touchstone
 file in a cache directory, and calls ``assign_s_param_model()`` automatically.
 
@@ -736,7 +736,7 @@ file in a cache directory, and calls ``assign_s_param_model()`` automatically.
    edb.close()
 
 The configuration can also be persisted as JSON and applied without a Python
-script.  The ``vendor_library_model`` key is fully round-tripped:
+script. The ``vendor_library_model`` key is fully round-tripped:
 
 .. code-block:: python
 
@@ -763,7 +763,7 @@ script.  The ``vendor_library_model`` key is fully round-tripped:
 
    ``vendor_library_model`` has higher priority than ``s_parameter_model`` and
    ``spice_model``.  If all three are set on the same component, only the vendor
-   library assignment is applied.  See the priority table in
+   library assignment is applied. See the priority table in
    :doc:`configuration_api_guide` for the full ordering.
 
 Exporting the builder as JSON for review and reuse

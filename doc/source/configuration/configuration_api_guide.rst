@@ -176,7 +176,7 @@ The ``vendor_library_model`` feature lets you assign an S-parameter model from
 the Ansys built-in component library directly on a ``CfgComponent`` instance.
 This is an alternative to pointing at a local ``.snp`` file with
 ``set_s_parameter_model()``: PyEDB retrieves the matching ``ComponentPart``
-from the library at apply-time, exports its scikit-rf ``Network`` to a
+from the library at apply time, exports its scikit-rf ``Network`` to a
 Touchstone file in a cache directory, and calls ``assign_s_param_model()``
 automatically.
 
@@ -239,7 +239,7 @@ ignored for that component.
 **Cache directory**
 
 The exported Touchstone file is written to ``<aedb_dir>/component_lib_cache/``
-by default.  Pass ``touchstone_cache_dir`` to use a custom path.  The directory
+by default. Pass ``touchstone_cache_dir`` to use a custom path. The directory
 is created automatically if it does not exist.
 
 Applying a configuration
