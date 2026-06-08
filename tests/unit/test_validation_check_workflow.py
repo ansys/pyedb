@@ -46,13 +46,14 @@ class _DummyActiveEdb:
         self.closed = []
         self.opened = []
         self.base_path = str(base_path) if base_path else None
+        self.version = "2026.1"
 
     def close(self, terminate_rpc_session=False):
         self.closed.append(terminate_rpc_session)
         self.db = None
 
-    def open(self, restart_rpc_server=False):
-        self.opened.append(restart_rpc_server)
+    def open(self, aedbpath, edbversion):
+        self.opened.append((aedbpath, edbversion))
         self.db = object()
 
 
@@ -152,7 +153,7 @@ def test_run_validation_check_closes_and_reopens_active_session(tmp_path, monkey
     )
 
     assert active_edb.closed == [False]
-    assert active_edb.opened == [False]
+    assert active_edb.opened == [(str(aedb.resolve()), "2026.1")]
     assert any("Closing active EDB session" in m for m in active_edb.logger.messages)
     assert any("Re-opening EDB session" in m for m in active_edb.logger.messages)
 

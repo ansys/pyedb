@@ -22,6 +22,7 @@
 
 from __future__ import annotations
 
+import inspect
 from pathlib import Path
 import platform
 import shutil
@@ -163,9 +164,12 @@ class ValidationCheckWorkflow:
         temp_aedb = temp_root / source_aedb.name
 
         active_session_closed = False
+        active_edb_version = None
         if active_edb and getattr(active_edb, "db", None) is not None:
+            # Preserve the version used by the active session so reopen can reuse it when required.
+            active_edb_version = getattr(active_edb, "version", None) or getattr(active_edb, "edbversion", None)
             active_edb.logger.info("Closing active EDB session before static validation check workflow.")
-            active_edb.close(terminate_rpc_session=False)
+            active_edb.close()
             active_session_closed = True
 
         try:
@@ -233,8 +237,11 @@ class ValidationCheckWorkflow:
         finally:
             if active_session_closed:
                 active_edb.logger.info("Re-opening EDB session after static validation check workflow.")
-                # Keep the shared RPC server alive; only reopen the active design session.
-                active_edb.open(restart_rpc_server=False)
+                open_params = inspect.signature(active_edb.open).parameters
+                if len(open_params) >= 2 and active_edb_version is not None:
+                    active_edb.open(str(source_aedb), active_edb_version)
+                else:
+                    active_edb.open(str(source_aedb))
 
 
 def run_validation_check(*args, **kwargs) -> bool:
