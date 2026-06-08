@@ -3415,51 +3415,6 @@ class Edb(EdbInit):
         finally:
             edb2.close(terminate_rpc_session=False)
 
-    def run_validation_check(
-        self,
-        edb_path: str | None = None,
-        validation_mode: str = "SYZ",
-        num_cpus: int = 8,
-        fix_self_intersections: bool = True,
-        fix_disjoint_nets: bool = True,
-        check_for_shorted_nets: bool = True,
-        fix_overlapping_vias: bool = True,
-        check_for_bondwire_errors: bool = True,
-        fix_misalignments: bool = True,
-        fix_floating_planes: bool = True,
-        check_for_unreferenced_traces: bool = True,
-        ignore_non_functional_pads: bool = True,
-        correct_all_fixable_issues: bool = True,
-        strict_disjoint_net_check: bool = True,
-        save: bool = True,
-    ) -> bool:
-        """Run Siwave geometry validation/healing in static mode.
-
-        This helper closes the active EDB session before launching external tools
-        and reopens it afterwards.
-        """
-        from pyedb.workflows.utilities.validation_check import ValidationCheckWorkflow
-
-        target_edb_path = self.edbpath if edb_path is None else edb_path
-        return ValidationCheckWorkflow.run_validation_check(
-            edb_path=target_edb_path,
-            validation_mode=validation_mode,
-            num_cpus=num_cpus,
-            fix_self_intersections=fix_self_intersections,
-            fix_disjoint_nets=fix_disjoint_nets,
-            check_for_shorted_nets=check_for_shorted_nets,
-            fix_overlapping_vias=fix_overlapping_vias,
-            check_for_bondwire_errors=check_for_bondwire_errors,
-            fix_misalignments=fix_misalignments,
-            fix_floating_planes=fix_floating_planes,
-            check_for_unreferenced_traces=check_for_unreferenced_traces,
-            ignore_non_functional_pads=ignore_non_functional_pads,
-            correct_all_fixable_issues=correct_all_fixable_issues,
-            strict_disjoint_net_check=strict_disjoint_net_check,
-            save=save,
-            active_edb=self,
-        )
-
     def _init_objects(self):
         """Initialize commonly used cached objects for the gRPC EDB implementation.
 

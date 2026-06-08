@@ -155,7 +155,7 @@ class TestClass(BaseTestClass):
         main_board.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
-    def test_run_validation_check(self):
+    def test_run_siwave_validation_check(self):
         edbapp = self.edb_examples.get_si_verse()
         executable_suffix = "" if platform.system().lower() == "linux" else ".exe"
         siwave_ng = Path(edbapp.base_path) / f"siwave_ng{executable_suffix}"
@@ -164,8 +164,8 @@ class TestClass(BaseTestClass):
         initial_edb_def_mtime = edb_def.stat().st_mtime_ns
         assert siwave_ng.is_file()
         assert siwave_valcheck.is_file()
-        assert edbapp.run_validation_check(num_cpus=2)
-        # run_validation_check closes/reopens the active session, verify the session remains usable.
+        assert edbapp.layout_validation.run_siwave_validation_check(num_cpus=2)
+        # run_siwave_validation_check closes/reopens the active session, verify the session remains usable.
         assert edbapp.db is not None
         assert edbapp.stackup.layers
         assert edb_def.is_file()

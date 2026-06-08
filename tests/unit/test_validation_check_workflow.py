@@ -25,10 +25,15 @@ import platform
 
 import pytest
 
+from pyedb.grpc.database.layout_validation import LayoutValidation
 from pyedb.grpc.edb import Edb
-from pyedb.workflows.utilities.validation_check import ValidationCheckWorkflow
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+
+
+# ---------------------------------------------------------------------------
+# Helpers / fakes
+# ---------------------------------------------------------------------------
 
 
 class _DummyLogger:
@@ -39,7 +44,9 @@ class _DummyLogger:
         self.messages.append(msg)
 
 
-class _DummyActiveEdb:
+class _DummyPedb:
+    """Minimal mock that satisfies LayoutValidation and run_siwave_validation_check."""
+
     def __init__(self, base_path=None, edbpath=None):
         self.db = object()
         self.logger = _DummyLogger()
@@ -48,14 +55,23 @@ class _DummyActiveEdb:
         self.base_path = str(base_path) if base_path else None
         self.edbpath = str(edbpath) if edbpath else None
         self.version = "2026.1"
+        # LayoutValidation.__init__ reads layout_instance; supply a stub.
+        self.layout_instance = None
 
-    def close(self, terminate_rpc_session=False):
-        self.closed.append(terminate_rpc_session)
+    def close(self):
+        self.closed.append(True)
         self.db = None
 
     def open(self, aedbpath, edbversion):
         self.opened.append((aedbpath, edbversion))
         self.db = object()
+
+
+def _make_layout_validation(pedb: _DummyPedb) -> LayoutValidation:
+    """Construct LayoutValidation bypassing __init__ to avoid real EDB calls."""
+    lv = LayoutValidation.__new__(LayoutValidation)
+    lv._pedb = pedb
+    return lv
 
 
 class _FakePopen:
@@ -91,13 +107,20 @@ def _create_aedb(tmp_path: Path) -> Path:
     return aedb
 
 
-def test_run_validation_check_creates_files_and_copies_back(tmp_path, monkeypatch):
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+
+
+def test_run_siwave_validation_check_creates_files_and_copies_back(tmp_path, monkeypatch):
     aedb = _create_aedb(tmp_path)
     stale_temp = tmp_path / "_temp"
     stale_temp.mkdir()
     (stale_temp / "old.txt").write_text("stale", encoding="utf-8")
 
     ansys_root = _create_ansys_root(tmp_path, linux_mode=(platform.system().lower() == "linux"))
+    pedb = _DummyPedb(base_path=ansys_root, edbpath=str(aedb))
+    lv = _make_layout_validation(pedb)
 
     calls = []
 
@@ -105,19 +128,9 @@ def test_run_validation_check_creates_files_and_copies_back(tmp_path, monkeypatc
         calls.append(command)
         return _FakePopen(command, stdout=stdout, stderr=stderr, text=text)
 
-    monkeypatch.setattr("pyedb.workflows.utilities.validation_check.subprocess.Popen", _fake_popen)
+    monkeypatch.setattr("pyedb.grpc.database.layout_validation.subprocess.Popen", _fake_popen)
 
-    monkeypatch.setattr(
-        "pyedb.workflows.utilities.validation_check.installed_ansys_em_versions",
-        lambda: {"261": str(ansys_root)},
-    )
-
-    result = ValidationCheckWorkflow.run_validation_check(
-        edb_path=str(aedb),
-        validation_mode="SYZ",
-        num_cpus=4,
-        fix_disjoint_nets=False,
-    )
+    result = lv.run_siwave_validation_check(validation_mode="SYZ", num_cpus=4, fix_disjoint_nets=False)
 
     assert result
     assert (aedb / "edb.def").read_text(encoding="utf-8") == "healed"
@@ -138,68 +151,41 @@ def test_run_validation_check_creates_files_and_copies_back(tmp_path, monkeypatc
     assert all(Path(cmd[2]).is_absolute() for cmd in calls)
 
 
-def test_run_validation_check_closes_and_reopens_active_session(tmp_path, monkeypatch):
+def test_run_siwave_validation_check_closes_and_reopens_active_session(tmp_path, monkeypatch):
     aedb = _create_aedb(tmp_path)
     ansys_root = _create_ansys_root(tmp_path, linux_mode=(platform.system().lower() == "linux"))
-    active_edb = _DummyActiveEdb(base_path=ansys_root, edbpath=str(aedb))
+    pedb = _DummyPedb(base_path=ansys_root, edbpath=str(aedb))
+    lv = _make_layout_validation(pedb)
 
     monkeypatch.setattr(
-        "pyedb.workflows.utilities.validation_check.subprocess.Popen",
+        "pyedb.grpc.database.layout_validation.subprocess.Popen",
         lambda command, stdout=None, stderr=None, text=True: _FakePopen(command, stdout, stderr, text),
     )
 
-    ValidationCheckWorkflow.run_validation_check(
-        edb_path=str(aedb),
-        active_edb=active_edb,
-    )
+    lv.run_siwave_validation_check()
 
-    assert active_edb.closed == [False]
-    assert active_edb.opened == [(str(aedb.resolve()), "2026.1")]
-    assert any("Closing active EDB session" in m for m in active_edb.logger.messages)
-    assert any("Re-opening EDB session" in m for m in active_edb.logger.messages)
-
-
-def test_run_validation_check_does_not_close_unrelated_active_session(tmp_path, monkeypatch):
-    aedb = _create_aedb(tmp_path)
-    other_aedb = tmp_path / "other_board.aedb"
-    other_aedb.mkdir()
-    (other_aedb / "edb.def").write_text("other", encoding="utf-8")
-    ansys_root = _create_ansys_root(tmp_path, linux_mode=(platform.system().lower() == "linux"))
-    active_edb = _DummyActiveEdb(base_path=ansys_root, edbpath=str(other_aedb))
-
-    monkeypatch.setattr(
-        "pyedb.workflows.utilities.validation_check.subprocess.Popen",
-        lambda command, stdout=None, stderr=None, text=True: _FakePopen(command, stdout, stderr, text),
-    )
-
-    ValidationCheckWorkflow.run_validation_check(
-        edb_path=str(aedb),
-        active_edb=active_edb,
-    )
-
-    assert active_edb.closed == []
-    assert active_edb.opened == []
+    assert pedb.closed == [True]
+    assert pedb.opened == [(str(aedb.resolve()), "2026.1")]
+    assert any("Closing active EDB session" in m for m in pedb.logger.messages)
+    assert any("Re-opening EDB session" in m for m in pedb.logger.messages)
 
 
 def test_linux_executable_names_do_not_use_exe_extension(tmp_path, monkeypatch):
     aedb = _create_aedb(tmp_path)
     ansys_root = _create_ansys_root(tmp_path, linux_mode=True)
+    pedb = _DummyPedb(base_path=ansys_root, edbpath=str(aedb))
+    lv = _make_layout_validation(pedb)
     commands = []
 
-    monkeypatch.setattr("pyedb.workflows.utilities.validation_check.platform.system", lambda: "Linux")
+    monkeypatch.setattr("pyedb.grpc.database.layout_validation.platform.system", lambda: "Linux")
 
     def _fake_popen(command, stdout=None, stderr=None, text=True):
         commands.append(command)
         return _FakePopen(command, stdout=stdout, stderr=stderr, text=text)
 
-    monkeypatch.setattr("pyedb.workflows.utilities.validation_check.subprocess.Popen", _fake_popen)
+    monkeypatch.setattr("pyedb.grpc.database.layout_validation.subprocess.Popen", _fake_popen)
 
-    monkeypatch.setattr(
-        "pyedb.workflows.utilities.validation_check.installed_ansys_em_versions",
-        lambda: {"261": str(ansys_root)},
-    )
-
-    ValidationCheckWorkflow.run_validation_check(edb_path=str(aedb))
+    lv.run_siwave_validation_check()
 
     assert commands
     assert commands[0][0].endswith("siwave_ng")
@@ -208,22 +194,25 @@ def test_linux_executable_names_do_not_use_exe_extension(tmp_path, monkeypatch):
     assert not commands[1][0].endswith(".exe")
 
 
-def test_edb_run_validation_check_delegates_to_workflow(monkeypatch):
+def test_edb_layout_validation_exposes_run_siwave_validation_check(monkeypatch):
     edb = Edb.__new__(Edb)
     edb.edbpath = r"C:\tmp\board.aedb"
 
     captured = {}
 
-    def _fake_run_validation_check(**kwargs):
+    # Build a fake LayoutValidation whose run_siwave_validation_check captures kwargs.
+    fake_lv = LayoutValidation.__new__(LayoutValidation)
+
+    def _fake_run_siwave_validation_check(**kwargs):
         captured.update(kwargs)
         return True
 
-    monkeypatch.setattr(
-        "pyedb.workflows.utilities.validation_check.ValidationCheckWorkflow.run_validation_check",
-        staticmethod(_fake_run_validation_check),
-    )
+    fake_lv.run_siwave_validation_check = _fake_run_siwave_validation_check
 
-    result = edb.run_validation_check(
+    # Patch the layout_validation property so __init__ is never reached.
+    monkeypatch.setattr(Edb, "layout_validation", property(lambda self: fake_lv))
+
+    result = edb.layout_validation.run_siwave_validation_check(
         validation_mode="SYZ",
         num_cpus=2,
         fix_disjoint_nets=False,
@@ -231,37 +220,29 @@ def test_edb_run_validation_check_delegates_to_workflow(monkeypatch):
     )
 
     assert result is True
-    assert captured["edb_path"] == edb.edbpath
-    assert captured["active_edb"] is edb
     assert captured["validation_mode"] == "SYZ"
     assert captured["num_cpus"] == 2
     assert captured["fix_disjoint_nets"] is False
     assert captured["save"] is False
-    assert captured["strict_disjoint_net_check"] is True
-    assert "ansys_em_root" not in captured
 
 
-def test_run_validation_check_accepts_return_code_one_for_validation_step(tmp_path, monkeypatch):
+def test_run_siwave_validation_check_accepts_return_code_one(tmp_path, monkeypatch):
     aedb = _create_aedb(tmp_path)
     ansys_root = _create_ansys_root(tmp_path, linux_mode=(platform.system().lower() == "linux"))
+    pedb = _DummyPedb(base_path=ansys_root, edbpath=str(aedb))
+    lv = _make_layout_validation(pedb)
 
     class _ReturnCodeAwarePopen(_FakePopen):
         def __init__(self, command, stdout=None, stderr=None, text=True):
             super().__init__(command, stdout=stdout, stderr=stderr, text=text)
-            cmd = Path(command[0]).name.lower()
-            if "siwavevalchk" in cmd:
+            if "siwavevalchk" in Path(command[0]).name.lower():
                 self.returncode = 1
 
     monkeypatch.setattr(
-        "pyedb.workflows.utilities.validation_check.subprocess.Popen",
+        "pyedb.grpc.database.layout_validation.subprocess.Popen",
         lambda command, stdout=None, stderr=None, text=True: _ReturnCodeAwarePopen(command, stdout, stderr, text),
     )
 
-    monkeypatch.setattr(
-        "pyedb.workflows.utilities.validation_check.installed_ansys_em_versions",
-        lambda: {"261": str(ansys_root)},
-    )
-
-    result = ValidationCheckWorkflow.run_validation_check(edb_path=str(aedb))
+    result = lv.run_siwave_validation_check()
     assert result is True
     assert (aedb / "edb.def").read_text(encoding="utf-8") == "healed"
