@@ -52,7 +52,7 @@ class SimulationSetups:
         self._siwave_cpa_setup: dict[str, SIWaveCPASimulationSetup] = {}
         self._hfss_pi_setups: dict[str, HFSSPISimulationSetup] = {}
 
-    def _raw_simulation_setups(self) -> list:
+    def _raw_simulation_setups(self) -> list[CoreSimulationSetup]:
         """Return raw (uncast) core SimulationSetup objects from the active cell.
 
         This helper exists to work around a limitation in the public

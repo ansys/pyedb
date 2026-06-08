@@ -24,11 +24,21 @@
 
 import re
 
-from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
-from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
+from ansys.edb.core.definition.component_property import ComponentProperty as CoreComponentProperty
+from ansys.edb.core.definition.die_property import (
+    DieOrientation as CoreDieOrientation,
+    DieProperty as CoreDieProperty,
+    DieType as CoreDieType,
+)
+from ansys.edb.core.definition.port_property import PortProperty as CorePortProperty
+from ansys.edb.core.definition.solder_ball_property import (
+    SolderBallProperty as CoreSolderBallProperty,
+    SolderballShape as CoreSolderballShape,
+)
 from pydantic import BaseModel
 
 from pyedb.configuration.cfg_common import CfgBase
+from pyedb.grpc.database.components import _EDB_CORE_TYPED_COMPONENT_PROPERTY
 
 
 def _smallest_pin_pad_size(comp) -> float | None:
@@ -98,6 +108,35 @@ _die_orientation_mapping = {
 _NO_DIE_TYPES = ("no_die", "none", None)
 
 
+def _persist_component_property(core_component, cp) -> None:
+    """Write *cp* back to *core_component* so changes are saved to disk.
+
+    On EDB 2026.1 with the typed component property API (``ICComponentProperty``,
+    ``RLCComponentProperty``, ``IOComponentProperty``) the server-side
+    ``SetComponentProperty`` RPC silently drops sub-property mutations when the
+    value is passed as a typed subclass.  Casting to the base
+    :class:`ComponentProperty` (same underlying ``msg`` id) makes the write
+    persist correctly across save / reopen.
+
+    Additionally, sub-properties **must** be brand-new objects created via
+    ``SolderBallProperty.create()`` / ``PortProperty.create()`` /
+    ``DieProperty.create()``; mutating an instance returned by
+    ``cp.solder_ball_property`` (etc.) and re-assigning it does **not**
+    persist in 2026.1 even with the base-class cast.  Callers must therefore
+    ``create()`` the sub-property, populate it, then assign it to *cp* before
+    calling this helper.
+
+    Parameters
+    ----------
+    core_component : ansys.edb.core.hierarchy.component_group.ComponentGroup
+        The raw core component (``pyedb_obj.core``).
+    cp : ComponentProperty | ICComponentProperty | IOComponentProperty | RLCComponentProperty
+        The mutated component property previously fetched from
+        ``core_component.component_property``.
+    """
+    core_component.component_property = CoreComponentProperty(cp.msg)
+
+
 class CfgPinPairModel(BaseModel):
     """Represent one pin-pair RLC model entry."""
 
@@ -144,6 +183,7 @@ class CfgComponent(CfgBase):
         self.spice_model = kwargs.get("spice_model", {})
         self.s_parameter_model = kwargs.get("s_parameter_model", {})
         self.netlist_model = kwargs.get("netlist_model", {})
+        self.vendor_library_model = kwargs.get("vendor_library_model", {})
 
     def retrieve_model_properties_from_edb(self):
         """Retrieve model properties from the EDB design."""
@@ -199,62 +239,73 @@ class CfgComponent(CfgBase):
     def _set_ic_die_properties_to_edb(self):
         if not self.ic_die_properties:
             return
-        comp_prop = self.pyedb_obj.component_property
-        cp = comp_prop.core if hasattr(comp_prop, "core") else comp_prop
         grpc = self._pedb.grpc
-        ic_die_prop = cp.die_property if grpc else cp.GetDieProperty().Clone()
         die_type = (self.ic_die_properties.get("type") or "").lower() or None
-        s2p = _get_snake_to_pascal() if not grpc else None
         if grpc:
+            # See ``_persist_component_property`` for the EDB 2026.1 quirk: each
+            # sub-property must be a freshly ``.create()``-d instance, populated
+            # locally, then assigned to the typed component property — only
+            # then does a base-class write-back persist to disk.
+            cp = self.pyedb_obj.core.component_property
+            ic_die_prop = CoreDieProperty.create()
             ic_die_prop.die_type = _die_type_mapping[die_type or "none"]
-        else:
-            ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, s2p(die_type)))
-        if die_type not in _NO_DIE_TYPES:
-            orientation = self.ic_die_properties.get("orientation")
-            if orientation:
-                if grpc:
+            if die_type not in _NO_DIE_TYPES:
+                orientation = self.ic_die_properties.get("orientation")
+                if orientation:
                     ic_die_prop.die_orientation = _die_orientation_mapping[orientation]
-                else:
-                    ic_die_prop.SetOrientation(getattr(self._pedb._edb.Definition.DieOrientation, s2p(orientation)))
-            if die_type == "wire_bond":
-                height = self.ic_die_properties.get("height")
-                if height:
-                    if grpc:
+                if die_type == "wire_bond":
+                    height = self.ic_die_properties.get("height")
+                    if height:
                         ic_die_prop.height = self._pedb.value(height)
-                    else:
-                        ic_die_prop.SetHeight(self._pedb.edb_value(height))
-        if grpc:
-            self.pyedb_obj.core.component_property.die_property = ic_die_prop
+            cp.die_property = ic_die_prop
+            _persist_component_property(self.pyedb_obj.core, cp)
         else:
+            comp_prop = self.pyedb_obj.component_property
+            cp = comp_prop.core if hasattr(comp_prop, "core") else comp_prop
+            ic_die_prop = cp.GetDieProperty().Clone()
+            s2p = _get_snake_to_pascal()
+            ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, s2p(die_type)))
+            if die_type not in _NO_DIE_TYPES:
+                orientation = self.ic_die_properties.get("orientation")
+                if orientation:
+                    ic_die_prop.SetOrientation(getattr(self._pedb._edb.Definition.DieOrientation, s2p(orientation)))
+                if die_type == "wire_bond":
+                    height = self.ic_die_properties.get("height")
+                    if height:
+                        ic_die_prop.SetHeight(self._pedb.edb_value(height))
             self.pyedb_obj.ic_die_properties = ic_die_prop
 
     def _set_port_properties_to_edb(self):
+        if not self.port_properties:
+            return
         grpc = self._pedb.grpc
+        height = self.port_properties.get("reference_height")
+        reference_size_auto = self.port_properties.get("reference_size_auto")
+        ref_x = self.port_properties.get("reference_size_x", 0)
+        ref_y = self.port_properties.get("reference_size_y", 0)
         if grpc:
-            cp = self.pyedb_obj.component_property
-            port_prop = cp.port_property
+            # See ``_persist_component_property``: we need a fresh PortProperty
+            # to make the write-back persist on EDB 2026.1.  Initial defaults
+            # for fields the user did not specify are copied from the existing
+            # port_property so we do not regress unrelated settings.
+            cp = self.pyedb_obj.core.component_property
+            existing = cp.port_property
+            port_prop = CorePortProperty.create()
+            port_prop.reference_height = self._pedb.value(height) if height is not None else existing.reference_height
+            port_prop.reference_size_auto = (
+                reference_size_auto if reference_size_auto is not None else existing.reference_size_auto
+            )
+            port_prop.set_reference_size(self._pedb.value(ref_x), self._pedb.value(ref_y))
+            cp.port_property = port_prop
+            _persist_component_property(self.pyedb_obj.core, cp)
         else:
             # Use a mutable clone to avoid ReadOnlyModificationAttemptException.
             cp = self.pyedb_obj._get_component_property_clone()
             port_prop = cp.GetPortProperty().Clone()
-        height = self.port_properties.get("reference_height")
-        if height:
-            if grpc:
-                port_prop.reference_height = self._pedb.value(height)
-            else:
+            if height is not None:
                 port_prop.SetReferenceHeight(self._pedb.edb_value(height))
-        reference_size_auto = self.port_properties.get("reference_size_auto")
-        if reference_size_auto is not None:
-            if grpc:
-                port_prop.reference_size_auto = reference_size_auto
-            else:
+            if reference_size_auto is not None:
                 port_prop.SetReferenceSizeAuto(reference_size_auto)
-        ref_x = self.port_properties.get("reference_size_x", 0)
-        ref_y = self.port_properties.get("reference_size_y", 0)
-        if grpc:
-            port_prop.set_reference_size(self._pedb.value(ref_x), self._pedb.value(ref_y))
-            cp.port_properties = port_prop
-        else:
             port_prop.SetReferenceSize(self._pedb.edb_value(ref_x), self._pedb.edb_value(ref_y))
             cp.SetPortProperty(port_prop)
             self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
@@ -276,6 +327,8 @@ class CfgComponent(CfgBase):
                     l_enabled=i.get("inductance_enabled", False),
                     c_enabled=i.get("capacitance_enabled", False),
                 )
+        elif self.vendor_library_model:
+            self._set_vendor_library_model_to_edb()
         elif self.s_parameter_model:
             self.pyedb_obj.assign_s_param_model(
                 self.s_parameter_model["model_path"],
@@ -290,8 +343,64 @@ class CfgComponent(CfgBase):
                 self.spice_model["terminal_pairs"],
             )
 
+    def _set_vendor_library_model_to_edb(self):
+        """Resolve a vendor-library model entry and assign it to this component.
+
+        Steps:
+
+        1. Call ``get_vendor_libraries()`` to obtain the :class:`ComponentLib`.
+        2. Locate the :class:`ComponentPart` via vendor → series → part_name.
+        3. Export the scikit-rf ``Network`` to a Touchstone ``.s2p`` file
+           (cached in *touchstone_cache_dir* or a ``component_lib_cache`` folder
+           next to the ``.aedb`` file).
+        4. Call :meth:`assign_s_param_model` on the component instance.
+        """
+        import os
+        from pathlib import Path
+
+        vlm = self.vendor_library_model
+        vendor = vlm.get("vendor", "")
+        series = vlm.get("series", "")
+        part_name = vlm.get("part_name", "")
+        reference_net = vlm.get("reference_net", "GND")
+        cache_dir = vlm.get("touchstone_cache_dir")
+
+        if not (vendor and series and part_name):
+            raise ValueError(f"vendor_library_model requires 'vendor', 'series', and 'part_name' keys. Got: {vlm!r}")
+
+        comp_lib = self._pedb.components.get_vendor_libraries()
+
+        # Locate the ComponentPart in capacitors or inductors
+        part = None
+        for lib_section in (comp_lib.capacitors, comp_lib.inductors):
+            if vendor in lib_section:
+                series_dict = lib_section[vendor]
+                if series in series_dict and part_name in series_dict[series]:
+                    part = series_dict[series][part_name]
+                    break
+
+        if part is None:
+            available_caps = list(comp_lib.capacitors.keys())
+            available_inds = list(comp_lib.inductors.keys())
+            raise KeyError(
+                f"Vendor '{vendor}' / series '{series}' / part '{part_name}' not found in "
+                f"vendor libraries. Available capacitor vendors: {available_caps}, "
+                f"inductor vendors: {available_inds}."
+            )
+
+        # Determine Touchstone cache directory
+        if cache_dir is None:
+            cache_dir = os.path.join(os.path.dirname(self._pedb.edbpath), "component_lib_cache")
+        Path(cache_dir).mkdir(parents=True, exist_ok=True)
+
+        snp_path = part.write_touchstone(os.path.join(cache_dir, f"{part_name}.s2p"))
+
+        self.pyedb_obj.assign_s_param_model(snp_path, part_name, reference_net)
+
     def _set_solder_ball_properties_to_edb(self):
         sbp_data = self.solder_ball_properties
+        if not sbp_data:
+            return
         shape = sbp_data.get("shape")
         diameter = sbp_data.get("diameter")
         height = sbp_data.get("height")
@@ -301,21 +410,26 @@ class CfgComponent(CfgBase):
         if self._pedb.grpc:
             if not shape:
                 raise ValueError("Solderball shape must be either cylinder or spheroid")
-            cp = self.pyedb_obj.component_property
-            sbp = cp.solder_ball_property
             shape_lower = shape.lower()
-            if shape_lower == "cylinder":
-                sbp.set_diameter(self._pedb.value(diameter))
-            elif shape_lower == "spheroid":
-                sbp.set_diameter(self._pedb.value(diameter), self._pedb.value(mid_diameter))
-            else:
+            if shape_lower not in ("cylinder", "spheroid"):
                 raise ValueError("Solderball shape must be either cylinder or spheroid")
-            sbp.shape = shape_lower
-            sbp.height = self._pedb.value(height)
+            # See ``_persist_component_property``: we MUST instantiate a brand-
+            # new SolderBallProperty (mutating one returned from
+            # ``cp.solder_ball_property`` does not persist on EDB 2026.1, even
+            # with the base-class write-back).
+            cp = self.pyedb_obj.core.component_property
+            sbp = CoreSolderBallProperty.create()
+            if shape_lower == "cylinder":
+                sbp.set_diameter(self._pedb.value(diameter), self._pedb.value(diameter))
+            else:  # spheroid
+                sbp.set_diameter(self._pedb.value(diameter), self._pedb.value(mid_diameter))
+            sbp.shape = _solder_shape_mapping[shape_lower]
+            if height is not None:
+                sbp.height = self._pedb.value(height)
             if material is not None:
                 sbp.material_name = material
             cp.solder_ball_property = sbp
-            self.pyedb_obj.component_property = cp
+            _persist_component_property(self.pyedb_obj.core, cp)
         else:
             if not shape:
                 return
@@ -333,12 +447,8 @@ class CfgComponent(CfgBase):
         die_props = self.pyedb_obj.ic_die_properties
         die_type = die_props.die_type
         temp = {"type": "no_die" if die_type in _NO_DIE_TYPES else die_type}
-        if die_type in _NO_DIE_TYPES:
-            if self._pedb and self._pedb.grpc:
-                orientation = die_props.die_orientation
-                temp["orientation"] = orientation if orientation is not None else "chip_up"
-        else:
-            temp["orientation"] = die_props.die_orientation
+        temp["orientation"] = die_props.die_orientation
+        if die_type not in _NO_DIE_TYPES:
             if die_type == "wire_bond":
                 temp["height"] = str(die_props.height)
         self.ic_die_properties = temp
@@ -476,6 +586,56 @@ class CfgComponent(CfgBase):
         u1.set_s_parameter_model("cap_100nF", "/snp/cap.s2p", "GND")
         """
         self.s_parameter_model = {"model_name": model_name, "model_path": model_path, "reference_net": reference_net}
+
+    def set_vendor_library_model(
+        self,
+        vendor: str,
+        series: str,
+        part_name: str,
+        reference_net: str = "GND",
+        touchstone_cache_dir: str | None = None,
+    ):
+        """Assign a vendor component-library model (capacitor or inductor) to this component.
+
+        The Ansys component library is looked up at apply-time via
+        ``edbapp.components.get_vendor_libraries()``.  The scikit-rf
+        ``Network`` is exported to a Touchstone ``.s2p`` file and then
+        registered as an S-parameter model on the component instance.
+
+        Parameters
+        ----------
+        vendor : str
+            Vendor folder name inside the Ansys component library, e.g.
+            ``"Murata"``.
+        series : str
+            Series folder name, e.g. ``"GRM15"``.
+        part_name : str
+            Exact part name as listed in the library ``index.txt``, e.g.
+            ``"GRM155R71C104KA88"``.
+        reference_net : str, optional
+            Reference (ground) net for the model assignment.  Default is
+            ``"GND"``.
+        touchstone_cache_dir : str, optional
+            Directory where exported Touchstone files are cached.  When
+            ``None`` (default) a ``component_lib_cache`` folder next to the
+            ``.aedb`` file is used.
+
+        Examples
+        --------
+        cfg = edb.configuration.create_config_builder()
+        c1 = cfg.components.add("C1", part_type="capacitor")
+        c1.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88", reference_net="GND")
+        edb.configuration.run(cfg)
+        """
+        data = {
+            "vendor": vendor,
+            "series": series,
+            "part_name": part_name,
+            "reference_net": reference_net,
+        }
+        if touchstone_cache_dir is not None:
+            data["touchstone_cache_dir"] = touchstone_cache_dir
+        self.vendor_library_model = data
 
     def set_spice_model(self, model_name: str, model_path: str, sub_circuit: str = "", terminal_pairs=None):
         """Assign a SPICE subcircuit model to this component.
@@ -660,6 +820,7 @@ class CfgComponent(CfgBase):
             data["pin_pair_model"] = self.pin_pair_model
         for key in (
             "s_parameter_model",
+            "vendor_library_model",
             "spice_model",
             "netlist_model",
             "ic_die_properties",

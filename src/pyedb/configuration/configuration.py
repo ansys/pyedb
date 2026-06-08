@@ -291,7 +291,9 @@ class Configuration:
         self.__apply_with_logging("Applying package definitions", self.cfg_data.package_definitions.apply)
         self.__apply_with_logging("Applying modeler", self.apply_modeler)
         self.__apply_with_logging("Placing ports", self.cfg_data.ports.apply)
+        self._pedb.layout.use_cache = True
         self.apply_terminals()
+        self._pedb.layout.use_cache = False
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
         self.apply_operations()
         self.apply_setups()
@@ -1197,7 +1199,7 @@ class Configuration:
                     phase=i.source_phase,
                     terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
-                    hfss_type=i.hfss_type if i.hfss_type else "Wave",
+                    hfss_type=i.hfss_type if i.hfss_type else "Gap",
                 )
             elif i.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                 manager.add_pin_group_terminal(
@@ -1297,7 +1299,7 @@ class Configuration:
             data["sources"] = self.cfg_data.sources.get_data_from_db()
         if kwargs.get("ports", False):
             data["ports"] = self.cfg_data.ports.get_data_from_db()
-        if kwargs.get("components", False) or kwargs.get("s_parameters", False):
+        if kwargs.get("components", False) or kwargs.get("s_parameters", False) or kwargs.get("spice_models", False):
             self.cfg_data.components.retrieve_parameters_from_edb()
             components = []
             for i in self.cfg_data.components.components:
@@ -1307,8 +1309,10 @@ class Configuration:
 
             if kwargs.get("components", False):
                 data["components"] = components
-            elif kwargs.get("s_parameters", False):
+            if kwargs.get("s_parameters", False):
                 data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db(components)
+            if kwargs.get("spice_models", False):
+                data["spice_models"] = self.cfg_data.spice_models.get_data_from_db(components)
         if kwargs.get("nets", False):
             data["nets"] = self.cfg_data.nets.get_data_from_db()
         if kwargs.get("pin_groups", False):
@@ -1342,6 +1346,7 @@ class Configuration:
         general=True,
         variables=True,
         terminals=False,
+        spice_models=True,
     ):
         """Export the configuration data from layout to a file.
 
@@ -1379,6 +1384,10 @@ class Configuration:
             Whether to export variable.
         terminals : bool
             Whether to export terminals. Alternative to ports and sources.
+        spice_models : bool
+            Whether to export SPICE model assignments grouped by component
+            definition (top-level ``spice_models`` section). Default is
+            ``True``.
         Returns
         -------
         bool
@@ -1400,6 +1409,7 @@ class Configuration:
             general=general,
             variables=variables,
             terminals=terminals,
+            spice_models=spice_models,
         )
 
         file_path = file_path if isinstance(file_path, Path) else Path(file_path)

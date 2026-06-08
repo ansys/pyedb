@@ -169,7 +169,16 @@ class PrimitivesQuery:
     ) -> dict[str, list[Primitive]]:
         grouped_primitives = {key: [] for key in initial_keys or []}
         for primitive in primitives if primitives is not None else self.primitives:
-            grouped_primitives.setdefault(getattr(primitive, attribute_name), []).append(primitive)
+            try:
+                attribute_value = getattr(primitive, attribute_name)
+            except Exception as exc:  # pragma: no cover - defensive against gRPC server errors
+                self._pedb.logger.debug(
+                    "Skipping primitive while grouping by %s due to attribute access error: %s",
+                    attribute_name,
+                    exc,
+                )
+                continue
+            grouped_primitives.setdefault(attribute_value, []).append(primitive)
         return grouped_primitives
 
     def _wrap_primitive(self, primitive) -> Any | None:
@@ -289,24 +298,63 @@ class PrimitivesQuery:
         net_name_set = self._as_filter_set(net_name)
         prim_type_set = self._as_filter_set(prim_type)
 
-        # Optimization: if a specific layer is requested, use primitives_by_layer
-        # to avoid fetching all primitives (which can hit corrupt types on gRPC server)
-        if layer_name_set is not None:
+        # Optimization: if every requested layer is a stackup layer, use the cached
+        # ``primitives_by_layer`` mapping to avoid wrapping every primitive in the
+        # design (which can hit corrupt types on the gRPC server).
+        if layer_name_set is not None and layer_name_set.issubset(self._pedb.stackup.layers.keys()):
+            primitives_by_layer = self.primitives_by_layer
             primitives_list = []
             for layer in layer_name_set:
-                primitives_list.extend(self.primitives_by_layer.get(layer, []))
+                primitives_list.extend(primitives_by_layer.get(layer, []))
         else:
-            primitives_list = self.primitives
+            primitives_list = list(self._iter_primitives_with_voids())
 
         return [
             primitive
             for primitive in primitives_list
-            if (layer_name_set is None or primitive.layer_name in layer_name_set)
-            and (name_set is None or primitive.aedt_name in name_set)
-            and (net_name_set is None or primitive.net_name in net_name_set)
-            and (prim_type_set is None or primitive.primitive_type in prim_type_set or primitive.type in prim_type_set)
-            and (is_void is None or primitive.is_void == is_void)
+            if self._primitive_matches_filters(
+                primitive,
+                layer_name_set=layer_name_set,
+                name_set=name_set,
+                net_name_set=net_name_set,
+                prim_type_set=prim_type_set,
+                is_void=is_void,
+            )
         ]
+
+    def _primitive_matches_filters(
+        self,
+        primitive,
+        layer_name_set: set | None,
+        name_set: set | None,
+        net_name_set: set | None,
+        prim_type_set: set | None,
+        is_void: bool | None,
+    ) -> bool:
+        """Return ``True`` when *primitive* satisfies all provided filters.
+
+        Each attribute access is guarded so that primitives whose underlying gRPC
+        objects are in an inconsistent state on the server (e.g. ``"Illegal
+        operation on a null Layer object"``) are silently skipped instead of
+        raising and aborting the whole query.
+        """
+        try:
+            if layer_name_set is not None and primitive.layer_name not in layer_name_set:
+                return False
+            if name_set is not None and primitive.aedt_name not in name_set:
+                return False
+            if net_name_set is not None and primitive.net_name not in net_name_set:
+                return False
+            if prim_type_set is not None and (
+                primitive.primitive_type not in prim_type_set and primitive.type not in prim_type_set
+            ):
+                return False
+            if is_void is not None and primitive.is_void != is_void:
+                return False
+        except Exception as exc:  # pragma: no cover - defensive against gRPC server errors
+            self._pedb.logger.debug("Skipping primitive while filtering due to attribute access error: %s", exc)
+            return False
+        return True
 
     @property
     def primitives_by_aedt_name(self) -> dict[str, Primitive]:
@@ -572,11 +620,59 @@ class Layout(PrimitivesQuery):
         self.core = core
         self._pedb = pedb
         self.__primitives = []
+        self.__use_cache = False
         self.__padstack_instances = {}
 
     @property
     def layout_instance(self) -> Any:
         return self.core.layout_instance
+
+    @property
+    def use_cache(self):
+        """bool: Enable or disable layout caching.
+
+        When enabled, caches padstack instances and primitives for faster access.
+        """
+        return self.__use_cache
+
+    @use_cache.setter
+    def use_cache(self, value: bool):
+        """Set cache usage and refresh if enabled.
+
+        Parameters
+        ----------
+        value : bool
+            Whether to enable caching.
+        """
+        self.__use_cache = value
+        if self.__use_cache:
+            self.refresh_cache()
+
+    def refresh_cache(self):
+        """Refresh the layout cache.
+
+        Caches padstack instances and primitives from the core object.
+        """
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
+        self._pedb.logger.info("Caching layout...")
+        self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
+
+        self.__primitives = []
+        for primitive in self.core.primitives:
+            wrapped_primitive = self._wrap_primitive(primitive)
+            if wrapped_primitive is not None:
+                self.__primitives.append(wrapped_primitive)
+
+        self._pedb.logger.info("Caching finished.")
+
+    def clear_cache(self):
+        """Clear the layout cache.
+
+        Clears cached padstack instances and primitives.
+        """
+        self.__padstack_instances = []
+        self.__primitives = []
 
     @property
     def terminals(
@@ -695,9 +791,12 @@ class Layout(PrimitivesQuery):
     @property
     def padstack_instances(self) -> list[PadstackInstance]:
         """Get all padstack instances in a list."""
-        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+        if self.__use_cache:
+            return self.__padstack_instances
+        else:
+            from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-        return [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
+            return [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
     @property
     def voltage_regulators(self) -> list[VoltageRegulator]:

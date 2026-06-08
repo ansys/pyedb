@@ -59,6 +59,17 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
 
+# ansys-edb-core >= 0.4: SolderBallProperty, DieProperty, PortProperty each have their own
+# direct RPC stubs — mutations persist immediately without a SetComponentProperty write-back.
+try:
+    from ansys.edb.core.definition.ic_component_property import (
+        ICComponentProperty as _ICComponentProperty,  # noqa: F401
+    )
+
+    _EDB_CORE_TYPED_COMPONENT_PROPERTY = True
+except ImportError:
+    _EDB_CORE_TYPED_COMPONENT_PROPERTY = False
+
 component_type_mapping = {
     CoreComponentType.OTHER: "other",
     CoreComponentType.RESISTOR: "resistor",
@@ -1207,7 +1218,15 @@ class Component:
         str
             Component part name.
         """
-        return self.core.component_def.name
+        from ansys.edb.core.inner.exceptions import InvalidArgumentException
+
+        try:
+            return self.core.component_def.name
+        except InvalidArgumentException:
+            self._pedb.logger.warning(
+                f"Component '{self.name}' has no component definition. Returning empty part name."
+            )
+            return ""
 
     @part_name.setter
     def part_name(self, name):  # pragma: no cover
@@ -1370,7 +1389,7 @@ class Component:
                 pname, pnumber = pair
                 if pname not in pin_names_sp:  # pragma: no cover
                     raise ValueError(f"Pin name {pname} doesn't exist in {file_path}.")
-                model.core.add_terminal(str(pnumber), pname)
+                model.core.add_terminal(pname, str(pnumber))
         else:
             for idx, pname in enumerate(pin_names_sp):
                 model.core.add_terminal(pname, str(idx + 1))
@@ -1577,12 +1596,19 @@ class SolderBallProperty:
         return self._component.core.component_property.solder_ball_property
 
     def _write(self, mutate_fn):
-        """Helper: fetch raw core solder ball property → mutate → write back."""
+        """Helper: fetch raw core solder ball property → mutate → write back if needed.
+
+        With ansys-edb-core >= 0.4 (typed component property API) each SolderBallProperty
+        mutation method issues its own direct RPC call, so no write-back is required.
+        With older releases the entire component property must be written back.
+        """
         cmp_property = self._component.core.component_property
         sbp = cmp_property.solder_ball_property
         mutate_fn(sbp)
-        cmp_property.solder_ball_property = sbp
-        self._component.core.component_property = cmp_property
+        if not _EDB_CORE_TYPED_COMPONENT_PROPERTY:
+            # Old API: mutations on sbp are local; write the whole property back.
+            cmp_property.solder_ball_property = sbp
+            self._component.core.component_property = cmp_property
 
     @property
     def is_null(self) -> bool:

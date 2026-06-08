@@ -384,3 +384,268 @@ class TestComponentsConfig:
         cc = CfgComponents(components_data=data)
         assert len(cc.components) == 1
         assert cc.components[0].reference_designator == "R1"
+
+
+# ---------------------------------------------------------------------------
+# Vendor library model tests
+# ---------------------------------------------------------------------------
+
+
+class TestVendorLibraryModel:
+    """Unit tests for CfgComponent.set_vendor_library_model() and the
+    vendor_library_model field serialization / apply logic.
+
+    All tests are license-free and rely entirely on ``unittest.mock``.
+    """
+
+    # ------------------------------------------------------------------
+    # set_vendor_library_model – field population
+    # ------------------------------------------------------------------
+
+    def test_set_vendor_library_model_basic(self):
+        """set_vendor_library_model() stores all mandatory fields correctly."""
+        c = CfgComponent("C1", part_type="capacitor")
+        c.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88", reference_net="GND")
+        vlm = c.vendor_library_model
+        assert vlm["vendor"] == "Murata"
+        assert vlm["series"] == "GRM15"
+        assert vlm["part_name"] == "GRM155R71C104KA88"
+        assert vlm["reference_net"] == "GND"
+
+    def test_set_vendor_library_model_default_reference_net(self):
+        """reference_net defaults to 'GND' when not provided."""
+        c = CfgComponent("C1")
+        c.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88")
+        assert c.vendor_library_model["reference_net"] == "GND"
+
+    def test_set_vendor_library_model_with_cache_dir(self):
+        """Optional touchstone_cache_dir is stored when given."""
+        c = CfgComponent("C1")
+        c.set_vendor_library_model("TDK", "C_MHZ", "C1608C0G1H103J080AA", touchstone_cache_dir="/tmp/snp")
+        assert c.vendor_library_model["touchstone_cache_dir"] == "/tmp/snp"
+
+    def test_set_vendor_library_model_no_cache_dir_key_when_none(self):
+        """touchstone_cache_dir must not appear in the dict when not supplied."""
+        c = CfgComponent("C1")
+        c.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88")
+        assert "touchstone_cache_dir" not in c.vendor_library_model
+
+    def test_vendor_library_model_default_empty(self):
+        """vendor_library_model is an empty dict on a freshly created component."""
+        c = CfgComponent("C1")
+        assert c.vendor_library_model == {}
+
+    # ------------------------------------------------------------------
+    # to_dict – serialization
+    # ------------------------------------------------------------------
+
+    def test_to_dict_includes_vendor_library_model(self):
+        """to_dict() must contain vendor_library_model when set."""
+        c = CfgComponent("C1", part_type="capacitor")
+        c.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88", "GND")
+        d = c.to_dict()
+        assert "vendor_library_model" in d
+        assert d["vendor_library_model"]["vendor"] == "Murata"
+        assert d["vendor_library_model"]["part_name"] == "GRM155R71C104KA88"
+
+    def test_to_dict_excludes_vendor_library_model_when_empty(self):
+        """to_dict() must NOT include vendor_library_model when it is empty."""
+        c = CfgComponent("C1")
+        assert "vendor_library_model" not in c.to_dict()
+
+    def test_to_dict_does_not_include_s_parameter_model_when_vendor_set(self):
+        """Setting vendor_library_model must not pollute s_parameter_model."""
+        c = CfgComponent("C1", part_type="capacitor")
+        c.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88")
+        d = c.to_dict()
+        assert "s_parameter_model" not in d
+
+    def test_round_trip_via_components_data(self):
+        """CfgComponents can reconstruct a component with vendor_library_model from a dict."""
+        data = [
+            {
+                "reference_designator": "C1",
+                "part_type": "capacitor",
+                "vendor_library_model": {
+                    "vendor": "Murata",
+                    "series": "GRM15",
+                    "part_name": "GRM155R71C104KA88",
+                    "reference_net": "GND",
+                },
+            }
+        ]
+        cc = CfgComponents(components_data=data)
+        assert cc.components[0].vendor_library_model["vendor"] == "Murata"
+        assert cc.components[0].vendor_library_model["part_name"] == "GRM155R71C104KA88"
+
+    def test_round_trip_to_list(self):
+        """to_list() preserves vendor_library_model through a round-trip."""
+        cc = CfgComponents()
+        c = cc.add("C1", part_type="capacitor")
+        c.set_vendor_library_model("TDK", "C_MHZ", "C1608C0G1H103J080AA", "GND")
+        lst = cc.to_list()
+        assert lst[0]["vendor_library_model"]["vendor"] == "TDK"
+        assert lst[0]["vendor_library_model"]["series"] == "C_MHZ"
+
+    # ------------------------------------------------------------------
+    # _set_vendor_library_model_to_edb – apply logic (fully mocked)
+    # ------------------------------------------------------------------
+
+    def _make_mock_pedb(self, part, vendor="Murata", series="GRM15", part_name="GRM155R71C104KA88", tmp_path=None):
+        """Build a minimal mock pedb that serves ``get_vendor_libraries()``."""
+        from pyedb.component_libraries.ansys_components import ComponentLib
+
+        comp_lib = ComponentLib()
+        comp_lib.capacitors = {vendor: {series: {part_name: part}}}
+        comp_lib.inductors = {}
+
+        mock_pedb = MagicMock()
+        mock_pedb.components.get_vendor_libraries.return_value = comp_lib
+        mock_pedb.edbpath = str(tmp_path or "/fake/design.aedb")
+        return mock_pedb
+
+    def test_apply_calls_write_touchstone(self, tmp_path):
+        """_set_vendor_library_model_to_edb calls write_touchstone on the ComponentPart."""
+        mock_part = MagicMock()
+        snp_file = str(tmp_path / "GRM155R71C104KA88.s2p")
+        mock_part.write_touchstone.return_value = snp_file
+
+        mock_pedb = self._make_mock_pedb(mock_part, tmp_path=tmp_path)
+        mock_pyedb_obj = MagicMock()
+
+        c = CfgComponent(mock_pedb, mock_pyedb_obj, reference_designator="C1", part_type="capacitor")
+        c.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88", "GND")
+        c._set_vendor_library_model_to_edb()
+
+        mock_part.write_touchstone.assert_called_once()
+        written_path = mock_part.write_touchstone.call_args[0][0]
+        assert "GRM155R71C104KA88" in written_path
+
+    def test_apply_calls_assign_s_param_model(self, tmp_path):
+        """assign_s_param_model is called with the exported Touchstone path."""
+        mock_part = MagicMock()
+        snp_file = str(tmp_path / "GRM155R71C104KA88.s2p")
+        mock_part.write_touchstone.return_value = snp_file
+
+        mock_pedb = self._make_mock_pedb(mock_part, tmp_path=tmp_path)
+        mock_pyedb_obj = MagicMock()
+
+        c = CfgComponent(mock_pedb, mock_pyedb_obj, reference_designator="C1", part_type="capacitor")
+        c.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88", "GND")
+        c._set_vendor_library_model_to_edb()
+
+        mock_pyedb_obj.assign_s_param_model.assert_called_once_with(snp_file, "GRM155R71C104KA88", "GND")
+
+    def test_apply_with_custom_cache_dir(self, tmp_path):
+        """touchstone_cache_dir is used as the export directory when provided."""
+        cache_dir = str(tmp_path / "my_cache")
+        mock_part = MagicMock()
+        mock_part.write_touchstone.return_value = str(tmp_path / "p.s2p")
+
+        mock_pedb = self._make_mock_pedb(mock_part, tmp_path=tmp_path)
+        mock_pyedb_obj = MagicMock()
+
+        c = CfgComponent(mock_pedb, mock_pyedb_obj, reference_designator="C1", part_type="capacitor")
+        c.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88", touchstone_cache_dir=cache_dir)
+        c._set_vendor_library_model_to_edb()
+
+        written_path = mock_part.write_touchstone.call_args[0][0]
+        assert written_path.startswith(cache_dir)
+
+    def test_apply_inductor_found_in_inductors(self, tmp_path):
+        """Inductors are located from the inductors library section."""
+        from pyedb.component_libraries.ansys_components import ComponentLib
+
+        mock_part = MagicMock()
+        snp_file = str(tmp_path / "LQW18AN4N7D00D.s2p")
+        mock_part.write_touchstone.return_value = snp_file
+
+        comp_lib = ComponentLib()
+        comp_lib.capacitors = {}
+        comp_lib.inductors = {"Murata": {"LQW18A": {"LQW18AN4N7D00D": mock_part}}}
+
+        mock_pedb = MagicMock()
+        mock_pedb.components.get_vendor_libraries.return_value = comp_lib
+        mock_pedb.edbpath = str(tmp_path / "design.aedb")
+        mock_pyedb_obj = MagicMock()
+
+        c = CfgComponent(mock_pedb, mock_pyedb_obj, reference_designator="L1", part_type="inductor")
+        c.set_vendor_library_model("Murata", "LQW18A", "LQW18AN4N7D00D", "GND")
+        c._set_vendor_library_model_to_edb()
+
+        mock_pyedb_obj.assign_s_param_model.assert_called_once_with(snp_file, "LQW18AN4N7D00D", "GND")
+
+    def test_apply_missing_vendor_raises_key_error(self, tmp_path):
+        """KeyError is raised when the requested vendor does not exist."""
+        from pyedb.component_libraries.ansys_components import ComponentLib
+
+        comp_lib = ComponentLib()
+        comp_lib.capacitors = {}
+        comp_lib.inductors = {}
+
+        mock_pedb = MagicMock()
+        mock_pedb.components.get_vendor_libraries.return_value = comp_lib
+        mock_pedb.edbpath = str(tmp_path / "design.aedb")
+        mock_pyedb_obj = MagicMock()
+
+        c = CfgComponent(mock_pedb, mock_pyedb_obj, reference_designator="C1", part_type="capacitor")
+        c.set_vendor_library_model("NonExistentVendor", "SomeSeries", "SomePart")
+        with pytest.raises(KeyError, match="NonExistentVendor"):
+            c._set_vendor_library_model_to_edb()
+
+    def test_apply_missing_part_raises_key_error(self, tmp_path):
+        """KeyError is raised when the requested part is not in the series."""
+        from pyedb.component_libraries.ansys_components import ComponentLib
+
+        comp_lib = ComponentLib()
+        comp_lib.capacitors = {"Murata": {"GRM15": {"OTHER_PART": MagicMock()}}}
+        comp_lib.inductors = {}
+
+        mock_pedb = MagicMock()
+        mock_pedb.components.get_vendor_libraries.return_value = comp_lib
+        mock_pedb.edbpath = str(tmp_path / "design.aedb")
+        mock_pyedb_obj = MagicMock()
+
+        c = CfgComponent(mock_pedb, mock_pyedb_obj, reference_designator="C1", part_type="capacitor")
+        c.set_vendor_library_model("Murata", "GRM15", "MISSING_PART")
+        with pytest.raises(KeyError, match="MISSING_PART"):
+            c._set_vendor_library_model_to_edb()
+
+    def test_apply_empty_fields_raises_value_error(self, tmp_path):
+        """ValueError is raised when vendor/series/part_name are empty strings."""
+        mock_pedb = MagicMock()
+        mock_pedb.edbpath = str(tmp_path / "design.aedb")
+        mock_pyedb_obj = MagicMock()
+
+        c = CfgComponent(mock_pedb, mock_pyedb_obj, reference_designator="C1")
+        c.vendor_library_model = {"vendor": "", "series": "", "part_name": ""}
+        with pytest.raises(ValueError, match="vendor_library_model requires"):
+            c._set_vendor_library_model_to_edb()
+
+    # ------------------------------------------------------------------
+    # _set_model_properties_to_edb dispatch
+    # ------------------------------------------------------------------
+
+    def test_dispatch_uses_vendor_library_over_s_parameter(self, tmp_path):
+        """vendor_library_model takes priority over s_parameter_model in dispatch."""
+        from unittest.mock import patch
+
+        mock_pedb = MagicMock()
+        mock_pyedb_obj = MagicMock()
+
+        c = CfgComponent(mock_pedb, mock_pyedb_obj, reference_designator="C1", part_type="capacitor")
+        c.set_vendor_library_model("Murata", "GRM15", "GRM155R71C104KA88")
+        c.s_parameter_model = {"model_name": "other", "model_path": "/f.s2p", "reference_net": "GND"}
+
+        with patch.object(c, "_set_vendor_library_model_to_edb") as mock_vlm:
+            c._set_model_properties_to_edb()
+            mock_vlm.assert_called_once()
+            mock_pyedb_obj.assign_s_param_model.assert_not_called()
+
+    def test_dispatch_falls_through_to_s_parameter_when_no_vendor_model(self):
+        """s_parameter_model is used when vendor_library_model is empty."""
+        mock_pyedb_obj = MagicMock()
+        c = CfgComponent(None, mock_pyedb_obj, reference_designator="C1")
+        c.s_parameter_model = {"model_name": "m1", "model_path": "/f.s2p", "reference_net": "GND"}
+        c._set_model_properties_to_edb()
+        mock_pyedb_obj.assign_s_param_model.assert_called_once_with("/f.s2p", "m1", "GND")

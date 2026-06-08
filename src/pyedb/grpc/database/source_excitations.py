@@ -2282,7 +2282,9 @@ class SourceExcitation(SourceExcitationInternal):
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         pos_edge_term.impedance = self._pedb._value_setter(impedance)
         if reference_layer:
-            reference_layer = self._pedb.stackup.signal_layers[reference_layer]
+            if reference_layer not in self._pedb.stackup.signal_layers:
+                self._pedb.logger.error(f"Reference layer '{reference_layer}' not found in signal layers.")
+                return None
             pos_edge_term.reference_layer = reference_layer
         prop = ", ".join(
             [

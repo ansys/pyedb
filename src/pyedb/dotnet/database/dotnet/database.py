@@ -202,7 +202,7 @@ class NetDotNet:
     def __init__(self, app, net_obj=None):
         self.net = app._edb.Cell.Net
 
-        self.core = app._edb
+        self.core = net_obj
         self._app = app
         self.net_obj = net_obj
 

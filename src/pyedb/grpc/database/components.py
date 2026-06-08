@@ -35,6 +35,20 @@ from ansys.edb.core.definition.solder_ball_property import (
     SolderballShape as CoreSolderballShape,
 )
 from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
+
+# ansys-edb-core >= 0.4 introduced type-specific component property classes (ICComponentProperty,
+# IOComponentProperty, RLCComponentProperty) whose sub-property setters (die_property,
+# solder_ball_property, port_property) each issue their own direct RPC calls — no monolithic
+# SetComponentProperty write-back is required or accepted.  Older releases expose a flat
+# ComponentProperty object that must be written back via the component setter.
+try:
+    from ansys.edb.core.definition.ic_component_property import (  # noqa: F401
+        ICComponentProperty as _ICComponentProperty,
+    )
+
+    _EDB_CORE_TYPED_COMPONENT_PROPERTY = True
+except ImportError:
+    _EDB_CORE_TYPED_COMPONENT_PROPERTY = False
 from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSPICEModel
 from ansys.edb.core.hierarchy.structure3d import Structure3D as CoreStructure3D
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
@@ -273,6 +287,8 @@ class Components(object):
                 if model_type == "RLC":
                     comp_definition.assign_rlc_model(p["Res"], p["Ind"], p["Cap"], p["Is_parallel"])
                 else:
+                    if "Model_name" not in p:
+                        continue
                     model_name = p["Model_name"]
                     file_path = data[model_type][model_name]
                     if model_type == "SParameterModel":
@@ -336,7 +352,8 @@ class Components(object):
                             data["SPICEModel"][model.name] = model.file_path
                     else:
                         model = comp.netlist_model
-                        data["Definitions"][part_name]["Model_name"] = model.netlist
+                        if model is not None:
+                            data["Definitions"][part_name]["Model_name"] = model.netlist
 
         with codecs.open(file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
@@ -1319,44 +1336,85 @@ class Components(object):
         else:
             sball_shape = CoreSolderballShape.SOLDERBALL_SPHEROID
 
-        cmp_property = cmp.component_property
-        if cmp.core.component_type == CoreComponentType.IC:
-            ic_die_prop = cmp_property.die_property
-            ic_die_prop.die_type = CoreDieType.FLIPCHIP
-            # Top layer → chip_down (die faces down toward board), bottom layer → chip_up
-            if cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
-                chip_orientation = "chip_down"
-            else:
-                chip_orientation = "chip_up"
-            if chip_orientation.lower() == "chip_up":
-                ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
-            else:
-                ic_die_prop.die_orientation = CoreDieOrientation.CHIP_DOWN
-            cmp_property.die_property = ic_die_prop
+        if _EDB_CORE_TYPED_COMPONENT_PROPERTY:
+            # ansys-edb-core >= 0.4: typed component property — each sub-property setter
+            # issues its own direct RPC call; no SetComponentProperty write-back is needed
+            # (and would fail on the new server).
+            cmp_property = cmp.core.component_property
+            if cmp_property is None:
+                self._logger.error(f"Component {cmp.name} has no component property.")
+                return False
 
-        solder_ball_prop = cmp_property.solder_ball_property
-        solder_ball_prop.set_diameter(self._pedb._value_setter(sball_diam), self._pedb._value_setter(sball_mid_diam))
-        solder_ball_prop.height = self._pedb._value_setter(sball_height)
+            if cmp.core.component_type == CoreComponentType.IC:
+                ic_die_prop = cmp_property.die_property
+                ic_die_prop.die_type = CoreDieType.FLIPCHIP
+                # Top layer → chip_down (die faces down toward board), bottom layer → chip_up
+                if cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
+                    chip_orientation = "chip_down"
+                else:
+                    chip_orientation = "chip_up"
+                if chip_orientation.lower() == "chip_up":
+                    ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
+                else:
+                    ic_die_prop.die_orientation = CoreDieOrientation.CHIP_DOWN
 
-        solder_ball_prop.shape = sball_shape
-        if material_name:
-            if not material_name in self._pedb.materials:
-                self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
-            solder_ball_prop.material_name = material_name
-        cmp_property.solder_ball_property = solder_ball_prop
-        cmp.component_property = cmp_property
-
-        # Re-fetch cmp_property after write-back to avoid operating on a stale/null gRPC object
-        cmp_property = cmp.component_property
-        port_prop = cmp_property.port_property
-        port_prop.reference_height = self._pedb._value_setter(reference_height)
-        port_prop.reference_size_auto = auto_reference_size
-        if not auto_reference_size:
-            port_prop.set_reference_size(
-                self._pedb._value_setter(reference_size_x), self._pedb._value_setter(reference_size_y)
+            solder_ball_prop = cmp_property.solder_ball_property
+            solder_ball_prop.set_diameter(
+                self._pedb._value_setter(sball_diam), self._pedb._value_setter(sball_mid_diam)
             )
-        cmp_property.port_property = port_prop
-        cmp.component_property = cmp_property
+            solder_ball_prop.height = self._pedb._value_setter(sball_height)
+            solder_ball_prop.shape = sball_shape
+            if material_name:
+                if not material_name in self._pedb.materials:
+                    self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
+                solder_ball_prop.material_name = material_name
+
+            port_prop = cmp_property.port_property
+            port_prop.reference_height = self._pedb._value_setter(reference_height)
+            port_prop.reference_size_auto = auto_reference_size
+            if not auto_reference_size:
+                port_prop.set_reference_size(
+                    self._pedb._value_setter(reference_size_x), self._pedb._value_setter(reference_size_y)
+                )
+        else:
+            # ansys-edb-core < 0.4: flat ComponentProperty — must write back via SetComponentProperty.
+            cmp_property = cmp.component_property
+            if cmp.core.component_type == CoreComponentType.IC:
+                ic_die_prop = cmp_property.die_property
+                ic_die_prop.die_type = CoreDieType.FLIPCHIP
+                if cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
+                    chip_orientation = "chip_down"
+                else:
+                    chip_orientation = "chip_up"
+                if chip_orientation.lower() == "chip_up":
+                    ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
+                else:
+                    ic_die_prop.die_orientation = CoreDieOrientation.CHIP_DOWN
+                cmp_property.die_property = ic_die_prop
+
+            solder_ball_prop = cmp_property.solder_ball_property
+            solder_ball_prop.set_diameter(
+                self._pedb._value_setter(sball_diam), self._pedb._value_setter(sball_mid_diam)
+            )
+            solder_ball_prop.height = self._pedb._value_setter(sball_height)
+            solder_ball_prop.shape = sball_shape
+            if material_name:
+                if not material_name in self._pedb.materials:
+                    self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
+                solder_ball_prop.material_name = material_name
+            cmp_property.solder_ball_property = solder_ball_prop
+            cmp.component_property = cmp_property
+
+            cmp_property = cmp.component_property
+            port_prop = cmp_property.port_property
+            port_prop.reference_height = self._pedb._value_setter(reference_height)
+            port_prop.reference_size_auto = auto_reference_size
+            if not auto_reference_size:
+                port_prop.set_reference_size(
+                    self._pedb._value_setter(reference_size_x), self._pedb._value_setter(reference_size_y)
+                )
+            cmp_property.port_property = port_prop
+            cmp.component_property = cmp_property
         return True
 
     def set_component_rlc(
@@ -2107,7 +2165,7 @@ class Components(object):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edb_file = r"C:\my_edb_file.aedb"
+        >>> edb_file = r"C:\\my_edb_file.aedb"
         >>> edb = Edb(edb_file)
         >>> for cmp in list(edb.components.instances.keys()):
         >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)

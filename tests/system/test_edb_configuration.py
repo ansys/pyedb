@@ -897,7 +897,6 @@ class TestClassTerminals(BaseTestClass):
         "impedance": 1,
         "is_circuit_port": False,
         "boundary_type": "PortBoundary",
-        "hfss_type": "Gap",
         "terminal_type": "padstack_instance",
         "padstack_instance": "U7-M7",
         "layer": None,
@@ -966,10 +965,42 @@ class TestClassTerminals(BaseTestClass):
         "name": "bundle_terminal",
     }
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet always return Wave-port type.")
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
+        edbapp.configuration.run()
+        terminal1 = edbapp.ports["terminal1"]
+        assert terminal1.impedance == 1
+        assert terminal1.padstack_instance.aedt_name == "U7-M7"
+
+        exported = edbapp.configuration.get_data_from_db(terminals=True)["terminals"]
+        assert exported[0] == {
+            "name": "terminal1",
+            "impedance": 1.0,
+            "is_circuit_port": False,
+            "amplitude": 1.0,
+            "phase": 0.0,
+            "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
+            "boundary_type": "port" if edbapp.grpc else "PortBoundary",
+            "hfss_type": "Gap",
+            "terminal_type": "padstack_instance",
+            "padstack_instance": "U7-M7",
+            "padstack_instance_id": 4294971660,
+        }
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_padstack_instance_terminal_b(self):
+        terminal = {
+            "name": "terminal1",
+            "impedance": 1,
+            "is_circuit_port": False,
+            "boundary_type": "PortBoundary",
+            "terminal_type": "padstack_instance",
+            "padstack_instance_id": 4294971660,
+            "layer": None,
+        }
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.configuration.load({"terminals": [terminal]}, append=False)
         edbapp.configuration.run()
         terminal1 = edbapp.ports["terminal1"]
         assert terminal1.impedance == 1
@@ -1880,11 +1911,7 @@ class TestComponent(BaseTestClass):
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
         component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
         assert component["ic_die_properties"]["type"] in ["none", "no_die", "flip_chip", "flipchip"]
-        if db.grpc:
-            # grpc does have this property not DotNet.
-            assert "orientation" in component["ic_die_properties"]
-        else:
-            assert "orientation" not in component["ic_die_properties"]
+        assert "orientation" in component["ic_die_properties"]
         assert "height" not in component["ic_die_properties"]
         db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
