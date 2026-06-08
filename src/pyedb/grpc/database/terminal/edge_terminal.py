@@ -83,6 +83,38 @@ class EdgeTerminal(Terminal):
         return Component(self._pedb, self.core.component)
 
     @property
+    def reference_layer(self):
+        """Reference layer of the terminal.
+
+        Returns
+        -------
+        str or None
+            Name of the reference layer, or ``None`` if not set.
+        """
+        try:
+            layer = self.core.reference_layer
+            return layer.name if layer and not layer.is_null else None
+        except AttributeError:
+            return None
+
+    @reference_layer.setter
+    def reference_layer(self, value):
+        """Set the reference layer of the terminal.
+
+        Parameters
+        ----------
+        value : str, :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`, or gRPC Layer
+            Reference layer name, pyedb StackupLayer wrapper, or raw gRPC Layer object.
+        """
+        from pyedb.grpc.database.layers.stackup_layer import StackupLayer
+
+        if isinstance(value, StackupLayer):
+            self.core.reference_layer = value.core
+        else:
+            # Accepts a string (layer name) or a raw gRPC Layer object directly.
+            self.core.reference_layer = value
+
+    @property
     def is_circuit_port(self) -> bool:
         """Is circuit port.
 

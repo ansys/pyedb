@@ -468,3 +468,91 @@ class TestNormalizeNetListEdgeCases:
     def test_non_string_non_net_ignored(self):
         result = SourceExcitationInternal._normalize_net_list([123, None, "GND"])
         assert result == {"GND"}
+
+
+def _make_excitation_for_edge_port():
+    """Build a SourceExcitation with the _create_edge_terminal and stackup mocked."""
+    exc, pedb = _make_excitation()
+
+    # Mock the edge terminal returned by _create_edge_terminal
+    mock_term = MagicMock()
+    mock_term.is_null = False
+    mock_term.name = "P1"
+    exc._create_edge_terminal = MagicMock(return_value=mock_term)
+
+    # Mock _value_setter so impedance assignment doesn't crash
+    pedb._value_setter = MagicMock(return_value=50)
+
+    # Mock set_product_solver_option on the terminal
+    mock_term.set_product_solver_option = MagicMock()
+
+    return exc, pedb, mock_term
+
+
+@pytest.mark.grpc
+class TestCreateEdgePortVerticalReferenceLayer:
+    """Regression tests – create_edge_port_vertical must not raise when reference_layer is specified."""
+
+    def test_no_reference_layer_succeeds(self):
+        """Without reference_layer the method returns the port name without touching reference_layer."""
+        exc, pedb, mock_term = _make_excitation_for_edge_port()
+        # signal_layers not consulted when reference_layer is None
+        result = exc.create_edge_port_vertical(
+            prim_id=1,
+            point_on_edge=[0.0, 0.5e-3],
+            port_name="P1",
+        )
+        assert result == "P1"
+        # stackup.signal_layers should not have been accessed at all
+        pedb.stackup.signal_layers.__contains__.assert_not_called()
+
+    def test_valid_reference_layer_sets_terminal_reference_layer(self):
+        """With a valid reference_layer string the setter is called on the terminal."""
+        exc, pedb, mock_term = _make_excitation_for_edge_port()
+
+        # Simulate the layer existing in signal_layers
+        mock_stackup_layer = MagicMock()
+        pedb.stackup.signal_layers = {"L2_BOT": mock_stackup_layer}
+
+        result = exc.create_edge_port_vertical(
+            prim_id=1,
+            point_on_edge=[0.0, 0.5e-3],
+            port_name="P1",
+            reference_layer="L2_BOT",
+        )
+
+        assert result == "P1"
+        # Verify that reference_layer was assigned on the terminal mock
+        assert mock_term.reference_layer == "L2_BOT"
+
+    def test_invalid_reference_layer_returns_none_and_logs_error(self):
+        """With a reference_layer that does not exist the method returns None and logs an error."""
+        exc, pedb, mock_term = _make_excitation_for_edge_port()
+
+        # Layer NOT present in signal_layers
+        pedb.stackup.signal_layers = {}
+
+        result = exc.create_edge_port_vertical(
+            prim_id=1,
+            point_on_edge=[0.0, 0.5e-3],
+            port_name="P1",
+            reference_layer="NONEXISTENT",
+        )
+
+        assert result is None
+        pedb.logger.error.assert_called_once()
+
+    def test_reference_layer_not_assigned_when_layer_missing(self):
+        """When reference_layer is invalid the method returns None (exits before assigning reference_layer)."""
+        exc, pedb, mock_term = _make_excitation_for_edge_port()
+        pedb.stackup.signal_layers = {}
+
+        result = exc.create_edge_port_vertical(
+            prim_id=1,
+            point_on_edge=[0.0, 0.5e-3],
+            port_name="P1",
+            reference_layer="BAD_LAYER",
+        )
+
+        # Early exit means None is returned; the terminal name is never reached
+        assert result is None
