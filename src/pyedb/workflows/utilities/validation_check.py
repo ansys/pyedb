@@ -43,8 +43,6 @@ class ValidationCheckWorkflow:
         roots = []
         if active_edb and getattr(active_edb, "base_path", None):
             roots.append(Path(active_edb.base_path))
-        elif active_edb and getattr(active_edb, "ansys_em_path", None):
-            roots.append(Path(active_edb.ansys_em_path))
         else:
             installed = installed_ansys_em_versions()
             if installed:
@@ -165,7 +163,16 @@ class ValidationCheckWorkflow:
 
         active_session_closed = False
         active_edb_version = None
-        if active_edb and getattr(active_edb, "db", None) is not None:
+        active_edb_path = None
+        if active_edb and getattr(active_edb, "edbpath", None):
+            active_edb_path = Path(active_edb.edbpath).resolve()
+
+        if (
+            active_edb
+            and getattr(active_edb, "db", None) is not None
+            and active_edb_path is not None
+            and active_edb_path == source_aedb
+        ):
             # Preserve the version used by the active session so reopen can reuse it when required.
             active_edb_version = getattr(active_edb, "version", None) or getattr(active_edb, "edbversion", None)
             active_edb.logger.info("Closing active EDB session before static validation check workflow.")

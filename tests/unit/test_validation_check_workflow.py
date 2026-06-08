@@ -40,12 +40,13 @@ class _DummyLogger:
 
 
 class _DummyActiveEdb:
-    def __init__(self, base_path=None):
+    def __init__(self, base_path=None, edbpath=None):
         self.db = object()
         self.logger = _DummyLogger()
         self.closed = []
         self.opened = []
         self.base_path = str(base_path) if base_path else None
+        self.edbpath = str(edbpath) if edbpath else None
         self.version = "2026.1"
 
     def close(self, terminate_rpc_session=False):
@@ -140,7 +141,7 @@ def test_run_validation_check_creates_files_and_copies_back(tmp_path, monkeypatc
 def test_run_validation_check_closes_and_reopens_active_session(tmp_path, monkeypatch):
     aedb = _create_aedb(tmp_path)
     ansys_root = _create_ansys_root(tmp_path, linux_mode=(platform.system().lower() == "linux"))
-    active_edb = _DummyActiveEdb(base_path=ansys_root)
+    active_edb = _DummyActiveEdb(base_path=ansys_root, edbpath=str(aedb))
 
     monkeypatch.setattr(
         "pyedb.workflows.utilities.validation_check.subprocess.Popen",
@@ -156,6 +157,28 @@ def test_run_validation_check_closes_and_reopens_active_session(tmp_path, monkey
     assert active_edb.opened == [(str(aedb.resolve()), "2026.1")]
     assert any("Closing active EDB session" in m for m in active_edb.logger.messages)
     assert any("Re-opening EDB session" in m for m in active_edb.logger.messages)
+
+
+def test_run_validation_check_does_not_close_unrelated_active_session(tmp_path, monkeypatch):
+    aedb = _create_aedb(tmp_path)
+    other_aedb = tmp_path / "other_board.aedb"
+    other_aedb.mkdir()
+    (other_aedb / "edb.def").write_text("other", encoding="utf-8")
+    ansys_root = _create_ansys_root(tmp_path, linux_mode=(platform.system().lower() == "linux"))
+    active_edb = _DummyActiveEdb(base_path=ansys_root, edbpath=str(other_aedb))
+
+    monkeypatch.setattr(
+        "pyedb.workflows.utilities.validation_check.subprocess.Popen",
+        lambda command, stdout=None, stderr=None, text=True: _FakePopen(command, stdout, stderr, text),
+    )
+
+    ValidationCheckWorkflow.run_validation_check(
+        edb_path=str(aedb),
+        active_edb=active_edb,
+    )
+
+    assert active_edb.closed == []
+    assert active_edb.opened == []
 
 
 def test_linux_executable_names_do_not_use_exe_extension(tmp_path, monkeypatch):
