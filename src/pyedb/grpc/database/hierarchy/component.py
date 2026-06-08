@@ -1067,7 +1067,7 @@ class Component:
         list
             List of Pins of Component.
         """
-        return list(self.pins.values())
+        return [PadstackInstance(self._pedb, connectable) for connectable in self.core.members]
 
     @property
     def nets(self):
@@ -1093,15 +1093,7 @@ class Component:
         Dic[str,:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             Component dictionary pins.
         """
-        _pins = {}
-        for connectable in self.core.members:
-            if isinstance(connectable, CorePadstackInstanceTerminal):
-                if connectable.padstack_instance.is_layout_pin:
-                    _pins[connectable.name] = PadstackInstanceTerminal(self._pedb, connectable)
-            if isinstance(connectable, CorePadstackInstance):
-                if connectable.is_layout_pin:
-                    _pins[connectable.name] = PadstackInstance(self._pedb, connectable)
-        return _pins
+        return {connectable.name: PadstackInstance(self._pedb, connectable) for connectable in self.core.members}
 
     @property
     def num_pins(self):
