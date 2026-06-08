@@ -130,7 +130,9 @@ def test_run_siwave_validation_check_creates_files_and_copies_back(tmp_path, mon
 
     monkeypatch.setattr("pyedb.grpc.database.layout_validation.subprocess.Popen", _fake_popen)
 
-    result = lv.run_siwave_validation_check(validation_mode="SYZ", num_cpus=4, fix_disjoint_nets=False)
+    result = lv.run_siwave_validation_check(
+        validation_mode="SYZ", num_cpus=4, fix_disjoint_nets=False, delete_temp_folder=False
+    )
 
     assert result
     assert (aedb / "edb.def").read_text(encoding="utf-8") == "healed"
@@ -246,3 +248,42 @@ def test_run_siwave_validation_check_accepts_return_code_one(tmp_path, monkeypat
     result = lv.run_siwave_validation_check()
     assert result is True
     assert (aedb / "edb.def").read_text(encoding="utf-8") == "healed"
+
+
+def test_run_siwave_validation_check_deletes_temp_folder_by_default(tmp_path, monkeypatch):
+    aedb = _create_aedb(tmp_path)
+    ansys_root = _create_ansys_root(tmp_path, linux_mode=(platform.system().lower() == "linux"))
+    pedb = _DummyPedb(base_path=ansys_root, edbpath=str(aedb))
+    lv = _make_layout_validation(pedb)
+
+    monkeypatch.setattr(
+        "pyedb.grpc.database.layout_validation.subprocess.Popen",
+        lambda command, stdout=None, stderr=None, text=True: _FakePopen(command, stdout, stderr, text),
+    )
+
+    # Default delete_temp_folder=True should clean up
+    result = lv.run_siwave_validation_check()
+
+    assert result is True
+    temp_root = tmp_path / "_temp"
+    assert not temp_root.exists()
+
+
+def test_run_siwave_validation_check_preserves_temp_folder_when_requested(tmp_path, monkeypatch):
+    aedb = _create_aedb(tmp_path)
+    ansys_root = _create_ansys_root(tmp_path, linux_mode=(platform.system().lower() == "linux"))
+    pedb = _DummyPedb(base_path=ansys_root, edbpath=str(aedb))
+    lv = _make_layout_validation(pedb)
+
+    monkeypatch.setattr(
+        "pyedb.grpc.database.layout_validation.subprocess.Popen",
+        lambda command, stdout=None, stderr=None, text=True: _FakePopen(command, stdout, stderr, text),
+    )
+
+    # delete_temp_folder=False should preserve the folder
+    result = lv.run_siwave_validation_check(delete_temp_folder=False)
+
+    assert result is True
+    temp_root = tmp_path / "_temp"
+    assert temp_root.exists()
+    assert (temp_root / "create_edb.exec").is_file()

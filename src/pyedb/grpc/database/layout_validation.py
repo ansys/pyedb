@@ -504,6 +504,7 @@ class LayoutValidation:
         correct_all_fixable_issues: bool = True,
         strict_disjoint_net_check: bool = True,
         save: bool = True,
+        delete_temp_folder: bool = True,
     ) -> bool:
         """Run Siwave geometry validation/healing workflow through ``siwave_ng`` and ``siwavevalchk``.
 
@@ -540,6 +541,8 @@ class LayoutValidation:
             Add ``StrictDisjointNetCheck`` when ``True``.
         save : bool, optional
             Add ``Save`` when ``True``.
+        delete_temp_folder : bool, optional
+            Delete the temporary working folder after workflow completion. Default is ``True``.
 
         Returns
         -------
@@ -625,3 +628,5 @@ class LayoutValidation:
                     self._pedb.open(str(source_aedb), active_edb_version)
                 else:
                     self._pedb.open(str(source_aedb))
+            if delete_temp_folder and temp_root.exists():
+                shutil.rmtree(temp_root)
