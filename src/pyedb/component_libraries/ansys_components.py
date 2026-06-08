@@ -122,6 +122,44 @@ class ComponentPart:
         else:
             return 0.0
 
+    def write_touchstone(self, output_path: str) -> str:
+        """Export the component S-parameters to a Touchstone ``.s2p`` file.
+
+        The binary ``sdata.bin`` data is read on demand and then written to
+        *output_path* using scikit-rf's Touchstone writer so the file can be
+        consumed by the existing EDB S-parameter assignment pipeline.
+
+        Parameters
+        ----------
+        output_path : str
+            Destination file path.  The ``.s2p`` extension is appended
+            automatically when *output_path* has no suffix.
+
+        Returns
+        -------
+        str
+            Absolute path of the written Touchstone file.
+
+        Raises
+        ------
+        ImportError
+            If ``scikit-rf`` is not installed.
+
+        Examples
+        --------
+        part = lib.capacitors["Murata"]["GRM15"]["GRM155R71C104KA88"]
+        path = part.write_touchstone("/tmp/GRM155R71C104KA88.s2p")
+        """
+        from pathlib import Path
+
+        path = Path(output_path)
+        if not path.suffix:
+            path = path.with_suffix(".s2p")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        net = self.s_parameters  # triggers _extract_impedance if not yet loaded
+        net.write_touchstone(str(path))
+        return str(path)
+
     def _extract_impedance(self):
         try:
             import skrf as rf
