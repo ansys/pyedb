@@ -1613,7 +1613,7 @@ class Modeler(object):
         local_origin_x: float | str | None = 0,
         local_origin_y: float | str | None = 0,
         local_origin_z: float | str | None = 0,
-    )-> Any:
+    ) -> Any:
         """Insert a 3d component on a given layer. Placement location and rotation are automatically determined based
         on the component reference designator.
 
@@ -1639,10 +1639,10 @@ class Modeler(object):
             y=p1.position[1],
             placement_layer=comp.placement_layer,
             rotation=comp.rotation,
-            place_on_bottom= True if comp.placement_layer == list(self._pedb.stackup.signal_layers)[-1] else False,
-            local_origin_x = local_origin_x,
-            local_origin_y = local_origin_y,
-            local_origin_z = local_origin_z,
+            place_on_bottom=True if comp.placement_layer == list(self._pedb.stackup.signal_layers)[-1] else False,
+            local_origin_x=local_origin_x,
+            local_origin_y=local_origin_y,
+            local_origin_z=local_origin_z,
         )
 
     def create_taper(

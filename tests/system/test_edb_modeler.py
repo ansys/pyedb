@@ -676,9 +676,7 @@ class TestClass(BaseTestClass):
     def test_insert_3d_component_on_component(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/CAP_DUMMY.a3dcomp")[0]
         edbapp = self.edb_examples.get_si_verse()
-        cell_inst_1 = edbapp.modeler.insert_3d_component_on_component(
-            a3dcomp_path=fpath, reference_designator="C191"
-        )
+        cell_inst_1 = edbapp.modeler.insert_3d_component_on_component(a3dcomp_path=fpath, reference_designator="C191")
         assert not cell_inst_1.is_null
         assert cell_inst_1.transform3d.shift.x.value == pytest.approx(0.0254)
         assert cell_inst_1.transform3d.shift.y.value == pytest.approx(0.0738)
