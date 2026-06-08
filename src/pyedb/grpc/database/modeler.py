@@ -1550,7 +1550,7 @@ class Modeler(object):
         local_origin_y: float | str | None = 0,
         local_origin_z: float | str | None = 0,
     ) -> Any:
-        """Insert a layout instance into the active layout.
+        """Insert a 3d component on a given layer.
 
         Parameters
         ----------
@@ -1605,6 +1605,45 @@ class Modeler(object):
                 local_origin_z=local_origin_z,
             )
         return cell_inst
+
+    def insert_3d_component_on_component(
+        self,
+        a3dcomp_path: str | Path,
+        reference_designator: str,
+        local_origin_x: float | str | None = 0,
+        local_origin_y: float | str | None = 0,
+        local_origin_z: float | str | None = 0,
+    )-> Any:
+        """Insert a 3d component on a given layer. Placement location and rotation are automatically determined based
+        on the component reference designator.
+
+        Parameters
+        ----------
+        a3dcomp_path: str or Path
+            File path to the 3D component.
+        reference_designator: str
+            Reference designator of the component to place on.
+        local_origin_x: float or str
+            Local origin X coordinate.
+        local_origin_y: float or str
+            Local origin Y coordinate.
+        local_origin_z: float or str
+            Local origin Z coordinate.
+        """
+
+        comp = self._pedb.components.instances[reference_designator]
+        p1 = list(sorted(comp.pins.items()))[0][1]
+        return self.insert_3d_component_on_layer(
+            a3dcomp_path=a3dcomp_path,
+            x=p1.position[0],
+            y=p1.position[1],
+            placement_layer=comp.placement_layer,
+            rotation=comp.rotation,
+            place_on_bottom= True if comp.placement_layer == list(self._pedb.stackup.signal_layers)[-1] else False,
+            local_origin_x = local_origin_x,
+            local_origin_y = local_origin_y,
+            local_origin_z = local_origin_z,
+        )
 
     def create_taper(
         self,
