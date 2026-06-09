@@ -41,13 +41,13 @@ from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSPICEModel
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 import numpy as np
 
+from pyedb.grpc.database.hierarchy.group import Group
 from pyedb.grpc.database.hierarchy.netlist_model import NetlistModel
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.s_parameter_model import SparamModel
 from pyedb.grpc.database.hierarchy.spice_model import SpiceModel
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from pyedb.grpc.database.hierarchy.group import Group
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
 

@@ -45,6 +45,7 @@ from typing import List, Union
 
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.primitive.primitive import Primitive as _CorePrimitive
+
 from pyedb.grpc.database.hierarchy.group import Group
 
 # ---------------------------------------------------------------------------

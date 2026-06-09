@@ -35,6 +35,7 @@ from ansys.edb.core.geometry.polygon_data import (
 
 from pyedb.grpc.database.geometry.point_data import PointData
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
+from pyedb.grpc.database.hierarchy.group import Group
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
@@ -44,7 +45,6 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.primitive.text import Text
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
-from pyedb.grpc.database.hierarchy.group import Group
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
 

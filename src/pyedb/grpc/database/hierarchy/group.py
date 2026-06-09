@@ -107,7 +107,7 @@ class Group:
         return self._pedb.value(location[0]), location[1].value
 
     @location.setter
-    def location(self, value: tuple|list):
+    def location(self, value: tuple | list):
         """Set group center.
 
         Parameters
