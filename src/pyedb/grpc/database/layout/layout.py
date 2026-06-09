@@ -740,7 +740,7 @@ class Layout(PrimitivesQuery):
         """
         from pyedb.grpc.database.hierarchy.component import Component
 
-        return [Component(self._pedb, g) for g in self.core.groups if len(g.members)]
+        return [Component(self._pedb, g) for g in self.core.groups]
 
     @property
     def coordinate_systems(self):
