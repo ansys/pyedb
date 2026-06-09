@@ -1419,6 +1419,7 @@ class TestPointData(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="gRPC only")
     def test_insert_cs(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.modeler.insert_coordinate_system(name="CS1", x="1mm", y="2mm", layer="1_Top")
