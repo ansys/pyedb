@@ -1949,7 +1949,25 @@ class Modeler(object):
                 self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
         return True
 
-    def insert_coordinate_system(self, name: str, x: float | str, y: float | str, layer: str):
+    def insert_coordinate_system(self, name: str, x: float | str, y: float | str, layer: str) -> Group:
+        """Insert a coordinate system.
+
+        Parameters
+        ----------
+        name : str
+            Name of the coordinate system.
+        x : float | str
+            X coordinate position.
+        y : float | str
+            Y coordinate position.
+        layer : str
+            Placement layer for the coordinate system.
+
+        Returns
+        -------
+        Group
+            The created coordinate system group.
+        """
         cs = Group.create(self._pedb, name)
         cs.placement_layer = layer
         cs.location = [x, y]

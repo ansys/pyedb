@@ -24,6 +24,15 @@ from ansys.edb.core.hierarchy.group import Group as CoreGroup
 
 
 class Group:
+    """Represents a group.
+    Parameters
+    ----------
+    pedb
+        The parent EDB instance.
+    core
+        The core group object.
+    """
+
     def __init__(self, pedb, core):
         self.core = core
         self._pedb = pedb
@@ -34,8 +43,8 @@ class Group:
 
         Parameters
         ----------
-        layout : :class:`.Layout`
-            Layout to create the group in.
+        pedb
+            Edb to create the group in.
         name : str
             Name of the group.
 
@@ -75,11 +84,18 @@ class Group:
 
     @placement_layer.setter
     def placement_layer(self, value):
+        """Set placement layer.
+
+        Parameters
+        ----------
+        value : str
+            Name of the placement layer.
+        """
         self.core.placement_layer = self._pedb.stackup.layers[value].core
 
     @property
     def location(self) -> tuple:
-        """Component center.
+        """Group center.
 
         Returns
         -------
@@ -92,4 +108,11 @@ class Group:
 
     @location.setter
     def location(self, value: tuple|list):
+        """Set group center.
+
+        Parameters
+        ----------
+        value : tuple or list
+            [x, y] coordinates.
+        """
         self.core.location = self._pedb.value(value[0]), self._pedb.value(value[1])
