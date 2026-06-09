@@ -84,6 +84,12 @@ class _FakePopen:
 
         if "siwave_ng" in cmd and target.suffix.lower() == ".aedb":
             target.parent.joinpath(f"{target.stem}.siw").write_text("siw", encoding="utf-8")
+        elif "siwavevalchk" in cmd and target.suffix.lower() == ".siw":
+            valchk_dir = target.parent / f"{target.stem}.siwaveresults" / "valchk"
+            valchk_dir.mkdir(parents=True, exist_ok=True)
+            (valchk_dir / "valchk.prof").write_text("profile", encoding="utf-8")
+            (valchk_dir / "valchk.results").write_text("results", encoding="utf-8")
+            (valchk_dir / "valchk_error_warning.log").write_text("warnings", encoding="utf-8")
         elif "siwave_ng" in cmd and target.suffix.lower() == ".siw":
             target.parent.joinpath(f"{target.stem}.aedb", "edb.def").write_text("healed", encoding="utf-8")
 
@@ -146,6 +152,12 @@ def test_run_siwave_validation_check_creates_files_and_copies_back(tmp_path, mon
     assert "ValidationMode SYZ" in val_check
     assert "SetNumCpus 4" in val_check
     assert "FixDisjointNets" not in val_check
+
+    log_root = tmp_path / "validation_check_log"
+    assert log_root.is_dir()
+    assert (log_root / "valchk.prof").is_file()
+    assert (log_root / "valchk.results").is_file()
+    assert (log_root / "valchk_error_warning.log").is_file()
 
     assert len(calls) == 3
     assert all(Path(cmd[0]).is_absolute() for cmd in calls)

@@ -642,7 +642,12 @@ class LayoutValidation:
                             copied += 1
                     self._pedb.logger.info(f"{copied} validation log file(s) copied to: {log_dest}")
                 else:
-                    self._pedb.logger.warning(f"Validation log folder not found, skipping: {valchk_src}")
+                    msg = f"Validation log folder not found, skipping: {valchk_src}"
+                    log_warning = getattr(self._pedb.logger, "warning", None)
+                    if callable(log_warning):
+                        log_warning(msg)
+                    else:
+                        self._pedb.logger.info(msg)
 
             return True
         finally:
