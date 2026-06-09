@@ -505,6 +505,7 @@ class LayoutValidation:
         strict_disjoint_net_check: bool = True,
         save: bool = True,
         delete_temp_folder: bool = True,
+        keep_log_files: bool = True,
     ) -> bool:
         """Run Siwave geometry validation/healing workflow through ``siwave_ng`` and ``siwavevalchk``.
 
@@ -543,6 +544,13 @@ class LayoutValidation:
             Add ``Save`` when ``True``.
         delete_temp_folder : bool, optional
             Delete the temporary working folder after workflow completion. Default is ``True``.
+        keep_log_files : bool, optional
+            Copy all files produced by ``siwavevalchk`` (e.g. ``valchk.prof``,
+            ``valchk.results``, ``valchk_error_warning.log``) from the temporary
+            results folder ``_temp/<stem>.siwaveresults/valchk`` into a
+            ``validation_check_log`` folder next to the source AEDB. Any
+            pre-existing ``validation_check_log`` folder is deleted first. Default
+            is ``True``.
 
         Returns
         -------
@@ -619,6 +627,23 @@ class LayoutValidation:
                 raise RuntimeError(f"Expected healed file not found: {healed_edb_def}")
 
             shutil.copy2(healed_edb_def, (source_aedb / "edb.def").resolve())
+
+            if keep_log_files:
+                valchk_src = temp_root / f"{source_aedb.stem}.siwaveresults" / "valchk"
+                log_dest = source_aedb.parent / "validation_check_log"
+                if log_dest.exists():
+                    shutil.rmtree(log_dest)
+                log_dest.mkdir(parents=True, exist_ok=True)
+                if valchk_src.is_dir():
+                    copied = 0
+                    for src_file in valchk_src.iterdir():
+                        if src_file.is_file():
+                            shutil.copy2(src_file, log_dest / src_file.name)
+                            copied += 1
+                    self._pedb.logger.info(f"{copied} validation log file(s) copied to: {log_dest}")
+                else:
+                    self._pedb.logger.warning(f"Validation log folder not found, skipping: {valchk_src}")
+
             return True
         finally:
             if active_session_closed:

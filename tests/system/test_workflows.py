@@ -164,10 +164,18 @@ class TestClass(BaseTestClass):
         initial_edb_def_mtime = edb_def.stat().st_mtime_ns
         assert siwave_ng.is_file()
         assert siwave_valcheck.is_file()
-        assert edbapp.layout_validation.run_siwave_validation_check(num_cpus=2)
+        assert edbapp.layout_validation.run_siwave_validation_check(num_cpus=2, keep_log_files=True)
         # run_siwave_validation_check closes/reopens the active session, verify the session remains usable.
         assert edbapp.db is not None
         assert edbapp.stackup.layers
         assert edb_def.is_file()
         assert edb_def.stat().st_mtime_ns != initial_edb_def_mtime
+        # Verify validation log files were copied to the project folder.
+        log_dest = Path(edbapp.edbpath).parent / "validation_check_log"
+        assert log_dest.is_dir()
+        assert (log_dest / "valchk.prof").is_file(), "Missing validation log file: valchk.prof"
+        assert (log_dest / "valchk_error_warning.log").is_file(), (
+            "Missing validation log file: valchk_error_warning.log"
+        )
+        assert any(log_dest.iterdir()), "validation_check_log folder is empty"
         edbapp.close(terminate_rpc_session=False)
