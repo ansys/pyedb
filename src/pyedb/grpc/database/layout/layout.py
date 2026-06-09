@@ -45,6 +45,7 @@ from typing import List, Union
 
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.primitive.primitive import Primitive as _CorePrimitive
+from pyedb.grpc.database.hierarchy.group import Group
 
 # ---------------------------------------------------------------------------
 # Resilience patch for gRPC SDK PrimitiveType enum version mismatches.
@@ -739,7 +740,11 @@ class Layout(PrimitivesQuery):
         """
         from pyedb.grpc.database.hierarchy.component import Component
 
-        return [Component(self._pedb, g) for g in self._pedb.active_cell.layout.groups]
+        return [Component(self._pedb, g) for g in self.core.groups if len(g.members)]
+
+    @property
+    def coordinate_systems(self):
+        return [Group(self._pedb, g) for g in self.core.groups if not len(g.members)]
 
     @property
     def pin_groups(self) -> list[PinGroup]:

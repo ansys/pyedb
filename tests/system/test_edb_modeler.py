@@ -1419,6 +1419,16 @@ class TestPointData(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
+    def test_insert_cs(self):
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.modeler.insert_coordinate_system(name="CS1", x="1mm", y="2mm", layer="1_Top")
+        cs = edbapp.layout.coordinate_systems[0]
+        assert cs.name == "CS1"
+        assert cs.location[0] == 0.001
+        assert cs.location[1] == 0.002
+        assert cs.placement_layer == "1_Top"
+        edbapp.close(terminate_rpc_session=False)
+
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPolygonData(BaseTestClass):

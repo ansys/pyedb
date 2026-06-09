@@ -44,6 +44,7 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.primitive.text import Text
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
+from pyedb.grpc.database.hierarchy.group import Group
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
 
@@ -1947,3 +1948,9 @@ class Modeler(object):
                     polygon_data = polygon_data.expand(self._pedb.value(traces_offset))
                 self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
         return True
+
+    def insert_coordinate_system(self, name: str, x: float | str, y: float | str, layer: str):
+        cs = Group.create(self._pedb, name)
+        cs.placement_layer = layer
+        cs.location = [x, y]
+        return cs
