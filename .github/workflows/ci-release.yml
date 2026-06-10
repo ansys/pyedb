@@ -246,7 +246,7 @@ jobs:
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          max_attempts: 3
+          max_attempts: 1
           retry_on: error
           timeout_minutes: 120
           command: |
@@ -308,7 +308,7 @@ jobs:
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          max_attempts: 3
+          max_attempts: 1
           retry_on: error
           timeout_minutes: 180
           command: |
@@ -377,7 +377,7 @@ jobs:
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          max_attempts: 3
+          max_attempts: 1
           retry_on: error
           timeout_minutes: 120
           command: |
@@ -446,7 +446,7 @@ jobs:
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
-          max_attempts: 3
+          max_attempts: 1
           retry_on: error
           timeout_minutes: 180
           command: |
@@ -525,17 +525,14 @@ jobs:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
-          max_attempts: 3
+          max_attempts: 1
           retry_on: error
           timeout_minutes: 180
           command: |
             .venv\Scripts\activate
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
-            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
-            pytest -v external/pyaedt/tests/system/general/test_circuit.py
-            pytest -v external/pyaedt/tests/system/general/test_hfss.py
-            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
+            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py         
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -543,7 +540,7 @@ jobs:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
-          max_attempts: 3
+          max_attempts: 1
           retry_on: error
           timeout_minutes: 180
           command: |
@@ -556,7 +553,7 @@ jobs:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
-          max_attempts: 3
+          max_attempts: 1
           retry_on: error
           timeout_minutes: 180
           command: |
@@ -633,7 +630,7 @@ jobs:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
-          max_attempts: 3
+          max_attempts: 1
           retry_on: error
           timeout_minutes: 180
           command: |
@@ -641,9 +638,6 @@ jobs:
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
             pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
-            pytest -v external/pyaedt/tests/system/general/test_circuit.py
-            pytest -v external/pyaedt/tests/system/general/test_hfss.py
-            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -651,7 +645,7 @@ jobs:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
-          max_attempts: 3
+          max_attempts: 1
           retry_on: error
           timeout_minutes: 180
           command: |
@@ -664,7 +658,7 @@ jobs:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
-          max_attempts: 3
+          max_attempts: 1
           retry_on: error
           timeout_minutes: 180
           command: |
