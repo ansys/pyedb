@@ -205,7 +205,7 @@ class TestCfgSParameters:
         mock_comp_def.component_models = {"m1": mock_model_obj}
         mock_comp_def.get_properties.return_value = {"pin_order": None}
         mock_pedb = MagicMock()
-        mock_pedb.definitions.component = {"CAP": mock_comp_def}
+        mock_pedb.definitions.components = {"CAP": mock_comp_def}
         sc = CfgSParameters(pedb=mock_pedb)
         cfg_components = [
             {

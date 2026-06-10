@@ -150,7 +150,7 @@ class CfgPackageDefinitions:
         package_definitions = []
         _pkg_field_names = set(CfgPackage.model_fields.keys())
         _hs_field_names = set(CfgHeatSink.model_fields.keys())
-        for pkg_name, pkg_obj in self._pedb.definitions.package.items():
+        for pkg_name, pkg_obj in self._pedb.definitions.packages.items():
             pkg = {}
             pkg_attrs = [i for i in dir(pkg_obj) if not i.startswith("_")]
             pkg_attrs = {i for i in pkg_attrs if i in _pkg_field_names}
@@ -176,8 +176,8 @@ class CfgPackageDefinitions:
             from pyedb.dotnet.database.definition.package_def import PackageDef
 
         for pkg in self.packages:
-            comp_def_from_db = self._pedb.definitions.component[pkg.component_definition]
-            if pkg.name in self._pedb.definitions.package:
+            comp_def_from_db = self._pedb.definitions.components[pkg.component_definition]
+            if pkg.name in self._pedb.definitions.packages:
                 self._pedb.definitions.package[pkg.name].delete()
 
             if pkg.extent_bounding_box:
