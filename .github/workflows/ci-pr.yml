@@ -239,15 +239,13 @@ jobs:
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests --extra dotnet
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 60
-          command: |
-            .venv\Scripts\activate
-            pytest tests/system --cov=pyedb --color=yes -ra
+        run: |
+          .venv\Scripts\activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
@@ -301,15 +299,13 @@ jobs:
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            .venv\Scripts\activate
-            pytest tests/system -vvv --cov=pyedb --color=yes -ra
+        run: |
+          .venv\Scripts\activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
@@ -370,15 +366,13 @@ jobs:
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests --extra dotnet
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 60
-          command: |
-            source .venv/bin/activate
-            pytest tests/system -vvv --cov=pyedb --color=yes -ra
+        run: |
+          .venv\Scripts\activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
@@ -439,15 +433,13 @@ jobs:
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            source .venv/bin/activate
-            pytest tests/system -vvv --cov=pyedb --color=yes -ra
+        run: |
+          .venv\Scripts\activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
