@@ -41,7 +41,7 @@ GRPC_NOT_SUPPORTED_WARNING = (
 )
 
 DOTNET_USAGE_WARNING = (
-    "DotNet version of PyEDB used. Please note that this version of PyEDB is deprecated in the future "
+    "DotNet version of PyEDB used. Please note that this version of PyEDB is planned to be deprecated in the future "
     "and gRPC version will remains the long term supported one. Upgrade to ANSYS release version 2026.1.2 or later"
     "for fast grpc performances."
 )
