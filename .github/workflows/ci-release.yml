@@ -532,7 +532,7 @@ jobs:
           .venv\Scripts\activate
           pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
         timeout-minutes: 180
-      
+
 
       - name: Run PyAEDT extensions tests
         env:
@@ -622,17 +622,14 @@ jobs:
 
 
       - name: Run PyAEDT solvers tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            source .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
+        run: |
+          source .venv/bin/activate
+          pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
+        timeout-minutes: 180
+
 
       - name: Run PyAEDT extensions tests
         env:
