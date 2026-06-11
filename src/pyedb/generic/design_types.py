@@ -24,7 +24,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, overload
 import warnings
 
-from pyedb.generic.grpc_warnings import GRPC_NOT_SUPPORTED_WARNING
+from pyedb.generic.grpc_warnings import DOTNET_USAGE_WARNING, GRPC_NOT_SUPPORTED_WARNING
 from pyedb.generic.settings import settings
 from pyedb.misc.decorators import deprecate_argument_name
 
@@ -393,13 +393,17 @@ def Edb(
         elif float(settings.specified_version) < 2026.1:
             warnings.warn(GRPC_NOT_SUPPORTED_WARNING, UserWarning)
             raise RuntimeError(
-                f"gRPC is not supported for AEDT version {settings.specified_version}. "
-                f"Please use version 2025.2 or later."
+                f"gRPC is now default backend selection for PyEDB is not supported for AEDT "
+                f"version {settings.specified_version}."
+                f"Please use AEDT version 2026.1 or later to enable gRPC functionality, "
+                f"or set grpc=False to use the DotNet backend. Note DotNet will be deprecated and gRPC will be the long"
+                f" term supported version."
             )
 
     else:
         from pyedb.dotnet.edb import Edb
 
+        warnings.warn(DOTNET_USAGE_WARNING, UserWarning)
         return Edb(
             edbpath=edbpath,
             cellname=cellname,
