@@ -84,7 +84,7 @@ class CfgSParameters:
         """Read S-parameter model assignments from EDB."""
         if self._pedb is None:
             return [m.model_dump() for m in self.models]
-        db_comp_def = self._pedb.definitions.component
+        db_comp_def = self._pedb.definitions.components
         for name, compdef_obj in db_comp_def.items():
             nport_models = compdef_obj.component_models
             if not nport_models:

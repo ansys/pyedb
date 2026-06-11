@@ -35,72 +35,6 @@ class Definitions:
         self._pedb = pedb
 
     @property
-    @deprecated_property("use components property instead")
-    def component_defs(self) -> Dict[str, ComponentDef]:
-        """Component definitions.
-
-        .. deprecated:: 0.66.0
-           Use :attr:`components` instead.
-
-        """
-        return self.components
-
-    @property
-    @deprecated_property("use components property instead")
-    def component(self):
-        """Component definitions.
-
-        .. deprecated:: 0.66.0
-           Use :attr:`components` instead.
-
-        """
-        return self.components
-
-    @property
-    @deprecated_property("use apd_bondwires property instead")
-    def apd_bondwire_defs(self):
-        """Get all APD bondwire definitions in this Database.
-
-        .. deprecated:: 0.66.0
-           Use :attr:`apd_bondwires` instead.
-
-        """
-        return self.apd_bondwires
-
-    @property
-    @deprecated_property("use jedec4_bondwires property instead")
-    def jedec4_bondwire_defs(self):
-        """Get all JEDEC4 bondwire definitions in this Database.
-
-        .. deprecated:: 0.66.0
-           Use :attr:`jedec4_bondwires` instead.
-
-        """
-        return self.jedec4_bondwires
-
-    @property
-    @deprecated_property("use jedec5_bondwires property instead")
-    def jedec5_bondwire_defs(self):
-        """Get all JEDEC5 bondwire definitions in this Database.
-
-        .. deprecated:: 0.66.0
-           Use :attr:`jedec5_bondwires` instead.
-
-        """
-        return self.jedec5_bondwires
-
-    @property
-    @deprecated_property("use packages property instead")
-    def package_defs(self) -> Dict[str, PackageDef]:
-        """Package definitions.
-
-        .. deprecated:: 0.66.0
-           Use :attr:`packages` instead.
-
-        """
-        return self.packages
-
-    @property
     def components(self) -> Dict[str, ComponentDef]:
         """Component definitions
 
@@ -113,17 +47,6 @@ class Definitions:
         ...     print(f"Component: {name}, Part: {comp_def.part}")
         """
         return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.active_db.component_defs}
-
-    @property
-    @deprecated_property("use packages property instead")
-    def package(self):
-        """Package definitions.
-
-        .. deprecated:: 0.66.0
-           Use :attr:`packages` instead.
-
-        """
-        return self.packages
 
     @property
     def packages(self) -> Dict[str, PackageDef]:
@@ -183,19 +106,6 @@ class Definitions:
             jedec5_def.name.value: Jedec5BondwireDef(self._pedb, jedec5_def)
             for jedec5_def in self._pedb.active_db.jedec5_bondwire_defs
         }
-
-    @deprecated("use add_package() method instead")
-    def add_package_def(
-        self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
-    ) -> Union[PackageDef, bool]:
-        """Add a package definition.
-
-        .. deprecated:: 0.66.0
-
-           Use :meth:`add_package` instead.
-
-        """
-        return self.add_package(name, component_part_name=component_part_name, boundary_points=boundary_points)
 
     def add_package(
         self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
