@@ -468,8 +468,7 @@ def exec_code(
         if result.returncode != 0:
             stderr_output = result.stderr if common.json_mode else ""
             raise RuntimeError(
-                f"Script exited with code {result.returncode}"
-                + (f": {stderr_output}" if stderr_output else "")
+                f"Script exited with code {result.returncode}" + (f": {stderr_output}" if stderr_output else "")
             )
 
         data = {"executed": True, "script": executed, "edb_path": edb_path}
