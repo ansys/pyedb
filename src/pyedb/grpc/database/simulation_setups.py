@@ -52,6 +52,11 @@ class SimulationSetups:
         self._siwave_cpa_setup: dict[str, SIWaveCPASimulationSetup] = {}
         self._hfss_pi_setups: dict[str, HFSSPISimulationSetup] = {}
 
+    @staticmethod
+    def _sweep_params_are_set(start_freq, stop_freq, step_freq) -> bool:
+        """Return True when all sweep parameters are explicitly provided."""
+        return start_freq is not None and stop_freq is not None and step_freq is not None
+
     def _raw_simulation_setups(self) -> list[CoreSimulationSetup]:
         """Return raw (uncast) core SimulationSetup objects from the active cell.
 
@@ -319,9 +324,9 @@ class SimulationSetups:
         self,
         name=None,
         distribution="linear",
-        start_freq: float = None,
-        stop_freq: float = None,
-        step_freq: float = None,
+        start_freq: float | str = None,
+        stop_freq: float | str = None,
+        step_freq: float | str | int = None,
         discrete_sweep=False,
         sweep_name: str = "frequency_sweep",
         **kwargs,
@@ -354,7 +359,7 @@ class SimulationSetups:
             name=name,
             solver="hfss",
         )
-        if start_freq and stop_freq and step_freq:
+        if self._sweep_params_are_set(start_freq, stop_freq, step_freq):
             setup.add_sweep(
                 name=sweep_name,
                 distribution=distribution,
@@ -373,9 +378,9 @@ class SimulationSetups:
         self,
         name=None,
         distribution="linear",
-        start_freq: float = None,
-        stop_freq: float = None,
-        step_freq: float = None,
+        start_freq: float | str = None,
+        stop_freq: float | str = None,
+        step_freq: float | str | int = None,
         discrete_sweep=False,
         sweep_name: str = "frequency_sweep",
         **kwargs,
@@ -408,7 +413,7 @@ class SimulationSetups:
             name=name,
             solver="hfss_pi",
         )
-        if start_freq and stop_freq and step_freq:
+        if self._sweep_params_are_set(start_freq, stop_freq, step_freq):
             setup.add_sweep(
                 name=sweep_name,
                 distribution=distribution,
@@ -427,9 +432,9 @@ class SimulationSetups:
         self,
         name=None,
         distribution="linear",
-        start_freq: float = None,
-        stop_freq: float = None,
-        step_freq: float = None,
+        start_freq: float | str = None,
+        stop_freq: float | str = None,
+        step_freq: float | str | int = None,
         discrete_sweep=False,
         sweep_name: str = "frequency_sweep",
         **kwargs,
@@ -462,7 +467,7 @@ class SimulationSetups:
             name=name,
             solver="siwave",
         )
-        if start_freq and stop_freq and step_freq:
+        if self._sweep_params_are_set(start_freq, stop_freq, step_freq):
             setup.add_sweep(
                 name=sweep_name,
                 distribution=distribution,
@@ -529,9 +534,9 @@ class SimulationSetups:
         self,
         name=None,
         distribution="linear",
-        start_freq: float = None,
-        stop_freq: float = None,
-        step_freq: float = None,
+        start_freq: float | str = None,
+        stop_freq: float | str = None,
+        step_freq: float | str | int = None,
         discrete_sweep=False,
         sweep_name: str = "frequency_sweep",
         **kwargs,
@@ -564,7 +569,7 @@ class SimulationSetups:
             name=name,
             solver="raptor_x",
         )
-        if start_freq is not None and stop_freq and step_freq:
+        if self._sweep_params_are_set(start_freq, stop_freq, step_freq):
             setup.add_sweep(
                 name=sweep_name,
                 distribution=distribution,
@@ -583,9 +588,9 @@ class SimulationSetups:
         self,
         name=None,
         distribution="linear",
-        start_freq: float = None,
-        stop_freq: float = None,
-        step_freq: float = None,
+        start_freq: float | str = None,
+        stop_freq: float | str = None,
+        step_freq: float | str | int = None,
         discrete_sweep=False,
         sweep_name: str = "frequency_sweep",
         **kwargs,
@@ -618,7 +623,7 @@ class SimulationSetups:
             name=name,
             solver="q3d",
         )
-        if start_freq and stop_freq and step_freq:
+        if self._sweep_params_are_set(start_freq, stop_freq, step_freq):
             setup.add_sweep(
                 name=sweep_name,
                 distribution=distribution,

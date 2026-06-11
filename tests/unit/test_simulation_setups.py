@@ -453,6 +453,14 @@ class TestCreateHfssSetup:
             )
         fake_setup.add_sweep.assert_called_once()
 
+    def test_creates_with_sweep_when_start_freq_is_zero(self):
+        pedb = _make_pedb()
+        ss = SimulationSetups(pedb)
+        fake_setup = MagicMock()
+        with patch.object(ss, "create", return_value=fake_setup):
+            ss.create_hfss_setup(name="my_hfss", start_freq=0, stop_freq=10e9, step_freq=1e8)
+        fake_setup.add_sweep.assert_called_once()
+
     def test_applies_kwargs_as_attributes(self):
         pedb = _make_pedb()
         ss = SimulationSetups(pedb)
@@ -486,6 +494,14 @@ class TestCreateHfsspiSetup:
             )
         fake_setup.add_sweep.assert_called_once()
 
+    def test_creates_with_sweep_when_start_freq_is_zero(self):
+        pedb = _make_pedb()
+        ss = SimulationSetups(pedb)
+        fake_setup = MagicMock()
+        with patch.object(ss, "create", return_value=fake_setup):
+            ss.create_hfss_pi_setup(name="my_pi", start_freq=0, stop_freq=5e9, step_freq=1e8)
+        fake_setup.add_sweep.assert_called_once()
+
     def test_applies_kwargs_as_attributes(self):
         pedb = _make_pedb()
         ss = SimulationSetups(pedb)
@@ -517,6 +533,14 @@ class TestCreateSiwaveSetup:
                 stop_freq=1e9,
                 step_freq=1e6,
             )
+        fake_setup.add_sweep.assert_called_once()
+
+    def test_creates_with_sweep_when_start_freq_is_zero(self):
+        pedb = _make_pedb()
+        ss = SimulationSetups(pedb)
+        fake_setup = MagicMock()
+        with patch.object(ss, "create", return_value=fake_setup):
+            ss.create_siwave_setup(name="my_si", start_freq=0, stop_freq=1e9, step_freq=1e6)
         fake_setup.add_sweep.assert_called_once()
 
 
@@ -656,6 +680,14 @@ class TestCreateQ3dSetup:
             )
         fake_setup.add_sweep.assert_called_once()
 
+    def test_creates_with_sweep_when_start_freq_is_zero(self):
+        pedb = _make_pedb()
+        ss = SimulationSetups(pedb)
+        fake_setup = MagicMock()
+        with patch.object(ss, "create", return_value=fake_setup):
+            ss.create_q3d_setup(name="my_q3d", start_freq=0, stop_freq=10e9, step_freq=1e8)
+        fake_setup.add_sweep.assert_called_once()
+
     def test_applies_kwargs_as_attributes(self):
         pedb = _make_pedb()
         ss = SimulationSetups(pedb)
@@ -663,3 +695,38 @@ class TestCreateQ3dSetup:
         with patch.object(ss, "create", return_value=fake_setup):
             ss.create_q3d_setup(name="my_q3d", custom_opt=True)
         assert fake_setup.custom_opt is True
+
+
+@pytest.mark.parametrize(
+    ("method_name", "stop_freq", "step_freq"),
+    [
+        ("create_hfss_setup", "10GHz", "10MHz"),
+        ("create_hfss_pi_setup", "5GHz", "100MHz"),
+        ("create_siwave_setup", "1GHz", "1MHz"),
+        ("create_raptor_x_setup", "20GHz", "200MHz"),
+        ("create_q3d_setup", "2GHz", "20MHz"),
+    ],
+)
+def test_create_setup_accepts_string_frequency_values(method_name, stop_freq, step_freq):
+    pedb = _make_pedb()
+    ss = SimulationSetups(pedb)
+    fake_setup = MagicMock()
+
+    with patch.object(ss, "create", return_value=fake_setup):
+        getattr(ss, method_name)(
+            name="my_setup",
+            start_freq="0Hz",
+            stop_freq=stop_freq,
+            step_freq=step_freq,
+            sweep_name="my_sweep",
+        )
+
+    fake_setup.add_sweep.assert_called_once_with(
+        name="my_sweep",
+        distribution="linear",
+        start_freq="0Hz",
+        stop_freq=stop_freq,
+        step=step_freq,
+        discrete=False,
+        frequency_set=None,
+    )
