@@ -372,7 +372,7 @@ def Edb(
     settings.is_grpc = grpc
 
     if grpc:
-        if float(settings.specified_version) >= 2025.2:
+        if float(settings.specified_version) >= 2026.1:
             settings.logger.info(GRPC_DEFAULT_MESSAGE)
             from pyedb.grpc.edb import Edb
 
@@ -390,7 +390,7 @@ def Edb(
                 remove_existing_aedt=remove_existing_aedt,
             )
 
-        elif float(settings.specified_version) < 2025.2:
+        elif float(settings.specified_version) < 2026.1:
             warnings.warn(GRPC_NOT_SUPPORTED_WARNING, UserWarning)
             raise RuntimeError(
                 f"gRPC is not supported for AEDT version {settings.specified_version}. "
