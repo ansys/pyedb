@@ -23,8 +23,10 @@
 from __future__ import annotations
 
 import code
+import os
 from pathlib import Path
-import runpy
+import subprocess
+import sys
 
 try:
     import typer
@@ -435,43 +437,49 @@ def exec_code(
     script_path: str | None = typer.Argument(None, help="Python script to execute against the EDB."),
     path: str = typer.Option(..., "--path", "-p", help="EDB path (.aedb folder or edb.def file)."),
     code_snippet: str | None = typer.Option(None, "--code", help="Inline Python code to execute."),
-    save_on_success: bool = typer.Option(
-        True,
-        "--save/--no-save",
-        help="Save the database after successful execution.",
-    ),
 ) -> None:
-    """Open an EDB, execute Python code, then close it."""
+    """Execute a Python script or inline code snippet against an EDB."""
 
     def _run() -> None:
         if (script_path is not None) == (code_snippet is not None):
             raise RuntimeError("Provide either a script path or --code.")
 
-        with common.managed_edb(edb_path=path) as (db, context):
-            namespace = common.build_console_namespace(db)
-            if code_snippet:
-                exec(compile(code_snippet, "<pyedb-cli>", "exec"), namespace, namespace)  # nosec
-                executed = "<inline>"
-            else:
-                script_file = Path(script_path).expanduser()
-                if not script_file.exists():
-                    raise RuntimeError(f"Script file '{script_file}' does not exist.")
-                runpy.run_path(str(script_file), init_globals=namespace, run_name="__main__")
-                executed = str(script_file.resolve())
+        edb_path = common.ensure_existing_edb_path(path)
+        env = os.environ.copy()
+        env["PYEDB_EDB_PATH"] = edb_path
 
-            if save_on_success:
-                db.save()
+        if code_snippet:
+            cmd = [sys.executable, "-c", code_snippet]
+            executed = "<inline>"
+        else:
+            script_file = Path(script_path).expanduser()
+            if not script_file.exists():
+                raise RuntimeError(f"Script file '{script_file}' does not exist.")
+            executed = str(script_file.resolve())
+            cmd = [sys.executable, executed]
 
-        data = {
-            "executed": True,
-            "script": executed,
-            "edb_path": context["edb_path"],
-            "saved": save_on_success,
-        }
+        result = subprocess.run(
+            cmd,
+            env=env,
+            capture_output=common.json_mode,
+            text=True,
+        )  # nosec
+
+        if result.returncode != 0:
+            stderr_output = result.stderr if common.json_mode else ""
+            raise RuntimeError(
+                f"Script exited with code {result.returncode}"
+                + (f": {stderr_output}" if stderr_output else "")
+            )
+
+        data = {"executed": True, "script": executed, "edb_path": edb_path}
+        if common.json_mode and result.stdout:
+            data["stdout"] = result.stdout
+
         if common.json_mode:
             common.print_output(data=data)
         else:
-            typer.secho(f"Executed script against '{context['edb_path']}'", fg="green")
+            typer.secho(f"Executed script against '{edb_path}'", fg="green")
 
     common.run_with_error_handling(_run)
 

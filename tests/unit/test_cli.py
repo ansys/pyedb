@@ -24,6 +24,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess as _subprocess
+from unittest.mock import MagicMock, patch
 
 import pytest
 from typer.testing import CliRunner
@@ -388,14 +390,47 @@ def test_config_apply_uses_explicit_paths(runner, tmp_path):
     assert FakeEdb.instances[-1].configuration.loaded[-1]["output_file"] == str(output_path.resolve())
 
 
-def test_exec_executes_inline_code_and_saves(runner, tmp_path):
-    edb_path = make_aedb(tmp_path / "scripted.aedb")
+def _make_subprocess_result(returncode=0, stdout="", stderr=""):
+    result = MagicMock()
+    result.returncode = returncode
+    result.stdout = stdout
+    result.stderr = stderr
+    return result
 
-    result = runner.invoke(app, ["exec", "--path", str(edb_path), "--code", "edb.marker = 'updated'"])
+
+def test_exec_executes_inline_code(runner, tmp_path):
+    edb_path = make_aedb(tmp_path / "scripted.aedb")
+    with patch.object(_subprocess, "run", return_value=_make_subprocess_result()) as mock_run:
+        result = runner.invoke(app, ["exec", "--path", str(edb_path), "--code", "print('hello')"])
 
     assert result.exit_code == 0
-    assert FakeEdb.instances[-1].marker == "updated"
-    assert FakeEdb.instances[-1].saved is True
+    mock_run.assert_called_once()
+    cmd = mock_run.call_args[0][0]
+    assert cmd[1] == "-c"
+    assert cmd[2] == "print('hello')"
+    assert mock_run.call_args.kwargs["env"]["PYEDB_EDB_PATH"] == str(edb_path.resolve())
+
+
+def test_exec_executes_script_file(runner, tmp_path):
+    edb_path = make_aedb(tmp_path / "scripted.aedb")
+    script = tmp_path / "my_script.py"
+    script.write_text("print('hello')", encoding="utf-8")
+    with patch.object(_subprocess, "run", return_value=_make_subprocess_result()) as mock_run:
+        result = runner.invoke(app, ["exec", "--path", str(edb_path), str(script)])
+
+    assert result.exit_code == 0
+    mock_run.assert_called_once()
+    cmd = mock_run.call_args[0][0]
+    assert cmd[-1] == str(script.resolve())
+    assert mock_run.call_args.kwargs["env"]["PYEDB_EDB_PATH"] == str(edb_path.resolve())
+
+
+def test_exec_propagates_subprocess_failure(runner, tmp_path):
+    edb_path = make_aedb(tmp_path / "scripted.aedb")
+    with patch.object(_subprocess, "run", return_value=_make_subprocess_result(returncode=1, stderr="boom")):
+        result = runner.invoke(app, ["exec", "--path", str(edb_path), "--code", "exit(1)"])
+
+    assert result.exit_code != 0
 
 
 def test_save_with_path_saves_copy(runner, tmp_path):
