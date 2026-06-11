@@ -532,7 +532,8 @@ jobs:
             .venv\Scripts\activate
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
-            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py         
+            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
+            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py::test_insert_layout_component
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -638,6 +639,7 @@ jobs:
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
             pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
+            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py::test_insert_layout_component
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
