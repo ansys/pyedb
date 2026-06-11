@@ -25,7 +25,7 @@ from __future__ import annotations
 import code
 import os
 from pathlib import Path
-import subprocess
+import subprocess  # nosec B404
 import sys
 
 try:
