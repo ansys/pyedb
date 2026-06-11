@@ -215,7 +215,6 @@ class RpcSession:
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
-            settings.logger.info("Grpc session started")
 
     @staticmethod
     def kill():

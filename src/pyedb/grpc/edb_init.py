@@ -58,9 +58,6 @@ class EdbInit(object):
         self.logger = settings.logger
         self._db = None
         self.version = version
-        self.logger.info("Logger is initialized in EDB.")
-        self.logger.info("legacy v%s", __version__)
-        self.logger.info("Python version %s", sys.version)
         self.session = None
         if is_linux:
             if env_value(self.version) in os.environ:
