@@ -340,11 +340,12 @@ class SimulationSetups:
         distribution : str, optional
             Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
         start_freq : float, str, optional
-            Starting frequency (Hz).
+            Starting frequency in Hz, or a unit string like ``"0Hz"``.
         stop_freq : float, str, optional
-            Stopping frequency (Hz).
+            Stopping frequency in Hz, or a unit string like ``"10GHz"``.
         step_freq : float, str, int, optional
-        Frequency step (Hz) or count depending on distribution.
+            Frequency step in Hz, unit string (for example ``"10MHz"``),
+            or point count depending on distribution.
         discrete_sweep : bool, optional
             Use discrete sweep.
         sweep_name : str, optional
@@ -394,11 +395,12 @@ class SimulationSetups:
         distribution : str, optional
             Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
         start_freq : float, str, optional
-            Starting frequency (Hz).
+            Starting frequency in Hz, or a unit string like ``"0Hz"``.
         stop_freq : float, str, optional
-            Stopping frequency (Hz).
+            Stopping frequency in Hz, or a unit string like ``"10GHz"``.
         step_freq : float, str, int, optional
-        Frequency step (Hz) or count depending on distribution.
+            Frequency step in Hz, unit string (for example ``"10MHz"``),
+            or point count depending on distribution.
         discrete_sweep : bool, optional
             Use discrete sweep.
         sweep_name : str, optional
@@ -448,11 +450,12 @@ class SimulationSetups:
         distribution : str, optional
             Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
         start_freq : float, str, optional
-            Starting frequency (Hz).
+            Starting frequency in Hz, or a unit string like ``"0Hz"``.
         stop_freq : float, str, optional
-            Stopping frequency (Hz).
+            Stopping frequency in Hz, or a unit string like ``"10GHz"``.
         step_freq : float, str, int, optional
-            Frequency step (Hz) or count depending on distribution.
+            Frequency step in Hz, unit string (for example ``"10MHz"``),
+            or point count depending on distribution.
         discrete_sweep : bool, optional
             Use discrete sweep.
         sweep_name : str, optional
@@ -550,11 +553,12 @@ class SimulationSetups:
         distribution : str, optional
             Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
         start_freq : float, str, optional
-            Starting frequency (Hz).
+            Starting frequency in Hz, or a unit string like ``"0Hz"``.
         stop_freq : float, str, optional
-            Stopping frequency (Hz).
+            Stopping frequency in Hz, or a unit string like ``"10GHz"``.
         step_freq : float, str, int, optional
-            Frequency step (Hz) or count depending on distribution.
+            Frequency step in Hz, unit string (for example ``"10MHz"``),
+            or point count depending on distribution.
         discrete_sweep : bool, optional
             Use discrete sweep.
         sweep_name : str, optional
@@ -604,11 +608,12 @@ class SimulationSetups:
         distribution : str, optional
             Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
         start_freq : float, str, optional
-            Starting frequency (Hz).
+            Starting frequency in Hz, or a unit string like ``"0Hz"``.
         stop_freq : float, str, optional
-            Stopping frequency (Hz).
+            Stopping frequency in Hz, or a unit string like ``"10GHz"``.
         step_freq : float, str, int, optional
-            Frequency step (Hz) or count depending on distribution.
+            Frequency step in Hz, unit string (for example ``"10MHz"``),
+            or point count depending on distribution.
         discrete_sweep : bool, optional
             Use discrete sweep.
         sweep_name : str, optional
