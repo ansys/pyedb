@@ -243,15 +243,13 @@ jobs:
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests --extra dotnet
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 120
-          command: |
-            .venv\Scripts\activate
-            pytest tests/system -vvv --cov
+        run: |
+          .venv\Scripts\activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
@@ -305,15 +303,13 @@ jobs:
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            .venv\Scripts\activate
-            pytest tests/system -vvv --cov
+        run: |
+          .venv\Scripts\activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
@@ -374,15 +370,13 @@ jobs:
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests --extra dotnet
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 120
-          command: |
-            source .venv/bin/activate
-            pytest tests/system -vvv --cov
+        run: |
+          .venv\Scripts\activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
@@ -443,15 +437,13 @@ jobs:
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            source .venv/bin/activate
-            pytest tests/system -vvv --cov
+        run: |
+          .venv\Scripts\activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
@@ -520,20 +512,17 @@ jobs:
           uv pip install --no-cache-dir --group tests .[all]
 
       - name: Run PyAEDT general and layout tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            .venv\Scripts\activate
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
-            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
-            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py::test_insert_layout_component
+        run: |
+          .venv\Scripts\activate
+          pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+          pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
+          pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
+          pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py::test_insert_layout_component
+          pytest -v external/pyaedt/tests/system/general/test_hfss.py::test_import_dxf
+        timeout-minutes: 180
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -549,25 +538,21 @@ jobs:
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            .venv\Scripts\activate
-            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
-            pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
+        run: |
+          .venv\Scripts\activate
+          pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
+          pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
+          pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
+          pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
+          pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
+          pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
+        timeout-minutes: 180
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -626,20 +611,18 @@ jobs:
           uv pip install --no-cache-dir --group tests .[all]
 
       - name: Run PyAEDT general and layout tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            source .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
-            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
-            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py::test_insert_layout_component
+        run: |
+          source .venv/bin/activate
+          pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+          pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
+          pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
+          pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py::test_insert_layout_component
+          pytest -v external/pyaedt/tests/system/general/test_hfss.py::test_import_dxf
+        timeout-minutes: 180
+
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -655,25 +638,21 @@ jobs:
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 1
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            source .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
-            pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
+        run: |
+          source .venv/bin/activate
+          pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
+          pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
+          pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
+          pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
+          pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
+          pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
+        timeout-minutes: 180
 
   docs-build:
     name: Build documentation
