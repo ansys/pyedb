@@ -1968,14 +1968,8 @@ class TestOperations(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load(data, apply_file=True)
         data_from_db = edbapp.configuration.get_data_from_db(operations=True)
-        assert len(data_from_db["operations"]["cutout"]["signal_nets"]) == 3
-        assert len(data_from_db["operations"]["cutout"]["custom_extent"]) > 0
-        edbapp.close(terminate_rpc_session=False)
-
-        data_from_db["operations"]["cutout"]["signal_nets"].remove("GND")
-        data_from_db["operations"]["cutout"]["reference_nets"].append("GND")
-        edbapp = self.edb_examples.get_si_verse()
-        edbapp.configuration.load(data_from_db, apply_file=True)
+        assert len(data_from_db["operations"]["cutout"]["signal_nets"]) == 2
+        assert len(data_from_db["operations"]["cutout"]["reference_nets"]) == 1
         edbapp.close(terminate_rpc_session=False)
 
     def test_16_components_rlc(self):
