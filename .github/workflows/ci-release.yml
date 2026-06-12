@@ -373,7 +373,7 @@ jobs:
 
       - name: Executing system tests
         run: |
-          .venv\Scripts\activate
+          source .venv/bin/activate
           pytest tests/system --cov=pyedb --color=yes -ra
         timeout-minutes: 60
 
