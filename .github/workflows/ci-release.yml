@@ -246,14 +246,14 @@ jobs:
 
       - name: Executing system tests
         run: |
-          .venv\Scripts\activate
+          source .venv\Scripts\activate
           pytest tests/system --cov=pyedb --color=yes -ra
         timeout-minutes: 60
 
 
       - name: Create coverage files
         run: |
-          .venv\Scripts\activate
+          source .venv\Scripts\activate
           python -m coverage html -d .cov\system-html
           python -m coverage xml -o .cov\system.xml
 
@@ -306,14 +306,14 @@ jobs:
 
       - name: Executing system tests
         run: |
-          .venv\Scripts\activate
+          source .venv\Scripts\activate
           pytest tests/system --cov=pyedb --color=yes -ra
         timeout-minutes: 60
 
 
       - name: Create coverage files
         run: |
-          .venv\Scripts\activate
+          source .venv\Scripts\activate
           python -m coverage html -d .cov\system-html
           python -m coverage xml -o .cov\system.xml
 
@@ -373,7 +373,7 @@ jobs:
 
       - name: Executing system tests
         run: |
-          .venv\Scripts\activate
+          source .venv\Scripts\activate
           pytest tests/system --cov=pyedb --color=yes -ra
         timeout-minutes: 60
 
@@ -440,7 +440,7 @@ jobs:
 
       - name: Executing system tests
         run: |
-          .venv\Scripts\activate
+          source .venv\Scripts\activate
           pytest tests/system --cov=pyedb --color=yes -ra
         timeout-minutes: 60
 
@@ -507,7 +507,7 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
-          .venv\Scripts\activate
+          source .venv\Scripts\activate
           cd external/pyaedt
           uv pip install --no-cache-dir --group tests .[all]
 
@@ -516,7 +516,7 @@ jobs:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         run: |
-          .venv\Scripts\activate
+          source .venv\Scripts\activate
           pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
           pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
           pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
@@ -529,7 +529,7 @@ jobs:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         run: |
-          .venv\Scripts\activate
+          source .venv\Scripts\activate
           pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
         timeout-minutes: 180
 
@@ -539,7 +539,7 @@ jobs:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         run: |
-          .venv\Scripts\activate
+          source .venv\Scripts\activate
           pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
           pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
           pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
