@@ -194,14 +194,14 @@ jobs:
       - name: Create coverage files
         run: |
           source .venv/bin/activate
-          python -m coverage html -d .cov\unit-html
-          python -m coverage xml -o .cov\unit.xml
+          python -m coverage html -d .cov/unit-html
+          python -m coverage xml -o .cov/unit.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          path: .cov\unit-html
+          path: .cov/unit-html
           name: html-unit-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
@@ -373,7 +373,7 @@ jobs:
 
       - name: Executing system tests
         run: |
-          source .venv\Scripts\activate
+          source .venv/bin/activate
           pytest tests/system --cov=pyedb --color=yes -ra
         timeout-minutes: 60
 
@@ -440,7 +440,7 @@ jobs:
 
       - name: Executing system tests
         run: |
-          source .venv\Scripts\activate
+          source .venv/bin/activate
           pytest tests/system --cov=pyedb --color=yes -ra
         timeout-minutes: 60
 
