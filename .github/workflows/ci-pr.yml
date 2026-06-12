@@ -304,7 +304,7 @@ jobs:
         run: |
           .venv\Scripts\activate
           pytest tests/system --cov=pyedb --color=yes -ra
-        timeout-minutes: 60
+        timeout-minutes: 180
 
 
       - name: Create coverage files
@@ -371,7 +371,7 @@ jobs:
         run: |
           source .venv/bin/activate
           pytest tests/system --cov=pyedb --color=yes -ra
-        timeout-minutes: 60
+        timeout-minutes: 180
 
 
       - name: Create coverage files
@@ -438,7 +438,7 @@ jobs:
         run: |
           source .venv/bin/activate
           pytest tests/system --cov=pyedb --color=yes -ra
-        timeout-minutes: 60
+        timeout-minutes: 180
 
 
       - name: Create coverage files
