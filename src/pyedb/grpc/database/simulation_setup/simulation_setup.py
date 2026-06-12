@@ -193,23 +193,12 @@ class SimulationSetup(SimulationSetupDeprecated, ABC):
         This function creates SweepData entries from the provided frequency_set and
         appends them to the existing core.sweep_data.
         """
-        from pyedb.grpc.database.simulation_setup.sweep_data import _mapping_distribution
-
         sw_data = None
         for sweep_item in frequency_set:
-            # detect distribution token and map to internal code
-            if "linear_scale" in sweep_item:
-                distribution = "LIN"
-            elif "linear_count" in sweep_item:
-                distribution = "LINC"
-            elif "exponential" in sweep_item:
-                distribution = "ESTP"
-            elif "log_scale" in sweep_item:
-                distribution = "DEC"
-            elif "octave_count" in sweep_item:
-                distribution = "OCT"
-            else:
-                distribution = "LIN"
+            # Delegate distribution normalisation to the shared helper so that all
+            # aliases ("decade_count", "log_scale", "linear_count", …) are handled
+            # consistently.
+            distribution = self._normalize_distribution(sweep_item[0])
 
             start_freq = self._pedb.number_with_units(sweep_item[1], "Hz")
             stop_freq = self._pedb.number_with_units(sweep_item[2], "Hz")
@@ -272,35 +261,64 @@ class SimulationSetup(SimulationSetupDeprecated, ABC):
         discrete: bool = False,
         frequency_set: list[list[str]] | None = None,
     ) -> SweepData | None:
-        """Add a HFSS frequency sweep.
+        """Add a frequency sweep to the simulation setup.
 
-        This method was refactored to reduce complexity. The behavior is compatible
-        with the previous implementation: it accepts either a legacy `frequency_set`
-        or single-sweep parameters.
+        Accepts either a single-sweep shorthand (``distribution`` / ``start_freq`` /
+        ``stop_freq`` / ``step``) or a multi-band ``frequency_set`` list that groups
+        several sweep sub-ranges into one named sweep object.
 
         Parameters
         ----------
-        name: str
-            sweep name
-        distribution: str
-            sweep distribution. Supported values `"linear"`, `"linear_count"`, `"decade_count"`, `"exponential"`,
-            `"octave_count"`. Default: `"linear"`
-        start_freq: str or float
-            starting frequency (e.g. "0GHz" or 0)
-        stop_freq: str or float
-            stopping frequency (e.g. "20GHz" or 20000000000)
-        step: str or float
-            frequency step (e.g. "10MHz" or 10000000)
-        discrete: bool
-            whether the sweep is discrete or interpolating
-        frequency_set: list[list[str]] or None
-            legacy multi-sweep format (e.g. [["linear_scale", "0GHz", "20GHz", "10MHz"], [...], ...])
+        name : str, optional
+            Name of the sweep. Auto-generated when omitted.
+        distribution : str, optional
+            Sweep distribution used in single-sweep mode. Supported values:
+            ``"linear"`` (default), ``"linear_count"``, ``"decade_count"``,
+            ``"log_scale"``, ``"exponential"``, ``"octave_count"``.
+        start_freq : str or float, optional
+            Start frequency for single-sweep mode (e.g. ``"0GHz"`` or ``0``).
+            Default is ``"0GHz"``.
+        stop_freq : str or float, optional
+            Stop frequency for single-sweep mode (e.g. ``"20GHz"`` or ``20e9``).
+            Default is ``"20GHz"``.
+        step : str or float, optional
+            Frequency step or point count for single-sweep mode
+            (e.g. ``"10MHz"`` or ``10e6``). Default is ``"10MHz"``.
+        discrete : bool, optional
+            When ``True`` the sweep type is set to *discrete*; otherwise
+            *interpolating*. Default is ``False``.
+        frequency_set : list[list[str or float]] or None, optional
+            Multi-band sweep definition. Each inner list has the form
+            ``[distribution, start_freq, stop_freq, step]`` and supports all
+            distribution aliases recognised by the ``distribution`` parameter.
+            When provided, ``distribution`` / ``start_freq`` / ``stop_freq`` /
+            ``step`` are ignored.
 
         Returns
         -------
-        SweepData | None
-            The newly added sweep when single sweep parameters are used, or None when
-            `frequency_set` is provided (legacy multi-sweep behavior).
+        SweepData or None
+            The newly added :class:`SweepData` object, or ``None`` if the sweep
+            could not be created.
+
+        Examples
+        --------
+        Single linear sweep:
+
+        >>> setup = edbapp.simulation_setups.create_siwave_setup()
+        >>> sweep = setup.add_sweep(name="sweep1", start_freq="0GHz", stop_freq="10GHz", step="10MHz")
+
+        Multi-band sweep combining a DC point, a decade (log) band and a linear
+        band — all grouped under one sweep name:
+
+        >>> setup = edbapp.simulation_setups.create_siwave_setup()
+        >>> setup.add_sweep(
+        ...     name="sweep1",
+        ...     frequency_set=[
+        ...         ["linear_count", "0GHz", "0GHz", "1"],
+        ...         ["decade_count", "1Hz", "10MHz", "10"],
+        ...         ["linear", "10MHz", "10GHz", "10MHz"],
+        ...     ],
+        ... )
         """
         # Legacy batch mode
         if frequency_set:
