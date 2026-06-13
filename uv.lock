@@ -40,20 +40,20 @@ wheels = [
 
 [[package]]
 name = "ansys-api-edb"
-version = "0.3.0"
+version = "0.3.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "grpcio" },
     { name = "protobuf" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b8/e0/af5d7cc9f2739d7ac1df89a2b5a5e98324497d2166f9b28b1d23cc9ef045/ansys_api_edb-0.3.0.tar.gz", hash = "sha256:dff1ae2973a4036ef9e25c87cf37d211b1f4df1571d8718909a6ce6cb9e148c5", size = 44157, upload-time = "2026-04-08T14:26:20.564Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/f6/2ea2788687e69db378e47bcf477469caed509d1485a324b253e31074a969/ansys_api_edb-0.3.2.tar.gz", hash = "sha256:28d0f0d07fcbdae78ba2c9eddfe87951f85a091f168552b98c738f9018c8a4aa", size = 44527, upload-time = "2026-06-09T21:03:00.669Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bc/ba/2b3583132e1c1a2ab13cb8f773e44c3e2f4f67b80de96bd40ee9d24bb037/ansys_api_edb-0.3.0-py3-none-any.whl", hash = "sha256:586555b087b97cb194acb4681d43bcdd63c6c9260fec5c277573dd4e6dd3ba40", size = 714860, upload-time = "2026-04-08T14:26:18.872Z" },
+    { url = "https://files.pythonhosted.org/packages/e1/ee/3f0df4ab2a16f62479c318707ba9bc8a82968b8ea0a2aaeb3991b180aecf/ansys_api_edb-0.3.2-py3-none-any.whl", hash = "sha256:c9ee598781fd0dc074c404351d827031496e06d3d93ed5a68a28720218932a71", size = 716468, upload-time = "2026-06-09T21:02:59.017Z" },
 ]
 
 [[package]]
 name = "ansys-edb-core"
-version = "0.3.1"
+version = "0.3.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ansys-api-edb" },
@@ -61,9 +61,9 @@ dependencies = [
     { name = "grpcio" },
     { name = "protobuf" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/88/ac/a6758a44ec4090eb664336edbd8c7f492d3fdd427a5497f4aca7e64dfc19/ansys_edb_core-0.3.1.tar.gz", hash = "sha256:0e5b4b7abae57c653f1fbe112e3c2f8da3bc12fc75f93c343e63f0914e310dfd", size = 158625, upload-time = "2026-04-23T09:12:13.388Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8f/78/fdfa0e93cc19ebf741bb9dbf637bb014f918b7aa6f97301e4b693df17cea/ansys_edb_core-0.3.2.tar.gz", hash = "sha256:e43f70a3798a6dbb17eefa68004fa20b87015525cd7e7767e9dee7a507e4a48d", size = 174806, upload-time = "2026-06-10T21:07:30.669Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d1/c2/5e061828beb26eb78762f23b4f1a9b4332209d904ddf1d4e15b2e7f284f3/ansys_edb_core-0.3.1-py3-none-any.whl", hash = "sha256:6bb65b8ffcc00bd70a82b3a17177b8503ea3c6b3ff8f2e47c9c6498a8aa5dbbd", size = 225005, upload-time = "2026-04-23T09:12:11.714Z" },
+    { url = "https://files.pythonhosted.org/packages/0d/32/e32dce5641dfbe16065747b952d8df850f5451b1561d949848cd25aaa3e5/ansys_edb_core-0.3.2-py3-none-any.whl", hash = "sha256:9a55f497fe5c5dbb1e8e9bed4c76b2609e9d7ce2d55ac182827e3e1018ceb24c", size = 241979, upload-time = "2026-06-10T21:07:29.114Z" },
 ]
 
 [[package]]
