@@ -31,7 +31,8 @@ dependencies = [
     "ansys-edb-core>=0.3.1",
     "psutil",
     "defusedxml>=0.7,<8.0",
-    "xmltodict"
+    "xmltodict",
+    "typer>=0.20.0",
 ]
 
 [project.optional-dependencies]
@@ -104,6 +105,9 @@ doc = [
     "sphinx-gallery>=0.14.0,<0.22",
     "sphinx_design>=0.4.0,<0.7",
 ]
+
+[project.scripts]
+pyedb = "pyedb.cli:app"
 
 [project.urls]
 Bugs = "https://github.com/ansys/pyedb/issues"
