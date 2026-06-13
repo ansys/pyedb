@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`MaterialModelException`
+===============================
+
+
+.. py:exception:: pyedb.exceptions.MaterialModelException
+
+   Bases: :py:obj:`Exception`
+
+
+   
+   Exception triggered when handling material model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.exceptions import MaterialModelException
+
+
+
+
+

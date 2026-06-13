@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``model.py`` module
+=======================
+
+.. py:module:: pyedb.grpc.database.hierarchy.model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.hierarchy.model.Model`
+            - Manages model :class:`Model <ansys.edb.core.hierarchy.model.Model>`.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Model</autoapi/pyedb/grpc/database/hierarchy/model/Model>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

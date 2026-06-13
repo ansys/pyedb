@@ -1,0 +1,6 @@
+model\_rebuild
+==============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: DiffPairLengthMatch.model_rebuild
