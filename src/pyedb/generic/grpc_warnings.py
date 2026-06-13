@@ -33,11 +33,11 @@ GRPC_BETA_WARNING = (
 )
 
 GRPC_NOT_SUPPORTED_WARNING = (
-    f"gRPC is now the default backend selection for PyEDB is and not supported for AEDT "
-    f"version 2025.2 and earlier."
-    f"Please use AEDT version 2026.1 or later to enable gRPC functionality, "
-    f"or set grpc=False to use the DotNet backend. Note DotNet will be deprecated and gRPC will be the long"
-    f" term supported version."
+    "gRPC is now the default backend selection for PyEDB is and not supported for AEDT "
+    "version 2025.2 and earlier."
+    "Please use AEDT version 2026.1 or later to enable gRPC functionality, "
+    "or set grpc=False to use the DotNet backend. Note DotNet will be deprecated and gRPC will be the long"
+    " term supported version."
 )
 
 DOTNET_USAGE_WARNING = (
