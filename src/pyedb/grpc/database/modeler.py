@@ -35,6 +35,7 @@ from ansys.edb.core.geometry.polygon_data import (
 
 from pyedb.grpc.database.geometry.point_data import PointData
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
+from pyedb.grpc.database.hierarchy.group import Group
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
@@ -1550,7 +1551,7 @@ class Modeler(object):
         local_origin_y: float | str | None = 0,
         local_origin_z: float | str | None = 0,
     ) -> Any:
-        """Insert a layout instance into the active layout.
+        """Insert a 3d component on a given layer.
 
         Parameters
         ----------
@@ -1605,6 +1606,45 @@ class Modeler(object):
                 local_origin_z=local_origin_z,
             )
         return cell_inst
+
+    def insert_3d_component_on_component(
+        self,
+        a3dcomp_path: str | Path,
+        reference_designator: str,
+        local_origin_x: float | str | None = 0,
+        local_origin_y: float | str | None = 0,
+        local_origin_z: float | str | None = 0,
+    ) -> Any:
+        """Insert a 3d component on a given layer. Placement location and rotation are automatically determined based
+        on the component reference designator.
+
+        Parameters
+        ----------
+        a3dcomp_path: str or Path
+            File path to the 3D component.
+        reference_designator: str
+            Reference designator of the component to place on.
+        local_origin_x: float or str
+            Local origin X coordinate.
+        local_origin_y: float or str
+            Local origin Y coordinate.
+        local_origin_z: float or str
+            Local origin Z coordinate.
+        """
+
+        comp = self._pedb.components.instances[reference_designator]
+        p1 = list(sorted(comp.pins.items()))[0][1]
+        return self.insert_3d_component_on_layer(
+            a3dcomp_path=a3dcomp_path,
+            x=p1.position[0],
+            y=p1.position[1],
+            placement_layer=comp.placement_layer,
+            rotation=comp.rotation,
+            place_on_bottom=True if comp.placement_layer == list(self._pedb.stackup.signal_layers)[-1] else False,
+            local_origin_x=local_origin_x,
+            local_origin_y=local_origin_y,
+            local_origin_z=local_origin_z,
+        )
 
     def create_taper(
         self,
@@ -1908,3 +1948,27 @@ class Modeler(object):
                     polygon_data = polygon_data.expand(self._pedb.value(traces_offset))
                 self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
         return True
+
+    def insert_coordinate_system(self, name: str, x: float | str, y: float | str, layer: str) -> Group:
+        """Insert a coordinate system.
+
+        Parameters
+        ----------
+        name : str
+            Name of the coordinate system.
+        x : float | str
+            X coordinate position.
+        y : float | str
+            Y coordinate position.
+        layer : str
+            Placement layer for the coordinate system.
+
+        Returns
+        -------
+        Group
+            The created coordinate system group.
+        """
+        cs = Group.create(self._pedb, name)
+        cs.placement_layer = layer
+        cs.location = [x, y]
+        return cs

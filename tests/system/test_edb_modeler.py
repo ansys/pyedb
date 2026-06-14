@@ -639,7 +639,7 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_3d_component_placement_3d(self):
-        fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
+        fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")[0]
         edbapp = self.edb_examples.get_si_board()
         cell_inst_1 = edbapp.modeler.insert_3d_component_placement_3d(
             a3dcomp_path=fpath,
@@ -656,7 +656,7 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_3d_component_on_layer(self):
-        fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
+        fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")[0]
         edbapp = self.edb_examples.get_si_board()
         cell_inst_1 = edbapp.modeler.insert_3d_component_on_layer(
             a3dcomp_path=fpath, x="1mm", y="2mm", placement_layer="s1"
@@ -670,6 +670,17 @@ class TestClass(BaseTestClass):
             place_on_bottom=True,
         )
         assert not cell_inst_2.is_null
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
+    def test_insert_3d_component_on_component(self):
+        fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/CAP_DUMMY.a3dcomp")[0]
+        edbapp = self.edb_examples.get_si_verse()
+        cell_inst_1 = edbapp.modeler.insert_3d_component_on_component(a3dcomp_path=fpath, reference_designator="C191")
+        assert not cell_inst_1.is_null
+        assert cell_inst_1.transform3d.shift.x.value == pytest.approx(0.0254)
+        assert cell_inst_1.transform3d.shift.y.value == pytest.approx(0.0738)
+        assert cell_inst_1.transform3d.z_y_x_rotation.x.value == pytest.approx(-1.5707963267948968)
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="PrimitiveDotNet is only available on the .NET backend")
@@ -1406,6 +1417,17 @@ class TestPointData(BaseTestClass):
         assert pdata2.x == pytest.approx(0)
         assert pdata2.y == pytest.approx(1)
 
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="gRPC only")
+    def test_insert_cs(self):
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.modeler.insert_coordinate_system(name="CS1", x="1mm", y="2mm", layer="1_Top")
+        cs = edbapp.layout.coordinate_systems[0]
+        assert cs.name == "CS1"
+        assert cs.location[0] == 0.001
+        assert cs.location[1] == 0.002
+        assert cs.placement_layer == "1_Top"
         edbapp.close(terminate_rpc_session=False)
 
 
