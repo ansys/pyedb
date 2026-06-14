@@ -184,7 +184,7 @@ class RectangularPatch:
                     horizontal_extent_factor=10,
                     vertical_extent_factor=5,
                 )
-                setup = self._edb.create_hfss_setup("Patch_antenna_lib")
+                setup = self._edb.simulation_setups.create_hfss_setup("Patch_antenna_lib")
                 setup.adaptive_settings.adaptive_frequency_data_list[0].adaptive_frequency = str(
                     self.estimated_frequency
                 )
@@ -355,7 +355,7 @@ class CircularPatch:
                     horizontal_extent_factor=10,
                     vertical_extent_factor=5,
                 )
-                setup = self._edb.create_hfss_setup("Patch_antenna_lib")
+                setup = self._edb.simulation_setups.create_hfss_setup("Patch_antenna_lib")
                 setup.adaptive_settings.adaptive_frequency_data_list[0].adaptive_frequency = str(
                     self.estimated_frequency
                 )
@@ -591,7 +591,7 @@ class TriangularPatch:
                     horizontal_extent_factor=10,
                     vertical_extent_factor=5,
                 )
-                setup = self._edb.create_hfss_setup("Patch_antenna_lib")
+                setup = self._edb.simulation_setups.create_hfss_setup("Patch_antenna_lib")
                 setup.adaptive_settings.adaptive_frequency_data_list[0].adaptive_frequency = str(
                     self.estimated_frequency
                 )
