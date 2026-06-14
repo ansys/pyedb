@@ -462,10 +462,7 @@ class LayoutValidation:
                 if candidate.is_file():
                     return candidate.absolute()
 
-        raise FileNotFoundError(
-            f"Unable to locate executable '{executable}' under: "
-            f"{', '.join(str(r) for r in roots)}"
-        )
+        raise FileNotFoundError(f"Unable to locate executable '{executable}' under: {', '.join(str(r) for r in roots)}")
 
     @staticmethod
     def _write_siwave_exec_files(temp_root: Path, validation_lines: list[str]) -> tuple[Path, Path, Path]:
