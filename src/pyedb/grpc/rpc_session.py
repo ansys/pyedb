@@ -53,6 +53,7 @@ class RpcSession:
     server_pid = 0
     _open_db_count = 0  # number of EDB databases currently open against this server
     _owns_session = False  # True only when RpcSession launched the server itself
+    fast_grpc_mode_enabled = False
 
     @staticmethod
     def acquire():
@@ -198,6 +199,7 @@ class RpcSession:
         for attempt in range(max_attempts):
             try:
                 RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
+                RpcSession.fast_grpc_mode_enabled = RpcSession.rpc_session.shared_memory
                 break
             except Exception as e:
                 settings.logger.warning(f"launch_session attempt {attempt + 1}/{max_attempts} failed: {e}")
@@ -213,7 +215,6 @@ class RpcSession:
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
-            settings.logger.info("Grpc session started")
 
     @staticmethod
     def kill():
