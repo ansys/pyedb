@@ -35,6 +35,7 @@ from ansys.edb.core.geometry.polygon_data import (
 
 from pyedb.grpc.database.geometry.point_data import PointData
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
+from pyedb.grpc.database.hierarchy.group import Group
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
@@ -1947,3 +1948,27 @@ class Modeler(object):
                     polygon_data = polygon_data.expand(self._pedb.value(traces_offset))
                 self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
         return True
+
+    def insert_coordinate_system(self, name: str, x: float | str, y: float | str, layer: str) -> Group:
+        """Insert a coordinate system.
+
+        Parameters
+        ----------
+        name : str
+            Name of the coordinate system.
+        x : float | str
+            X coordinate position.
+        y : float | str
+            Y coordinate position.
+        layer : str
+            Placement layer for the coordinate system.
+
+        Returns
+        -------
+        Group
+            The created coordinate system group.
+        """
+        cs = Group.create(self._pedb, name)
+        cs.placement_layer = layer
+        cs.location = [x, y]
+        return cs
