@@ -199,7 +199,10 @@ class RpcSession:
         for attempt in range(max_attempts):
             try:
                 RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
-                RpcSession.fast_grpc_mode_enabled = RpcSession.rpc_session.shared_memory
+                if hasattr(RpcSession.rpc_session, "in_memory"):
+                    RpcSession.fast_grpc_mode_enabled = RpcSession.rpc_session.in_memory
+                else:
+                    RpcSession.fast_grpc_mode_enabled = False
                 break
             except Exception as e:
                 settings.logger.warning(f"launch_session attempt {attempt + 1}/{max_attempts} failed: {e}")
