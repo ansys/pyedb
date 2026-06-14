@@ -430,7 +430,8 @@ class LayoutValidation:
 
     def _resolve_siwave_executable(self, executable_name: str) -> Path:
         """Resolve the absolute path to a Siwave CLI executable."""
-        suffix = "" if platform.system().lower() == "linux" else ".exe"
+        is_linux = platform.system().lower() == "linux"
+        suffix = "" if is_linux else ".exe"
         executable = f"{executable_name}{suffix}"
 
         roots = []
@@ -444,13 +445,27 @@ class LayoutValidation:
         if not roots:
             raise FileNotFoundError("Unable to locate Ansys EM root.")
 
-        for root in roots:
-            for rel in (Path(), Path("Win64"), Path("Linux64")):
-                candidate = (root / rel / executable).resolve()
-                if candidate.is_file():
-                    return candidate
+        # Prefer platform-specific folders first.
+        if is_linux:
+            rel_paths = (Path("Linux64"), Path())
+        else:
+            rel_paths = (Path("Win64"), Path())
 
-        raise FileNotFoundError(f"Unable to find executable `{executable}` under: {', '.join(str(r) for r in roots)}")
+        for root in roots:
+            root = root.expanduser().absolute()
+
+            for rel in rel_paths:
+                candidate = root / rel / executable
+
+                # Do not use resolve() here, because on Linux siwave_ng may be
+                # a symlink to .answrapper. resolve() would return .answrapper.
+                if candidate.is_file():
+                    return candidate.absolute()
+
+        raise FileNotFoundError(
+            f"Unable to locate executable '{executable}' under: "
+            f"{', '.join(str(r) for r in roots)}"
+        )
 
     @staticmethod
     def _write_siwave_exec_files(temp_root: Path, validation_lines: list[str]) -> tuple[Path, Path, Path]:
