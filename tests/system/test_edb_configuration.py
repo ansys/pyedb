@@ -2887,3 +2887,82 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
         data = edb_app.configuration.get_data_from_db(package_definitions=True)
         assert "package_definitions" in data
         edb_app.close(terminate_rpc_session=False)
+
+    def test_cfg_operations(self):
+        edbapp = self.edb_examples.get_si_verse()
+        SIGNAL_NETS = [
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_RX3_N",
+        ]
+        REFERENCE_NET = "GND"
+        COMPONENT = "U1"
+
+        cfg = edbapp.configuration.create_config_builder()
+
+        cfg.nets.add_signal_nets(SIGNAL_NETS)
+        cfg.nets.add_power_ground_nets([REFERENCE_NET])
+
+        cfg.operations.add_cutout(
+            signal_nets=SIGNAL_NETS,
+            reference_nets=[REFERENCE_NET],
+            extent_type="ConvexHull",
+            expansion_size=3e-3,
+        )
+
+        cfg.pin_groups.add(reference_designator=COMPONENT, nets=SIGNAL_NETS)
+        cfg.pin_groups.add(
+            name=f"Pingroup_{COMPONENT}.{REFERENCE_NET}",
+            reference_designator=COMPONENT,
+            nets=REFERENCE_NET,
+        )
+
+        for net in SIGNAL_NETS:
+            cfg.ports.add_circuit_port(
+                reference_designator=COMPONENT,
+                positive_net=net,
+                negative_net=REFERENCE_NET,
+            )
+        json_path = os.path.join(edbapp.edbpath, "test_cfg.json")
+        hfss_setup = cfg.setups.add_hfss_setup(name="HFSS_PCIe")
+        sweep = hfss_setup.add_frequency_sweep(name="Sweep_LIN")
+        sweep.add_linear_scale_frequencies(start="1GHz", stop="10GHz", step="0.5GHz")
+        edbapp.configuration.run(cfg)
+        edbapp.configuration.export(
+            file_path=json_path,
+            stackup=True,
+            nets=True,
+            pin_groups=True,
+            ports=True,
+            setups=True,
+            operations=True,
+            components=False,
+            padstacks=False,
+            boundaries=False,
+            s_parameters=False,
+            spice_models=False,
+            variables=False,
+            general=False,
+        )
+        assert os.path.isfile(json_path)
+        with open(json_path, "r", encoding="utf-8") as f:
+            config_data = json.load(f)
+
+        def _assert_not_empty(obj, path="root"):
+            if isinstance(obj, dict):
+                for k, v in obj.items():
+                    _assert_not_empty(v, f"{path}.{k}")
+            elif isinstance(obj, list):
+                for i, item in enumerate(obj):
+                    _assert_not_empty(item, f"{path}[{i}]")
+            else:
+                if obj is None or (isinstance(obj, (str, list, dict)) and len(obj) == 0):
+                    raise AssertionError(f"Field '{path}' must not be empty or None")
+
+        _assert_not_empty(config_data)
+        edbapp.close(terminate_rpc_session=False)
