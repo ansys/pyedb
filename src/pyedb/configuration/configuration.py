@@ -1086,18 +1086,21 @@ class Configuration:
         if polygons:
             poly = polygons[0]
             custom_extent = poly.polygon_data.points
-            net_names = []
+            signal_nets = []
+            reference_nets = []
             for name, obj in self._pedb.nets.nets.items():
                 if obj.primitives:
                     if obj.primitives[0].layer.name == "pyedb_cutout":
                         continue
+                    if name in self.cfg_data.nets.signal_nets:
+                        signal_nets.append(name)
                     else:
-                        net_names.append(name)
+                        reference_nets.append(name)
 
             self.cfg_data.operations.add_cutout(
                 custom_extent=custom_extent,
-                reference_nets=[],
-                signal_nets=net_names,
+                reference_nets=reference_nets,
+                signal_nets=signal_nets,
             )
 
     @execution_timer("Placing terminals")
@@ -1318,7 +1321,8 @@ class Configuration:
         if kwargs.get("pin_groups", False):
             data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
         if kwargs.get("operations", False):
-            self.get_operations()
+            if self.cfg_data.operations.cutout is None:
+                self.get_operations()
             data["operations"] = self.cfg_data.operations.model_dump()
         if kwargs.get("padstacks", False):
             self.get_padstacks()
