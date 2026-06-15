@@ -34,6 +34,25 @@ from ansys.edb.core.simulation_setup.simulation_setup import (
     SweepData as CoreSweepData,
 )
 
+# Extend CoreDistribution with full-name aliases used by AEDT internal tools
+# (e.g. pintopinsetup) that write human-readable distribution names into the
+# frequency_string field instead of the abbreviated enum names.
+# ansys-edb-core parses frequency_string with ``Distribution[token]`` so the
+# aliases must live in the enum's _member_map_.
+_DISTRIBUTION_FULL_NAME_ALIASES: dict[str, CoreDistribution] = {
+    "Linear": CoreDistribution.LIN,
+    "LinearCount": CoreDistribution.LINC,
+    "Linear Count": CoreDistribution.LINC,
+    "LogScale": CoreDistribution.DEC,
+    "Log Scale": CoreDistribution.DEC,
+    "Decade": CoreDistribution.DEC,
+    "Exponential": CoreDistribution.ESTP,
+    "OctaveCount": CoreDistribution.OCT,
+    "Octave Count": CoreDistribution.OCT,
+}
+for _alias, _member in _DISTRIBUTION_FULL_NAME_ALIASES.items():
+    CoreDistribution._member_map_.setdefault(_alias, _member)
+
 _mapping_distribution = {
     "lin": CoreDistribution.LIN,
     "dec": CoreDistribution.DEC,

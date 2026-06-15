@@ -129,12 +129,6 @@ class SimulationSetup(SystemObject):
     def set_sim_setup_info(self, sim_setup_info: SimSetupInfo):
         self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
 
-    # @property
-    # def get_sim_setup_info(self):
-    #     """Get simulation setup information."""
-    #     warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
-    #     return self.sim_setup_info._edb_object
-
     @property
     def is_null(self):
         """Adding this property for compatibility with grpc."""

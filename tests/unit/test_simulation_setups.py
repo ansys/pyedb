@@ -32,6 +32,57 @@ from pyedb.grpc.database.simulation_setups import SimulationSetups
 pytestmark = [pytest.mark.unit, pytest.mark.grpc]
 
 
+class TestDistributionFullNameAliases:
+    """Verify that CoreDistribution accepts full human-readable names written by AEDT internal tools.
+
+    pintopinsetup and other AEDT-internal tools write the full English name (e.g. 'Linear')
+    into the frequency_string field of an EDB sweep.  ansys-edb-core parses that field with
+    ``Distribution[name]``; without the aliases that lookup raised a KeyError.
+    """
+
+    @pytest.mark.parametrize(
+        "alias,expected_name",
+        [
+            ("Linear", "LIN"),
+            ("LinearCount", "LINC"),
+            ("Linear Count", "LINC"),
+            ("LogScale", "DEC"),
+            ("Log Scale", "DEC"),
+            ("Decade", "DEC"),
+            ("Exponential", "ESTP"),
+            ("OctaveCount", "OCT"),
+            ("Octave Count", "OCT"),
+        ],
+    )
+    def test_full_name_alias_resolves(self, alias, expected_name):
+        """Distribution[alias] must resolve to the correct enum member without raising KeyError."""
+        from pyedb.grpc.database.simulation_setup.sweep_data import CoreDistribution
+
+        member = CoreDistribution[alias]
+        assert member.name == expected_name
+
+    def test_abbreviated_names_unchanged(self):
+        """The original abbreviated names (LIN, DEC, …) must still work after patching."""
+        from pyedb.grpc.database.simulation_setup.sweep_data import CoreDistribution
+
+        for name in ("LIN", "LINC", "DEC", "ESTP", "OCT"):
+            assert CoreDistribution[name].name == name
+
+    def test_aliases_do_not_shadow_existing_members(self):
+        """setdefault must not replace a pre-existing member with an alias."""
+        from pyedb.grpc.database.simulation_setup.sweep_data import CoreDistribution
+
+        # LIN is a real member; it must still be the canonical object
+        assert CoreDistribution["LIN"] is CoreDistribution.LIN
+
+    def test_invalid_distribution_name_still_raises(self):
+        """Unknown distribution names that are neither abbreviated nor aliased must still raise KeyError."""
+        from pyedb.grpc.database.simulation_setup.sweep_data import CoreDistribution
+
+        with pytest.raises(KeyError):
+            _ = CoreDistribution["NotADistribution"]
+
+
 def _make_setup_stub(name: str, type_name: str):
     """Return a minimal stub that mimics a gRPC SimulationSetup object."""
     stub = SimpleNamespace()
