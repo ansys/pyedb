@@ -453,6 +453,14 @@ class TestCreateHfssSetup:
             )
         fake_setup.add_sweep.assert_called_once()
 
+    def test_creates_with_sweep_when_start_freq_is_zero(self):
+        pedb = _make_pedb()
+        ss = SimulationSetups(pedb)
+        fake_setup = MagicMock()
+        with patch.object(ss, "create", return_value=fake_setup):
+            ss.create_hfss_setup(name="my_hfss", start_freq=0, stop_freq=10e9, step_freq=1e8)
+        fake_setup.add_sweep.assert_called_once()
+
     def test_applies_kwargs_as_attributes(self):
         pedb = _make_pedb()
         ss = SimulationSetups(pedb)
@@ -486,6 +494,14 @@ class TestCreateHfsspiSetup:
             )
         fake_setup.add_sweep.assert_called_once()
 
+    def test_creates_with_sweep_when_start_freq_is_zero(self):
+        pedb = _make_pedb()
+        ss = SimulationSetups(pedb)
+        fake_setup = MagicMock()
+        with patch.object(ss, "create", return_value=fake_setup):
+            ss.create_hfss_pi_setup(name="my_pi", start_freq=0, stop_freq=5e9, step_freq=1e8)
+        fake_setup.add_sweep.assert_called_once()
+
     def test_applies_kwargs_as_attributes(self):
         pedb = _make_pedb()
         ss = SimulationSetups(pedb)
@@ -517,6 +533,14 @@ class TestCreateSiwaveSetup:
                 stop_freq=1e9,
                 step_freq=1e6,
             )
+        fake_setup.add_sweep.assert_called_once()
+
+    def test_creates_with_sweep_when_start_freq_is_zero(self):
+        pedb = _make_pedb()
+        ss = SimulationSetups(pedb)
+        fake_setup = MagicMock()
+        with patch.object(ss, "create", return_value=fake_setup):
+            ss.create_siwave_setup(name="my_si", start_freq=0, stop_freq=1e9, step_freq=1e6)
         fake_setup.add_sweep.assert_called_once()
 
 
@@ -656,6 +680,14 @@ class TestCreateQ3dSetup:
             )
         fake_setup.add_sweep.assert_called_once()
 
+    def test_creates_with_sweep_when_start_freq_is_zero(self):
+        pedb = _make_pedb()
+        ss = SimulationSetups(pedb)
+        fake_setup = MagicMock()
+        with patch.object(ss, "create", return_value=fake_setup):
+            ss.create_q3d_setup(name="my_q3d", start_freq=0, stop_freq=10e9, step_freq=1e8)
+        fake_setup.add_sweep.assert_called_once()
+
     def test_applies_kwargs_as_attributes(self):
         pedb = _make_pedb()
         ss = SimulationSetups(pedb)
@@ -663,3 +695,195 @@ class TestCreateQ3dSetup:
         with patch.object(ss, "create", return_value=fake_setup):
             ss.create_q3d_setup(name="my_q3d", custom_opt=True)
         assert fake_setup.custom_opt is True
+
+
+@pytest.mark.parametrize(
+    ("method_name", "stop_freq", "step_freq"),
+    [
+        ("create_hfss_setup", "10GHz", "10MHz"),
+        ("create_hfss_pi_setup", "5GHz", "100MHz"),
+        ("create_siwave_setup", "1GHz", "1MHz"),
+        ("create_raptor_x_setup", "20GHz", "200MHz"),
+        ("create_q3d_setup", "2GHz", "20MHz"),
+    ],
+)
+def test_create_setup_accepts_string_frequency_values(method_name, stop_freq, step_freq):
+    pedb = _make_pedb()
+    ss = SimulationSetups(pedb)
+    fake_setup = MagicMock()
+
+    with patch.object(ss, "create", return_value=fake_setup):
+        getattr(ss, method_name)(
+            name="my_setup",
+            start_freq="0Hz",
+            stop_freq=stop_freq,
+            step_freq=step_freq,
+            sweep_name="my_sweep",
+        )
+
+    fake_setup.add_sweep.assert_called_once_with(
+        name="my_sweep",
+        distribution="linear",
+        start_freq="0Hz",
+        stop_freq=stop_freq,
+        step=step_freq,
+        discrete=False,
+        frequency_set=None,
+    )
+
+
+from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup  # noqa: E402
+
+
+def _call_normalize(distribution: str) -> str:
+    """Call _normalize_distribution without instantiating an abstract class."""
+    mock_self = MagicMock(spec=SimulationSetup)
+    return SimulationSetup._normalize_distribution(mock_self, distribution)
+
+
+class TestNormalizeDistribution:
+    @pytest.mark.parametrize(
+        ("alias", "expected"),
+        [
+            # linear / LIN
+            ("linear", "LIN"),
+            ("linear scale", "LIN"),
+            ("LIN", "LIN"),
+            ("lin", "LIN"),
+            # linear_count / LINC
+            ("linear_count", "LINC"),
+            ("linear count", "LINC"),
+            ("LINC", "LINC"),
+            # decade_count / DEC  ← the bug that was fixed
+            ("decade_count", "DEC"),
+            ("decade count", "DEC"),
+            ("log_scale", "DEC"),
+            ("log scale", "DEC"),
+            ("DEC", "DEC"),
+            ("dec", "DEC"),
+            # exponential / ESTP
+            ("exponential", "ESTP"),
+            ("ESTP", "ESTP"),
+            # octave_count / OCT
+            ("octave_count", "OCT"),
+            ("octave count", "OCT"),
+            ("OCT", "OCT"),
+        ],
+    )
+    def test_known_aliases(self, alias, expected):
+        assert _call_normalize(alias) == expected
+
+    def test_none_returns_lin(self):
+        assert _call_normalize(None) == "LIN"
+
+    def test_empty_string_returns_lin(self):
+        assert _call_normalize("") == "LIN"
+
+    def test_unknown_string_falls_back_to_lin(self):
+        assert _call_normalize("does_not_exist") == "LIN"
+
+
+def _make_simulation_setup_mock():
+    """Return a minimal mock that exposes the real _normalize_distribution and
+    _add_sweeps_from_frequency_set methods but doesn't need a live EDB."""
+    pedb = MagicMock()
+    # number_with_units just echoes the first argument for these tests
+    pedb.number_with_units.side_effect = lambda v, _unit: str(v)
+    pedb.value.side_effect = lambda v: v
+
+    # A fake core object whose sweep_data list we can inspect
+    core = MagicMock()
+    core.sweep_data = []
+
+    setup = MagicMock(spec=SimulationSetup)
+    setup._pedb = pedb
+    setup.core = core
+    # Bind the real methods to this mock instance
+    setup._normalize_distribution = lambda d: SimulationSetup._normalize_distribution(setup, d)
+    setup._add_sweeps_from_frequency_set = lambda fs, name, init, discrete: (
+        SimulationSetup._add_sweeps_from_frequency_set(setup, fs, name, init, discrete)
+    )
+    return setup
+
+
+class TestAddSweepsFromFrequencySet:
+    """Regression tests for _add_sweeps_from_frequency_set distribution mapping."""
+
+    def _run(self, frequency_set):
+        """Run _add_sweeps_from_frequency_set with mocked SweepData and return
+        the list of (distribution, ...) tuples passed to SweepData / add_frequency_data."""
+        setup = _make_simulation_setup_mock()
+        distributions_seen = []
+
+        def fake_sweep_data(pedb, name, distribution, start_f, end_f, step, simsetup):
+            distributions_seen.append(distribution)
+            sw = MagicMock()
+            sw.core = MagicMock()
+            sw.add_frequency_data = lambda **kw: distributions_seen.append(kw["distribution"])
+            return sw
+
+        def fake_add_frequency_data(self_inner, *, distribution, start_f, end_f, step):
+            distributions_seen.append(distribution)
+
+        with (
+            patch(
+                "pyedb.grpc.database.simulation_setup.simulation_setup.SweepData",
+                side_effect=fake_sweep_data,
+            ),
+        ):
+            setup._add_sweeps_from_frequency_set(frequency_set, "sweep1", 0, False)
+
+        return distributions_seen
+
+    def test_decade_count_maps_to_dec(self):
+        """decade_count must produce DEC, not the old fallback LIN."""
+        dists = self._run([["decade_count", "1Hz", "10MHz", "10"]])
+        assert dists[0] == "DEC"
+
+    def test_linear_count_maps_to_linc(self):
+        dists = self._run([["linear_count", "0GHz", "0GHz", "1"]])
+        assert dists[0] == "LINC"
+
+    def test_linear_maps_to_lin(self):
+        dists = self._run([["linear", "10MHz", "10GHz", "10MHz"]])
+        assert dists[0] == "LIN"
+
+    def test_log_scale_maps_to_dec(self):
+        dists = self._run([["log_scale", "1Hz", "10MHz", "10"]])
+        assert dists[0] == "DEC"
+
+    def test_multi_band_frequency_set_distributions(self):
+        """Reproduce the exact user scenario and verify each band's distribution."""
+        frequency_set = [
+            ["linear_count", "0GHz", "0GHz", "1"],
+            ["decade_count", "1Hz", "10MHz", "10"],
+            ["linear", "10MHz", "10GHz", "10MHz"],
+        ]
+        setup = _make_simulation_setup_mock()
+        distributions_seen = []
+        add_freq_calls = []
+
+        def fake_sweep_data(pedb, name, distribution, start_f, end_f, step, simsetup):
+            distributions_seen.append(("init", distribution))
+            sw = MagicMock()
+            sw.core = MagicMock()
+
+            def _add_fd(distribution, start_f, end_f, step):
+                add_freq_calls.append(distribution)
+                return True
+
+            sw.add_frequency_data = _add_fd
+            return sw
+
+        with patch(
+            "pyedb.grpc.database.simulation_setup.simulation_setup.SweepData",
+            side_effect=fake_sweep_data,
+        ):
+            setup._add_sweeps_from_frequency_set(frequency_set, "sweep1", 0, False)
+
+        # First band initialises SweepData with LINC
+        assert distributions_seen[0] == ("init", "LINC")
+        # Second band (decade_count) must be DEC
+        assert add_freq_calls[0] == "DEC"
+        # Third band (linear) must be LIN
+        assert add_freq_calls[1] == "LIN"

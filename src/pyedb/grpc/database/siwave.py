@@ -614,7 +614,9 @@ class Siwave(object):
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
         >>> # Add SYZ analysis with linear sweep from 1kHz to 10GHz
-        >>> setup = edbapp.siwave.add_siwave_syz_analysis(start_freq=1e3, stop_freq=10e9, distribution="linear")
+        >>> setup = edbapp.siwave.add_siwave_syz_analysis(
+        ...     start_freq="1kHz", stop_freq="10GHz", step_freq="10MHz", distribution="linear"
+        ... )
         >>> # Add SYZ analysis with decade sweep
         >>> setup = edbapp.siwave.add_siwave_syz_analysis(
         ...     start_freq=1e3,
