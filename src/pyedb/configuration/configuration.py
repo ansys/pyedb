@@ -1092,10 +1092,10 @@ class Configuration:
                 if obj.primitives:
                     if obj.primitives[0].layer.name == "pyedb_cutout":
                         continue
-                    if obj.is_power_ground:
-                        reference_nets.append(name)
-                    else:
+                    if name in self.cfg_data.nets.signal_nets:
                         signal_nets.append(name)
+                    else:
+                        reference_nets.append(name)
 
             self.cfg_data.operations.add_cutout(
                 custom_extent=custom_extent,

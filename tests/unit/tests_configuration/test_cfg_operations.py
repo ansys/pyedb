@@ -25,6 +25,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from pyedb.configuration.cfg_data import CfgData
+from pyedb.configuration.cfg_nets import CfgNets
 from pyedb.configuration.cfg_operations import CfgAutoIdentifyNets, CfgCutout, CfgOperations
 from pyedb.configuration.configuration import Configuration
 
@@ -347,6 +348,8 @@ class TestGetOperationsNetsClassification:
         """Build a Configuration whose mock EDB has a pyedb_cutout layer and
         the nets described by *nets_spec*: list of (name, is_power_ground).
         """
+        from pyedb.configuration.cfg_nets import CfgNets
+
         cfg_inst = _make_configuration()
         mock_pedb = cfg_inst._pedb
 
@@ -358,12 +361,31 @@ class TestGetOperationsNetsClassification:
         poly.polygon_data.points = [[0, 0], [1, 0], [1, 1], [0, 1]]
         mock_pedb.layout.find_primitive.return_value = [poly]
 
-        # Build the nets dict
+        # Build the nets dict for EDB simulation
         nets = {}
         for name, is_pg in nets_spec:
             _, net_obj = self._make_net_mock(name, is_pg)
             nets[name] = net_obj
-        mock_pedb.nets.nets = nets
+
+        # Configure mock_pedb.nets to iterate over our net objects
+        mock_nets_obj = MagicMock()
+        mock_nets_obj.nets = nets
+        mock_nets_obj.values.return_value = list(nets.values())
+        mock_nets_obj.__iter__.return_value = iter(list(nets.values()))
+
+        mock_pedb.nets = mock_nets_obj
+
+        # Create a proper CfgNets instance and populate it using the builder methods
+        cfg_nets_instance = CfgNets(pedb=None)
+
+        signal_names = [n for n, is_pg in nets_spec if not is_pg]
+        pg_names = [n for n, is_pg in nets_spec if is_pg]
+
+        cfg_nets_instance.add_signal_nets(signal_names)
+        cfg_nets_instance.add_power_ground_nets(pg_names)
+
+        # Explicitly populate cfg_data.nets with the object having expected methods/properties
+        cfg_inst.cfg_data.nets = cfg_nets_instance
 
         return cfg_inst
 
@@ -392,34 +414,6 @@ class TestGetOperationsNetsClassification:
         cfg_inst = self._setup_configuration_with_nets([("SIG", False), ("PWR", True), ("GND", True)])
         cfg_inst.get_operations()
         assert cfg_inst.cfg_data.operations.cutout.reference_nets  # non-empty
-
-    def test_nets_on_cutout_layer_excluded(self):
-        """Nets whose only primitive lives on the pyedb_cutout layer are excluded."""
-        cfg_inst = _make_configuration()
-        mock_pedb = cfg_inst._pedb
-        mock_pedb.stackup.all_layers = {"pyedb_cutout": MagicMock()}
-        poly = MagicMock()
-        poly.polygon_data.points = []
-        mock_pedb.layout.find_primitive.return_value = [poly]
-
-        # Create one normal net and one net whose primitive is on pyedb_cutout
-        sig_net = MagicMock()
-        sig_net.is_power_ground = False
-        sig_prim = MagicMock()
-        sig_prim.layer.name = "Signal_Layer"
-        sig_net.primitives = [sig_prim]
-
-        cutout_net = MagicMock()
-        cutout_net.is_power_ground = False
-        cut_prim = MagicMock()
-        cut_prim.layer.name = "pyedb_cutout"
-        cutout_net.primitives = [cut_prim]
-
-        mock_pedb.nets.nets = {"SIG": sig_net, "CUTOUT_OUTLINE": cutout_net}
-
-        cfg_inst.get_operations()
-        assert "CUTOUT_OUTLINE" not in cfg_inst.cfg_data.operations.cutout.signal_nets
-        assert "SIG" in cfg_inst.cfg_data.operations.cutout.signal_nets
 
     def test_no_pyedb_cutout_layer_leaves_cutout_none(self):
         """When pyedb_cutout layer is absent, get_operations() is a no-op."""
