@@ -2952,17 +2952,10 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
         assert os.path.isfile(json_path)
         with open(json_path, "r", encoding="utf-8") as f:
             config_data = json.load(f)
-
-        def _assert_not_empty(obj, path="root"):
-            if isinstance(obj, dict):
-                for k, v in obj.items():
-                    _assert_not_empty(v, f"{path}.{k}")
-            elif isinstance(obj, list):
-                for i, item in enumerate(obj):
-                    _assert_not_empty(item, f"{path}[{i}]")
-            else:
-                if obj is None or (isinstance(obj, (str, list, dict)) and len(obj) == 0):
-                    raise AssertionError(f"Field '{path}' must not be empty or None")
-
-        _assert_not_empty(config_data)
+        assert len(config_data.get("nets", None).get("signal_nets", None)) == 9
+        cutout = config_data.get("operations", None).get("cutout", None)
+        assert cutout.get("signal_nets", None)
+        assert cutout.get("reference_nets", None) == ["GND"]
+        assert cutout.get("extent_type", None) == "ConvexHull"
+        assert cutout.get("expansion_size", None) == 3e-3
         edbapp.close(terminate_rpc_session=False)
