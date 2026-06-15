@@ -449,10 +449,7 @@ class Configuration:
             else:
                 if setup.type == "hfss":
                     cfg_ac_setup = self.cfg_data.setups.add_hfss_setup(name=setup.name)
-                    if settings.is_grpc:
-                        adapt_type = FAdaptTypeMapper.get(setup.settings.general.adaptive_solution_type, as_grpc=True)
-                    else:
-                        adapt_type = FAdaptTypeMapper.get(setup.adaptive_settings.adapt_type, as_grpc=True)
+                    adapt_type = FAdaptTypeMapper.get(setup.settings.general.adaptive_solution_type, as_grpc=True)
                     cfg_ac_setup.adapt_type = adapt_type
                     if not settings.is_grpc:
                         if adapt_type == "single":
