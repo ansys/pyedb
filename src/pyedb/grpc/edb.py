@@ -260,9 +260,6 @@ class Edb(EdbInit):
         self._layout_instance = None
         self._configuration = None
         self._active_cell = None
-        if not float(self.version) >= 2025.2:
-            raise "EDB gRPC is only supported with ANSYS release 2025R2 and higher."
-        self.logger.info("Using PyEDB with gRPC as Beta until ANSYS 2027R1 official release.")
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
         self._setups = {}

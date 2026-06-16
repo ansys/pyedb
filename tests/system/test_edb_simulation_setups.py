@@ -80,6 +80,8 @@ class TestClass(BaseTestClass):
         assert len(edb.setups) == 1
         assert list(edb.setups)[0]
         setup = list(edb.hfss_setups.values())[0]
+        # testing DotNet adaptive path compatibility with grpc
+        assert setup.settings.general.adaptive_solution_type
         setup.add_sweep()
         assert not setup.sweep_data[0].enforce_causality
         sweeps = setup.sweep_data

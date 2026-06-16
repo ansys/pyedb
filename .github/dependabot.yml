@@ -1,6 +1,6 @@
 version: 2
 updates:
-  - package-ecosystem: "pip" # See documentation for possible values
+  - package-ecosystem: "uv" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
@@ -12,15 +12,14 @@ updates:
         - "ansys-sphinx-theme"
         - "ansys-tools-visualization-interface"
         - "ansys-pythonnet"
-    reviewers:
-      - "SMoraisAnsys"
     assignees:
-      - "pyansys-ci-bot"
+      - "svandenb-dev"
+      - "hui-zhou-a"
     labels:
       - "maintenance"
       - "dependencies"
     commit-message:
-      prefix: "BUILD"
+      prefix: "BUILD(uv)"
 
   - package-ecosystem: "github-actions"
     cooldown:
@@ -28,12 +27,33 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    reviewers:
-      - "SMoraisAnsys"
     assignees:
-      - "pyansys-ci-bot"
+      - "svandenb-dev"
+      - "hui-zhou-a"
     labels:
       - "maintenance"
       - "dependencies"
     commit-message:
-      prefix: "BUILD"
+      prefix: "BUILD(actions)"
+
+  - package-ecosystem: "pre-commit"
+    cooldown:
+      default-days: 7 # Fallback cooldown if no specific rule applies
+      include:
+        - "*"  # Include all dependencies in cooldown
+      exclude:
+        - "ansys/pre-commit-hooks"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      time: "06:00"
+      timezone: "Europe/Paris"
+    assignees:
+      - "svandenb-dev"
+      - "hui-zhou-a"
+    labels:
+      - "maintenance"
+      - "dependencies"
+    commit-message:
+      prefix: "BUILD(pre-commit)"
