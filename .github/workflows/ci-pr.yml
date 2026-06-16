@@ -473,6 +473,7 @@ jobs:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           sphinxopts: '-j 1 --color -w build_errors.txt'
+          use-python-cache: false
           check-links: false
           needs-quarto: true
           group-dependencies-name: 'doc'
