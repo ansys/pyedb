@@ -131,6 +131,7 @@ page on the Ansys website.
    :maxdepth: 2
 
    installation
+   cli
    backend_compatibility_migration
    troubleshooting
    contribution_guide
