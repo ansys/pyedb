@@ -31,6 +31,7 @@ import sys
 import time
 
 import ansys.edb.core.database as database
+from ansys.tools.common import warnings
 
 from pyedb import __version__
 from pyedb.generic.general_methods import env_path, env_value
@@ -57,9 +58,6 @@ class EdbInit(object):
         self.logger = settings.logger
         self._db = None
         self.version = version
-        self.logger.info("Logger is initialized in EDB.")
-        self.logger.info("legacy v%s", __version__)
-        self.logger.info("Python version %s", sys.version)
         self.session = None
         if is_linux:
             if env_value(self.version) in os.environ:
@@ -149,6 +147,19 @@ class EdbInit(object):
             port=port,
             restart_server=restart_rpc_server,
         )
+        if RpcSession._open_db_count == 0:
+            if RpcSession.fast_grpc_mode_enabled:
+                self.logger.info("RPC server started, fast mode active")
+            else:
+                self.logger.warning(
+                    "RPC server started, fast mode disabled !!!, upgrade to ANSYS release 2026.1.2 or "
+                    "higher to enable fast grpc mode automatically."
+                )
+                warnings.AnsysWarning(
+                    "RPC server started, fast mode disabled !!!, upgrade to ANSYS release 2026.1.2 "
+                    "or higher to enable fast grpc mode automatically."
+                )
+
         if not RpcSession.rpc_session:
             self.logger.error("Failed to start RPC server.")
             return False

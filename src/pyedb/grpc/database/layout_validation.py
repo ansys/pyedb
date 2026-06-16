@@ -20,13 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import inspect
+from pathlib import Path
+import platform
 import re
+import shutil
+import subprocess  # nosec B404
 from typing import Any, List, Optional, Union
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.net.net_class import NetClass as CoreNetClass
 
-from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.general_methods import generate_unique_name, installed_ansys_em_versions
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
 
@@ -386,7 +391,7 @@ class LayoutValidation:
         --------
         # Use an Edb instance (see `dc_shorts` example above) and call:
         #     edb.layout_validation.padstacks_no_name()
-        >>>
+        #
         # Automatically assign names to unnamed padstacks
         #     edb.layout_validation.padstacks_no_name(fix=True)
         """
@@ -422,3 +427,248 @@ class LayoutValidation:
             if len(pg.pins) == 0:
                 pg.delete()
                 self._pedb.logger.info(f"Pin group {name} deleted because it has no pins.")
+
+    def _resolve_siwave_executable(self, executable_name: str) -> Path:
+        """Resolve the absolute path to a Siwave CLI executable."""
+        is_linux = platform.system().lower() == "linux"
+        suffix = "" if is_linux else ".exe"
+        executable = f"{executable_name}{suffix}"
+
+        roots = []
+        if getattr(self._pedb, "base_path", None):
+            roots.append(Path(self._pedb.base_path))
+        else:
+            installed = installed_ansys_em_versions()
+            if installed:
+                roots.append(Path(next(reversed(installed.values()))))
+
+        if not roots:
+            raise FileNotFoundError("Unable to locate Ansys EM root.")
+
+        # Prefer platform-specific folders first.
+        if is_linux:
+            rel_paths = (Path("Linux64"), Path())
+        else:
+            rel_paths = (Path("Win64"), Path())
+
+        for root in roots:
+            root = root.expanduser().absolute()
+
+            for rel in rel_paths:
+                candidate = root / rel / executable
+
+                # Do not use resolve() here, because on Linux siwave_ng may be
+                # a symlink to .answrapper. resolve() would return .answrapper.
+                if candidate.is_file():
+                    return candidate.absolute()
+
+        raise FileNotFoundError(f"Unable to locate executable '{executable}' under: {', '.join(str(r) for r in roots)}")
+
+    @staticmethod
+    def _write_siwave_exec_files(temp_root: Path, validation_lines: list[str]) -> tuple[Path, Path, Path]:
+        """Write the three .exec script files consumed by siwave_ng / siwavevalchk."""
+        create_edb_exec = temp_root / "create_edb.exec"
+        create_siw_exec = temp_root / "create_siw.exec"
+        val_check_exec = temp_root / "val_check.exec"
+
+        create_edb_exec.write_text("SaveEdb\n", encoding="utf-8")
+        create_siw_exec.write_text("SaveSiw\n", encoding="utf-8")
+        val_check_exec.write_text("\n".join(validation_lines) + "\n", encoding="utf-8")
+
+        expected = {
+            create_edb_exec: "SaveEdb\n",
+            create_siw_exec: "SaveSiw\n",
+            val_check_exec: "\n".join(validation_lines) + "\n",
+        }
+        for file_path, expected_content in expected.items():
+            if not file_path.is_file() or file_path.read_text(encoding="utf-8") != expected_content:
+                raise RuntimeError(f"Failed to create expected workflow file: {file_path}")
+
+        return create_edb_exec, create_siw_exec, val_check_exec
+
+    @staticmethod
+    def _run_siwave_process(command: list[str], step_name: str, allowed_return_codes: tuple[int, ...] = (0,)) -> None:
+        """Run a subprocess and raise on unexpected return codes."""
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)  # nosec B603
+        stdout, stderr = process.communicate()
+        if process.returncode not in allowed_return_codes:
+            raise RuntimeError(
+                f"{step_name} failed with return code {process.returncode}.\n"
+                f"Command: {' '.join(command)}\n"
+                f"STDOUT: {stdout}\n"
+                f"STDERR: {stderr}\n"
+                f"Accepted return codes: {allowed_return_codes}"
+            )
+
+    def run_siwave_validation_check(
+        self,
+        validation_mode: str = "SYZ",
+        num_cpus: int = 8,
+        fix_self_intersections: bool = True,
+        fix_disjoint_nets: bool = True,
+        check_for_shorted_nets: bool = True,
+        fix_overlapping_vias: bool = True,
+        check_for_bondwire_errors: bool = True,
+        fix_misalignments: bool = True,
+        fix_floating_planes: bool = True,
+        check_for_unreferenced_traces: bool = True,
+        ignore_non_functional_pads: bool = True,
+        correct_all_fixable_issues: bool = True,
+        strict_disjoint_net_check: bool = True,
+        save: bool = True,
+        delete_temp_folder: bool = True,
+        keep_log_files: bool = True,
+    ) -> bool:
+        """Run Siwave geometry validation/healing workflow through ``siwave_ng`` and ``siwavevalchk``.
+
+        The active EDB session is closed before external tools run and reopened
+        afterwards (only when this session's path matches the target AEDB).
+
+        Parameters
+        ----------
+        validation_mode : str, optional
+            Validation mode passed as ``ValidationMode <mode>``. Default is ``"SYZ"``.
+        num_cpus : int, optional
+            Number of CPUs for ``SetNumCpus``. Default is ``8``.
+        fix_self_intersections : bool, optional
+            Add ``FixSelfIntersections`` when ``True``.
+        fix_disjoint_nets : bool, optional
+            Add ``FixDisjointNets`` when ``True``.
+        check_for_shorted_nets : bool, optional
+            Add ``CheckForShortedNets`` when ``True``.
+        fix_overlapping_vias : bool, optional
+            Add ``FixOverlappingVias`` when ``True``.
+        check_for_bondwire_errors : bool, optional
+            Add ``CheckForBondwireErrors`` when ``True``.
+        fix_misalignments : bool, optional
+            Add ``FixMisalignments`` when ``True``.
+        fix_floating_planes : bool, optional
+            Add ``FixFloatingPlanes`` when ``True``.
+        check_for_unreferenced_traces : bool, optional
+            Add ``CheckForUnreferencedTraces`` when ``True``.
+        ignore_non_functional_pads : bool, optional
+            Add ``IgnoreNonFunctionalPads`` when ``True``.
+        correct_all_fixable_issues : bool, optional
+            Add ``CorrectAllFixableIssues`` when ``True``.
+        strict_disjoint_net_check : bool, optional
+            Add ``StrictDisjointNetCheck`` when ``True``.
+        save : bool, optional
+            Add ``Save`` when ``True``.
+        delete_temp_folder : bool, optional
+            Delete the temporary working folder after workflow completion. Default is ``True``.
+        keep_log_files : bool, optional
+            Copy all files produced by ``siwavevalchk`` (e.g. ``valchk.prof``,
+            ``valchk.results``, ``valchk_error_warning.log``) from the temporary
+            results folder ``_temp/<stem>.siwaveresults/valchk`` into a
+            ``validation_check_log`` folder next to the source AEDB. Any
+            pre-existing ``validation_check_log`` folder is deleted first. Default
+            is ``True``.
+
+        Returns
+        -------
+        bool
+            ``True`` when the workflow succeeds and ``edb.def`` is written back.
+        """
+        source_aedb = Path(self._pedb.edbpath).resolve()
+
+        temp_root = source_aedb.parent / "_temp"
+        temp_aedb = temp_root / source_aedb.name
+
+        # Close the active session only when it points to the same AEDB we will process.
+        active_session_closed = False
+        active_edb_version = None
+        if getattr(self._pedb, "db", None) is not None:
+            active_edb_version = getattr(self._pedb, "version", None) or getattr(self._pedb, "edbversion", None)
+            self._pedb.logger.info("Closing active EDB session before static validation check workflow.")
+            self._pedb.close()
+            active_session_closed = True
+
+        try:
+            if temp_root.exists():
+                shutil.rmtree(temp_root)
+            temp_root.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(source_aedb, temp_aedb)
+
+            validation_lines = [f"ValidationMode {validation_mode}"]
+            toggles = [
+                (fix_self_intersections, "FixSelfIntersections"),
+                (fix_disjoint_nets, "FixDisjointNets"),
+                (check_for_shorted_nets, "CheckForShortedNets"),
+                (fix_overlapping_vias, "FixOverlappingVias"),
+                (check_for_bondwire_errors, "CheckForBondwireErrors"),
+                (fix_misalignments, "FixMisalignments"),
+                (fix_floating_planes, "FixFloatingPlanes"),
+                (check_for_unreferenced_traces, "CheckForUnreferencedTraces"),
+                (ignore_non_functional_pads, "IgnoreNonFunctionalPads"),
+            ]
+            validation_lines.extend(line for enabled, line in toggles if enabled)
+            validation_lines.append(f"SetNumCpus {int(num_cpus)}")
+            if correct_all_fixable_issues:
+                validation_lines.append("CorrectAllFixableIssues")
+            if strict_disjoint_net_check:
+                validation_lines.append("StrictDisjointNetCheck")
+            if save:
+                validation_lines.append("Save")
+
+            create_edb_exec, create_siw_exec, val_check_exec = LayoutValidation._write_siwave_exec_files(
+                temp_root=temp_root,
+                validation_lines=validation_lines,
+            )
+
+            siwave_ng = self._resolve_siwave_executable("siwave_ng")
+            siwave_val_check = self._resolve_siwave_executable("siwavevalchk")
+
+            siw_path = (temp_root / f"{source_aedb.stem}.siw").resolve()
+            LayoutValidation._run_siwave_process(
+                [str(siwave_ng), str(temp_aedb.resolve()), str(create_siw_exec.resolve())],
+                "Create SIW",
+            )
+            # siwavevalchk returns 1 when it reports findings (not a fatal failure).
+            LayoutValidation._run_siwave_process(
+                [str(siwave_val_check), str(siw_path), str(val_check_exec.resolve())],
+                "Validation check",
+                allowed_return_codes=(0, 1),
+            )
+            LayoutValidation._run_siwave_process(
+                [str(siwave_ng), str(siw_path), str(create_edb_exec.resolve())],
+                "Write healed EDB",
+            )
+
+            healed_edb_def = (temp_aedb / "edb.def").resolve()
+            if not healed_edb_def.is_file():
+                raise RuntimeError(f"Expected healed file not found: {healed_edb_def}")
+
+            shutil.copy2(healed_edb_def, (source_aedb / "edb.def").resolve())
+
+            if keep_log_files:
+                valchk_src = temp_root / f"{source_aedb.stem}.siwaveresults" / "valchk"
+                log_dest = source_aedb.parent / "validation_check_log"
+                if log_dest.exists():
+                    shutil.rmtree(log_dest)
+                log_dest.mkdir(parents=True, exist_ok=True)
+                if valchk_src.is_dir():
+                    copied = 0
+                    for src_file in valchk_src.iterdir():
+                        if src_file.is_file():
+                            shutil.copy2(src_file, log_dest / src_file.name)
+                            copied += 1
+                    self._pedb.logger.info(f"{copied} validation log file(s) copied to: {log_dest}")
+                else:
+                    msg = f"Validation log folder not found, skipping: {valchk_src}"
+                    log_warning = getattr(self._pedb.logger, "warning", None)
+                    if callable(log_warning):
+                        log_warning(msg)
+                    else:
+                        self._pedb.logger.info(msg)
+
+            return True
+        finally:
+            if active_session_closed:
+                self._pedb.logger.info("Re-opening EDB session after static validation check workflow.")
+                open_params = inspect.signature(self._pedb.open).parameters
+                if len(open_params) >= 2 and active_edb_version is not None:
+                    self._pedb.open(str(source_aedb), active_edb_version)
+                else:
+                    self._pedb.open(str(source_aedb))
+            if delete_temp_folder and temp_root.exists():
+                shutil.rmtree(temp_root)

@@ -100,3 +100,74 @@ def test_materials_read_materials(mock_file_open, mock_materials_property):
     }
     mats = materials.read_materials("some path")
     assert mats == expected_res
+
+
+# ---------------------------------------------------------------------------
+# gRPC MaterialProperties – field name regression tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.grpc
+class TestGrpcMaterialPropertiesFields:
+    """Verify that MaterialProperties uses JSON-compatible field names and that
+    __load_all_properties does not trigger FutureWarnings.
+
+    The public JSON schema uses ``dc_permittivity`` and ``permittivity_at_frequency``
+    as field names (backward-compatible with existing JSON files).  The grpc Material
+    class has deprecated those *property* names in favour of ``dc_relative_permittivity``
+    and ``relative_permittivity_at_frequency``.
+
+    The fix uses a mapping inside ``__load_all_properties`` so that the non-deprecated
+    property is accessed while the JSON key name stays unchanged.
+    """
+
+    def test_dc_permittivity_field_preserved_for_json_compat(self):
+        """MaterialProperties must keep 'dc_permittivity' so existing JSON files are valid."""
+        from pyedb.grpc.database.definition.materials import MaterialProperties
+
+        assert "dc_permittivity" in MaterialProperties.model_fields
+
+    def test_permittivity_at_frequency_field_preserved_for_json_compat(self):
+        """MaterialProperties must keep 'permittivity_at_frequency' so existing JSON files are valid."""
+        from pyedb.grpc.database.definition.materials import MaterialProperties
+
+        assert "permittivity_at_frequency" in MaterialProperties.model_fields
+
+    def test_model_dump_contains_legacy_json_keys(self):
+        """model_dump() must emit the same keys as the public JSON schema."""
+        from pyedb.grpc.database.definition.materials import MaterialProperties
+
+        keys = set(MaterialProperties().model_dump().keys())
+        assert "dc_permittivity" in keys
+        assert "permittivity_at_frequency" in keys
+
+    def test_deprecated_field_to_property_mapping_covers_both_fields(self):
+        """_DEPRECATED_FIELD_TO_PROPERTY must map both deprecated field names to their current property."""
+        from pyedb.grpc.database.definition.materials import _DEPRECATED_FIELD_TO_PROPERTY
+
+        assert _DEPRECATED_FIELD_TO_PROPERTY.get("dc_permittivity") == "dc_relative_permittivity"
+        assert _DEPRECATED_FIELD_TO_PROPERTY.get("permittivity_at_frequency") == "relative_permittivity_at_frequency"
+
+    def test_load_all_properties_does_not_trigger_future_warning(self):
+        """__load_all_properties must not emit FutureWarning for deprecated property names."""
+        from unittest.mock import MagicMock, PropertyMock
+        import warnings
+
+        from pyedb.grpc.database.definition.materials import Material
+
+        # Build a minimal Material stub with the non-deprecated properties defined
+        core = MagicMock()
+        core.name = "test_mat"
+        core.dielectric_material_model.is_null = True
+
+        mat = Material.__new__(Material)
+        mat.core = core
+        mat._Material__edb = MagicMock()
+        mat._Material__name = "test_mat"
+        mat._Material__material_def = core
+        mat._Material__dielectric_model = None
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", FutureWarning)
+            # Must not raise — if the deprecated property is accessed, FutureWarning becomes an error
+            mat._Material__load_all_properties()
