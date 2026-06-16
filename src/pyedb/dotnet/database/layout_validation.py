@@ -343,3 +343,25 @@ class LayoutValidation:
             if len(pins) == 0:
                 pg.delete()
                 self._pedb.logger.info(f"Pin group {name} deleted because it has no pins.")
+
+    def run_siwave_validation_check(
+        self,
+        validation_mode: str = "SYZ",
+        num_cpus: int = 8,
+        fix_self_intersections: bool = True,
+        fix_disjoint_nets: bool = True,
+        check_for_shorted_nets: bool = True,
+        fix_overlapping_vias: bool = True,
+        check_for_bondwire_errors: bool = True,
+        fix_misalignments: bool = True,
+        fix_floating_planes: bool = True,
+        check_for_unreferenced_traces: bool = True,
+        ignore_non_functional_pads: bool = True,
+        correct_all_fixable_issues: bool = True,
+        strict_disjoint_net_check: bool = True,
+        save: bool = True,
+        delete_temp_folder: bool = True,
+        keep_log_files: bool = True,
+    ):
+        """Not implemented with DotNet"""
+        raise NotImplementedError("Not implement with DotNet please switch to gRPC")
