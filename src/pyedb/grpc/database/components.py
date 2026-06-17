@@ -2183,9 +2183,11 @@ class Components(object):
             self._logger.info(f"Component {component.refdes} passed to deactivate is not an RLC.")
             return False
         component.is_enabled = False
-        return self._pedb.excitation_manager.add_port_on_rlc_component(
-            component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
-        )
+        if create_circuit_port:
+            return self._pedb.excitation_manager.add_port_on_rlc_component(
+                component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
+            )
+        return True
 
     def add_port_on_rlc_component(
         self, component: Optional[Union[str, Component]] = None, circuit_ports: bool = True, pec_boundary: bool = False
