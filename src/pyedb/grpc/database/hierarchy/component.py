@@ -384,9 +384,11 @@ class Component:
 
         Returns
         -------
-        :class:`PackageDef <ansys.edb.core.definition.package_def.PackageDef>`
+        :class:`PackageDef <pyedb.grpc.database.definition.package_def.PackageDef>`
         """
-        return self.core.component_property.package_def
+        from pyedb.grpc.database.definition.package_def import PackageDef
+
+        return PackageDef(self._pedb, self.core.component_property.package_def)
 
     @package_def.setter
     def package_def(self, value):

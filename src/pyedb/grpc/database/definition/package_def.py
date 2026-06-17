@@ -22,6 +22,9 @@
 
 from ansys.edb.core.definition.package_def import PackageDef as CorePackageDef
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+from pyedb.grpc.database.geometry.point_data import PointData
+from pyedb.grpc.database.geometry.polygon_data import PolygonData
+
 
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.utility.heat_sink import HeatSink
@@ -115,6 +118,33 @@ class PackageDef:
     @exterior_boundary.setter
     def exterior_boundary(self, value):
         self.core.exterior_boundary = value
+
+
+    def set_exterior_boundary_from_bbox(self,component):
+        point_data = []
+
+        val1 = (component.bounding_box[2] - component.bounding_box[0]) / 2
+        val2 = (component.bounding_box[3] - component.bounding_box[1]) / 2
+
+        if val1 > val2:
+            yval = val2
+            xval = val1
+        else:
+            yval = val1
+            xval = val2
+
+        temp = PointData.create(self._pedb, -xval, -yval)
+        point_data.append(temp)
+        temp = PointData.create(self._pedb, xval, -yval)
+        point_data.append(temp)
+        temp = PointData.create(self._pedb, xval, yval)
+        point_data.append(temp)
+        temp = PointData.create(self._pedb, -xval, yval)
+        point_data.append(temp)
+        poly_data = PolygonData.create(self._pedb, point_data, closed=True)
+        component.package_def.exterior_boundary = poly_data
+
+        return True
 
     @property
     def maximum_power(self) -> float:
