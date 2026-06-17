@@ -1289,13 +1289,13 @@ class PadstackInstance(conn_obj.ConnObj):
                                   Returned only when include_fill_material is true.
 
         """
-        if float(self._pedb.version) < 2027.1 and include_fill_material:
+        if float(self._pedb.version) <= 2027.1 and include_fill_material:
             warnings.warn(
                 "Backdrill fill material is not supported by AEDT 2026 R1 and below. The parameter will be ignored.",
                 UserWarning,
                 stacklevel=2,
             )
-        if float(self._pedb.version) < 2027.1:
+        if float(self._pedb.version) <= 2027.1:
             if self.backdrill_type == "no_drill":
                 return "", Value(0), Value(0)
             else:
@@ -1328,7 +1328,7 @@ class PadstackInstance(conn_obj.ConnObj):
         fill_material : str, optional
             Fill material name
         """
-        if float(self._pedb.version) < 2027.1 and fill_material:
+        if float(self._pedb.version) <= 2027.1 and fill_material:
             warnings.warn(
                 "Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter will be ignored.",
                 UserWarning,
@@ -1338,7 +1338,7 @@ class PadstackInstance(conn_obj.ConnObj):
         drill_to_layer = (
             self._pedb.stackup.layers[drill_to_layer] if isinstance(drill_to_layer, str) else drill_to_layer
         )
-        if float(self._pedb.version) < 2027.1:
+        if float(self._pedb.version) <= 2027.1:
             self.core.set_back_drill_by_layer(
                 drill_to_layer=drill_to_layer.core,
                 offset=self._pedb._value_setter(offset),
