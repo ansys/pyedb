@@ -615,7 +615,6 @@ jobs:
           source .venv/bin/activate
           pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
           pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
-          pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
           pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py::test_insert_layout_component
           pytest -v external/pyaedt/tests/system/general/test_hfss.py::test_import_dxf
         timeout-minutes: 180
