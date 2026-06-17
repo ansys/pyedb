@@ -2187,7 +2187,7 @@ class Components(object):
             return self._pedb.excitation_manager.add_port_on_rlc_component(
                 component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
             )
-        return True
+        return not component.is_enabled
 
     def add_port_on_rlc_component(
         self, component: Optional[Union[str, Component]] = None, circuit_ports: bool = True, pec_boundary: bool = False
