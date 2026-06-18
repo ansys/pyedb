@@ -141,146 +141,172 @@ class ExtendedNets:
 
     def generate_extended_nets(
         self,
-        resistor_below=10,
-        inductor_below=1,
-        capacitor_above=1,
-        exception_list=None,
-        include_signal=True,
-        include_power=True,
+        resistor_below: int | float = 10,
+        inductor_below: int | float = 1e-6,
+        capacitor_above: int | float = 1e-9,
+        exception_list: list | None = None,
+        include_signal: bool = True,
+        include_power: bool = True,
     ):
-        # type: (int | float, int | float, int |float, list, bool, bool) -> list[ExtendedNet]
-        """Get extended net and associated components.
+        """Get extended nets and associated components.
 
         Parameters
         ----------
         resistor_below : int, float, optional
-            Threshold of resistor value. Search extended net across resistors which has value lower than the threshold.
+            Threshold of resistor value. Extended nets are searched across resistors
+            with values lower than this threshold. Default value is `10 ohms`
         inductor_below : int, float, optional
-            Threshold of inductor value. Search extended net across inductances which has value lower than the
-            threshold.
+            Threshold of inductor value. Extended nets are searched across inductors
+            with values lower than this threshold. Default value is `1uH`
         capacitor_above : int, float, optional
-            Threshold of capacitor value. Search extended net across capacitors which has value higher than the
-            threshold.
+            Threshold of capacitor value. Extended nets are searched across capacitors
+            with values higher than this threshold. Default value is `1nF`
         exception_list : list, optional
             List of components to bypass when performing threshold checks. Components
             in the list are considered as serial components. The default is ``None``.
-        include_signal : str, optional
+        include_signal : bool, optional
             Whether to generate extended signal nets. The default is ``True``.
-        include_power : str, optional
+        include_power : bool, optional
             Whether to generate extended power nets. The default is ``True``.
 
         Returns
         -------
-        List[:class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`]
-            List of all extended nets.
+        list[list[str]]
+            List of generated extended net groups.
 
         Examples
         --------
         >>> from pyedb import Edb
         >>> app = Edb()
-        >>> app.nets.get_extended_nets()
+        >>> app.nets.generate_extended_nets()
         """
-        if exception_list is None:
-            exception_list = []
-        _extended_nets = []
-        _nets = self._pedb.nets.nets
-        all_nets = list(_nets.keys())[:]
+        exception_set = set(exception_list or [])
+
+        extended_nets = []
+        nets = self._pedb.nets.nets
+        remaining_nets = set(nets)
+
         net_dicts = (
             self._pedb.nets._comps_by_nets_dict
             if self._pedb.nets._comps_by_nets_dict
-            else (self._pedb.nets.components_by_nets)
+            else self._pedb.nets.components_by_nets
         )
         comp_dict = (
             self._pedb.nets._nets_by_comp_dict
             if self._pedb.nets._nets_by_comp_dict
-            else (self._pedb.nets.nets_by_components)
+            else self._pedb.nets.nets_by_components
         )
+
         cap, unit = decompose_variable_value(capacitor_above)
         capacitor_above = unit_converter(
-            values=cap, unit_system="Capacitance", input_units=unit if unit else "F    ", output_units="F"
+            values=cap,
+            unit_system="Capacitance",
+            input_units=unit if unit else "F",
+            output_units="F",
         )
 
         ind, unit = decompose_variable_value(inductor_below)
         inductor_below = unit_converter(
-            values=ind, unit_system="Inductance", input_units=unit if unit else "H", output_units="H"
+            values=ind,
+            unit_system="Inductance",
+            input_units=unit if unit else "H",
+            output_units="H",
         )
 
         res, unit = decompose_variable_value(resistor_below)
         resistor_below = unit_converter(
-            values=res, unit_system="Resistance", input_units=unit if unit else "ohm", output_units="ohm"
+            values=res,
+            unit_system="Resistance",
+            input_units=unit if unit else "ohm",
+            output_units="ohm",
         )
 
-        def get_net_list(net_name, _net_list):
-            comps = []
-            if net_name in net_dicts:
-                comps = net_dicts[net_name]
+        def component_passes_threshold(refdes):
+            """Return True when the component should be traversed."""
+            cmp = self._pedb.components.instances.get(refdes)
+            if not cmp:
+                return False
 
-            for vals in comps:
-                refdes = vals
-                cmp = self._pedb.components.instances[refdes]
-                if cmp.type not in ["inductor", "resistor", "capacitor"]:
+            if cmp.type not in {"inductor", "resistor", "capacitor"}:
+                return False
+
+            if not cmp.enabled:
+                return False
+
+            if refdes in exception_set:
+                return True
+
+            r_value, l_value, c_value = cmp.rlc_values
+
+            if cmp.type == "inductor":
+                return l_value is not None and l_value < inductor_below
+
+            if cmp.type == "resistor":
+                return r_value is not None and r_value < resistor_below
+
+            if cmp.type == "capacitor":
+                return c_value is not None and float(c_value) > capacitor_above
+
+            return False
+
+        def collect_connected_nets(start_net):
+            """Collect all nets connected through qualifying R/L/C components."""
+            collected = []
+            visited = set()
+            stack = [start_net]
+
+            while stack:
+                net_name = stack.pop()
+
+                if net_name in visited:
                     continue
-                if not cmp.enabled:
-                    continue
-                val_value = cmp.rlc_values
-                if refdes in exception_list:
-                    pass
-                elif cmp.type == "inductor":
-                    if val_value[1] is None:
-                        continue
-                    elif not val_value[1] < inductor_below:
-                        continue
-                elif cmp.type == "resistor":
-                    if val_value[0] is None:
-                        continue
-                    elif not val_value[0] < resistor_below:
-                        continue
-                elif cmp.type == "capacitor":
-                    if val_value[2] is None:
-                        continue
-                    elif not float(val_value[2]) > capacitor_above:
-                        continue
-                else:
-                    continue
-                for net in comp_dict[refdes]:
-                    if net not in _net_list:
-                        _net_list.append(net)
-                        get_net_list(net, _net_list)
 
-        while len(all_nets) > 0:
-            new_ext = [all_nets[0]]
-            get_net_list(new_ext[0], new_ext)
-            all_nets = [i for i in all_nets if i not in new_ext]
-            _extended_nets.append(new_ext)
+                visited.add(net_name)
+                collected.append(net_name)
 
-            if len(new_ext) > 1:
-                i = new_ext[0]
-                for i in new_ext:
-                    if not i.lower().startswith("unnamed"):
-                        break
+                for refdes in net_dicts.get(net_name, []):
+                    if not component_passes_threshold(refdes):
+                        continue
 
-                is_power = False
-                for i in new_ext:
-                    is_power = is_power or _nets[i].is_power_ground
+                    for connected_net in comp_dict.get(refdes, []):
+                        if connected_net not in visited:
+                            stack.append(connected_net)
 
-                if is_power:
-                    if include_power:
-                        ext_net = ExtendedNet.create(self._pedb.layout, i)
-                        ext_net.core.add_net(_nets[i].core)
-                        for net in new_ext:
-                            ext_net.core.add_net(_nets[net].core)
-                    else:  # pragma: no cover
-                        pass
-                else:
-                    if include_signal:
-                        ext_net = ExtendedNet.create(self._pedb.layout, i)
-                        ext_net.core.add_net(_nets[i].core)
-                        for net in new_ext:
-                            ext_net.core.add_net(_nets[net].core)
-                    else:  # pragma: no cover
-                        pass
+            return collected
 
-        return _extended_nets
+        def get_representative_net(net_group):
+            """Return the first non-unnamed net, or the first net if all are unnamed."""
+            for net_name in net_group:
+                if not net_name.lower().startswith("unnamed"):
+                    return net_name
+            return net_group[0]
+
+        while remaining_nets:
+            start_net = next(iter(remaining_nets))
+            net_group = collect_connected_nets(start_net)
+
+            remaining_nets.difference_update(net_group)
+
+            if len(net_group) <= 1:
+                continue
+
+            is_power = any(nets[net_name].is_power_ground for net_name in net_group)
+
+            if is_power and not include_power:
+                continue
+
+            if not is_power and not include_signal:
+                continue
+
+            representative_net = get_representative_net(net_group)
+
+            ext_net = ExtendedNet.create(self._pedb.layout, representative_net)
+            for net_name in net_group:
+                ext_net.core.add_net(nets[net_name].core)
+
+            extended_nets.append(net_group)
+
+        return extended_nets
 
 
 class ExtendedNet:
