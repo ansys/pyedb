@@ -186,7 +186,7 @@ class EdbExtendedNets(EdbCommon, object):
         exception_list: list | None = None,
         include_signal: bool = True,
         include_power: bool = True,
-    ):
+    ):  # codacy-disable
         """Get extended net and associated components.
 
         Parameters
