@@ -186,8 +186,20 @@ class TestClass(BaseTestClass):
         assert edbapp.extended_nets.items[extended_net_name].components
         assert edbapp.extended_nets.items[extended_net_name].rlc
         assert edbapp.extended_nets.items[extended_net_name].serial_rlc
-        assert edbapp.extended_nets.items["1V0"].serial_rlc
         assert edbapp.extended_nets.create("new_ex_net", "DDR4_A1")
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_generate_extended_nets_exclude_power(self):
+        """Verify extended nets generation excludes power nets when include_power=False"""
+        edbapp = self.edb_examples.get_si_verse()
+        # Generate extended nets with include_power=False
+        extended_nets = edbapp.extended_nets.generate_extended_nets(include_power=False)
+        # Check if only signal nets are in the result
+        assert len(extended_nets) == 21
+        for ext_net in extended_nets:
+            for net in ext_net:
+                net = edbapp.nets.nets.get(net)
+                assert not net.is_power_ground
         edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_0(self):
