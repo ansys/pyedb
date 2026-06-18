@@ -22,10 +22,9 @@
 
 from ansys.edb.core.definition.package_def import PackageDef as CorePackageDef
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
-from pyedb.grpc.database.geometry.polygon_data import PolygonData
-
 
 from pyedb.generic.settings import settings
+from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.utility.heat_sink import HeatSink
 from pyedb.grpc.database.utility.value import Value
 
@@ -117,7 +116,6 @@ class PackageDef:
     @exterior_boundary.setter
     def exterior_boundary(self, value):
         self.core.exterior_boundary = value
-
 
     def set_exterior_boundary_from_bbox(self, component):
         """Set package exterior boundary from a component bounding box.
