@@ -1178,9 +1178,11 @@ class Components(object):
             self._logger.info("Component %s passed to deactivate is not an RLC.", component.refdes)
             return False
         component.is_enabled = False
-        return self.add_port_on_rlc_component(
-            component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
-        )
+        if create_circuit_port:
+            return self.add_port_on_rlc_component(
+                component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
+            )
+        return not component.is_enabled
 
     def add_port_on_rlc_component(self, component=None, circuit_ports=True, pec_boundary=False):
         """Deactivate RLC component and replace it with a circuit port.
