@@ -75,8 +75,13 @@ class ExtendedNets:
             extended_net.core.add_net(self._pedb.nets.nets[i].core)
         return self.items[name]
 
-    def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
-        # type: (int | float, int | float, int |float, list) -> list[ExtendedNet]
+    def auto_identify_signal(
+        self,
+        resistor_below: int | float = 10,
+        inductor_below: int | float = 1,
+        capacitor_above: int | float = 1e-9,
+        exception_list: list | None = None,
+    ):
         """Get extended signal net and associated components.
 
         Parameters
@@ -105,10 +110,23 @@ class ExtendedNets:
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_signal()
         """
-        return self.generate_extended_nets(resistor_below, inductor_below, capacitor_above, exception_list, True, True)
 
-    def auto_identify_power(self, resistor_below=10, inductor_below=1, capacitor_above=1, exception_list=None):
-        # type: (int | float, int | float, int |float, list) -> list
+        return self.generate_extended_nets(
+            resistor_below,
+            inductor_below,
+            capacitor_above,
+            exception_list,
+            include_signal=True,
+            include_power=False,
+        )
+
+    def auto_identify_power(
+        self,
+        resistor_below: int | float = 10,
+        inductor_below: int | float = 1,
+        capacitor_above: int | float = 1,
+        exception_list: list | None = None,
+    ):
         """Get all extended power nets and their associated components.
 
         Parameters
@@ -137,7 +155,15 @@ class ExtendedNets:
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_power()
         """
-        return self.generate_extended_nets(resistor_below, inductor_below, capacitor_above, exception_list, True, True)
+
+        return self.generate_extended_nets(
+            resistor_below,
+            inductor_below,
+            capacitor_above,
+            exception_list,
+            include_signal=False,
+            include_power=True,
+        )
 
     def generate_extended_nets(
         self,
@@ -275,14 +301,17 @@ class ExtendedNets:
             return collected
 
         def get_representative_net(net_group):
-            """Return the first non-unnamed net, or the first net if all are unnamed."""
-            for net_name in net_group:
+            """Return a deterministic non-unnamed net, or the first net if all are unnamed."""
+            sorted_group = sorted(net_group)
+
+            for net_name in sorted_group:
                 if not net_name.lower().startswith("unnamed"):
                     return net_name
-            return net_group[0]
+
+            return sorted_group[0]
 
         while remaining_nets:
-            start_net = next(iter(remaining_nets))
+            start_net = sorted(remaining_nets)[0]
             net_group = collect_connected_nets(start_net)
 
             remaining_nets.difference_update(net_group)
@@ -300,7 +329,12 @@ class ExtendedNets:
 
             representative_net = get_representative_net(net_group)
 
+            if representative_net in self.items:
+                extended_nets.append(net_group)
+                continue
+
             ext_net = ExtendedNet.create(self._pedb.layout, representative_net)
+
             for net_name in net_group:
                 ext_net.core.add_net(nets[net_name].core)
 

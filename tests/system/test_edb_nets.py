@@ -186,7 +186,6 @@ class TestClass(BaseTestClass):
         assert edbapp.extended_nets.items[extended_net_name].components
         assert edbapp.extended_nets.items[extended_net_name].rlc
         assert edbapp.extended_nets.items[extended_net_name].serial_rlc
-        assert edbapp.extended_nets.items["1V0"].serial_rlc
         assert edbapp.extended_nets.create("new_ex_net", "DDR4_A1")
         edbapp.close(terminate_rpc_session=False)
 
