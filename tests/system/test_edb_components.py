@@ -548,6 +548,12 @@ class TestClass(BaseTestClass):
         assert edb.components["C200"].create_package_def(component_part_name="SMTC-MECT-110-01-M-D-RA1_V")
         assert not edb.components["C200"].create_package_def()
         assert edb.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
+        if edb.grpc:
+            pkg_def = edb.components["C200"].package_def
+            assert not pkg_def.exterior_boundary.points
+            assert pkg_def.set_exterior_boundary_from_bbox("C200")
+            assert len(pkg_def.exterior_boundary.points) == 4
+            assert pkg_def.set_exterior_boundary_from_bbox(edb.components.instances["C200"])
         edb.close(terminate_rpc_session=False)
 
     def test_solder_ball_getter_setter(self):
