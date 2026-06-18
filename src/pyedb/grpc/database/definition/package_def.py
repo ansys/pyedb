@@ -103,19 +103,24 @@ class PackageDef:
         self.core.name = value
 
     @property
-    def exterior_boundary(self) -> CorePolygonData:
+    def exterior_boundary(self) -> PolygonData:
         """Get the exterior boundary of a package definition.
 
         Returns
         -------
-        :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
+        :class:`PolygonData <class: PolygonData>`
 
         """
-        return CorePolygonData(self.core.exterior_boundary.points)
+        return PolygonData(self._pedb, self.core.exterior_boundary.without_arcs())
 
     @exterior_boundary.setter
     def exterior_boundary(self, value):
-        self.core.exterior_boundary = value
+        if isinstance(value, PolygonData):
+            self.core.exterior_boundary = value.core
+        elif isinstance(value, CorePolygonData):
+            self.core.exterior_boundary = value
+        else:
+            raise TypeError("Unsupported type for exterior_boundary. Expected PolygonData or CorePolygonData.")
 
     def set_exterior_boundary_from_bbox(self, component):
         """Set package exterior boundary from a component bounding box.
@@ -142,7 +147,7 @@ class PackageDef:
             component_obj = component
 
         bbox = getattr(component_obj, "bounding_box", None)
-        if not isinstance(bbox, (list, tuple)) or len(bbox) != 4:
+        if bbox is None:
             settings.logger.error("Invalid component bounding box. Expected [x_min, y_min, x_max, y_max].")
             return False
 
