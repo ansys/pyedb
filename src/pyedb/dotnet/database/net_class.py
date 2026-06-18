@@ -186,7 +186,7 @@ class EdbExtendedNets(EdbCommon, object):
         exception_list: list | None = None,
         include_signal: bool = True,
         include_power: bool = True,
-    ):  # noqa: C901
+    ):
         """Get extended net and associated components.
 
         Parameters
@@ -211,19 +211,12 @@ class EdbExtendedNets(EdbCommon, object):
         -------
         list
             List of all generated extended net groups.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> app = Edb()
-        >>> app.nets.generate_extended_nets()
         """
-        if exception_list is None:
-            exception_list = []
+        exceptions = set(exception_list or [])
+        extended_nets = []
 
-        _extended_nets = []
-        _nets = self._pedb.nets.nets
-        all_nets = list(_nets.keys())[:]
+        nets = self._pedb.nets.nets
+        all_nets = list(nets.keys())
 
         net_dicts = (
             self._pedb.nets._comps_by_nets_dict
@@ -236,91 +229,96 @@ class EdbExtendedNets(EdbCommon, object):
             else self._pedb.nets.nets_by_components
         )
 
-        def get_net_list(net_name, _net_list):
-            comps = []
-            if net_name in net_dicts:
-                comps = net_dicts[net_name]
+        resistor_limit = self._pedb.edb_value(resistor_below).ToDouble()
+        inductor_limit = self._pedb.edb_value(inductor_below).ToDouble()
+        capacitor_limit = self._pedb.edb_value(capacitor_above).ToDouble()
 
-            for vals in comps:
-                refdes = vals
-                cmp = self._pedb.components.instances[refdes]
+        component_rules = {
+            "Resistor": (0, resistor_limit, lambda value, limit: value <= limit),
+            "Inductor": (1, inductor_limit, lambda value, limit: value <= limit),
+            "Capacitor": (2, capacitor_limit, lambda value, limit: value >= limit),
+        }
 
-                is_enabled = cmp.is_enabled
-                if not is_enabled:
-                    continue
+        def _passes_component_filter(refdes, component):
+            """Return True when component can be used to extend nets."""
+            component_type = component.type
 
-                val_type = cmp.type
-                if val_type not in ["Inductor", "Resistor", "Capacitor"]:
-                    continue
+            if not component.is_enabled or component_type not in component_rules:
+                return False
 
-                val_value = cmp.rlc_values
+            if refdes in exceptions:
+                return True
 
-                if refdes in exception_list:
-                    pass
+            value_index, limit, comparator = component_rules[component_type]
+            component_value = component.rlc_values[value_index]
 
-                elif val_type == "Inductor":
-                    if val_value[1] is None:
-                        continue
-                    elif (
-                        not self._pedb.edb_value(val_value[1]).ToDouble()
-                        <= self._pedb.edb_value(inductor_below).ToDouble()
-                    ):
-                        continue
+            if component_value is None:
+                return False
 
-                elif val_type == "Resistor":
-                    if val_value[0] is None:
-                        continue
-                    elif (
-                        not self._pedb.edb_value(val_value[0]).ToDouble()
-                        <= self._pedb.edb_value(resistor_below).ToDouble()
-                    ):
-                        continue
+            value = self._pedb.edb_value(component_value).ToDouble()
+            return comparator(value, limit)
 
-                elif val_type == "Capacitor":
-                    if val_value[2] is None:
-                        continue
-                    elif (
-                        not self._pedb.edb_value(val_value[2]).ToDouble()
-                        >= self._pedb.edb_value(capacitor_above).ToDouble()
-                    ):
+        def _connected_nets(start_net):
+            """Collect all nets connected through valid serial components."""
+            collected_nets = [start_net]
+            visited_nets = {start_net}
+            nets_to_visit = [start_net]
+
+            while nets_to_visit:
+                net_name = nets_to_visit.pop()
+
+                for refdes in net_dicts.get(net_name, []):
+                    component = self._pedb.components.instances[refdes]
+
+                    if not _passes_component_filter(refdes, component):
                         continue
 
-                else:
-                    continue
+                    for connected_net in comp_dict.get(refdes, []):
+                        if connected_net in visited_nets:
+                            continue
 
-                for net in comp_dict[refdes]:
-                    if net not in _net_list:
-                        _net_list.append(net)
-                        get_net_list(net, _net_list)
+                        visited_nets.add(connected_net)
+                        collected_nets.append(connected_net)
+                        nets_to_visit.append(connected_net)
 
-        while len(all_nets) > 0:
-            new_ext = [all_nets[0]]
-            get_net_list(new_ext[0], new_ext)
+            return collected_nets
 
-            all_nets = [i for i in all_nets if i not in new_ext]
+        def _representative_net(net_group):
+            """Return the first named net, otherwise the first net in the group."""
+            return next(
+                (net for net in net_group if not net.lower().startswith("unnamed")),
+                net_group[0],
+            )
 
-            if len(new_ext) > 1:
-                representative_net = new_ext[0]
-                for net in new_ext:
-                    if not net.lower().startswith("unnamed"):
-                        representative_net = net
-                        break
+        def _is_power_net_group(net_group):
+            """Return True when any net in the group is power or ground."""
+            return any(nets[net].is_power_ground for net in net_group)
 
-                is_power = False
-                for net in new_ext:
-                    is_power = is_power or _nets[net].is_power_ground
+        def _should_include_net_group(net_group):
+            """Return True when the group should be included based on signal/power settings."""
+            if _is_power_net_group(net_group):
+                return include_power
 
-                if is_power:
-                    if not include_power:
-                        continue
-                else:
-                    if not include_signal:
-                        continue
+            return include_signal
 
-                self._pedb.extended_nets.create(representative_net, new_ext)
-                _extended_nets.append(new_ext)
+        while all_nets:
+            new_extended_net = _connected_nets(all_nets[0])
+            new_extended_net_set = set(new_extended_net)
 
-        return _extended_nets
+            all_nets = [net for net in all_nets if net not in new_extended_net_set]
+
+            if len(new_extended_net) <= 1:
+                continue
+
+            if not _should_include_net_group(new_extended_net):
+                continue
+
+            representative_net = _representative_net(new_extended_net)
+
+            self._pedb.extended_nets.create(representative_net, new_extended_net)
+            extended_nets.append(new_extended_net)
+
+        return extended_nets
 
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
