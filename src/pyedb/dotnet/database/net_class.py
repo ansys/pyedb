@@ -24,13 +24,11 @@ from __future__ import absolute_import  # noreorder
 
 import re
 
-from pyedb.dotnet.database.dotnet.database import ExtendedNetDotNet
 from pyedb.dotnet.database.edb_data.nets_data import (
     EDBDifferentialPairData,
     EDBExtendedNetData,
     EDBNetClassData,
 )
-from pyedb.generic.constants import decompose_variable_value, unit_converter
 
 
 class EdbCommon:
