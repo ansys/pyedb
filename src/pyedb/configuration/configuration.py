@@ -449,7 +449,7 @@ class Configuration:
             else:
                 if setup.type == "hfss":
                     cfg_ac_setup = self.cfg_data.setups.add_hfss_setup(name=setup.name)
-                    adapt_type = FAdaptTypeMapper.get(setup.adaptive_settings.adapt_type, as_grpc=True)
+                    adapt_type = FAdaptTypeMapper.get(setup.settings.general.adaptive_solution_type, as_grpc=True)
                     cfg_ac_setup.adapt_type = adapt_type
                     if not settings.is_grpc:
                         if adapt_type == "single":
@@ -469,14 +469,15 @@ class Configuration:
                                 "Unsupported adapt type found in setup, skipping adaptive settings."
                             )
                     else:
-                        if setup.adaptive_settings.adapt_type == "single":
+                        grpc_adapt_type = setup.settings.general.adaptive_solution_type
+                        if grpc_adapt_type == "single":
                             s_f_adapt = setup.settings.general.single_frequency_adaptive_solution
                             cfg_ac_setup.single_frequency_adaptive_solution.adaptive_frequency = (
                                 s_f_adapt.adaptive_frequency
                             )
                             cfg_ac_setup.single_frequency_adaptive_solution.max_passes = s_f_adapt.max_passes
                             cfg_ac_setup.single_frequency_adaptive_solution.max_delta = s_f_adapt.max_delta
-                        elif setup.adaptive_settings.adapt_type == "broadband":
+                        elif grpc_adapt_type == "broadband":
                             b_f_adapt = setup.settings.general.broadband_adaptive_solution
                             cfg_ac_setup.broadband_adaptive_solution.low_frequency = b_f_adapt.low_frequency
                             cfg_ac_setup.broadband_adaptive_solution.high_frequency = b_f_adapt.high_frequency
@@ -1086,18 +1087,21 @@ class Configuration:
         if polygons:
             poly = polygons[0]
             custom_extent = poly.polygon_data.points
-            net_names = []
+            signal_nets = []
+            reference_nets = []
             for name, obj in self._pedb.nets.nets.items():
                 if obj.primitives:
                     if obj.primitives[0].layer.name == "pyedb_cutout":
                         continue
+                    if name in self.cfg_data.nets.signal_nets:
+                        signal_nets.append(name)
                     else:
-                        net_names.append(name)
+                        reference_nets.append(name)
 
             self.cfg_data.operations.add_cutout(
                 custom_extent=custom_extent,
-                reference_nets=[],
-                signal_nets=net_names,
+                reference_nets=reference_nets,
+                signal_nets=signal_nets,
             )
 
     @execution_timer("Placing terminals")
@@ -1318,7 +1322,8 @@ class Configuration:
         if kwargs.get("pin_groups", False):
             data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
         if kwargs.get("operations", False):
-            self.get_operations()
+            if self.cfg_data.operations.cutout is None:
+                self.get_operations()
             data["operations"] = self.cfg_data.operations.model_dump()
         if kwargs.get("padstacks", False):
             self.get_padstacks()

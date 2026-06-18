@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import json
+from unittest.mock import MagicMock
 
 import pytest
 import toml
@@ -667,3 +668,137 @@ class TestCfgBase:
         t = Target()
         with pytest.raises(AttributeError, match="unknown_attr"):
             obj.set_attributes(t)
+
+
+# ---------------------------------------------------------------------------
+# Configuration.get_setups – gRPC path uses settings.general.adaptive_solution_type
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.grpc
+class TestGetSetupsGrpcAdaptType:
+    """Unit tests for Configuration.get_setups() in gRPC mode.
+
+    These tests verify that get_setups() reads the adaptive solution type from
+    ``setup.settings.general.adaptive_solution_type`` (the current non-deprecated
+    property) and NOT from the deprecated ``setup.adaptive_settings.adapt_type``.
+
+    Strategy: configure the mock so that accessing ``adaptive_settings.adapt_type``
+    raises an AttributeError.  If the code still completes successfully, the fix
+    is confirmed.
+    """
+
+    def _make_sweep_stub(self, name="sw1"):
+        sw = MagicMock()
+        sw.type = "interpolating"
+        sw.frequency_string = ["LIN 0Hz 10GHz 10MHz"]
+        sw.compute_dc_point = False
+        sw.enforce_causality = False
+        sw.enforce_passivity = True
+        sw.adv_dc_extrapolation = False
+        sw.use_hfss_solver_regions = False
+        # Pydantic validates these as Optional[str]; must be None or a string
+        sw.hfss_solver_region_setup_name = None
+        sw.hfss_solver_region_sweep_name = None
+        return {name: sw}
+
+    def _make_hfss_setup_stub(self, adapt_type="single"):
+        """Build a minimal mock HFSS setup for the gRPC path."""
+        setup = MagicMock()
+        setup.type = "hfss"
+        setup.name = "HFSS_Setup_1"
+
+        # The non-deprecated path that get_setups() should use
+        setup.settings.general.adaptive_solution_type = adapt_type
+
+        # Make the deprecated path raise so the test fails if it is accessed
+        type(setup).adaptive_settings = property(
+            lambda self: (_ for _ in ()).throw(AttributeError("adaptive_settings must not be accessed in gRPC mode"))
+        )
+
+        # Mesh operations and sweeps
+        setup.mesh_operations = []
+        setup.sweeps = self._make_sweep_stub()
+        return setup
+
+    def _make_configuration(self, setups_dict):
+        """Build a Configuration instance with a mocked pedb."""
+        from unittest.mock import MagicMock
+
+        from pyedb.configuration.configuration import Configuration
+
+        pedb = MagicMock()
+        pedb.setups = setups_dict
+        pedb.logger = MagicMock()
+        cfg = Configuration.__new__(Configuration)
+        cfg._pedb = pedb
+
+        from pyedb.configuration.cfg_data import CfgData
+
+        cfg.cfg_data = CfgData()
+        return cfg
+
+    def test_get_setups_single_adaptive_uses_settings_general(self):
+        """Single-frequency adapt type is read via settings.general, not adaptive_settings."""
+        from unittest.mock import patch
+
+        from pyedb.configuration.configuration import Configuration
+
+        setup = self._make_hfss_setup_stub(adapt_type="single")
+        sfas = MagicMock()
+        sfas.adaptive_frequency = "5GHz"
+        sfas.max_passes = 10
+        sfas.max_delta = "0.02"
+        setup.settings.general.single_frequency_adaptive_solution = sfas
+
+        cfg = self._make_configuration({"HFSS_Setup_1": setup})
+
+        with patch("pyedb.configuration.configuration.settings") as mock_settings:
+            mock_settings.is_grpc = True
+            cfg.get_setups()  # must not raise AttributeError
+
+        assert len(cfg.cfg_data.setups.setups) == 1
+        saved = cfg.cfg_data.setups.setups[0]
+        assert saved.adapt_type == "single"
+
+    def test_get_setups_broadband_adaptive_uses_settings_general(self):
+        """Broadband adapt type is read via settings.general, not adaptive_settings."""
+        from unittest.mock import patch
+
+        setup = self._make_hfss_setup_stub(adapt_type="broadband")
+        bb = MagicMock()
+        bb.low_frequency = "1GHz"
+        bb.high_frequency = "20GHz"
+        bb.max_delta = "0.02"
+        bb.max_passes = 20
+        setup.settings.general.broadband_adaptive_solution = bb
+
+        cfg = self._make_configuration({"HFSS_Setup_1": setup})
+
+        with patch("pyedb.configuration.configuration.settings") as mock_settings:
+            mock_settings.is_grpc = True
+            cfg.get_setups()
+
+        saved = cfg.cfg_data.setups.setups[0]
+        assert saved.adapt_type == "broadband"
+
+    def test_get_setups_siwave_ac_not_affected(self):
+        """SIwave AC setups follow a separate code path and must still be exported."""
+        from unittest.mock import patch
+
+        setup = MagicMock()
+        setup.type = "siwave"
+        setup.name = "SIWave_AC"
+        setup.settings.general.use_si_settings = True
+        setup.settings.general.si_slider_position = 1
+        setup.settings.general.pi_slider_position = 1
+        setup.sweeps = {}
+
+        cfg = self._make_configuration({"SIWave_AC": setup})
+
+        with patch("pyedb.configuration.configuration.settings") as mock_settings:
+            mock_settings.is_grpc = True
+            cfg.get_setups()
+
+        assert len(cfg.cfg_data.setups.setups) == 1
+        assert cfg.cfg_data.setups.setups[0].name == "SIWave_AC"

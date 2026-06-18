@@ -139,6 +139,14 @@ class MaterialProperties(BaseModel):
     permittivity_at_frequency: Optional[PositiveFloat] = 0.0
 
 
+# Maps deprecated MaterialProperties field names → current non-deprecated Material property names.
+# Used by Material.__load_all_properties to avoid triggering FutureWarning on access.
+_DEPRECATED_FIELD_TO_PROPERTY: dict[str, str] = {
+    "dc_permittivity": "dc_relative_permittivity",
+    "permittivity_at_frequency": "relative_permittivity_at_frequency",
+}
+
+
 class Material:
     """Manage EDB methods for material property management."""
 
@@ -644,10 +652,13 @@ class Material:
     def __load_all_properties(self):
         """Load all properties of the material."""
         res = MaterialProperties()
-        for property in res.model_dump().keys():
-            if hasattr(self, property):
-                value = getattr(self, property)
-                setattr(res, property, value)
+        for field_name in res.model_dump().keys():
+            # Use the current (non-deprecated) property name when one exists, so that
+            # accessing the value does not trigger FutureWarning on deprecated properties.
+            prop_name = _DEPRECATED_FIELD_TO_PROPERTY.get(field_name, field_name)
+            if hasattr(self, prop_name):
+                value = getattr(self, prop_name)
+                setattr(res, field_name, value)
         return res
 
     def set_thermal_modifier(

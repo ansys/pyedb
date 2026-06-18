@@ -40,6 +40,51 @@ from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
 
 
+class HfssSimSetupGeneralSettings:
+    """Class providing access to general HFSS simulation settings via DotNet objects."""
+
+    def __init__(self, sim_settings):
+        self._sim_settings = sim_settings
+
+    @property
+    def adaptive_solution_type(self) -> str:
+        """Access the adaptive solution type setting.
+
+        This property accesses the underlying DotNet ``AdaptiveSolutionType`` attribute directly.
+        It aligns with the gRPC API structure where the path is ``settings.general.adaptive_solution_type``.
+
+        Returns
+        -------
+        str
+            The value of the adaptive solution type from the simulation settings.
+        """
+        return self._sim_settings.AdaptiveSettings.AdaptType.ToString()
+
+
+class HfssSimSetupSettings:
+    """Container for HFSS simulation settings.
+
+    This class adapts the DotNet setup object structure to reflect the same structure as in gRPC,
+    providing a unified access path such as ``setup.settings.general.adaptive_solution_type``.
+    """
+
+    def __init__(self, sim_setup):
+        self._sim_setup = sim_setup
+
+    @property
+    def general(self):
+        """Access to general simulation settings.
+
+        Returns
+        -------
+        :class:`HfssSimSetupGeneralSettings`
+            A wrapper around the DotNet general settings object.
+        """
+        if not hasattr(self, "_general"):
+            self._general = HfssSimSetupGeneralSettings(self._sim_setup.sim_setup_info.simulation_settings)
+        return self._general
+
+
 class HfssSimulationSetup(SimulationSetup):
     """Manages EDB methods for HFSS simulation setup."""
 
@@ -61,6 +106,19 @@ class HfssSimulationSetup(SimulationSetup):
         obj._edb_object = obj._simulation_setup_builder(sim_setup_info._edb_object)
         obj._update_setup()
         return obj
+
+    @property
+    def settings(self):
+        """Access the simulation settings interface.
+
+        Returns
+        -------
+        :class:`HfssSimSetupSettings`
+            An instance providing access to simulation settings in the gRPC-compatible structure.
+        """
+        if not hasattr(self, "_settings"):
+            self._settings = HfssSimSetupSettings(self)
+        return self._settings
 
     @property
     def solver_slider_type(self):

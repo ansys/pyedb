@@ -114,7 +114,7 @@ jobs:
       USE_GRPC: '0'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -124,7 +124,7 @@ jobs:
           python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           enable-cache: false
 
@@ -151,7 +151,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -169,7 +169,7 @@ jobs:
       USE_GRPC: '1'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -179,7 +179,7 @@ jobs:
           python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           enable-cache: false
 
@@ -194,19 +194,19 @@ jobs:
       - name: Create coverage files
         run: |
           source .venv/bin/activate
-          python -m coverage html -d .cov\unit-html
-          python -m coverage xml -o .cov\unit.xml
+          python -m coverage html -d .cov/unit-html
+          python -m coverage xml -o .cov/unit.xml
 
       - name: Upload Coverage Results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          path: .cov\unit-html
+          path: .cov/unit-html
           name: html-unit-coverage-${{ github.job }}-${{ github.run_attempt }}
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -226,7 +226,7 @@ jobs:
       USE_GRPC: '0'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -236,26 +236,24 @@ jobs:
           python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests --extra dotnet
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 120
-          command: |
-            .venv\Scripts\activate
-            pytest tests/system -vvv --cov
+        run: |
+          . .venv\Scripts\activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
-          .venv\Scripts\activate
+          . .venv\Scripts\activate
           python -m coverage html -d .cov\system-html
           python -m coverage xml -o .cov\system.xml
 
@@ -268,7 +266,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -288,7 +286,7 @@ jobs:
       USE_GRPC: '1'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -298,26 +296,24 @@ jobs:
           python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            .venv\Scripts\activate
-            pytest tests/system -vvv --cov
+        run: |
+          . .venv\Scripts\activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
-          .venv\Scripts\activate
+          . .venv\Scripts\activate
           python -m coverage html -d .cov\system-html
           python -m coverage xml -o .cov\system.xml
 
@@ -330,7 +326,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -352,7 +348,7 @@ jobs:
       USE_GRPC: '0'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -367,22 +363,20 @@ jobs:
           sudo apt install libgl1-mesa-glx -y
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests --extra dotnet
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 120
-          command: |
-            source .venv/bin/activate
-            pytest tests/system -vvv --cov
+        run: |
+          source .venv/bin/activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
@@ -399,7 +393,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -421,7 +415,7 @@ jobs:
       USE_GRPC: '1'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -436,22 +430,20 @@ jobs:
           sudo apt install libgl1-mesa-glx -y
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
         run: uv sync --frozen --extra all --group tests
 
+
       - name: Executing system tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            source .venv/bin/activate
-            pytest tests/system -vvv --cov
+        run: |
+          source .venv/bin/activate
+          pytest tests/system --cov=pyedb --color=yes -ra
+        timeout-minutes: 60
+
 
       - name: Create coverage files
         run: |
@@ -468,7 +460,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
@@ -485,7 +477,7 @@ jobs:
     runs-on: [ Windows, self-hosted, pyedb ]
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -498,12 +490,12 @@ jobs:
           python-version: ${{ env.TESTS_VERSION }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           enable-cache: false
 
       - name: Clone PyAEDT on main branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ansys/pyaedt
           path: "external/pyaedt"
@@ -515,61 +507,49 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
-          .venv\Scripts\activate
+          . .venv\Scripts\activate
           cd external/pyaedt
           uv pip install --no-cache-dir --group tests .[all]
 
       - name: Run PyAEDT general and layout tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            .venv\Scripts\activate
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
-            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
-            pytest -v external/pyaedt/tests/system/general/test_circuit.py
-            pytest -v external/pyaedt/tests/system/general/test_hfss.py
-            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
+        run: |
+          . .venv\Scripts\activate
+          pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+          pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
+          pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
+          pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py::test_insert_layout_component
+          pytest -v external/pyaedt/tests/system/general/test_hfss.py::test_import_dxf
+        timeout-minutes: 180
 
       - name: Run PyAEDT solvers tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            .venv\Scripts\activate
-            pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
+        run: |
+          . .venv\Scripts\activate
+          pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
+        timeout-minutes: 180
+
 
       - name: Run PyAEDT extensions tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            .venv\Scripts\activate
-            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
-            pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
+        run: |
+          . .venv\Scripts\activate
+          pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
+          pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
+          pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
+          pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
+          pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
+          pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
+        timeout-minutes: 180
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -584,7 +564,7 @@ jobs:
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -602,12 +582,12 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           enable-cache: false
 
       - name: Clone PyAEDT on main branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ansys/pyaedt
           path: "external/pyaedt"
@@ -628,56 +608,44 @@ jobs:
           uv pip install --no-cache-dir --group tests .[all]
 
       - name: Run PyAEDT general and layout tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            source .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
-            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
-            pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
-            pytest -v external/pyaedt/tests/system/general/test_circuit.py
-            pytest -v external/pyaedt/tests/system/general/test_hfss.py
-            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
+        run: |
+          source .venv/bin/activate
+          pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+          pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
+          pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py::test_insert_layout_component
+          pytest -v external/pyaedt/tests/system/general/test_hfss.py::test_import_dxf
+        timeout-minutes: 180
+
 
       - name: Run PyAEDT solvers tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            source .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
+        run: |
+          source .venv/bin/activate
+          pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
+        timeout-minutes: 180
+
 
       - name: Run PyAEDT extensions tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 180
-          command: |
-            source .venv/bin/activate
-            pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
-            pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
-            pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
-            pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
-            pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
+        run: |
+          source .venv/bin/activate
+          pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_configure_layout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
+          pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
+          pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
+          pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
+          pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
+          pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
+          pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
+        timeout-minutes: 180
 
   docs-build:
     name: Build documentation

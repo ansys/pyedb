@@ -329,7 +329,7 @@ class TestClass(BaseTestClass):
         """Deactivate RLC component and convert to a circuit port."""
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.components.deactivate_rlc_component(component="C1", create_circuit_port=False)
-        assert edbapp.ports["C1"]
+        assert "C1" not in edbapp.ports
         assert edbapp.components["C1"].is_enabled is False
         assert edbapp.components.deactivate_rlc_component(component="C2", create_circuit_port=True)
         edbapp.components["C2"].is_enabled = False

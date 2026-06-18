@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 GRPC_GENERAL_WARNING = (
     "This version of the Ansys Electronics Database (EDB) is compatible with the gRPC "
     "interface. You can enable gRPC by passing ``grpc=True`` when instantiating the Edb object. "
@@ -31,4 +32,16 @@ GRPC_BETA_WARNING = (
     "working as expected. Please report any issue you find to the PyEDB team."
 )
 
-GRPC_NOT_SUPPORTED_WARNING = "Your current version does not support PyEDB grpc, falling back to DotNet version"
+GRPC_NOT_SUPPORTED_WARNING = (
+    "gRPC is now the default backend selection for PyEDB is and not supported for AEDT "
+    "version 2025.2 and earlier."
+    "Please use AEDT version 2026.1 or later to enable gRPC functionality, "
+    "or set grpc=False to use the DotNet backend. Note DotNet will be deprecated and gRPC will be the long"
+    " term supported version."
+)
+
+DOTNET_USAGE_WARNING = (
+    "DotNet version of PyEDB used. Please note that this version of PyEDB is planned to be deprecated in the future "
+    "and gRPC version will remains the long term supported one. Upgrade to ANSYS release version 2026.1.2 or later"
+    "for fast grpc performances."
+)
