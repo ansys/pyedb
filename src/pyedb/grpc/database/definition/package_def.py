@@ -24,6 +24,7 @@ from ansys.edb.core.definition.package_def import PackageDef as CorePackageDef
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 from pyedb.generic.settings import settings
+from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.utility.heat_sink import HeatSink
 from pyedb.grpc.database.utility.value import Value
 
@@ -102,19 +103,70 @@ class PackageDef:
         self.core.name = value
 
     @property
-    def exterior_boundary(self) -> CorePolygonData:
+    def exterior_boundary(self) -> PolygonData:
         """Get the exterior boundary of a package definition.
 
         Returns
         -------
-        :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
+        :class:`PolygonData <class: PolygonData>`
 
         """
-        return CorePolygonData(self.core.exterior_boundary.points)
+        return PolygonData(self._pedb, self.core.exterior_boundary.without_arcs())
 
     @exterior_boundary.setter
     def exterior_boundary(self, value):
-        self.core.exterior_boundary = value
+        if isinstance(value, PolygonData):
+            self.core.exterior_boundary = value.core
+        elif isinstance(value, CorePolygonData):
+            self.core.exterior_boundary = value
+        else:
+            raise TypeError("Unsupported type for exterior_boundary. Expected PolygonData or CorePolygonData.")
+
+    def set_exterior_boundary_from_bbox(self, component):
+        """Set package exterior boundary from a component bounding box.
+
+        The method builds a centered rectangular polygon from a component bounding
+        box and assigns it to this package definition.
+
+        Parameters
+        ----------
+        component : str or :class:`EDBComponent`
+            Component instance name or component object exposing ``bounding_box``.
+
+        Returns
+        -------
+        bool
+            ``True`` when the boundary is successfully assigned, ``False`` otherwise.
+        """
+        if isinstance(component, str):
+            component_obj = self._pedb.components.instances.get(component)
+            if component_obj is None:
+                settings.logger.error(f"Component '{component}' was not found in component instances.")
+                return False
+        else:
+            component_obj = component
+
+        bbox = getattr(component_obj, "bounding_box", None)
+        if bbox is None:
+            settings.logger.error("Invalid component bounding box. Expected [x_min, y_min, x_max, y_max].")
+            return False
+
+        x_min, y_min, x_max, y_max = bbox
+        half_x = abs(x_max - x_min) / 2
+        half_y = abs(y_max - y_min) / 2
+
+        x_extent = max(half_x, half_y)
+        y_extent = min(half_x, half_y)
+
+        points = [
+            (-x_extent, -y_extent),
+            (x_extent, -y_extent),
+            (x_extent, y_extent),
+            (-x_extent, y_extent),
+        ]
+        poly_data = PolygonData.create(self._pedb, points, closed=True)
+        self.exterior_boundary = poly_data
+        return True
 
     @property
     def maximum_power(self) -> float:

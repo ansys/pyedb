@@ -1790,7 +1790,7 @@ class TestDeactivateRlcComponent:
         cmp.is_enabled = True
         comps = _make_components({"R1": cmp})
         comps._pedb.excitation_manager.add_port_on_rlc_component.return_value = True
-        result = comps.deactivate_rlc_component(component="R1")
+        result = comps.deactivate_rlc_component(component="R1", create_circuit_port=True)
         comps._pedb.excitation_manager.add_port_on_rlc_component.assert_called_once()
         assert result is True
 
