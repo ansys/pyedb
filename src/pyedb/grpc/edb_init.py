@@ -80,8 +80,11 @@ class EdbInit(object):
         # register server kill
         atexit.register(self._signal_handler)
         # register signal handlers
-        signal.signal(signal.SIGTERM, self._signal_handler)
-        signal.signal(signal.SIGINT, self._signal_handler)
+        try:
+            signal.signal(signal.SIGTERM, self._signal_handler)
+            signal.signal(signal.SIGINT, self._signal_handler)
+        except Exception:
+            pass
 
     @staticmethod
     def _signal_handler(signum=None, frame=None):
