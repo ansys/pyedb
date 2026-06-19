@@ -31,7 +31,8 @@ dependencies = [
     "ansys-edb-core>=0.3.1",
     "psutil",
     "defusedxml>=0.7,<8.0",
-    "xmltodict"
+    "xmltodict",
+    "typer>=0.20.0",
 ]
 
 [project.optional-dependencies]
@@ -65,6 +66,10 @@ all = [
 
 [tool.flit.module]
 name = "pyedb"
+
+[project.entry-points."pyaedt.cli"]
+antenna = "ansys.aedt.toolkits.antenna.cli:antenna_app"
+edb = "pyedb.cli:app"
 
 # uv configuration
 [tool.uv]

@@ -409,6 +409,7 @@ html_theme_options = {
         "output": "autoapi",
         "directory": "src/pyedb",
         "ignore": [
+            "**/cli/**",
             "**/grpc/edb_init.py",
             "**/grpc/rpc_session.py",
             "**/dotnet/**",
