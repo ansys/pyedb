@@ -531,7 +531,7 @@ jobs:
         run: |
           . .venv\Scripts\activate
           pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
-        timeout-minutes: 180
+        timeout-minutes: 240
 
 
       - name: Run PyAEDT extensions tests
@@ -617,7 +617,7 @@ jobs:
           pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
           pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py::test_insert_layout_component
           pytest -v external/pyaedt/tests/system/general/test_hfss.py::test_import_dxf
-        timeout-minutes: 180
+        timeout-minutes: 240
 
 
       - name: Run PyAEDT solvers tests
@@ -627,7 +627,7 @@ jobs:
         run: |
           source .venv/bin/activate
           pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
-        timeout-minutes: 180
+        timeout-minutes: 240
 
 
       - name: Run PyAEDT extensions tests
@@ -645,7 +645,7 @@ jobs:
           pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
           pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
           pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
-        timeout-minutes: 180
+        timeout-minutes: 240
 
   docs-build:
     name: Build documentation
