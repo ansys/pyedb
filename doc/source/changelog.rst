@@ -9,6 +9,35 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.78.1 <https://github.com/ansys/pyedb/releases/tag/v0.78.1>`_ - June 20, 2026
+===============================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Fix a bug in multithread init
+          - `#2300 <https://github.com/ansys/pyedb/pull/2300>`_
+
+        * - Rpc fast mode detection fixed
+          - `#2301 <https://github.com/ansys/pyedb/pull/2301>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.78.0
+          - `#2299 <https://github.com/ansys/pyedb/pull/2299>`_
+
+
 `0.78.0 <https://github.com/ansys/pyedb/releases/tag/v0.78.0>`_ - June 19, 2026
 ===============================================================================
 
