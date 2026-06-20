@@ -199,8 +199,8 @@ class RpcSession:
         for attempt in range(max_attempts):
             try:
                 RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
-                if hasattr(RpcSession.rpc_session, "in_memory"):
-                    RpcSession.fast_grpc_mode_enabled = RpcSession.rpc_session.in_memory
+                if hasattr(RpcSession.rpc_session, "shared_memory"):
+                    RpcSession.fast_grpc_mode_enabled = RpcSession.rpc_session.shared_memory
                 else:
                     RpcSession.fast_grpc_mode_enabled = False
                 break
