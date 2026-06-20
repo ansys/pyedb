@@ -9,6 +9,152 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.78.0 <https://github.com/ansys/pyedb/releases/tag/v0.78.0>`_ - June 19, 2026
+===============================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Initial cli implementation
+          - `#2209 <https://github.com/ansys/pyedb/pull/2209>`_
+
+        * - Vendor libraries adding support with cfg
+          - `#2243 <https://github.com/ansys/pyedb/pull/2243>`_
+
+        * - Issue #2248 implemented
+          - `#2249 <https://github.com/ansys/pyedb/pull/2249>`_
+
+        * - Insert coordinate system
+          - `#2255 <https://github.com/ansys/pyedb/pull/2255>`_
+
+        * - Packagedef bound
+          - `#2289 <https://github.com/ansys/pyedb/pull/2289>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Issue #2075 fixed
+          - `#2242 <https://github.com/ansys/pyedb/pull/2242>`_
+
+        * - Vertical edge port reference layer failing
+          - `#2244 <https://github.com/ansys/pyedb/pull/2244>`_
+
+        * - Component.py pins
+          - `#2245 <https://github.com/ansys/pyedb/pull/2245>`_
+
+        * - Place 3D Component on a component
+          - `#2250 <https://github.com/ansys/pyedb/pull/2250>`_
+
+        * - Issue #2262 fixed
+          - `#2263 <https://github.com/ansys/pyedb/pull/2263>`_
+
+        * - Issue #2264 fixed
+          - `#2265 <https://github.com/ansys/pyedb/pull/2265>`_
+
+        * - Issue #2258 fixed
+          - `#2266 <https://github.com/ansys/pyedb/pull/2266>`_
+
+        * - Issue #2285 fix
+          - `#2286 <https://github.com/ansys/pyedb/pull/2286>`_
+
+        * - Issue 2284 fix extended net fix
+          - `#2288 <https://github.com/ansys/pyedb/pull/2288>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/checkout from 6.0.2 to 6.0.3
+          - `#2267 <https://github.com/ansys/pyedb/pull/2267>`_
+
+        * - Bump black from 25.1.0 to 26.5.1
+          - `#2269 <https://github.com/ansys/pyedb/pull/2269>`_
+
+        * - Bump astral-sh/setup-uv from 8.1.0 to 8.2.0
+          - `#2270 <https://github.com/ansys/pyedb/pull/2270>`_
+
+        * - Bump ruff from 0.15.13 to 0.15.16
+          - `#2271 <https://github.com/ansys/pyedb/pull/2271>`_
+
+        * - Bump pytest-rerunfailures from 16.2 to 16.3
+          - `#2272 <https://github.com/ansys/pyedb/pull/2272>`_
+
+        * - Bump pytest-xdist from 3.6.1 to 3.8.0
+          - `#2273 <https://github.com/ansys/pyedb/pull/2273>`_
+
+        * - Bump jupyterlab from 4.5.7 to 4.5.8
+          - `#2274 <https://github.com/ansys/pyedb/pull/2274>`_
+
+        * - Bump pywin32 from 311 to 312
+          - `#2275 <https://github.com/ansys/pyedb/pull/2275>`_
+
+        * - Bump codecov/codecov-action from 6.0.1 to 7.0.0
+          - `#2282 <https://github.com/ansys/pyedb/pull/2282>`_
+
+        * - Bump ruff from 0.15.16 to 0.15.17
+          - `#2298 <https://github.com/ansys/pyedb/pull/2298>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Pre-commit automatic update
+          - `#2226 <https://github.com/ansys/pyedb/pull/2226>`_, `#2277 <https://github.com/ansys/pyedb/pull/2277>`_
+
+        * - Bump release 0.78.dev0
+          - `#2235 <https://github.com/ansys/pyedb/pull/2235>`_
+
+        * - Update CHANGELOG for v0.77.0
+          - `#2241 <https://github.com/ansys/pyedb/pull/2241>`_
+
+        * - CI adjusted
+          - `#2257 <https://github.com/ansys/pyedb/pull/2257>`_
+
+        * - Removing grpc support with 25.2
+          - `#2261 <https://github.com/ansys/pyedb/pull/2261>`_
+
+        * - Remove reviewers and add pre-commit in dependabot cfg
+          - `#2268 <https://github.com/ansys/pyedb/pull/2268>`_
+
+        * - CI release windows fix
+          - `#2279 <https://github.com/ansys/pyedb/pull/2279>`_
+
+        * - Bump release 0.79.dev0
+          - `#2281 <https://github.com/ansys/pyedb/pull/2281>`_
+
+        * - Removing failing tests on pyaedt linux
+          - `#2283 <https://github.com/ansys/pyedb/pull/2283>`_
+
+        * - Release ci adjusted
+          - `#2295 <https://github.com/ansys/pyedb/pull/2295>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Remove redundant methods in gRPC
+          - `#2254 <https://github.com/ansys/pyedb/pull/2254>`_
+
+
 `0.77.0 <https://github.com/ansys/pyedb/releases/tag/v0.77.0>`_ - June 05, 2026
 ===============================================================================
 
