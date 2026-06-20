@@ -24,11 +24,11 @@
 """Database."""
 
 import atexit
-import threading
 import os
 from pathlib import Path
 import signal
 import sys
+import threading
 import time
 
 import ansys.edb.core.database as database
