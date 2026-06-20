@@ -24,6 +24,7 @@
 """Database."""
 
 import atexit
+import threading
 import os
 from pathlib import Path
 import signal
@@ -80,11 +81,11 @@ class EdbInit(object):
         # register server kill
         atexit.register(self._signal_handler)
         # register signal handlers
-        try:
+        if threading.current_thread() is threading.main_thread():
             signal.signal(signal.SIGTERM, self._signal_handler)
             signal.signal(signal.SIGINT, self._signal_handler)
-        except Exception:
-            pass
+        else:
+            self.logger.warning("signal disabled because part of multithread application")
 
     @staticmethod
     def _signal_handler(signum=None, frame=None):
