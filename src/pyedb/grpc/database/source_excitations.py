@@ -827,7 +827,7 @@ class SourceExcitation(SourceExcitationInternal):
                     )
         if isinstance(reference_net, str) or isinstance(reference_net, Net):
             reference_net = [reference_net]
-        _reference_net = [ref.name for ref in reference_net if isinstance(ref, Net)]
+        _reference_net = [ref.name if isinstance(ref, Net) else ref for ref in reference_net]
         if len(_reference_net) == len(reference_net):
             reference_net = _reference_net
         for ref_net in reference_net:

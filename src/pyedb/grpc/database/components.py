@@ -1125,6 +1125,7 @@ class Components(object):
             return False
         if group_name is None:
             group_name = PinGroup.unique_name(self._active_layout, "pin_group")
+        pins = [i for i in pins if "Terminal" not in str(i.core)]
         for pin in pins:
             pin.is_layout_pin = True
         forbiden_car = "-><"

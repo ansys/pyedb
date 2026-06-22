@@ -93,7 +93,15 @@ class SimulationSetups:
             # would drop HFSS_PI setups (see docstring above).
             stub = self._pedb.active_cell._Cell__stub
             msgs = stub.GetSimulationSetups(self._pedb.active_cell.msg).items
-            return [CoreSimulationSetup(msg) for msg in msgs]
+            setups = [CoreSimulationSetup(msg) for msg in msgs]
+            new_setups = []
+            for setup in setups:
+                try:
+                    if setup.type:
+                        new_setups.append(setup)
+                except ValueError:
+                    continue  # skip problematic setups
+            return new_setups
         except Exception:
             # Fall back to the public API if the private stub is not accessible.
             # Note: HFSS_PI setups will be missing in this path due to the

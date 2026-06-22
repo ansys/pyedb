@@ -262,7 +262,7 @@ class ExtendedNets:
             if refdes in exception_set:
                 return True
 
-            r_value, l_value, c_value = cmp.rlc_values
+            r_value, l_value, c_value = cmp.rlc_values[0] if isinstance(cmp.rlc_values[0], list) else cmp.rlc_values
 
             if cmp.type == "inductor":
                 return l_value is not None and l_value < inductor_below
