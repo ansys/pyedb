@@ -730,13 +730,13 @@ class ControlFileImportOptions:
         content.set("ExtractaUsePinNames", str(self.extracta_use_pin_names).lower())
         if self.max_antipad_radius != 0.0:
             content.set("MaxAntiPadRadius", str(self.max_antipad_radius))
-        if self.antipad_repalce_radius != 0.0:
-            content.set("AntiPadReplaceRadius", str(self.antipad_repalce_radius))
+        if self.antipad_replace_radius != 0.0:
+            content.set("AntiPadReplaceRadius", str(self.antipad_replace_radius))
         if self.min_bondwire_width != 0.0:
             content.set("MinBondwireWidth", str(self.min_bondwire_width))
         if self.gdsii_scaling_factor != 0.0:
             content.set("GDSIIScalingFactor", str(self.gdsii_scaling_factor))
-        content.set("DeleteEmptyNonLaminateSignalLayers", str(self.delte_empty_non_laminate_signal_layers).lower())
+        content.set("DeleteEmptyNonLaminateSignalLayers", str(self.delete_empty_non_laminate_signal_layers).lower())
         return True
 
 
