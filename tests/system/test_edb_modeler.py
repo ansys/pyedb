@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -1133,7 +1133,7 @@ class TestClass(BaseTestClass):
     def test_modeler_open_solder_mask_no_material_default(self):
         """open_solder_mask creates default SolderMask material when none provided."""
         edbapp = self.edb_examples.get_si_verse_sfp()
-        # Call without material to trigger default material creation (lines 1826-1829)
+        # Call without material to trigger default material creation (lines 1826 - 1829)
         edbapp.modeler.open_solder_mask(
             solder_mask_layer_name="SM_default",
             solder_mask_material="",  # empty material triggers default
@@ -1148,7 +1148,7 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only reference layer auto-detect bottom")
     def test_modeler_open_solder_mask_auto_reference_bottom(self):
-        """open_solder_mask auto-detects bottom reference layer (lines 1831-1834)."""
+        """open_solder_mask auto-detects bottom reference layer (lines 1831 - 1834)."""
         edbapp = self.edb_examples.get_si_verse_sfp()
         edbapp.materials.add_dielectric_material(name="SM_mat2", permittivity=4.0, dielectric_loss_tangent=0.02)
         # open_top=False triggers auto-detect of the bottommost signal layer (line 1834)
@@ -1156,7 +1156,7 @@ class TestClass(BaseTestClass):
             solder_mask_layer_name="SM_bottom",
             solder_mask_material="SM_mat2",
             solder_mask_thickness="30um",
-            reference_signal_layer="",  # auto-detect (covers lines 1831-1834)
+            reference_signal_layer="",  # auto-detect (covers lines 1831 - 1834)
             open_top=False,
             open_components=False,
             open_voids=False,
@@ -1248,7 +1248,7 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only pins_by_id and pins_by_aedt_name")
     def test_modeler_create_pin_group_combined_id_and_aedt_name(self):
-        """create_pin_group merges pins from both pins_by_id and pins_by_aedt_name (covers lines 1240-1242)."""
+        """create_pin_group merges pins from both pins_by_id and pins_by_aedt_name (covers lines 1240 - 1242)."""
         edbapp = self.edb_examples.get_si_verse()
         pins = edbapp.layout.padstack_instances
         pg = edbapp.modeler.create_pin_group(
@@ -1261,7 +1261,7 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — add_void static method with non-Primitive void")
     def test_modeler_add_void_non_primitive(self):
-        """add_void covers the else branch when void shape is not a Primitive (lines 1279-1280)."""
+        """add_void covers the else branch when void shape is not a Primitive (lines 1279 - 1280)."""
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.add_layer("sig")
         plane = edbapp.modeler.create_polygon(points=[[0, 0], [10e-3, 0], [10e-3, 10e-3], [0, 10e-3]], layer_name="sig")
@@ -1317,7 +1317,7 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only invalid component_filter with open_top=False")
     def test_modeler_open_solder_mask_component_filter_invalid_bottom(self):
-        """open_solder_mask raises ValueError when component_filter has unknown RefDes (lines 1858-1860)."""
+        """open_solder_mask raises ValueError when component_filter has unknown RefDes (lines 1858 - 1860)."""
         edbapp = self.edb_examples.get_si_verse_sfp()
         edbapp.materials.add_dielectric_material(name="SM_err2", permittivity=4.0, dielectric_loss_tangent=0.02)
         with pytest.raises(ValueError):
@@ -1335,7 +1335,7 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — open_solder_mask traces no offset")
     def test_modeler_open_solder_mask_traces_no_offset(self):
-        """open_solder_mask with open_traces=True and no traces_offset covers lines 1887-1891."""
+        """open_solder_mask with open_traces=True and no traces_offset covers lines 1887 - 1891."""
         edbapp = self.edb_examples.get_si_verse()
         edbapp.materials.add_dielectric_material(name="SM_tr_nooff", permittivity=4.0, dielectric_loss_tangent=0.02)
         # Use 1_Top which has traces — no filter so all traces are opened
@@ -1347,14 +1347,14 @@ class TestClass(BaseTestClass):
             open_components=False,
             open_voids=False,
             open_traces=True,
-            traces_offset=0.0,  # no offset → direct create_polygon (lines 1887-1891)
+            traces_offset=0.0,  # no offset → direct create_polygon (lines 1887 - 1891)
         )
         assert result is True
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — open_solder_mask voids no offset")
     def test_modeler_open_solder_mask_voids_no_offset(self):
-        """open_solder_mask with open_voids=True and no voids_opening_offset covers lines 1876-1882."""
+        """open_solder_mask with open_voids=True and no voids_opening_offset covers lines 1876 - 1882."""
         edbapp = self.edb_examples.get_si_verse()
         edbapp.materials.add_dielectric_material(name="SM_void_nooff", permittivity=4.0, dielectric_loss_tangent=0.02)
         # Use 1_Top which has polygons with voids
@@ -1365,7 +1365,7 @@ class TestClass(BaseTestClass):
             reference_signal_layer="1_Top",
             open_components=False,
             open_voids=True,
-            voids_opening_offset=0.0,  # no offset → direct create_polygon (lines 1876-1882)
+            voids_opening_offset=0.0,  # no offset → direct create_polygon (lines 1876 - 1882)
             open_traces=False,
         )
         assert result is True
