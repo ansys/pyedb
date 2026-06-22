@@ -1067,7 +1067,11 @@ class Component(Group):
         Dic[str,:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             Component dictionary pins.
         """
-        return {connectable.name: PadstackInstance(self._pedb, connectable) for connectable in self.core.members}
+        return {
+            connectable.name: PadstackInstance(self._pedb, connectable)
+            for connectable in self.core.members
+            if "name" in dir(connectable) and "Terminal" not in str(connectable)
+        }
 
     @property
     def num_pins(self):
