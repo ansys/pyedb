@@ -69,6 +69,10 @@ class CommonNets:
         annotate_component_names: bool = True,
         plot_vias: bool = False,
         title: str = None,
+        outline_width: int = 4,
+        plot_components_on_both_side: bool = False,
+        component_top_color: tuple = (0, 0, 0),
+        component_bottom_color: tuple = (41 / 255, 41 / 255, 41 / 255),
         **kwargs,
     ) -> tuple["Figure", "Axes"] | None:
         """Plot a Net to Matplotlib 2D Chart.
@@ -153,7 +157,7 @@ class CommonNets:
         label_colors = {}
         if outline:
             poly = Polygon(outline)
-            plot_line(poly.boundary, add_points=False, color=(0.7, 0, 0), linewidth=4)
+            plot_line(poly.boundary, add_points=False, color=(0.7, 0, 0), linewidth=outline_width)
         else:
             bbox = self._pedb.hfss.get_layout_bounding_box()
             x1 = bbox[0]
@@ -163,16 +167,17 @@ class CommonNets:
             p = [(x1, y1), (x1, y2), (x2, y2), (x2, y1), (x1, y1)]
             p = mirror_poly(p)
             poly = LinearRing(p)
-            plot_line(poly, add_points=False, color=(0.7, 0, 0), linewidth=4)
+            plot_line(poly, add_points=False, color=(0.7, 0, 0), linewidth=outline_width)
         layer_colors = {i: k.color for i, k in self._pedb.stackup.layers.items()}
         top_layer = list(self._pedb.stackup.signal_layers.keys())[0]
         bottom_layer = list(self._pedb.stackup.signal_layers.keys())[-1]
         lines = []
+        lines_bottom = []
+        lines_top = []
         top_comps = []
         bottom_comps = []
         if plot_components:
             nc = 0
-
             for comp in self._pedb.components.instances.values():
                 if not comp.is_enabled:
                     continue
@@ -182,14 +187,18 @@ class CommonNets:
                 layer_name = comp.placement_layer
                 if layer_name not in layers:
                     continue
-                if plot_components and top_view and layer_name == top_layer:
-                    component_color = (0 / 255, 0 / 255, 0 / 255)  # this is the color used in AEDT
+                if plot_components and layer_name == top_layer:
+                    component_color = component_top_color  # this is the color used in AEDT
                     label = "Component on top layer"
-                    label_colors[label] = component_color
-                elif plot_components and not top_view and layer_name == bottom_layer:
-                    component_color = (41 / 255, 41 / 255, 41 / 255)  # 41, 171, 135
+                    label_colors[label] = component_top_color
+                    if not plot_components_on_both_side and not top_view:
+                        continue
+                elif plot_components and layer_name == bottom_layer:
+                    component_color = component_bottom_color  # 41, 171, 135
                     label = "Component on bottom layer"
                     label_colors[label] = component_color
+                    if not plot_components_on_both_side and top_view:
+                        continue
                 else:
                     continue
                 for pinst in comp.pins.values():
@@ -197,7 +206,9 @@ class CommonNets:
                         pdef = pinst.definition
                         p_b_l = {i: j for i, j in pdef.pad_by_layer.items()}
                         pinst_net_name = pinst.net_name
-                        if top_view and top_layer in p_b_l and pinst_net_name in nets:
+                        if pinst_net_name in nets and (
+                            plot_components_on_both_side or (top_view and top_layer in p_b_l)
+                        ):
                             try:
                                 shape = p_b_l[top_layer].shape
                                 if shape.lower() == "circle":
@@ -223,7 +234,9 @@ class CommonNets:
                                     )
                             except KeyError:
                                 pass
-                        elif not top_view and bottom_layer in p_b_l and pinst.net_name in nets:
+                        elif pinst_net_name in nets and (
+                            plot_components_on_both_side or (not top_view and bottom_layer in p_b_l)
+                        ):
                             try:
                                 shape = p_b_l[bottom_layer].shape
                                 if shape == "Circle":
@@ -257,8 +270,13 @@ class CommonNets:
                 vertices = mirror_poly(vertices)
                 poly = Polygon(vertices)
                 lines.append(poly.boundary)
+                if layer_name == top_layer:
+                    lines_top.append(poly.boundary)
+                else:
+                    lines_top.append(poly.boundary)
                 if annotate_component_names:
                     font_size = 6 if poly.area < 6e-6 else 10
+                    k = comp.rotation / (math.pi / 2)
                     ax.annotate(
                         comp.name,
                         (poly.centroid.x, poly.centroid.y),
@@ -266,20 +284,23 @@ class CommonNets:
                         ha="center",
                         color=component_color,
                         size=font_size,
-                        rotation=comp.rotation * 180 / math.pi,
+                        rotation=math.pi / 2 if not math.isclose(k, round(k), abs_tol=1e-9) else 0,
                     )
             self._logger.debug("Plotted {} component(s)".format(nc))
-
+        lines = lines_top + lines_bottom
         if top_comps:
             ob = MultiPolygon(top_comps)
-            plot_polygon(ob, add_points=False, ax=ax)
+            plot_polygon(ob, add_points=False, ax=ax, edgecolor=component_bottom_color)
         if bottom_comps:
             ob = MultiPolygon(bottom_comps)
-            plot_polygon(ob, add_points=False, ax=ax)
+            plot_polygon(ob, add_points=False, ax=ax, edgecolor=component_top_color)
 
-        if lines:
+        if lines_top:
             ob = MultiLineString(lines)
-            plot_line(ob, ax=ax, add_points=False, color=(1, 0, 0), linewidth=1)
+            plot_line(ob, ax=ax, add_points=False, color=component_top_color, linewidth=1)
+        if lines_bottom:
+            ob = MultiLineString(lines)
+            plot_line(ob, ax=ax, add_points=False, color=component_bottom_color, linewidth=1)
 
         def create_poly(prim, polys, lines):
             if prim.is_void:
