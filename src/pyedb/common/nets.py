@@ -71,7 +71,7 @@ class CommonNets:
         title: str = None,
         outline_width: int = 4,
         plot_components_on_both_side: bool = False,
-        component_top_color: tuple = (0,0,0),
+        component_top_color: tuple = (0, 0, 0),
         component_bottom_color: tuple = (41 / 255, 41 / 255, 41 / 255),
         **kwargs,
     ) -> tuple["Figure", "Axes"] | None:
@@ -206,7 +206,9 @@ class CommonNets:
                         pdef = pinst.definition
                         p_b_l = {i: j for i, j in pdef.pad_by_layer.items()}
                         pinst_net_name = pinst.net_name
-                        if pinst_net_name in nets and (plot_components_on_both_side or (top_view and top_layer in p_b_l)):
+                        if pinst_net_name in nets and (
+                            plot_components_on_both_side or (top_view and top_layer in p_b_l)
+                        ):
                             try:
                                 shape = p_b_l[top_layer].shape
                                 if shape.lower() == "circle":
@@ -232,7 +234,9 @@ class CommonNets:
                                     )
                             except KeyError:
                                 pass
-                        elif pinst_net_name in nets and (plot_components_on_both_side or (not top_view and bottom_layer in p_b_l)):
+                        elif pinst_net_name in nets and (
+                            plot_components_on_both_side or (not top_view and bottom_layer in p_b_l)
+                        ):
                             try:
                                 shape = p_b_l[bottom_layer].shape
                                 if shape == "Circle":
@@ -280,10 +284,10 @@ class CommonNets:
                         ha="center",
                         color=component_color,
                         size=font_size,
-                        rotation=math.pi/2 if not math.isclose(k, round(k), abs_tol=1e-9) else 0,
+                        rotation=math.pi / 2 if not math.isclose(k, round(k), abs_tol=1e-9) else 0,
                     )
             self._logger.debug("Plotted {} component(s)".format(nc))
-        lines = lines_top +lines_bottom
+        lines = lines_top + lines_bottom
         if top_comps:
             ob = MultiPolygon(top_comps)
             plot_polygon(ob, add_points=False, ax=ax, edgecolor=component_bottom_color)
