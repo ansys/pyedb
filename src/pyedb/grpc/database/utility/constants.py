@@ -20,5 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 def get_terminal_supported_boundary_types():
     return ["voltage_source", "current_source", "port", "dc_terminal", "voltage_probe"]

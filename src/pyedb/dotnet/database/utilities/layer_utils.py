@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 def clear_is_owner(obj):
     """Use reflection to set the protected IsOwner property to False,
     preventing the buggy EDBLayer_Cleanup from being called in the destructor.

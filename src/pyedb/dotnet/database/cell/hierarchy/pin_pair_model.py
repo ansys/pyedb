@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 class PinPair(object):  # pragma: no cover
     def __init__(self, component, edb_pin_pair):
         self._pedb_comp = component

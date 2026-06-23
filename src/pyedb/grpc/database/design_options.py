@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 class EdbDesignOptions:
     def __init__(self, active_cell):
         self._active_cell = active_cell

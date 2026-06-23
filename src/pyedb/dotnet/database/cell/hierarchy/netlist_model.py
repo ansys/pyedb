@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 class NetlistModel(object):  # pragma: no cover
     def __init__(self, edb_model):
         self._edb_model = edb_model

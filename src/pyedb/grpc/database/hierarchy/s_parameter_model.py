@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 class SparamModel:  # pragma: no cover
     """Manage :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`"""
 
