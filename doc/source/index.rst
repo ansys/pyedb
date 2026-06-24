@@ -10,7 +10,8 @@ Welcome to PyEDB |version|
       significantly improved thanks to bypassing network traffic and treating all processing in memory.
     - **Optional DotNet Dependency:** The PyEDB DotNet library is now optional. Running ``pip install pyedb``
       installs only the base package. If ``grpc=False``, an error is issued saying
-      "DLL failed to initialize." To use the DotNet backend, run ``pip install pyedb[dotnet]``.
+      installs only the base package. If you try to set ``grpc=False``, you are going to get an error
+      saying that the DLL failed to initialize. To use the DotNet backend, run ``pip install pyedb[dotnet]``.
 
 **Useful links**:
 `Installation <https://edb.docs.pyansys.com/version/stable/getting_started/installation.html>`_ |
