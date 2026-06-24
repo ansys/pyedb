@@ -5,12 +5,12 @@ Welcome to PyEDB |version|
 
     - **Default gRPC Backend:** PyEDB now selects the gRPC backend by default if no flag is specified.
     - **gRPC Compatibility:** PyEDB gRPC support requires Ansys release 2026.1 or higher. If you specify gRPC with
-      Ansys release 2025.2 or lower, an error message will state that this backend is not supported for this version.
+      Ansys release 2025.2 or lower, an error message stating that this backend is not supported for this version.
     - **Fast Mode (Service Pack 2026.1.2):** PyEDB gRPC introduced "fast mode" with Service Pack 2026.1.2. Speed is
       significantly improved thanks to bypassing network traffic and treating all processing in memory.
     - **Optional DotNet Dependency:** The PyEDB DotNet library is now optional. Running ``pip install pyedb``
-      installs only the base package. If you try to set ``grpc=False``, you will get an error saying
-      "DLL failed to initialize". To use the DotNet backend, run ``pip install pyedb[dotnet]``.
+      installs only the base package. If ``grpc=False``, an error is issued saying
+      "DLL failed to initialize." To use the DotNet backend, run ``pip install pyedb[dotnet]``.
 
 **Useful links**:
 `Installation <https://edb.docs.pyansys.com/version/stable/getting_started/installation.html>`_ |
