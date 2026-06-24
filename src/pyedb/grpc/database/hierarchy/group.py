@@ -116,3 +116,16 @@ class Group:
             [x, y] coordinates.
         """
         self.core.location = self._pedb.value(value[0]), self._pedb.value(value[1])
+
+    # noqa: W293
+    @property
+    def id(self):
+        """Group id.
+
+        Returns
+        -------
+        group Id : int
+
+
+        """
+        return self.core.edb_uid
