@@ -489,6 +489,7 @@ class TestClass(BaseTestClass):
         """Get component's bounding box."""
         edbapp = self.edb_examples.get_si_verse()
         component = edbapp.components.instances["U1"]
+        assert component.id
         assert component.bounding_box
         assert isinstance(component.rotation, float)
         edbapp.close(terminate_rpc_session=False)
