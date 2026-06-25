@@ -89,7 +89,7 @@ tests = [
     "pytest-rerunfailures>=14.0,<17",
 ]
 doc = [
-    "ansys-sphinx-theme[autoapi]>=1.0.0,<1.9",
+    "ansys-sphinx-theme[autoapi]>=1.0.0,<1.10",
     "ezdxf>=1.4.2",
     "imageio>=2.30.0,<2.38",
     "jupyterlab>=4.0.0,<4.6",
