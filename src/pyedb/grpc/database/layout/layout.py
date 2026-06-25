@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -920,3 +920,16 @@ class Layout(PrimitivesQuery):
                 f"net_name={net_name}, component_pin_name={component_pin_name}"
             )
         return candidates
+
+    def convert_primitives_to_vias(self, primitives: list[Primitive], is_pins: bool = False):
+        """Convert a list of primitives into vias or pins.
+
+        Parameters
+        ----------
+        primitives : List[Primitive]
+            List of primitives to convert.
+        is_pins : bool, optional
+            If True, convert to pins; otherwise, convert to vias. Default is False.
+        """
+        primitives = [primitive.core for primitive in primitives]
+        self.core.convert_primitives_to_vias(primitives=primitives, is_pins=is_pins)

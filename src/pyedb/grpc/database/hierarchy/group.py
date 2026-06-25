@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -116,3 +116,16 @@ class Group:
             [x, y] coordinates.
         """
         self.core.location = self._pedb.value(value[0]), self._pedb.value(value[1])
+
+    # noqa: W293
+    @property
+    def id(self):
+        """Group id.
+
+        Returns
+        -------
+        group Id : int
+
+
+        """
+        return self.core.edb_uid

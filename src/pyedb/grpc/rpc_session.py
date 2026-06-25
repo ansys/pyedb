@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import inspect
 import os
 import platform
 import socket
@@ -196,9 +197,18 @@ class RpcSession:
             settings.logger.info("Attached to preexisting gRPC session")
             return
         max_attempts = 3 if _IS_WINDOWS else 1
+        use_shared_memory_ipc_flag_exist = False
+        launch_session_params = inspect.signature(launch_session).parameters
+        if "use_shared_memory_ipc" in launch_session_params:
+            use_shared_memory_ipc_flag_exist = True
         for attempt in range(max_attempts):
             try:
-                RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
+                if use_shared_memory_ipc_flag_exist:
+                    RpcSession.rpc_session = launch_session(
+                        RpcSession.base_path, port_num=RpcSession.port, use_shared_memory_ipc=True
+                    )
+                else:
+                    RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
                 if hasattr(RpcSession.rpc_session, "shared_memory"):
                     RpcSession.fast_grpc_mode_enabled = RpcSession.rpc_session.shared_memory
                 else:

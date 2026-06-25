@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -489,6 +489,7 @@ class TestClass(BaseTestClass):
         """Get component's bounding box."""
         edbapp = self.edb_examples.get_si_verse()
         component = edbapp.components.instances["U1"]
+        assert component.id
         assert component.bounding_box
         assert isinstance(component.rotation, float)
         edbapp.close(terminate_rpc_session=False)
