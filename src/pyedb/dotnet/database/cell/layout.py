@@ -661,6 +661,7 @@ class Layout(ObjBase, PrimitivesQuery):
         is_pins : bool, optional
             True for pins, false for vias (default).
         """
+        primitives = [primitive.core.GetOwner() for primitive in primitives]
         self.core.ConvertPrimitivestoVias(convert_py_list_to_net_list(primitives), is_pins)
 
     @property
