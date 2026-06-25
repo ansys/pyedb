@@ -9,6 +9,68 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.79.0 <https://github.com/ansys/pyedb/releases/tag/v0.79.0>`_ - June 25, 2026
+===============================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Component id missing
+          - `#2319 <https://github.com/ansys/pyedb/pull/2319>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Various improvements in plot method
+          - `#2311 <https://github.com/ansys/pyedb/pull/2311>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Doc note added
+          - `#2317 <https://github.com/ansys/pyedb/pull/2317>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump pytest from 9.0.3 to 9.1.0
+          - `#2309 <https://github.com/ansys/pyedb/pull/2309>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.78.2
+          - `#2307 <https://github.com/ansys/pyedb/pull/2307>`_
+
+        * - Use_shared_memory_ipc added
+          - `#2315 <https://github.com/ansys/pyedb/pull/2315>`_
+
+        * - Uv updated for ansys-edb-core-0.3.3
+          - `#2322 <https://github.com/ansys/pyedb/pull/2322>`_
+
+
 `0.78.2 <https://github.com/ansys/pyedb/releases/tag/v0.78.2>`_ - June 22, 2026
 ===============================================================================
 
