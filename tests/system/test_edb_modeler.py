@@ -1430,6 +1430,22 @@ class TestPointData(BaseTestClass):
         assert cs.placement_layer == "1_Top"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="Not working with FotNet.")
+    def test_convert_primitive_to_via(self):
+        edbapp = self.edb_examples.get_si_verse_sfp()
+        circ1 = edbapp.modeler.create_circle(layer_name="Top", x=0.0, y=0.0, radius=0.2e-3)
+        circ2 = edbapp.modeler.create_circle(layer_name="Bottom", x=0.0, y=0.0, radius=0.2e-3)
+        edbapp.layout.convert_primitives_to_vias(primitives=[circ1, circ2], is_pins=False)
+        padsatck_def = edbapp.padstacks.definitions.get("Circ0")
+        assert len(padsatck_def.instances) == 2
+        assert padsatck_def.instances[0].position == [0.0, 0.0]
+        assert padsatck_def.instances[0].start_layer == "Top"
+        assert padsatck_def.instances[0].stop_layer == "Top"
+        assert padsatck_def.instances[1].position == [0.0, 0.0]
+        assert padsatck_def.instances[1].start_layer == "Bottom"
+        assert padsatck_def.instances[1].stop_layer == "Bottom"
+        edbapp.close(terminate_rpc_session=False)
+
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPolygonData(BaseTestClass):
