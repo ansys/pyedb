@@ -1,5 +1,6 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
+#
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -18,11 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-# Stub file for pyedb.misc.decorators.
-# Maps pyedb custom deprecation decorators to typing_extensions equivalents so
-# that static analysis tools (mypy, pyright, IDEs) treat them identically to the
-# standard @typing_extensions.deprecated decorator.
 
 from typing import Any, Callable, TypeVar
 
