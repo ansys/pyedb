@@ -1,0 +1,102 @@
+﻿CopperBalance
+=============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoclass:: CopperBalance
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CopperBalance.construct
+      
+      
+      CopperBalance.copy
+      
+      
+      CopperBalance.dict
+      
+      
+      CopperBalance.from_orm
+      
+      
+      CopperBalance.json
+      
+      
+      CopperBalance.model_construct
+      
+      
+      CopperBalance.model_copy
+      
+      
+      CopperBalance.model_dump
+      
+      
+      CopperBalance.model_dump_json
+      
+      
+      CopperBalance.model_json_schema
+      
+      
+      CopperBalance.model_parametrized_name
+      
+      
+      CopperBalance.model_post_init
+      
+      
+      CopperBalance.model_rebuild
+      
+      
+      CopperBalance.model_validate
+      
+      
+      CopperBalance.model_validate_json
+      
+      
+      CopperBalance.model_validate_strings
+      
+      
+      CopperBalance.parse_file
+      
+      
+      CopperBalance.parse_obj
+      
+      
+      CopperBalance.parse_raw
+      
+      
+      CopperBalance.schema
+      
+      
+      CopperBalance.schema_json
+      
+      
+      CopperBalance.update_forward_refs
+      
+      
+      CopperBalance.validate
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CopperBalance.model_computed_fields
+      CopperBalance.model_config
+      CopperBalance.model_fields
+      CopperBalance.name
+      CopperBalance.max_percent
+      CopperBalance.layers
+   
+   

@@ -1,0 +1,150 @@
+
+
+
+
+
+
+The ``hfss_log_parser.py`` module
+=================================
+
+.. py:module:: pyedb.workflows.utilities.hfss_log_parser
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_log_parser
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.ProjectInfo`
+            - Basic meta-data extracted from the header of an HFSS batch log.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.InitMesh`
+            - Statistics reported during the initial tetrahedral meshing phase.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.AdaptivePass`
+            - Single adaptive solution pass with convergence metrics.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.Sweep`
+            - Frequency-sweep summary block.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.BlockParser`
+            - Base class for a single block parser.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.ProjectBlockParser`
+            - Extract project meta-data from the log header.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.InitMeshBlockParser`
+            - Extract initial mesh statistics from the log.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.AdaptiveBlockParser`
+            - Build a list of AdaptivePass objects from the adaptive section.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.SweepBlockParser`
+            - Extract frequency-sweep summary from the log.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.HFSSLogParser`
+            - High-level parser that orchestrates all block parsers.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.hfss_log_parser.ParsedLog`
+            - Root container returned by HFSSLogParser.parse().
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ProjectInfo</autoapi/pyedb/workflows/utilities/hfss_log_parser/ProjectInfo>
+    <span class="nf nf-cod-symbol_class"></span> InitMesh</autoapi/pyedb/workflows/utilities/hfss_log_parser/InitMesh>
+    <span class="nf nf-cod-symbol_class"></span> AdaptivePass</autoapi/pyedb/workflows/utilities/hfss_log_parser/AdaptivePass>
+    <span class="nf nf-cod-symbol_class"></span> Sweep</autoapi/pyedb/workflows/utilities/hfss_log_parser/Sweep>
+    <span class="nf nf-cod-symbol_class"></span> BlockParser</autoapi/pyedb/workflows/utilities/hfss_log_parser/BlockParser>
+    <span class="nf nf-cod-symbol_class"></span> ProjectBlockParser</autoapi/pyedb/workflows/utilities/hfss_log_parser/ProjectBlockParser>
+    <span class="nf nf-cod-symbol_class"></span> InitMeshBlockParser</autoapi/pyedb/workflows/utilities/hfss_log_parser/InitMeshBlockParser>
+    <span class="nf nf-cod-symbol_class"></span> AdaptiveBlockParser</autoapi/pyedb/workflows/utilities/hfss_log_parser/AdaptiveBlockParser>
+    <span class="nf nf-cod-symbol_class"></span> SweepBlockParser</autoapi/pyedb/workflows/utilities/hfss_log_parser/SweepBlockParser>
+    <span class="nf nf-cod-symbol_class"></span> HFSSLogParser</autoapi/pyedb/workflows/utilities/hfss_log_parser/HFSSLogParser>
+    <span class="nf nf-cod-symbol_class"></span> ParsedLog</autoapi/pyedb/workflows/utilities/hfss_log_parser/ParsedLog>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+HFSS log file parser for extracting simulation results and metrics.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

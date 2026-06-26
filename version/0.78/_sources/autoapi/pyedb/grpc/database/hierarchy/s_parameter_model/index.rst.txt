@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``s_parameter_model.py`` module
+===================================
+
+.. py:module:: pyedb.grpc.database.hierarchy.s_parameter_model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: s_parameter_model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.hierarchy.s_parameter_model.SparamModel`
+            - Manage :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SparamModel</autoapi/pyedb/grpc/database/hierarchy/s_parameter_model/SparamModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

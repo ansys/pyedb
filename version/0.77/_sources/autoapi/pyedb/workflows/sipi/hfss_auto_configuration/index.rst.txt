@@ -1,0 +1,267 @@
+
+
+
+
+
+
+The ``hfss_auto_configuration.py`` module
+=========================================
+
+.. py:module:: pyedb.workflows.sipi.hfss_auto_configuration
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_auto_configuration
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo`
+            - Solder ball configuration for component modeling.
+
+
+          * - :py:obj:`~pyedb.workflows.sipi.hfss_auto_configuration.SimulationSetup`
+            - HFSS simulation setup parameters.
+
+
+          * - :py:obj:`~pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup`
+            - Group of nets to be processed together in a batch simulation.
+
+
+          * - :py:obj:`~pyedb.workflows.sipi.hfss_auto_configuration.HFSSAutoConfiguration`
+            - Automatic HFSS simulation configuration from EDB designs.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~create_hfss_auto_configuration`
+            - Factory function to create an HFSSAutoConfiguration instance with optional overrides.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ref_patterns`
+            - 
+
+
+          * - :py:obj:`~combined_ref`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SolderBallsInfo</autoapi/pyedb/workflows/sipi/hfss_auto_configuration/SolderBallsInfo>
+    <span class="nf nf-cod-symbol_class"></span> SimulationSetup</autoapi/pyedb/workflows/sipi/hfss_auto_configuration/SimulationSetup>
+    <span class="nf nf-cod-symbol_class"></span> BatchGroup</autoapi/pyedb/workflows/sipi/hfss_auto_configuration/BatchGroup>
+    <span class="nf nf-cod-symbol_class"></span> HFSSAutoConfiguration</autoapi/pyedb/workflows/sipi/hfss_auto_configuration/HFSSAutoConfiguration>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+HFSS automatic configuration workflow for SI/PI analysis.
+
+This module provides tools to automatically configure HFSS simulations from EDB designs,
+including net grouping, batch processing, cutout generation, port creation, and
+simulation setup.
+
+Examples
+--------
+Basic workflow for automatic HFSS configuration:
+
+>>> from pyedb import Edb
+>>> from pyedb.workflows.sipi.hfss_auto_configuration import HFSSAutoConfiguration
+>>> edb = Edb("design.aedb")
+>>> config = HFSSAutoConfiguration(edb)
+>>> config.source_edb_path = "design.aedb"
+>>> config.target_edb_path = "design_hfss.aedb"
+>>> config.auto_populate_batch_groups()
+>>> config.create_projects()
+
+Create configuration with specific net groups:
+
+>>> config = HFSSAutoConfiguration()
+>>> config.source_edb_path = "my_design.aedb"
+>>> config.group_nets_by_prefix(["DDR", "PCIe", "USB"])
+>>> config.add_solder_ball("U1", diameter="0.3mm", height="0.2mm")
+>>> config.create_projects()
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: create_hfss_auto_configuration(edb: pyedb.Edb | None = None, ansys_version: str | None = None, grpc: bool | None = None, source_edb_path: str | None = None, target_edb_path: str | None = None, signal_nets: list | None = None, power_nets: list | None = None, reference_net: str | None = None, batch_size: int | None = None, batch_groups: list | None = None, components: list[str] | None = None, solder_balls: list | None = None, simulation_setup: SimulationSetup | None = None, extent_type: str | None = None, cutout_expansion: str | float | None = None, auto_mesh_seeding: bool | None = None, port_type: str | None = None, create_pin_group: bool | None = None) -> HFSSAutoConfiguration
+
+   
+   Factory function to create an HFSSAutoConfiguration instance with optional overrides.
+
+   This function creates a configuration object with all specified parameters,
+   providing a convenient alternative to manual attribute assignment.
+
+   :Parameters:
+
+       **edb** : :obj:`Edb` or :data:`python:None`, :obj:`optional`
+           Existing EDB object instance. The default is ``None``.
+
+       **ansys_version** : :class:`python:str` or :data:`python:None`, :obj:`optional`
+           ANSYS Electronics Desktop version. The default is ``None``.
+
+       **grpc** : :ref:`bool <python:bltin-boolean-values>` or :data:`python:None`, :obj:`optional`
+           Whether to use gRPC API mode. The default is ``None``.
+
+       **source_edb_path** : :class:`python:str` or :data:`python:None`, :obj:`optional`
+           Path to the source EDB file. The default is ``None``.
+
+       **target_edb_path** : :class:`python:str` or :data:`python:None`, :obj:`optional`
+           Path where configured EDB will be saved. The default is ``None``.
+
+       **signal_nets** : :class:`python:list` or :data:`python:None`, :obj:`optional`
+           List of signal net names. The default is ``None``.
+
+       **power_nets** : :class:`python:list` or :data:`python:None`, :obj:`optional`
+           List of power net names. The default is ``None``.
+
+       **reference_net** : :class:`python:str` or :data:`python:None`, :obj:`optional`
+           Name of reference (ground) net. The default is ``None``.
+
+       **batch_size** : :class:`python:int` or :data:`python:None`, :obj:`optional`
+           Maximum nets per batch group. The default is ``None``.
+
+       **batch_groups** : :class:`python:list` or :data:`python:None`, :obj:`optional`
+           Pre-configured batch groups. The default is ``None``.
+
+       **components** : :class:`python:list` :obj:`of` :class:`python:str` or :data:`python:None`, :obj:`optional`
+           Component reference designators. The default is ``None``.
+
+       **solder_balls** : :class:`python:list` or :data:`python:None`, :obj:`optional`
+           Solder ball configurations. The default is ``None``.
+
+       **simulation_setup** : :obj:`SimulationSetup` or :data:`python:None`, :obj:`optional`
+           Global simulation settings. The default is ``None``.
+
+       **extent_type** : :class:`python:str` or :data:`python:None`, :obj:`optional`
+           Cutout extent algorithm. The default is ``None``.
+
+       **cutout_expansion** : :class:`python:str` or :class:`python:float` or :data:`python:None`, :obj:`optional`
+           Cutout expansion margin. The default is ``None``.
+
+       **auto_mesh_seeding** : :ref:`bool <python:bltin-boolean-values>` or :data:`python:None`, :obj:`optional`
+           Enable automatic mesh seeding. The default is ``None``.
+
+       **port_type** : :class:`python:str` or :data:`python:None`, :obj:`optional`
+           Port type to create. The default is ``None``.
+
+       **create_pin_group** : :ref:`bool <python:bltin-boolean-values>` or :data:`python:None`, :obj:`optional`
+           Whether to create pin groups. The default is ``None``.
+
+
+
+   :Returns:
+
+       :obj:`HFSSAutoConfiguration`
+           Fully configured instance ready for use.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Create with basic settings:
+
+   >>> config = create_hfss_auto_configuration(
+   ...     source_edb_path="design.aedb",
+   ...     target_edb_path="design_hfss.aedb",
+   ...     signal_nets=["DDR4_DQ0", "DDR4_CLK"],
+   ...     reference_net="GND",
+   ... )
+   >>> config.source_edb_path
+   'design.aedb'
+
+   Create with custom simulation setup:
+
+   >>> setup = SimulationSetup(stop_frequency="60GHz")
+   >>> config = create_hfss_auto_configuration(
+   ...     source_edb_path="design.aedb", simulation_setup=setup, port_type="circuit_port"
+   ... )
+   >>> config.simulation_setup.stop_frequency
+   '60GHz'
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: ref_patterns
+   :value: ['^GND\\d*$', '^GND_\\w+', '^GND$', '^VSS\\d*$', '^VSS\\w*', '^DGND$', '^AGND$', '^PGND$',...
+
+
+.. py:data:: combined_ref
+
+
+

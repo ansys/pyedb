@@ -1,0 +1,132 @@
+
+
+
+
+
+
+:class:`SimulationSetup`
+========================
+
+
+.. py:class:: pyedb.workflows.sipi.hfss_auto_configuration.SimulationSetup
+
+   
+   HFSS simulation setup parameters.
+
+   This dataclass defines the simulation configuration including meshing
+   frequency, convergence criteria, and frequency sweep settings.
+
+
+   :Attributes:
+
+       **meshing_frequency** : :class:`python:str` or :class:`python:float`
+           Driven frequency used during mesh generation. The default is ``"10GHz"``.
+
+       **maximum_pass_number** : :class:`python:int`
+           Maximum number of adaptive passes. The default is ``15``.
+
+       **start_frequency** : :class:`python:str` or :class:`python:float`
+           Lower bound of the frequency sweep. The default is ``0``.
+
+       **stop_frequency** : :class:`python:str` or :class:`python:float`
+           Upper bound of the frequency sweep. The default is ``"40GHz"``.
+
+       **frequency_step** : :class:`python:str` or :class:`python:float`
+           Linear step size for the frequency sweep. The default is ``"0.05GHz"``.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> setup = SimulationSetup(meshing_frequency="5GHz", maximum_pass_number=20, stop_frequency="60GHz")
+   >>> setup.maximum_pass_number
+   20
+   >>> setup.stop_frequency
+   '60GHz'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~meshing_frequency`
+            - 
+          * - :py:attr:`~maximum_pass_number`
+            - 
+          * - :py:attr:`~start_frequency`
+            - 
+          * - :py:attr:`~stop_frequency`
+            - 
+          * - :py:attr:`~frequency_step`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.sipi.hfss_auto_configuration import SimulationSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: meshing_frequency
+   :type:  str | float
+   :value: '10GHz'
+
+
+.. py:attribute:: maximum_pass_number
+   :type:  int
+   :value: 15
+
+
+.. py:attribute:: start_frequency
+   :type:  str | float
+   :value: 0
+
+
+.. py:attribute:: stop_frequency
+   :type:  str | float
+   :value: '40GHz'
+
+
+.. py:attribute:: frequency_step
+   :type:  str | float
+   :value: '0.05GHz'
+
+
+
+
+
+

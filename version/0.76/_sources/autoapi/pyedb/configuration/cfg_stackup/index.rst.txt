@@ -1,0 +1,139 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_stackup`` library
+===============================================
+
+.. py:module:: pyedb.configuration.cfg_stackup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_stackup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgMaterialPropertyThermalModifier`
+            - Represent one thermal modifier applied to a material property.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.MaterialProperties`
+            - Store material properties.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgMaterial`
+            - Represent one material entry in the ``stackup`` section.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgHurayRoughnessModel`
+            - Represent a Huray surface-roughness model.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgGroisseRoughnessModel`
+            - Represent a Groisse surface-roughness model.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgRoughnessModel`
+            - Collect top, bottom, and side roughness models for a layer.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.EtchingModel`
+            - Represent trapezoidal etching settings for a conductor layer.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgLayer`
+            - Represent one signal or dielectric layer entry.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgStackup`
+            - Collect stackup materials and layers for serialization.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgMaterialPropertyThermalModifier</autoapi/pyedb/configuration/cfg_stackup/CfgMaterialPropertyThermalModifier>
+    <span class="nf nf-cod-symbol_class"></span> MaterialProperties</autoapi/pyedb/configuration/cfg_stackup/MaterialProperties>
+    <span class="nf nf-cod-symbol_class"></span> CfgMaterial</autoapi/pyedb/configuration/cfg_stackup/CfgMaterial>
+    <span class="nf nf-cod-symbol_class"></span> CfgHurayRoughnessModel</autoapi/pyedb/configuration/cfg_stackup/CfgHurayRoughnessModel>
+    <span class="nf nf-cod-symbol_class"></span> CfgGroisseRoughnessModel</autoapi/pyedb/configuration/cfg_stackup/CfgGroisseRoughnessModel>
+    <span class="nf nf-cod-symbol_class"></span> CfgRoughnessModel</autoapi/pyedb/configuration/cfg_stackup/CfgRoughnessModel>
+    <span class="nf nf-cod-symbol_class"></span> EtchingModel</autoapi/pyedb/configuration/cfg_stackup/EtchingModel>
+    <span class="nf nf-cod-symbol_class"></span> CfgLayer</autoapi/pyedb/configuration/cfg_stackup/CfgLayer>
+    <span class="nf nf-cod-symbol_class"></span> CfgStackup</autoapi/pyedb/configuration/cfg_stackup/CfgStackup>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Build the ``stackup`` configuration section.
+
+This module wraps stackup-related configuration models with fluent helpers for
+materials, layers, roughness, and etching definitions.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

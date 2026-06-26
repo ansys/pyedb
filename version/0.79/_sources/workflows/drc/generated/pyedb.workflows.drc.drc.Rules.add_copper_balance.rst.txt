@@ -1,0 +1,6 @@
+add\_copper\_balance
+====================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: Rules.add_copper_balance

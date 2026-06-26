@@ -1,0 +1,8 @@
+User-agent: *
+
+Disallow: /version/0.78
+Disallow: /version/0.77
+Disallow: /version/0.76
+Disallow: /pull/
+
+Sitemap: https://edb.docs.pyansys.com/sitemap.xml

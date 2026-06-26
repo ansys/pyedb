@@ -1,0 +1,1395 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pyedb.ansys.com/schemas/pyedb_config.schema.json",
+  "title": "PyEDB Configuration Schema",
+  "description": "JSON Schema for the complete PyEDB configuration file. Covers all sections recognized by CfgData._KNOWN_SECTIONS. Unknown top-level keys produce a UserWarning at runtime.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "general": { "$ref": "#/$defs/CfgGeneral" },
+    "variables": {
+      "description": "Design and project variable definitions.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/CfgVar" }
+    },
+    "nets": { "$ref": "#/$defs/CfgNets" },
+    "stackup": { "$ref": "#/$defs/CfgStackup" },
+    "components": {
+      "description": "Component overrides and model assignments.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/CfgComponent" }
+    },
+    "padstacks": { "$ref": "#/$defs/CfgPadstacks" },
+    "pin_groups": {
+      "description": "Named groups of component pins.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/CfgPinGroup" }
+    },
+    "ports": {
+      "description": "Port definitions (circuit, coax, wave, gap, differential).",
+      "type": "array",
+      "items": { "$ref": "#/$defs/AnyPort" }
+    },
+    "sources": {
+      "description": "Voltage or current source definitions.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/CfgSource" }
+    },
+    "probes": {
+      "description": "Voltage or current probe definitions.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/CfgProbe" }
+    },
+    "terminals": {
+      "description": "Terminal definitions.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/AnyTerminal" }
+    },
+    "setups": {
+      "description": "Simulation setup definitions.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/AnySetup" }
+    },
+    "s_parameters": {
+      "description": "S-parameter model assignments to components.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/CfgSParameterModel" }
+    },
+    "spice_models": {
+      "description": "SPICE model assignments to components.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/CfgSpiceModel" }
+    },
+    "package_definitions": {
+      "description": "IC package thermal and physical property definitions.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/CfgPackage" }
+    },
+    "boundaries": { "$ref": "#/$defs/CfgBoundaries" },
+    "operations": { "$ref": "#/$defs/CfgOperations" },
+    "modeler": { "$ref": "#/$defs/CfgModeler" }
+  },
+
+  "$defs": {
+
+    "StringOrNumber": {
+      "description": "A value expressed either as a number or as a string (e.g. '0.15mm', '5GHz').",
+      "type": ["string", "number"]
+    },
+
+    "PaddingData": {
+      "description": "A padding extent expressed as a size value and a flag indicating whether the value is a multiplier.",
+      "type": "object",
+      "required": ["size", "is_multiple"],
+      "additionalProperties": false,
+      "properties": {
+        "size": {
+          "description": "Absolute extent size or multiplier value.",
+          "$ref": "#/$defs/StringOrNumber"
+        },
+        "is_multiple": {
+          "description": "When true the size is interpreted as a multiplier of the board extent.",
+          "type": "boolean"
+        }
+      }
+    },
+
+    "CfgVar": {
+      "description": "A design or project variable.",
+      "type": "object",
+      "required": ["name", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Variable name. Prefix with '$' for project-scope.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Variable value.",
+          "$ref": "#/$defs/StringOrNumber"
+        },
+        "description": {
+          "description": "Human-readable description.",
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+
+    "CfgGeneral": {
+      "description": "General EDB settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "spice_model_library": { "type": "string" },
+        "s_parameter_library": { "type": "string" },
+        "anti_pads_always_on": { "type": "boolean" },
+        "suppress_pads": { "type": "boolean" }
+      }
+    },
+
+    "CfgNets": {
+      "description": "Net type classifications.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "signal_nets": {
+          "description": "Net names to classify as signal nets.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "power_ground_nets": {
+          "description": "Net names to classify as power/ground nets.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "CfgMaterialPropertyThermalModifier": {
+      "description": "Thermal modifier for a material property.",
+      "type": "object",
+      "required": ["property_name"],
+      "additionalProperties": false,
+      "properties": {
+        "property_name": { "type": "string" },
+        "basic_quadratic_c1": { "type": "number", "default": 0 },
+        "basic_quadratic_c2": { "type": "number", "default": 0 },
+        "basic_quadratic_temperature_reference": { "type": "number", "default": 22 },
+        "advanced_quadratic_lower_limit": { "type": "number", "default": -273.15 },
+        "advanced_quadratic_upper_limit": { "type": "number", "default": 1000 },
+        "advanced_quadratic_auto_calculate": { "type": "boolean", "default": true },
+        "advanced_quadratic_lower_constant": { "type": "number", "default": 1 },
+        "advanced_quadratic_upper_constant": { "type": "number", "default": 1 }
+      }
+    },
+
+    "CfgMaterial": {
+      "description": "A material definition with optional electromagnetic and thermal properties.",
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "conductivity": { "$ref": "#/$defs/StringOrNumber" },
+        "permittivity": { "$ref": "#/$defs/StringOrNumber" },
+        "dielectric_loss_tangent": { "$ref": "#/$defs/StringOrNumber" },
+        "magnetic_loss_tangent": { "$ref": "#/$defs/StringOrNumber" },
+        "mass_density": { "$ref": "#/$defs/StringOrNumber" },
+        "permeability": { "$ref": "#/$defs/StringOrNumber" },
+        "poisson_ratio": { "$ref": "#/$defs/StringOrNumber" },
+        "specific_heat": { "$ref": "#/$defs/StringOrNumber" },
+        "thermal_conductivity": { "$ref": "#/$defs/StringOrNumber" },
+        "youngs_modulus": { "$ref": "#/$defs/StringOrNumber" },
+        "thermal_expansion_coefficient": { "$ref": "#/$defs/StringOrNumber" },
+        "dc_conductivity": { "$ref": "#/$defs/StringOrNumber" },
+        "dc_permittivity": { "$ref": "#/$defs/StringOrNumber" },
+        "dielectric_model_frequency": { "$ref": "#/$defs/StringOrNumber" },
+        "loss_tangent_at_frequency": { "$ref": "#/$defs/StringOrNumber" },
+        "permittivity_at_frequency": { "$ref": "#/$defs/StringOrNumber" },
+        "thermal_modifiers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgMaterialPropertyThermalModifier" }
+        }
+      }
+    },
+
+    "CfgHurayRoughnessModel": {
+      "description": "Huray surface roughness model.",
+      "type": "object",
+      "required": ["model", "nodule_radius", "surface_ratio"],
+      "additionalProperties": false,
+      "properties": {
+        "model": { "type": "string", "const": "huray" },
+        "nodule_radius": { "$ref": "#/$defs/StringOrNumber" },
+        "surface_ratio": { "$ref": "#/$defs/StringOrNumber" }
+      }
+    },
+
+    "CfgGroisseRoughnessModel": {
+      "description": "Groisse surface roughness model.",
+      "type": "object",
+      "required": ["model", "roughness"],
+      "additionalProperties": false,
+      "properties": {
+        "model": { "type": "string", "const": "groisse" },
+        "roughness": { "$ref": "#/$defs/StringOrNumber" }
+      }
+    },
+
+    "CfgRoughnessSurface": {
+      "description": "A roughness model applied to one surface (top, bottom, or side).",
+      "oneOf": [
+        { "$ref": "#/$defs/CfgHurayRoughnessModel" },
+        { "$ref": "#/$defs/CfgGroisseRoughnessModel" }
+      ]
+    },
+
+    "CfgRoughnessModel": {
+      "description": "Surface roughness settings for a stackup layer.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "top": { "$ref": "#/$defs/CfgRoughnessSurface" },
+        "bottom": { "$ref": "#/$defs/CfgRoughnessSurface" },
+        "side": { "$ref": "#/$defs/CfgRoughnessSurface" }
+      }
+    },
+
+    "EtchingModel": {
+      "description": "Etch factor model for a stackup layer.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "factor": { "$ref": "#/$defs/StringOrNumber", "default": 0.5 },
+        "etch_power_ground_nets": { "type": "boolean", "default": false }
+      }
+    },
+
+    "CfgLayer": {
+      "description": "A stackup layer definition.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": {
+          "description": "Layer type (alias: layer_type).",
+          "type": "string",
+          "enum": ["signal", "dielectric"]
+        },
+        "layer_type": {
+          "description": "Layer type (alias for 'type').",
+          "type": "string",
+          "enum": ["signal", "dielectric"]
+        },
+        "material": { "type": "string" },
+        "fill_material": { "type": "string" },
+        "thickness": { "$ref": "#/$defs/StringOrNumber" },
+        "etch_factor": { "$ref": "#/$defs/StringOrNumber" },
+        "roughness": { "$ref": "#/$defs/CfgRoughnessModel" },
+        "etching": { "$ref": "#/$defs/EtchingModel" }
+      }
+    },
+
+    "CfgStackup": {
+      "description": "Stackup definition including materials and layers.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "materials": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgMaterial" }
+        },
+        "layers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgLayer" }
+        }
+      }
+    },
+
+    "CfgPinPairModel": {
+      "description": "RLC model between a pair of component pins.",
+      "type": "object",
+      "required": ["first_pin", "second_pin"],
+      "additionalProperties": false,
+      "properties": {
+        "first_pin": { "type": "string" },
+        "second_pin": { "type": "string" },
+        "resistance": { "oneOf": [{ "$ref": "#/$defs/StringOrNumber" }, { "type": "null" }] },
+        "inductance": { "oneOf": [{ "$ref": "#/$defs/StringOrNumber" }, { "type": "null" }] },
+        "capacitance": { "oneOf": [{ "$ref": "#/$defs/StringOrNumber" }, { "type": "null" }] },
+        "is_parallel": { "type": "boolean", "default": false },
+        "resistance_enabled": { "type": "boolean", "default": false },
+        "inductance_enabled": { "type": "boolean", "default": false },
+        "capacitance_enabled": { "type": "boolean", "default": false }
+      }
+    },
+
+    "CfgSParameterModelRef": {
+      "description": "Reference to an S-parameter model for a component.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model_name": { "type": "string" },
+        "model_path": { "type": "string" },
+        "reference_net": { "type": "string" }
+      }
+    },
+
+    "CfgSpiceModelRef": {
+      "description": "Reference to a SPICE model for a component.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model_name": { "type": "string" },
+        "model_path": { "type": "string" },
+        "sub_circuit": { "type": "string" },
+        "terminal_pairs": {
+          "type": "array",
+          "items": {}
+        }
+      }
+    },
+
+    "CfgNetlistModelRef": {
+      "description": "Reference to a netlist model for a component.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "netlist": { "type": "string" }
+      }
+    },
+
+    "CfgIcDieProperties": {
+      "description": "IC die properties for a component.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["flip_chip", "wire_bond", "no_die", "flipchip", "wirebond", "none"]
+        },
+        "orientation": {
+          "type": "string",
+          "enum": ["chip_up", "chip_down"]
+        },
+        "height": { "type": "string" }
+      }
+    },
+
+    "CfgSolderBallProperties": {
+      "description": "Solder ball geometry and material for a component.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shape": {
+          "type": "string",
+          "enum": ["cylinder", "spheroid", "no_solder_ball"]
+        },
+        "diameter": { "type": "string" },
+        "height": { "type": "string" },
+        "material": { "type": "string" },
+        "orientation": { "type": "string" },
+        "mid_diameter": { "type": "string" },
+        "uses_solder_ball": { "type": "boolean" }
+      }
+    },
+
+    "CfgPortProperties": {
+      "description": "Port reference plane properties for a component.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reference_height": { "type": "string" },
+        "reference_size_auto": { "type": "boolean" },
+        "reference_size_x": { "type": "string" },
+        "reference_size_y": { "type": "string" }
+      }
+    },
+
+    "CfgComponent": {
+      "description": "Component instance override and model assignment.",
+      "type": "object",
+      "required": ["reference_designator"],
+      "additionalProperties": false,
+      "properties": {
+        "reference_designator": { "type": "string" },
+        "part_type": {
+          "type": "string",
+          "enum": ["resistor", "capacitor", "inductor", "ic", "io", "other"]
+        },
+        "enabled": { "type": "boolean" },
+        "definition": { "type": "string" },
+        "placement_layer": { "type": "string" },
+        "pins": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "pin_pair_model": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgPinPairModel" }
+        },
+        "s_parameter_model": { "$ref": "#/$defs/CfgSParameterModelRef" },
+        "spice_model": { "$ref": "#/$defs/CfgSpiceModelRef" },
+        "netlist_model": { "$ref": "#/$defs/CfgNetlistModelRef" },
+        "ic_die_properties": { "$ref": "#/$defs/CfgIcDieProperties" },
+        "solder_ball_properties": { "$ref": "#/$defs/CfgSolderBallProperties" },
+        "port_properties": { "$ref": "#/$defs/CfgPortProperties" }
+      }
+    },
+
+    "CfgPadEntry": {
+      "description": "A pad shape entry on one layer within a padstack definition.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer_name": { "type": "string" },
+        "shape": { "type": "string" },
+        "offset_x": { "$ref": "#/$defs/StringOrNumber" },
+        "offset_y": { "$ref": "#/$defs/StringOrNumber" },
+        "rotation": { "$ref": "#/$defs/StringOrNumber" },
+        "geometry_type": { "type": "integer" },
+        "parameters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/StringOrNumber" }
+        }
+      }
+    },
+
+    "CfgHoleParameters": {
+      "description": "Hole geometry parameters for a padstack definition.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shape": { "type": "string" },
+        "diameter": { "$ref": "#/$defs/StringOrNumber" },
+        "offset_x": { "$ref": "#/$defs/StringOrNumber" },
+        "offset_y": { "$ref": "#/$defs/StringOrNumber" },
+        "rotation": { "$ref": "#/$defs/StringOrNumber" }
+      }
+    },
+
+    "CfgPadstackSolderBallParameters": {
+      "description": "Solder ball parameters for a padstack definition.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shape": { "type": "string" },
+        "diameter": { "$ref": "#/$defs/StringOrNumber" },
+        "height": { "$ref": "#/$defs/StringOrNumber" },
+        "mid_diameter": { "$ref": "#/$defs/StringOrNumber" },
+        "uses_solder_ball": { "type": "boolean" }
+      }
+    },
+
+    "CfgPadstackDefinition": {
+      "description": "A padstack definition including pad, anti-pad, thermal-pad shapes and hole.",
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "hole_plating_thickness": { "$ref": "#/$defs/StringOrNumber" },
+        "material": { "type": "string", "description": "Hole material (alias: hole_material)." },
+        "hole_material": { "type": "string" },
+        "hole_range": {
+          "type": "string",
+          "enum": ["through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad"]
+        },
+        "pad_parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "regular_pad": { "type": "array", "items": { "$ref": "#/$defs/CfgPadEntry" } },
+            "anti_pad": { "type": "array", "items": { "$ref": "#/$defs/CfgPadEntry" } },
+            "thermal_pad": { "type": "array", "items": { "$ref": "#/$defs/CfgPadEntry" } }
+          }
+        },
+        "hole_parameters": { "$ref": "#/$defs/CfgHoleParameters" },
+        "solder_ball_parameters": { "$ref": "#/$defs/CfgPadstackSolderBallParameters" }
+      }
+    },
+
+    "DrillParameters": {
+      "description": "Backdrill parameters specified by depth.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "drill_to_layer": { "type": "string" },
+        "drill_diameter": { "$ref": "#/$defs/StringOrNumber" },
+        "stub_length": { "$ref": "#/$defs/StringOrNumber" }
+      }
+    },
+
+    "CfgPadstackInstance": {
+      "description": "A padstack instance placed in the layout.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "id": { "type": "integer" },
+        "is_pin": { "type": "boolean", "default": false },
+        "net_name": { "type": "string" },
+        "layer_range": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "definition": { "type": "string" },
+        "position": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/StringOrNumber" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "rotation": { "$ref": "#/$defs/StringOrNumber" },
+        "hole_override_enabled": { "type": "boolean" },
+        "hole_override_diameter": { "$ref": "#/$defs/StringOrNumber" },
+        "solder_ball_layer": { "type": "string" },
+        "backdrill_parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "from_top": { "$ref": "#/$defs/DrillParameters" },
+            "from_bottom": { "$ref": "#/$defs/DrillParameters" }
+          }
+        }
+      }
+    },
+
+    "CfgPadstacks": {
+      "description": "Padstack definitions and instances.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "definitions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgPadstackDefinition" }
+        },
+        "instances": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgPadstackInstance" }
+        }
+      }
+    },
+
+    "CfgPinGroup": {
+      "description": "A named group of pins from one component.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "reference_designator": { "type": "string" },
+        "pins": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "net": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        }
+      }
+    },
+
+    "TerminalSelector": {
+      "description": "Identifies a simulation terminal endpoint. Exactly one of the selector keys must be provided.",
+      "type": "object",
+      "oneOf": [
+        {
+          "required": ["pin"],
+          "properties": {
+            "pin": { "type": "string" },
+            "reference_designator": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["net"],
+          "properties": {
+            "net": { "type": "string" },
+            "reference_designator": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["pin_group"],
+          "properties": {
+            "pin_group": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["padstack"],
+          "properties": {
+            "padstack": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["coordinates"],
+          "properties": {
+            "coordinates": {
+              "type": "object",
+              "required": ["layer", "point", "net"],
+              "additionalProperties": false,
+              "properties": {
+                "layer": { "type": "string" },
+                "point": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/StringOrNumber" },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "net": { "type": "string" }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["nearest_pin"],
+          "properties": {
+            "nearest_pin": {
+              "type": "object",
+              "required": ["reference_net", "search_radius"],
+              "additionalProperties": false,
+              "properties": {
+                "reference_net": { "type": "string" },
+                "search_radius": { "type": "string" }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "CfgCircuitPort": {
+      "description": "A circuit or coax port.",
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["circuit", "coax"] },
+        "positive_terminal": { "$ref": "#/$defs/TerminalSelector" },
+        "negative_terminal": { "$ref": "#/$defs/TerminalSelector" },
+        "impedance": { "$ref": "#/$defs/StringOrNumber" },
+        "reference_designator": { "type": "string" },
+        "distributed": { "type": "boolean" }
+      }
+    },
+
+    "PointOnEdge": {
+      "description": "A 2-D point identifying a location on a primitive edge.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/StringOrNumber" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+
+    "CfgEdgePort": {
+      "description": "A wave or gap port placed on a primitive edge.",
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["wave_port", "gap_port"] },
+        "primitive_name": { "type": "string" },
+        "point_on_edge": { "$ref": "#/$defs/PointOnEdge" },
+        "horizontal_extent_factor": { "type": "number", "default": 5 },
+        "vertical_extent_factor": { "type": "number", "default": 3 },
+        "pec_launch_width": { "type": "string", "default": "0.01mm" },
+        "impedance": { "$ref": "#/$defs/StringOrNumber" }
+      }
+    },
+
+    "CfgEdgeTerminalRef": {
+      "description": "Reference to a primitive edge used as a differential endpoint.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "primitive_name": { "type": "string" },
+        "point_on_edge": { "$ref": "#/$defs/PointOnEdge" }
+      }
+    },
+
+    "CfgDiffWavePort": {
+      "description": "A differential wave port.",
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "const": "diff_wave_port" },
+        "positive_terminal": { "$ref": "#/$defs/CfgEdgeTerminalRef" },
+        "negative_terminal": { "$ref": "#/$defs/CfgEdgeTerminalRef" },
+        "horizontal_extent_factor": { "type": "number", "default": 5 },
+        "vertical_extent_factor": { "type": "number", "default": 3 },
+        "pec_launch_width": { "type": "string", "default": "0.01mm" },
+        "impedance": { "$ref": "#/$defs/StringOrNumber" }
+      }
+    },
+
+    "AnyPort": {
+      "description": "Any port type, discriminated by the 'type' field.",
+      "oneOf": [
+        { "$ref": "#/$defs/CfgCircuitPort" },
+        { "$ref": "#/$defs/CfgEdgePort" },
+        { "$ref": "#/$defs/CfgDiffWavePort" }
+      ]
+    },
+
+    "CfgSource": {
+      "description": "A voltage or current source.",
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["current", "voltage"] },
+        "positive_terminal": { "$ref": "#/$defs/TerminalSelector" },
+        "negative_terminal": { "$ref": "#/$defs/TerminalSelector" },
+        "impedance": { "$ref": "#/$defs/StringOrNumber" },
+        "magnitude": { "type": "number" },
+        "reference_designator": { "type": "string" }
+      }
+    },
+
+    "CfgProbe": {
+      "description": "A voltage or current probe.",
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["current", "voltage"] },
+        "positive_terminal": { "$ref": "#/$defs/TerminalSelector" },
+        "negative_terminal": { "$ref": "#/$defs/TerminalSelector" },
+        "reference_designator": { "type": "string" }
+      }
+    },
+
+    "BoundaryTypeEnum": {
+      "description": "Boundary type identifier used on terminals.",
+      "type": "string",
+      "enum": [
+        "PortBoundary", "PecBoundary", "RlcBoundary",
+        "kCurrentSource", "kVoltageSource", "kNexximGround", "kNexximPort",
+        "kDcTerminal", "kVoltageProbe", "InvalidBoundary",
+        "port", "dc_terminal", "voltage_probe", "voltage_source",
+        "current_source", "rlc", "pec"
+      ]
+    },
+
+    "TerminalToGroundEnum": {
+      "description": "Ground reference assignment for a terminal.",
+      "type": "string",
+      "enum": [
+        "kNoGround", "kNegative", "kNegativeNode", "kPositive", "kPositiveNode",
+        "no_ground", "negative", "positive"
+      ]
+    },
+
+    "CfgPadstackInstanceTerminal": {
+      "description": "A terminal placed on a padstack instance.",
+      "type": "object",
+      "required": ["terminal_type", "padstack_instance", "impedance"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "terminal_type": { "type": "string", "const": "padstack_instance" },
+        "padstack_instance": { "type": "string" },
+        "padstack_instance_id": { "type": "integer" },
+        "layer": { "type": "string" },
+        "impedance": { "$ref": "#/$defs/StringOrNumber" },
+        "is_circuit_port": { "type": "boolean" },
+        "boundary_type": { "$ref": "#/$defs/BoundaryTypeEnum" },
+        "hfss_type": { "type": ["string", "null"], "enum": ["Wave", "Gap", null] },
+        "reference_terminal": { "type": "string" },
+        "amplitude": { "$ref": "#/$defs/StringOrNumber", "default": 1 },
+        "phase": { "$ref": "#/$defs/StringOrNumber", "default": 0 },
+        "terminal_to_ground": { "$ref": "#/$defs/TerminalToGroundEnum" }
+      }
+    },
+
+    "CfgPinGroupTerminal": {
+      "description": "A terminal placed on a named pin group.",
+      "type": "object",
+      "required": ["terminal_type", "pin_group"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "terminal_type": { "type": "string", "const": "pin_group" },
+        "pin_group": { "type": "string" },
+        "impedance": { "$ref": "#/$defs/StringOrNumber" },
+        "boundary_type": { "$ref": "#/$defs/BoundaryTypeEnum" },
+        "reference_terminal": { "type": "string" },
+        "amplitude": { "$ref": "#/$defs/StringOrNumber", "default": 1 },
+        "phase": { "$ref": "#/$defs/StringOrNumber", "default": 0 },
+        "terminal_to_ground": { "$ref": "#/$defs/TerminalToGroundEnum" }
+      }
+    },
+
+    "CfgPointTerminal": {
+      "description": "A terminal placed at a specific XY coordinate.",
+      "type": "object",
+      "required": ["terminal_type", "x", "y", "layer", "net"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "terminal_type": { "type": "string", "const": "point" },
+        "x": { "$ref": "#/$defs/StringOrNumber" },
+        "y": { "$ref": "#/$defs/StringOrNumber" },
+        "layer": { "type": "string" },
+        "net": { "type": "string" },
+        "impedance": { "$ref": "#/$defs/StringOrNumber" },
+        "boundary_type": { "$ref": "#/$defs/BoundaryTypeEnum" },
+        "reference_terminal": { "type": "string" },
+        "amplitude": { "$ref": "#/$defs/StringOrNumber", "default": 1 },
+        "phase": { "$ref": "#/$defs/StringOrNumber", "default": 0 },
+        "terminal_to_ground": { "$ref": "#/$defs/TerminalToGroundEnum" }
+      }
+    },
+
+    "CfgEdgeTerminal": {
+      "description": "A terminal placed on a primitive edge.",
+      "type": "object",
+      "required": ["terminal_type", "primitive"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "terminal_type": { "type": "string", "const": "edge" },
+        "primitive": { "type": "string" },
+        "point_on_edge_x": { "$ref": "#/$defs/StringOrNumber" },
+        "point_on_edge_y": { "$ref": "#/$defs/StringOrNumber" },
+        "impedance": { "$ref": "#/$defs/StringOrNumber" },
+        "boundary_type": { "$ref": "#/$defs/BoundaryTypeEnum" },
+        "hfss_type": { "type": ["string", "null"], "enum": ["Wave", "Gap", null] },
+        "reference_terminal": { "type": "string" },
+        "horizontal_extent_factor": { "type": "number", "default": 6 },
+        "vertical_extent_factor": { "type": "number", "default": 8 },
+        "pec_launch_width": { "type": "string", "default": "0.02mm" },
+        "amplitude": { "$ref": "#/$defs/StringOrNumber", "default": 1 },
+        "phase": { "$ref": "#/$defs/StringOrNumber", "default": 0 },
+        "terminal_to_ground": { "$ref": "#/$defs/TerminalToGroundEnum" }
+      }
+    },
+
+    "CfgBundleTerminal": {
+      "description": "A bundle terminal composed of multiple named terminals.",
+      "type": "object",
+      "required": ["terminal_type", "name", "terminals"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "terminal_type": { "type": "string", "const": "bundle" },
+        "terminals": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "AnyTerminal": {
+      "description": "Any terminal type, discriminated by the 'terminal_type' field.",
+      "oneOf": [
+        { "$ref": "#/$defs/CfgPadstackInstanceTerminal" },
+        { "$ref": "#/$defs/CfgPinGroupTerminal" },
+        { "$ref": "#/$defs/CfgPointTerminal" },
+        { "$ref": "#/$defs/CfgEdgeTerminal" },
+        { "$ref": "#/$defs/CfgBundleTerminal" }
+      ]
+    },
+
+    "CfgFrequencies": {
+      "description": "A frequency range/distribution entry for a sweep.",
+      "type": "object",
+      "required": ["distribution"],
+      "additionalProperties": false,
+      "properties": {
+        "distribution": {
+          "type": "string",
+          "enum": [
+            "linear_scale", "log_scale", "single",
+            "linear_count", "log_count",
+            "linear scale", "log scale", "linear count"
+          ]
+        },
+        "start": { "$ref": "#/$defs/StringOrNumber" },
+        "stop": { "$ref": "#/$defs/StringOrNumber" },
+        "increment": {
+          "description": "Step size, point count or sample count (alias: step, points, samples).",
+          "$ref": "#/$defs/StringOrNumber"
+        },
+        "step": { "$ref": "#/$defs/StringOrNumber" },
+        "points": { "type": "integer" },
+        "samples": { "type": "integer" }
+      }
+    },
+
+    "CfgFrequencySweep": {
+      "description": "A named frequency sweep attached to a simulation setup.",
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["discrete", "interpolation", "interpolating"]
+        },
+        "frequencies": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "$ref": "#/$defs/CfgFrequencies" },
+              { "type": "string" }
+            ]
+          }
+        },
+        "use_q3d_for_dc": { "type": "boolean", "default": false },
+        "compute_dc_point": { "type": "boolean", "default": false },
+        "enforce_causality": { "type": "boolean", "default": false },
+        "enforce_passivity": { "type": "boolean", "default": true },
+        "adv_dc_extrapolation": { "type": "boolean", "default": false },
+        "use_hfss_solver_regions": { "type": "boolean", "default": false },
+        "hfss_solver_region_setup_name": { "type": "string" },
+        "hfss_solver_region_sweep_name": { "type": "string" }
+      }
+    },
+
+    "CfgLengthMeshOperation": {
+      "description": "A length-based mesh operation for HFSS.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "mesh_operation_type": { "type": "string", "default": "length" },
+        "max_elements": { "type": "integer", "default": 1000 },
+        "max_length": { "type": "string", "default": "1mm" },
+        "restrict_length": { "type": "boolean", "default": true },
+        "refine_inside": { "type": "boolean", "default": false },
+        "nets_layers_list": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "CfgSingleFreqAdaptiveSolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "adaptive_frequency": { "$ref": "#/$defs/StringOrNumber", "default": "5GHz" },
+        "max_passes": { "type": "integer", "default": 20 },
+        "max_delta": { "$ref": "#/$defs/StringOrNumber", "default": "0.02" }
+      }
+    },
+
+    "CfgBroadbandAdaptiveSolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "low_frequency": { "$ref": "#/$defs/StringOrNumber" },
+        "high_frequency": { "$ref": "#/$defs/StringOrNumber" },
+        "max_passes": { "type": "integer" },
+        "max_delta": { "$ref": "#/$defs/StringOrNumber" }
+      }
+    },
+
+    "CfgAutoMeshOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "trace_ratio_seeding": { "type": "number", "default": 3 },
+        "signal_via_side_number": { "type": "integer", "default": 12 }
+      }
+    },
+
+    "CfgHFSSSetup": {
+      "description": "An HFSS simulation setup.",
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "const": "hfss" },
+        "adapt_type": {
+          "type": "string",
+          "enum": ["single", "broadband", "multi_frequencies"],
+          "default": "single"
+        },
+        "single_frequency_adaptive_solution": { "$ref": "#/$defs/CfgSingleFreqAdaptiveSolution" },
+        "broadband_adaptive_solution": { "$ref": "#/$defs/CfgBroadbandAdaptiveSolution" },
+        "multi_frequency_adaptive_solution": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgSingleFreqAdaptiveSolution" }
+        },
+        "auto_mesh_operation": { "$ref": "#/$defs/CfgAutoMeshOperation" },
+        "mesh_operations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgLengthMeshOperation" }
+        },
+        "freq_sweep": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgFrequencySweep" }
+        }
+      }
+    },
+
+    "CfgSIwaveACSetup": {
+      "description": "A SIwave AC simulation setup.",
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "const": "siwave_ac" },
+        "use_si_settings": { "type": "boolean", "default": true },
+        "si_slider_position": { "type": "integer", "minimum": 0, "maximum": 2, "default": 1 },
+        "pi_slider_position": { "type": "integer", "minimum": 0, "maximum": 2, "default": 1 },
+        "freq_sweep": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgFrequencySweep" }
+        }
+      }
+    },
+
+    "CfgDcIrSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "export_dc_thermal_data": { "type": "boolean", "default": false },
+        "per_pin_use_pin_format": { "type": "boolean" },
+        "per_pin_res_enabled": { "type": "boolean" },
+        "per_pin_report_enabled": { "type": "boolean" },
+        "source_terms_to_ground": { "type": "string" }
+      }
+    },
+
+    "CfgSIwaveDCSetup": {
+      "description": "A SIwave DC simulation setup.",
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "const": "siwave_dc" },
+        "dc_slider_position": { "$ref": "#/$defs/StringOrNumber" },
+        "dc_ir_settings": { "$ref": "#/$defs/CfgDcIrSettings" }
+      }
+    },
+
+    "AnySetup": {
+      "description": "Any simulation setup, discriminated by the 'type' field.",
+      "oneOf": [
+        { "$ref": "#/$defs/CfgHFSSSetup" },
+        { "$ref": "#/$defs/CfgSIwaveACSetup" },
+        { "$ref": "#/$defs/CfgSIwaveDCSetup" }
+      ]
+    },
+
+    "CfgSParameterModel": {
+      "description": "An S-parameter Touchstone model mapped to a component definition.",
+      "type": "object",
+      "required": ["name", "component_definition", "file_path"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "component_definition": { "type": "string" },
+        "file_path": { "type": "string" },
+        "reference_net": { "type": "string", "default": "" },
+        "apply_to_all": { "type": "boolean", "default": true },
+        "components": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "reference_net_per_component": {
+          "description": "Mapping of component reference designator to reference net name.",
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "pin_order": {
+          "type": "array",
+          "items": {}
+        }
+      }
+    },
+
+    "CfgSpiceModel": {
+      "description": "A SPICE sub-circuit model mapped to a component definition.",
+      "type": "object",
+      "required": ["name", "component_definition", "file_path"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "component_definition": { "type": "string" },
+        "file_path": { "type": "string" },
+        "sub_circuit_name": { "type": "string", "default": "" },
+        "apply_to_all": { "type": "boolean", "default": true },
+        "components": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "terminal_pairs": {
+          "oneOf": [
+            { "type": "array", "items": {} },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+
+    "CfgHeatSink": {
+      "description": "Heat sink geometry for an IC package.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fin_base_height": { "type": "string" },
+        "fin_height": { "type": "string" },
+        "fin_orientation": { "type": "string" },
+        "fin_spacing": { "type": "string" },
+        "fin_thickness": { "type": "string" }
+      }
+    },
+
+    "CfgPackage": {
+      "description": "IC package thermal and physical property definition.",
+      "type": "object",
+      "required": ["name", "component_definition"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "component_definition": { "type": "string" },
+        "apply_to_all": { "type": "boolean" },
+        "components": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "maximum_power": { "type": "string" },
+        "thermal_conductivity": { "type": "string" },
+        "theta_jb": { "type": "string" },
+        "theta_jc": { "type": "string" },
+        "height": { "type": "string" },
+        "extent_bounding_box": { "type": "object" },
+        "heatsink": { "$ref": "#/$defs/CfgHeatSink" }
+      }
+    },
+
+    "CfgBoundaries": {
+      "description": "HFSS radiation boundary and airbox settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "use_open_region": { "type": "boolean" },
+        "open_region_type": { "type": "string" },
+        "is_pml_visible": { "type": "boolean" },
+        "operating_freq": {},
+        "radiation_level": { "type": "number" },
+        "dielectric_extent_type": { "type": "string" },
+        "dielectric_base_polygon": { "type": "string" },
+        "dielectric_extent_size": { "$ref": "#/$defs/PaddingData" },
+        "honor_user_dielectric": { "type": "boolean", "default": false },
+        "extent_type": { "type": "string" },
+        "base_polygon": { "type": "string" },
+        "truncate_air_box_at_ground": { "type": "boolean" },
+        "air_box_horizontal_extent": { "$ref": "#/$defs/PaddingData" },
+        "air_box_positive_vertical_extent": { "$ref": "#/$defs/PaddingData" },
+        "air_box_negative_vertical_extent": { "$ref": "#/$defs/PaddingData" },
+        "sync_air_box_vertical_extent": { "type": "boolean" }
+      }
+    },
+
+    "CfgAutoIdentifyNets": {
+      "description": "Criteria for automatic net classification during cutout.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "resistor_below": { "type": "number" },
+        "inductor_below": { "type": "number" },
+        "capacitor_above": { "$ref": "#/$defs/StringOrNumber" }
+      }
+    },
+
+    "CfgCutout": {
+      "description": "Layout cutout (clipping) operation settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "signal_nets": {
+          "description": "Nets to preserve in the cutout (alias: signal_list).",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "signal_list": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "reference_nets": {
+          "description": "Reference/ground nets included in the cutout (alias: reference_list).",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "reference_list": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "extent_type": {
+          "type": "string",
+          "enum": ["ConvexHull", "Conformal", "BoundingBox", "CustomExtent"],
+          "default": "ConvexHull"
+        },
+        "expansion_size": {
+          "$ref": "#/$defs/StringOrNumber",
+          "default": 0.002
+        },
+        "number_of_threads": { "type": "integer", "default": 1 },
+        "custom_extent": {},
+        "custom_extent_units": { "type": "string", "default": "meter" },
+        "expansion_factor": { "type": "number", "default": 0 },
+        "auto_identify_nets": { "$ref": "#/$defs/CfgAutoIdentifyNets" }
+      }
+    },
+
+    "CfgOperations": {
+      "description": "Post-processing operations applied to the EDB layout.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cutout": { "$ref": "#/$defs/CfgCutout" },
+        "generate_auto_hfss_regions": { "type": "boolean", "default": false }
+      }
+    },
+
+    "CfgTrace": {
+      "description": "A trace primitive to add to the layout.",
+      "type": "object",
+      "required": ["name", "layer", "width"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "layer": { "type": "string" },
+        "width": { "$ref": "#/$defs/StringOrNumber" },
+        "net_name": { "type": "string", "default": "" },
+        "start_cap_style": {
+          "type": "string",
+          "enum": ["round", "extended", "flat"],
+          "default": "round"
+        },
+        "end_cap_style": {
+          "type": "string",
+          "enum": ["round", "extended", "flat"],
+          "default": "round"
+        },
+        "corner_style": {
+          "type": "string",
+          "enum": ["sharp", "round", "mitered"],
+          "default": "sharp"
+        },
+        "path": {
+          "description": "Absolute path vertices as [x,y] pairs.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/StringOrNumber" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "incremental_path": {
+          "description": "Incremental (relative) path vertices as [dx,dy] pairs.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/StringOrNumber" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      }
+    },
+
+    "CfgPlane": {
+      "description": "A copper plane primitive to add to the layout.",
+      "type": "object",
+      "required": ["layer"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "layer": { "type": "string" },
+        "net_name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["rectangle", "polygon", "circle"]
+        },
+        "lower_left_point": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/StringOrNumber" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "upper_right_point": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/StringOrNumber" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "corner_radius": { "$ref": "#/$defs/StringOrNumber" },
+        "rotation": { "$ref": "#/$defs/StringOrNumber" },
+        "voids": { "type": "array", "items": {} },
+        "points": {
+          "description": "Polygon vertices as [x,y] pairs.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/StringOrNumber" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "radius": { "$ref": "#/$defs/StringOrNumber" },
+        "position": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/StringOrNumber" },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      }
+    },
+
+    "CfgPrimitivesToDelete": {
+      "description": "Filter criteria for primitives to delete from the layout.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer_name": { "type": "array", "items": { "type": "string" } },
+        "name": { "type": "array", "items": { "type": "string" } },
+        "net_name": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "CfgModeler": {
+      "description": "Layout geometry creation and modification operations.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "traces": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgTrace" }
+        },
+        "planes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgPlane" }
+        },
+        "padstack_definitions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgPadstackDefinition" }
+        },
+        "padstack_instances": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgPadstackInstance" }
+        },
+        "components": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CfgComponent" }
+        },
+        "primitives_to_delete": { "$ref": "#/$defs/CfgPrimitivesToDelete" }
+      }
+    }
+
+  }
+}
+

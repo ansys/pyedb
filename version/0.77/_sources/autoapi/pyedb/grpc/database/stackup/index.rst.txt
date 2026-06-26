@@ -1,0 +1,104 @@
+
+
+
+
+
+
+The ``stackup.py`` module
+=========================
+
+.. py:module:: pyedb.grpc.database.stackup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: stackup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.stackup.LayerCollection`
+            - Manages layer collections in an EDB database.
+
+
+          * - :py:obj:`~pyedb.grpc.database.stackup.Stackup`
+            - Manages EDB methods for stackup operations.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~logger`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> LayerCollection</autoapi/pyedb/grpc/database/stackup/LayerCollection>
+    <span class="nf nf-cod-symbol_class"></span> Stackup</autoapi/pyedb/grpc/database/stackup/Stackup>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains the `EdbStackup` class.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: logger
+
+
+

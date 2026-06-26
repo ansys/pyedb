@@ -1,0 +1,50 @@
+
+
+
+
+
+
+:class:`GRPC`
+=============
+
+
+.. py:class:: pyedb.generic.constants.TerminalTypeMapper.GRPC
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants.TerminalTypeMapper import GRPC
+
+
+
+
+

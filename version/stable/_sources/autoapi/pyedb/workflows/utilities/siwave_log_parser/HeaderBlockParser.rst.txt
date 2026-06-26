@@ -1,0 +1,123 @@
+
+
+
+
+
+
+:class:`HeaderBlockParser`
+==========================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.HeaderBlockParser(lines: list[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract AEDT version information from the log header.
+
+   This parser searches through log lines to find version, build, and
+   installation location information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = [
+   ...     "ANSYS Electromagnetics Suite Version 2026.1 Build: 12345",
+   ...     "Location: C:\Program Files\AnsysEM\v261",
+   ... ]
+   >>> parser = HeaderBlockParser(lines)
+   >>> version = parser.parse()
+   >>> version.version
+   '2026.1'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HeaderBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse the stored lines and return an AEDTVersion instance.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import HeaderBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> AEDTVersion
+
+   
+   Parse the stored lines and return an AEDTVersion instance.
+
+
+
+
+
+   :Returns:
+
+       :obj:`AEDTVersion`
+           Populated version data object containing version, build, and location.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = ["Version 2026.1 Build: 12345", "Location: C:\AnsysEM"]
+   >>> parser = HeaderBlockParser(lines)
+   >>> info = parser.parse()
+   >>> info.build
+   '12345'
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

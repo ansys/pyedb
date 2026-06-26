@@ -1,0 +1,271 @@
+
+
+
+
+
+
+:class:`CfgSParameters`
+=======================
+
+
+.. py:class:: pyedb.configuration.cfg_s_parameter_models.CfgSParameters(pedb=None, data=None, path_lib=None)
+
+   
+   Manage all configured S-parameter model assignments.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgSParameters
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~apply`
+            - Write all S-parameter model assignments into the open EDB design.
+          * - :py:attr:`~get_data_from_db`
+            - Read S-parameter model assignments from EDB.
+          * - :py:attr:`~to_list`
+            - Serialize all S-parameter models to a list of dictionaries.
+          * - :py:attr:`~add`
+            - Add an S-parameter model assignment to this configuration.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~s_parameters_models`
+            - Alias for :attr:`models` for backwards compatibility.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~path_libraries`
+            - 
+          * - :py:attr:`~models`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
+
+Property detail
+---------------
+
+.. py:property:: s_parameters_models
+
+   
+   Alias for :attr:`models` for backwards compatibility.
+
+   ..deprecated:: 0.76.0
+       Use :attr:`models` instead of :attr:`s_parameters_models`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: path_libraries
+   :value: None
+
+
+.. py:attribute:: models
+
+
+
+Method detail
+-------------
+
+.. py:method:: apply()
+
+   
+   Write all S-parameter model assignments into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db(cfg_components)
+
+   
+   Read S-parameter model assignments from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_list()
+
+   
+   Serialize all S-parameter models to a list of dictionaries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add(name: str, component_definition: str, file_path: str, reference_net: str = '', apply_to_all: bool = True, components=None, reference_net_per_component=None, pin_order=None)
+
+   
+   Add an S-parameter model assignment to this configuration.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Model name registered in the EDB component library.
+
+       **component_definition** : :class:`python:str`
+           Component definition (part) name, e.g. ``"CAP_100nF"``.
+
+       **file_path** : :class:`python:str`
+           Absolute or library-relative path to the Touchstone file.
+
+       **reference_net** : :class:`python:str`, :obj:`optional`
+           Default reference (ground) net for the model.
+
+       **apply_to_all** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Assign the model to all components matching *component_definition*
+           when ``True`` (default).  When ``False``, only the entries in
+           *components* are assigned.
+
+       **components** : :class:`python:list` :obj:`of` :class:`python:str`, :obj:`optional`
+           Reference designators to assign when *apply_to_all* is ``False``.
+
+       **reference_net_per_component** : :class:`python:dict`, :obj:`optional`
+           Per-component reference net overrides:
+           ``{"U1": "GND_U1", "U2": "GND"}``.
+
+       **pin_order** : :class:`python:list`, :obj:`optional`
+           Custom port-to-pin mapping list.
+
+
+
+   :Returns:
+
+       :obj:`CfgSParameterModel`
+           The newly created model assignment object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg.s_parameters.add(
+       "cap_model",
+       component_definition="CAP_100nF",
+       file_path="/snp/cap.s2p",
+       reference_net="GND"
+   )
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
