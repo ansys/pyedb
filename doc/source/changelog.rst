@@ -9,6 +9,54 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.79.1 <https://github.com/ansys/pyedb/releases/tag/v0.79.1>`_ - June 26, 2026
+===============================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Convert primitive to via
+          - `#2325 <https://github.com/ansys/pyedb/pull/2325>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update ansys-sphinx-theme[autoapi] requirement from <1.9,>=1.0.0 to >=1.0.0,<1.10
+          - `#2327 <https://github.com/ansys/pyedb/pull/2327>`_
+
+        * - Bump jupyterlab from 4.5.8 to 4.6.0
+          - `#2328 <https://github.com/ansys/pyedb/pull/2328>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update missing or outdated files
+          - `#2308 <https://github.com/ansys/pyedb/pull/2308>`_
+
+        * - Pre-commit automatic update
+          - `#2310 <https://github.com/ansys/pyedb/pull/2310>`_
+
+        * - Update CHANGELOG for v0.79.0
+          - `#2323 <https://github.com/ansys/pyedb/pull/2323>`_
+
+        * - Bump release 0.80.dev0
+          - `#2324 <https://github.com/ansys/pyedb/pull/2324>`_
+
+
 `0.79.0 <https://github.com/ansys/pyedb/releases/tag/v0.79.0>`_ - June 25, 2026
 ===============================================================================
 
