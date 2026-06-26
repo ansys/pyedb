@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -661,6 +661,7 @@ class Layout(ObjBase, PrimitivesQuery):
         is_pins : bool, optional
             True for pins, false for vias (default).
         """
+        primitives = [primitive.core.GetOwner() for primitive in primitives]
         self.core.ConvertPrimitivestoVias(convert_py_list_to_net_list(primitives), is_pins)
 
     @property
