@@ -133,18 +133,14 @@ def env_path(input_version: str) -> str:
     """
     try:
         if input_version is None:
-            return list(settings.INSTALLED_VERSIONS.values())[0]
+            return settings.aedt_installation_path
+        elif input_version in settings.INSTALLED_VERSIONS:
+            return settings.INSTALLED_VERSIONS[input_version]
         else:
-            return os.getenv(
-                "ANSYSEM_ROOT{0}{1}".format(
-                    get_version_and_release(input_version)[0], get_version_and_release(input_version)[1]
-                ),
-                "",
-            )
+            raise ValueError(f"Invalid or not found AEDT version {input_version}")
     except TypeError as e:
         raise Exception(
-            "The edb version is not provided and can't be inferred from the environment variables. "
-            "Please provide the version as an argument."
+            f"Failed to retrieve the installation path for the specified AEDT version {input_version}."
         ) from e
 
 
