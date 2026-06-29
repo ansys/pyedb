@@ -134,8 +134,7 @@ def env_path(input_version: str) -> str:
     """
     try:
         if input_version is None:
-            installed_version = list_installed_ansysem()[0]
-            return os.getenv(installed_version)
+            return list(settings.INSTALLED_VERSIONS.values())[0]
         else:
             return os.getenv(
                 "ANSYSEM_ROOT{0}{1}".format(
