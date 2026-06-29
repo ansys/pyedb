@@ -46,7 +46,6 @@ from pyedb.generic.settings import settings
 
 # Backwards-compatible re-exports (decorators were moved to pyedb.misc.decorators)
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_class, execution_timer
-from pyedb.misc.misc import list_installed_ansysem
 
 if TYPE_CHECKING:
     import pandas as pd
