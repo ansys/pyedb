@@ -554,6 +554,7 @@ class TestClass(BaseTestClass):
             assert not pkg_def.exterior_boundary.points
             assert pkg_def.set_exterior_boundary_from_bbox("C200")
             assert len(pkg_def.exterior_boundary.points) == 4
+            assert len(pkg_def.exterior_boundary_with_arcs.arcs) == 4
             assert pkg_def.set_exterior_boundary_from_bbox(edb.components.instances["C200"])
         edb.close(terminate_rpc_session=False)
 
