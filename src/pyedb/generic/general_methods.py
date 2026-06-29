@@ -46,6 +46,7 @@ from pyedb.generic.settings import settings
 
 # Backwards-compatible re-exports (decorators were moved to pyedb.misc.decorators)
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_class, execution_timer
+from pyedb.misc.misc import list_installed_ansysem
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -132,12 +133,16 @@ def env_path(input_version: str) -> str:
     "C:/Program Files/ANSYSEM/ANSYSEM2021.2/Win64"
     """
     try:
-        return os.getenv(
-            "ANSYSEM_ROOT{0}{1}".format(
-                get_version_and_release(input_version)[0], get_version_and_release(input_version)[1]
-            ),
-            "",
-        )
+        if input_version is None:
+            installed_version = list_installed_ansysem()[0]
+            return os.getenv(installed_version)
+        else:
+            return os.getenv(
+                "ANSYSEM_ROOT{0}{1}".format(
+                    get_version_and_release(input_version)[0], get_version_and_release(input_version)[1]
+                ),
+                "",
+            )
     except TypeError as e:
         raise Exception(
             "The edb version is not provided and can't be inferred from the environment variables. "
@@ -165,7 +170,7 @@ def get_version_and_release(input_version: str) -> tuple[int, int]:
             version -= 1
         else:
             release -= 2
-    return (version, release)
+    return version, release
 
 
 def env_value(input_version: str) -> str:
