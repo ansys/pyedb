@@ -224,11 +224,6 @@ class TestClass(BaseTestClass):
         assert result is None
         edbapp.close(terminate_rpc_session=False)
 
-    # ------------------------------------------------------------------
-    # Regression: parameterised configuration must create geometry in gRPC
-    # PadstackDef.set_pad_parameters must wrap sizes in Value objects)
-    # ------------------------------------------------------------------
-
     @pytest.mark.skipif(not config["use_grpc"], reason="Regression test for gRPC-specific bug.")
     def test_parametric_config_creates_padstack_definitions(self):
         """Parameterised config: padstack definitions must be created with correct names.
@@ -313,12 +308,12 @@ class TestClass(BaseTestClass):
 
         # --- planes (rectangle primitives) ---
         primitives = edbapp.layout.primitives
-        non_path_prims = [p for p in primitives if p.primitive_type.upper() != "PATH"]
+        non_path_prims = [p for p in primitives if p.primitive_type != "path"]
         assert len(non_path_prims) >= 6, (
             f"Expected at least 6 non-path primitives (GND rectangles), got {len(non_path_prims)}"
         )
         # Verify that at least one rectangle has voids (anti-pad circles attached)
-        rectangles = [p for p in non_path_prims if p.primitive_type.upper() == "RECTANGLE"]
+        rectangles = [p for p in non_path_prims if p.primitive_type == "rectangle"]
         assert len(rectangles) >= 6, f"Expected at least 6 GND rectangles, got {len(rectangles)}"
 
         edbapp.close(terminate_rpc_session=False)
