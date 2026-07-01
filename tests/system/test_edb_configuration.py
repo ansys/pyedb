@@ -36,8 +36,6 @@ from pyedb.generic.settings import settings
 from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
-_PARAMETRIC_CONFIG_JSON = os.path.join(local_path, "example_models", "test.json")
-
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 U8_IC_DIE_PROPERTIES = {
@@ -2971,7 +2969,8 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
         gRPC backend to silently produce an empty design.
         """
         edbapp = self.edb_examples.create_empty_edb()
-        assert edbapp.configuration.load(_PARAMETRIC_CONFIG_JSON, apply_file=True)
+        json = self.edb_examples.copy_test_files_into_local_folder("config_files/test.json")[0]
+        assert edbapp.configuration.load(json, apply_file=True)
 
         defs = edbapp.padstacks.definitions
         assert "CORE_VIA" in defs, "CORE_VIA padstack definition must be created"
@@ -2988,7 +2987,8 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
         padstack definition so that the pad geometry is non-zero.
         """
         edbapp = self.edb_examples.create_empty_edb()
-        assert edbapp.configuration.load(_PARAMETRIC_CONFIG_JSON, apply_file=True)
+        json = self.edb_examples.copy_test_files_into_local_folder("config_files/test.json")[0]
+        assert edbapp.configuration.load(json, apply_file=True)
 
         # Design variable must be present and have the expected value
         assert edbapp.variable_exists("$CORE_VIA_pad_diameter")
@@ -3023,7 +3023,8 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
         fanout segments, anti-pad circles, and GND plane rectangles.
         """
         edbapp = self.edb_examples.create_empty_edb()
-        assert edbapp.configuration.load(_PARAMETRIC_CONFIG_JSON, apply_file=True)
+        json = self.edb_examples.copy_test_files_into_local_folder("config_files/test.json")[0]
+        assert edbapp.configuration.load(json, apply_file=True)
 
         # --- padstack instances ---
         instances = edbapp.padstacks.instances
