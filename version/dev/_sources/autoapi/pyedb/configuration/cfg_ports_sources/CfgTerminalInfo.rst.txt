@@ -1,0 +1,446 @@
+
+
+
+
+
+
+:class:`CfgTerminalInfo`
+========================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgTerminalInfo(pedb, **kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+   
+   Describe a high-level terminal selector used by ports, sources, and probes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+
+.. py:currentmodule:: CfgTerminalInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update_contact_radius`
+            - Update the contact radius used for equipotential region creation.
+          * - :py:attr:`~export_properties`
+            - Serialize this terminal selector to a plain dictionary.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~CFG_TERMINAL_TYPES`
+            - 
+          * - :py:attr:`~value`
+            - 
+          * - :py:attr:`~reference_designator`
+            - 
+          * - :py:attr:`~contact_type`
+            - 
+          * - :py:attr:`~contact_radius`
+            - 
+          * - :py:attr:`~num_of_contact`
+            - 
+          * - :py:attr:`~contact_expansion`
+            - 
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pin`
+            - Create a terminal selector that targets a single component pin.
+          * - :py:attr:`~net`
+            - Create a terminal selector that targets all pins of a net on a component.
+          * - :py:attr:`~pin_group`
+            - Create a terminal selector that references a named pin group.
+          * - :py:attr:`~padstack`
+            - Create a terminal selector that targets a named padstack instance.
+          * - :py:attr:`~coordinates`
+            - Create a terminal selector at an exact XY location on a layer.
+          * - :py:attr:`~nearest_pin`
+            - Create a terminal selector that resolves to the nearest reference pin.
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgTerminalInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: CFG_TERMINAL_TYPES
+   :value: ['pin', 'net', 'pin_group', 'nearest_pin', 'coordinates']
+
+
+.. py:attribute:: value
+
+.. py:attribute:: reference_designator
+
+.. py:attribute:: contact_type
+
+.. py:attribute:: contact_radius
+
+.. py:attribute:: num_of_contact
+
+.. py:attribute:: contact_expansion
+
+
+
+Method detail
+-------------
+
+.. py:method:: pin(pin_name: str, reference_designator: str | None = None) -> dict
+   :staticmethod:
+
+
+   
+   Create a terminal selector that targets a single component pin.
+
+
+   :Parameters:
+
+       **pin_name** : :class:`python:str`
+           Physical pin identifier on the component, e.g. ``"A1"``.
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Reference designator of the owning component, e.g. ``"U1"``.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Terminal-selector dictionary, e.g.
+           ``{"pin": "A1", "reference_designator": "U1"}``.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   TerminalInfo.pin("A1", reference_designator="U1")
+   {'pin': 'A1', 'reference_designator': 'U1'}
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: net(net_name: str, reference_designator: str | None = None) -> dict
+   :staticmethod:
+
+
+   
+   Create a terminal selector that targets all pins of a net on a component.
+
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`
+           Net name, e.g. ``"VDD"``.
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Component whose pins should be used, e.g. ``"U1"``.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Terminal-selector dictionary.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   TerminalInfo.net("VDD", reference_designator="U1")
+   {'net': 'VDD', 'reference_designator': 'U1'}
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: pin_group(pin_group_name: str) -> dict
+   :staticmethod:
+
+
+   
+   Create a terminal selector that references a named pin group.
+
+
+   :Parameters:
+
+       **pin_group_name** : :class:`python:str`
+           Name of a pre-defined pin group, e.g. ``"pg_VDD"``.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Terminal-selector dictionary ``{"pin_group": pin_group_name}``.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   TerminalInfo.pin_group("pg_VDD")
+   {'pin_group': 'pg_VDD'}
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: padstack(padstack_instance_name: str) -> dict
+   :staticmethod:
+
+
+   
+   Create a terminal selector that targets a named padstack instance.
+
+   Use this for coaxial ports placed on named via instances.
+
+   :Parameters:
+
+       **padstack_instance_name** : :class:`python:str`
+           AEDT padstack-instance name, e.g. ``"via_A1"``.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Terminal-selector dictionary ``{"padstack": padstack_instance_name}``.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   TerminalInfo.padstack("via_A1")
+   {'padstack': 'via_A1'}
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: coordinates(layer: str, x: float | int, y: float | int, net: str) -> dict
+   :staticmethod:
+
+
+   
+   Create a terminal selector at an exact XY location on a layer.
+
+
+   :Parameters:
+
+       **layer** : :class:`python:str`
+           Layer name on which the terminal is placed, e.g. ``"top"``.
+
+       **x** : :class:`python:float`
+           X coordinate in metres.
+
+       **y** : :class:`python:float`
+           Y coordinate in metres.
+
+       **net** : :class:`python:str`
+           Net name the terminal belongs to.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Terminal-selector dictionary with a ``"coordinates"`` key.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   TerminalInfo.coordinates("top", 0.001, 0.002, "SIG")
+   {'coordinates': {'layer': 'top', 'point': [0.001, 0.002], 'net': 'SIG'}}
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: nearest_pin(reference_net: str, search_radius='5mm') -> dict
+   :staticmethod:
+
+
+   
+   Create a terminal selector that resolves to the nearest reference pin.
+
+   Useful as a *negative_terminal* when you want the solver to
+   auto-find a ground reference.
+
+   :Parameters:
+
+       **reference_net** : :class:`python:str`
+           Net name to search for the nearest pin, e.g. ``"GND"``.
+
+       **search_radius** : :class:`python:str`, :obj:`optional`
+           Search radius around the positive terminal.  Accepts unit strings
+           such as ``"5mm"`` or ``"0.5e-3"``.  Default is ``"5mm"``.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Terminal-selector dictionary with a ``"nearest_pin"`` key.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   TerminalInfo.nearest_pin("GND", search_radius="3mm")
+   {'nearest_pin': {'reference_net': 'GND', 'search_radius': '3mm'}}
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: update_contact_radius(radius: str | float | int)
+
+   
+   Update the contact radius used for equipotential region creation.
+
+
+   :Parameters:
+
+       **radius** : :class:`python:str` :class:`python:float`, :obj:`or` int.
+           Contact radius.  A unit string (``"0.1mm"``) is accepted when an
+           EDB session is attached; otherwise the value is stored as-is.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_properties()
+
+   
+   Serialize this terminal selector to a plain dictionary.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary containing the selector type key and, if present, the
+           ``reference_designator``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

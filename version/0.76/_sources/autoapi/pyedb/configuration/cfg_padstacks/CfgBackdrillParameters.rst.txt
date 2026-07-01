@@ -1,0 +1,159 @@
+
+
+
+
+
+
+:class:`CfgBackdrillParameters`
+===============================
+
+.. toctree::
+   :hidden:
+
+    DrillParametersByLayer</autoapi/pyedb/configuration/cfg_padstacks/CfgBackdrillParameters.DrillParametersByLayer>
+    DrillParametersByLayerWithStub</autoapi/pyedb/configuration/cfg_padstacks/CfgBackdrillParameters.DrillParametersByLayerWithStub>
+    DrillParameters</autoapi/pyedb/configuration/cfg_padstacks/CfgBackdrillParameters.DrillParameters>
+
+
+.. py:class:: pyedb.configuration.cfg_padstacks.CfgBackdrillParameters(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Store optional backdrill definitions for a padstack instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgBackdrillParameters
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_backdrill_to_layer`
+            - Configure a backdrill stopping at a named layer.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~from_top`
+            - 
+          * - :py:attr:`~from_bottom`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_padstacks import CfgBackdrillParameters
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: from_top
+   :type:  CfgBackdrillParameters.DrillParameters | CfgBackdrillParameters.DrillParametersByLayer | CfgBackdrillParameters.DrillParametersByLayerWithStub | None
+   :value: None
+
+
+.. py:attribute:: from_bottom
+   :type:  CfgBackdrillParameters.DrillParameters | CfgBackdrillParameters.DrillParametersByLayer | CfgBackdrillParameters.DrillParametersByLayerWithStub | None
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_backdrill_to_layer(drill_to_layer: str, diameter: str, stub_length: str = None, drill_from_bottom: bool = True)
+
+   
+   Configure a backdrill stopping at a named layer.
+
+
+   :Parameters:
+
+       **drill_to_layer** : :class:`python:str`
+           Target layer name where the backdrill stops.
+
+       **diameter** : :class:`python:str`
+           Backdrill diameter, e.g. ``"0.25mm"``.
+
+       **stub_length** : :class:`python:str` or :data:`python:None`, :obj:`optional`
+           Stub length beyond the target layer.  ``None`` means no stub.
+
+       **drill_from_bottom** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           ``True`` (default) drills from the bottom; ``False`` from the top.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.configuration.cfg_padstacks.CfgBackdrillParameters.DrillParametersByLayer
+    pyedb.configuration.cfg_padstacks.CfgBackdrillParameters.DrillParametersByLayerWithStub
+    pyedb.configuration.cfg_padstacks.CfgBackdrillParameters.DrillParameters
+
+
+
+

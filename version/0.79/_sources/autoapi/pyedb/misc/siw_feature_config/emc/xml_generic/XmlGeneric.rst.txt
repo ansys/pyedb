@@ -1,0 +1,305 @@
+
+
+
+
+
+
+:class:`XmlGeneric`
+===================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric(element)
+
+   
+   Generic XML handler for EMC configuration.
+
+   This class provides a generic interface for creating, reading, and writing
+   XML configurations. It supports nested elements and automatic attribute mapping.
+
+   :Parameters:
+
+       **element** : :obj:`xml.etree.ElementTree.Element` or :data:`python:None`
+           XML element to initialize from.
+
+   :Attributes:
+
+       **DEBUG** : :ref:`bool <python:bltin-boolean-values>`
+           Debug flag for additional logging.
+
+       **CLS_MAPPING** : :class:`python:dict`
+           Mapping of element types to their corresponding classes.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.siw_feature_config.emc.xml_generic import XmlGeneric
+   >>> element = None
+   >>> xml_obj = XmlGeneric(element)
+   >>> kwargs = {"name": "test", "value": "123"}
+   >>> xml_obj.create(kwargs)
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: XmlGeneric
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_sub_element`
+            - Add a sub-element to the XML structure.
+          * - :py:attr:`~create`
+            - Create XML object from keyword arguments.
+          * - :py:attr:`~write_xml`
+            - Write object to XML element tree.
+          * - :py:attr:`~write_dict`
+            - Write object to dictionary format.
+          * - :py:attr:`~read_dict`
+            - Read object from dictionary format.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~DEBUG`
+            - 
+          * - :py:attr:`~CLS_MAPPING`
+            - 
+          * - :py:attr:`~sub_elements`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.xml_generic import XmlGeneric
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: DEBUG
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: CLS_MAPPING
+   :type:  dict
+
+.. py:attribute:: sub_elements
+   :type:  list
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_sub_element(kwargs: dict, elem_type: str) -> None
+
+   
+   Add a sub-element to the XML structure.
+
+
+   :Parameters:
+
+       **kwargs** : :class:`python:dict`
+           Dictionary of keyword arguments for the sub-element.
+
+       **elem_type** : :class:`python:str`
+           Type of the element to add.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> xml_obj = XmlGeneric(None)
+   >>> kwargs = {"name": "component1", "value": "100"}
+   >>> xml_obj.add_sub_element(kwargs, "Component")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create(kwargs: dict)
+
+   
+   Create XML object from keyword arguments.
+
+
+   :Parameters:
+
+       **kwargs** : :class:`python:dict`
+           Dictionary of keyword arguments to populate the object.
+
+
+
+   :Returns:
+
+       :obj:`XmlGeneric`
+           Self reference for method chaining.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> xml_obj = XmlGeneric(None)
+   >>> kwargs = {"name": "net1", "impedance": "50"}
+   >>> xml_obj.create(kwargs)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: write_xml(parent)
+
+   
+   Write object to XML element tree.
+
+
+   :Parameters:
+
+       **parent** : :obj:`xml.etree.ElementTree.Element`
+           Parent XML element to write to.
+
+
+
+   :Returns:
+
+       :obj:`xml.etree.ElementTree.Element`
+           Parent element with added content.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> import xml.etree.ElementTree as ET
+   >>> parent = ET.Element("Root")
+   >>> xml_obj = XmlGeneric(None)
+   >>> xml_obj.write_xml(parent)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: write_dict(parent: dict) -> None
+
+   
+   Write object to dictionary format.
+
+
+   :Parameters:
+
+       **parent** : :class:`python:dict`
+           Parent dictionary to write to.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> xml_obj = XmlGeneric(None)
+   >>> output = {}
+   >>> xml_obj.write_dict(output)
+   >>> print(output)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: read_dict(data: dict) -> None
+
+   
+   Read object from dictionary format.
+
+
+   :Parameters:
+
+       **data** : :class:`python:dict`
+           Dictionary containing configuration data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> xml_obj = XmlGeneric(None)
+   >>> data = {"sub_elements": [{"Component": {"name": "C1", "value": "10uF"}}]}
+   >>> xml_obj.read_dict(data)
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

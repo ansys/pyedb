@@ -1,0 +1,445 @@
+
+
+
+
+
+
+The ``pyedb.generic.data_handlers`` library
+===========================================
+
+.. py:module:: pyedb.generic.data_handlers
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: data_handlers
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~format_decimals`
+            - Format a number with appropriate decimal places and commas.
+
+
+          * - :py:obj:`~random_string`
+            - Generate a random string
+
+
+          * - :py:obj:`~unique_string_list`
+            - Return a unique list of strings from an element list.
+
+
+          * - :py:obj:`~string_list`
+            - Return a list of strings from a string or a list of strings.
+
+
+          * - :py:obj:`~ensure_list`
+            - Check if the input is a list, if not, convert it to a list.
+
+
+          * - :py:obj:`~from_rkm`
+            - Convert an RKM code string to a string with a decimal point.
+
+
+          * - :py:obj:`~str_to_bool`
+            - Convert a ``"True"`` or ``"False"`` string to its corresponding Boolean value.
+
+
+          * - :py:obj:`~float_units`
+            - Retrieve units for a value.
+
+
+          * - :py:obj:`~json_to_dict`
+            - Load JSON file to a dictionary.
+
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~RKM_MAPS`
+            - 
+
+
+          * - :py:obj:`~UNIT_VAL`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: format_decimals(el: int | str) -> str
+
+   
+   Format a number with appropriate decimal places and commas.
+
+
+   :Parameters:
+
+       **el** : :class:`python:int` or :class:`python:str`
+           The number to format.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The formatted number as a string, with commas and appropriate decimal places.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: random_string(length: int = 6, only_digits: bool = False, char_set: str | None = None) -> str
+
+   
+   Generate a random string
+
+
+   :Parameters:
+
+       **length** : :class:`python:int`
+           Length of the random string. Default value is ``6``.
+
+       **only_digits** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether only digits are to be included. Default is ``False``.
+
+       **char_set** : :class:`python:str`, :obj:`optional`
+           Custom character set to pick the characters from. By default chooses from
+           ASCII and digit characters or just digits if ``only_digits`` is ``True``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Random string of specified length.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: unique_string_list(element_list: str | Iterable[str], only_string: bool = True) -> list[str]
+
+   
+   Return a unique list of strings from an element list.
+
+
+   :Parameters:
+
+       **element_list** : :class:`python:str` or :obj:`Iterable`\[:class:`python:str`]
+           The input element(s) to be converted to a unique list of strings.
+
+       **only_string** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether only strings are allowed in the input list. Default is ``True``.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           A unique list of strings without duplicates.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: string_list(element_list: str | list) -> list[str]
+
+   
+   Return a list of strings from a string or a list of strings.
+
+
+   :Parameters:
+
+       **element_list** : :class:`python:str` or :class:`python:list`
+           The input element(s) to be converted to a list of strings.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           A list of strings.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: ensure_list(element_list: Any) -> list[Any]
+
+   
+   Check if the input is a list, if not, convert it to a list.
+
+
+   :Parameters:
+
+       **element_list** : :obj:`Any`
+           The input element(s) to be converted to a list.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:obj:`Any`]
+           A list containing the input element(s).
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: from_rkm(code: str) -> str
+
+   
+   Convert an RKM code string to a string with a decimal point.
+
+
+   :Parameters:
+
+       **code** : :class:`python:str`
+           RKM code string.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           String with a decimal point and an R value.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from_rkm("R47")
+   '0.47'
+
+   >>> from_rkm("4R7")
+   '4.7'
+
+   >>> from_rkm("470R")
+   '470'
+
+   >>> from_rkm("4K7")
+   '4.7k'
+
+   >>> from_rkm("47K")
+   '47k'
+
+   >>> from_rkm("47K3")
+   '47.3k'
+
+   >>> from_rkm("470K")
+   '470k'
+
+   >>> from_rkm("4M7")
+   '4.7M'
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: str_to_bool(s: str) -> bool | str
+
+   
+   Convert a ``"True"`` or ``"False"`` string to its corresponding Boolean value.
+
+   If the passed arguments are not relevant in the context of conversion, the argument
+   itself is returned. This method can be called using the ``map()`` function to
+   ensure conversion of Boolean strings in a list.
+
+   The method is not case-sensitive:
+
+       - ``True`` is returned if the input is ``"true"``, ``"1"``, `"yes"``, or ``"y"``;
+       - ``False`` is returned if the input is ``"false"``, ``"no"``, ``"n"``,  or ``"0"``.
+       - Otherwise, the input value is passed through the method unchanged.
+
+   :Parameters:
+
+       **s: str**
+           ..
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>` or :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: float_units(val_str: str, units: str = '') -> float
+
+   
+   Retrieve units for a value.
+
+
+   :Parameters:
+
+       **val_str** : :class:`python:str`
+           Name of the float value.
+
+       **units** : :class:`python:str`, :obj:`optional`
+           The default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           The value of the float with the appropriate units.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: json_to_dict(fn: str) -> dict[str, Any]
+
+   
+   Load JSON file to a dictionary.
+
+
+   :Parameters:
+
+       **fn** : :class:`python:str`
+           JSON file full path.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :obj:`Any`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: RKM_MAPS
+
+.. py:data:: UNIT_VAL
+
+
+

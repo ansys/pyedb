@@ -1,0 +1,6 @@
+net2
+====
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: MinClearance.net2

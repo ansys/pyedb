@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_nets`` library
+============================================
+
+.. py:module:: pyedb.configuration.cfg_nets
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_nets
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_nets.CfgNets`
+            - Fluent builder for the ``nets`` configuration section.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgNets</autoapi/pyedb/configuration/cfg_nets/CfgNets>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Build the ``nets`` configuration section.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

@@ -1,0 +1,389 @@
+
+
+
+
+
+
+:class:`ParsedLog`
+==================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.ParsedLog
+
+   
+   Root container returned by HFSSLogParser.parse().
+
+   This class holds all parsed information from an HFSS log file and provides
+   convenience methods for checking convergence, completion status, and
+   extracting specific metrics.
+
+
+   :Attributes:
+
+       **project** : :obj:`ProjectInfo`
+           Project meta-data including name, file path, and design information.
+
+       **init_mesh** : :obj:`InitMesh`
+           Initial mesh statistics.
+
+       **adaptive** : :class:`python:list` :obj:`of` :obj:`AdaptivePass`
+           Adaptive passes in chronological order.
+
+       **sweep** : :obj:`Sweep` or :data:`python:None`
+           Frequency-sweep summary, or ``None`` if no sweep was performed.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pathlib import Path
+   >>> parsed = ParsedLog(
+   ...     project=ProjectInfo(name="Test", file=Path("/tmp/test.aedt")),
+   ...     init_mesh=InitMesh(tetrahedra=5000, memory_mb=100, real_time_sec=30, cpu_time_sec=28),
+   ...     adaptive=[],
+   ...     sweep=None,
+   ... )
+   >>> parsed.project.name
+   'Test'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ParsedLog
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_dict`
+            - Deep-convert the entire object to JSON-serializable primitives.
+          * - :py:attr:`~is_converged`
+            - Check if the adaptive solver declared convergence.
+          * - :py:attr:`~adaptive_passes`
+            - Return the list of adaptive passes.
+          * - :py:attr:`~memory_on_convergence`
+            - Memory consumed by the last converged adaptive pass.
+          * - :py:attr:`~is_completed`
+            - Check if the simulation completed successfully.
+          * - :py:attr:`~errors`
+            - Extract error lines from the log file.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~project`
+            - 
+          * - :py:attr:`~init_mesh`
+            - 
+          * - :py:attr:`~adaptive`
+            - 
+          * - :py:attr:`~sweep`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import ParsedLog
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: project
+   :type:  ProjectInfo
+
+.. py:attribute:: init_mesh
+   :type:  InitMesh
+
+.. py:attribute:: adaptive
+   :type:  list[AdaptivePass]
+
+.. py:attribute:: sweep
+   :type:  Optional[Sweep]
+
+
+
+Method detail
+-------------
+
+.. py:method:: to_dict() -> dict
+
+   
+   Deep-convert the entire object to JSON-serializable primitives.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Plain dict/list/scalar structure suitable for JSON serialization.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> parsed = ParsedLog(project=..., init_mesh=..., adaptive=[], sweep=None)
+   >>> data_dict = parsed.to_dict()
+   >>> isinstance(data_dict, dict)
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_converged() -> bool
+
+   
+   Check if the adaptive solver declared convergence.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if at least one adaptive pass converged, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> parsed = ParsedLog(
+   ...     project=ProjectInfo(name="T", file=Path("/t")),
+   ...     init_mesh=InitMesh(tetrahedra=100, memory_mb=10, real_time_sec=5, cpu_time_sec=5),
+   ...     adaptive=[
+   ...         AdaptivePass(
+   ...             pass_nr=1,
+   ...             freq_hz=1e9,
+   ...             tetrahedra=100,
+   ...             matrix_size=50,
+   ...             memory_mb=10,
+   ...             delta_s=0.01,
+   ...             converged=True,
+   ...             elapsed_sec=10,
+   ...         )
+   ...     ],
+   ...     sweep=None,
+   ... )
+   >>> parsed.is_converged()
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: adaptive_passes() -> list[AdaptivePass]
+
+   
+   Return the list of adaptive passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :obj:`AdaptivePass`
+           All adaptive passes in chronological order.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> parsed = ParsedLog(project=..., init_mesh=..., adaptive=[pass1, pass2], sweep=None)
+   >>> passes = parsed.adaptive_passes()
+   >>> len(passes)
+   2
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: memory_on_convergence() -> float
+
+   
+   Memory consumed by the last converged adaptive pass.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Memory in megabytes, or ``math.nan`` if no pass converged.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> parsed = ParsedLog(
+   ...     project=ProjectInfo(name="T", file=Path("/t")),
+   ...     init_mesh=InitMesh(tetrahedra=100, memory_mb=10, real_time_sec=5, cpu_time_sec=5),
+   ...     adaptive=[
+   ...         AdaptivePass(
+   ...             pass_nr=1,
+   ...             freq_hz=1e9,
+   ...             tetrahedra=100,
+   ...             matrix_size=50,
+   ...             memory_mb=256.5,
+   ...             delta_s=0.01,
+   ...             converged=True,
+   ...             elapsed_sec=10,
+   ...         )
+   ...     ],
+   ...     sweep=None,
+   ... )
+   >>> parsed.memory_on_convergence()
+   256.5
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_completed() -> bool
+
+   
+   Check if the simulation completed successfully.
+
+   A simulation is considered complete when both adaptive convergence
+   occurred and a frequency sweep was executed.
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if converged and sweep completed, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> parsed = ParsedLog(
+   ...     project=ProjectInfo(name="T", file=Path("/t")),
+   ...     init_mesh=InitMesh(tetrahedra=100, memory_mb=10, real_time_sec=5, cpu_time_sec=5),
+   ...     adaptive=[
+   ...         AdaptivePass(
+   ...             pass_nr=1,
+   ...             freq_hz=1e9,
+   ...             tetrahedra=100,
+   ...             matrix_size=50,
+   ...             memory_mb=256,
+   ...             delta_s=0.01,
+   ...             converged=True,
+   ...             elapsed_sec=10,
+   ...         )
+   ...     ],
+   ...     sweep=Sweep(type="Interpolating", frequencies=11, solved=[1e9], elapsed_sec=30),
+   ... )
+   >>> parsed.is_completed()
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: errors() -> list[str]
+
+   
+   Extract error lines from the log file.
+
+   Searches the log for lines containing error markers like ``[error]``
+   or ``*** ERROR ***``. Warnings are ignored.
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`python:str`
+           List of stripped error lines, empty if none found.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> parsed = ParsedLog(project=..., init_mesh=..., adaptive=[], sweep=None)
+   >>> errs = parsed.errors()
+   >>> len(errs)
+   0
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

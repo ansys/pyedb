@@ -1,0 +1,186 @@
+
+
+
+
+
+
+:class:`CfgPadstackDefinition`
+==============================
+
+
+.. py:class:: pyedb.configuration.cfg_padstacks.CfgPadstackDefinition(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Represent one padstack definition entry.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CfgPadstackDefinition
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a :class:`CfgPadstackDefinition` from keyword arguments.
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~hole_plating_thickness`
+            - 
+          * - :py:attr:`~material`
+            - 
+          * - :py:attr:`~hole_range`
+            - 
+          * - :py:attr:`~pad_parameters`
+            - 
+          * - :py:attr:`~hole_parameters`
+            - 
+          * - :py:attr:`~solder_ball_parameters`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: hole_plating_thickness
+   :type:  str | float | None
+   :value: None
+
+
+.. py:attribute:: material
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: hole_range
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: pad_parameters
+   :type:  dict | None
+   :value: None
+
+
+.. py:attribute:: hole_parameters
+   :type:  dict | None
+   :value: None
+
+
+.. py:attribute:: solder_ball_parameters
+   :type:  dict | None
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(**kwargs) -> CfgPadstackDefinition
+   :classmethod:
+
+
+   
+   Create a :class:`CfgPadstackDefinition` from keyword arguments.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

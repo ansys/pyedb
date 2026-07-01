@@ -1,0 +1,219 @@
+
+
+
+
+
+
+:class:`AttribIndex`
+====================
+
+
+.. py:class:: pyedb.siwave_core.product_properties.AttribIndex
+
+
+.. py:currentmodule:: AttribIndex
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~FROM_GROUP_NAME`
+            - 
+          * - :py:attr:`~FROM_NET_NAME`
+            - 
+          * - :py:attr:`~FROM_PIN_NAME`
+            - 
+          * - :py:attr:`~FROM_PINS_ON_NET_NAME`
+            - 
+          * - :py:attr:`~FROM_REFDES_NAME`
+            - 
+          * - :py:attr:`~TO_GROUP_NAME`
+            - 
+          * - :py:attr:`~TO_NET_NAME`
+            - 
+          * - :py:attr:`~TO_PIN_NAME`
+            - 
+          * - :py:attr:`~TO_PINS_ON_NET_NAME`
+            - 
+          * - :py:attr:`~TO_REFDES_NAME`
+            - 
+          * - :py:attr:`~TO_SOURCE_TYPE`
+            - 
+          * - :py:attr:`~TO_SOURCE_MAG`
+            - 
+          * - :py:attr:`~TO_RLC_TYPE`
+            - 
+          * - :py:attr:`~TO_RLC_MAG`
+            - 
+          * - :py:attr:`~REF_DES_NAME`
+            - 
+          * - :py:attr:`~PIN_NAME`
+            - 
+          * - :py:attr:`~PINS_ON_NET_NAME`
+            - 
+          * - :py:attr:`~TERM_TYPE`
+            - 
+          * - :py:attr:`~PIN_REGEX`
+            - 
+          * - :py:attr:`~PART_REGEX`
+            - 
+          * - :py:attr:`~REFDES_REGEX`
+            - 
+          * - :py:attr:`~NET_REGEX`
+            - 
+          * - :py:attr:`~FROM_PIN_ON_NET_NAME`
+            - 
+          * - :py:attr:`~TO_PIN_ON_NET_NAME`
+            - 
+          * - :py:attr:`~LAYER_NAME`
+            - 
+          * - :py:attr:`~X_POS`
+            - 
+          * - :py:attr:`~Y_POS`
+            - 
+          * - :py:attr:`~NUM_ATTRIBS`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.siwave_core.product_properties import AttribIndex
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: FROM_GROUP_NAME
+   :value: 0
+
+
+.. py:attribute:: FROM_NET_NAME
+   :value: 1
+
+
+.. py:attribute:: FROM_PIN_NAME
+   :value: 2
+
+
+.. py:attribute:: FROM_PINS_ON_NET_NAME
+   :value: 3
+
+
+.. py:attribute:: FROM_REFDES_NAME
+   :value: 4
+
+
+.. py:attribute:: TO_GROUP_NAME
+   :value: 5
+
+
+.. py:attribute:: TO_NET_NAME
+   :value: 6
+
+
+.. py:attribute:: TO_PIN_NAME
+   :value: 7
+
+
+.. py:attribute:: TO_PINS_ON_NET_NAME
+   :value: 8
+
+
+.. py:attribute:: TO_REFDES_NAME
+   :value: 9
+
+
+.. py:attribute:: TO_SOURCE_TYPE
+   :value: 10
+
+
+.. py:attribute:: TO_SOURCE_MAG
+   :value: 11
+
+
+.. py:attribute:: TO_RLC_TYPE
+   :value: 12
+
+
+.. py:attribute:: TO_RLC_MAG
+   :value: 13
+
+
+.. py:attribute:: REF_DES_NAME
+   :value: 14
+
+
+.. py:attribute:: PIN_NAME
+   :value: 15
+
+
+.. py:attribute:: PINS_ON_NET_NAME
+   :value: 16
+
+
+.. py:attribute:: TERM_TYPE
+   :value: 17
+
+
+.. py:attribute:: PIN_REGEX
+   :value: 18
+
+
+.. py:attribute:: PART_REGEX
+   :value: 19
+
+
+.. py:attribute:: REFDES_REGEX
+   :value: 20
+
+
+.. py:attribute:: NET_REGEX
+   :value: 21
+
+
+.. py:attribute:: FROM_PIN_ON_NET_NAME
+   :value: 22
+
+
+.. py:attribute:: TO_PIN_ON_NET_NAME
+   :value: 23
+
+
+.. py:attribute:: LAYER_NAME
+   :value: 24
+
+
+.. py:attribute:: X_POS
+   :value: 25
+
+
+.. py:attribute:: Y_POS
+   :value: 26
+
+
+.. py:attribute:: NUM_ATTRIBS
+   :value: 27
+
+
+
+
+
+
