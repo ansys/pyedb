@@ -127,7 +127,12 @@ class PadstackInstance(conn_obj.ConnObj):
             PadstackInstance object.
         """
         if isinstance(net, str):
-            net = layout._pedb.nets.nets.get(net, Net.create(layout, generate_unique_name("net")))
+            # Look up the net by name; if it doesn't exist yet, create it with the
+            # correct name.  Using dict.get(..., Net.create(...random...)) was wrong:
+            # it always evaluated the default (creating a ghost net) even when the
+            # lookup succeeded, and produced random net_XXXX names when the net was
+            # genuinely absent.
+            net = layout._pedb.nets.nets.get(net) or Net.create(layout, net)
         if isinstance(padstack_definition, PadstackDef):
             padstack_def = padstack_definition.core
             padstack_definition = padstack_definition.name
