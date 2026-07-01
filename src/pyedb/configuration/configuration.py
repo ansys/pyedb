@@ -1013,13 +1013,7 @@ class Configuration:
                     # New instance — place it and use the returned object directly
                     self._pedb.logger.info(f"Padstack instance '{inst.name}' not found in EDB — placing it.")
                     position = inst.position if inst.position else [0, 0]
-                    if inst.rotation is not None:
-                        try:
-                            rotation = float(inst.rotation)
-                        except (ValueError, TypeError):
-                            rotation = inst.rotation  # keep as string expression for gRPC Value conversion
-                    else:
-                        rotation = 0.0
+                    rotation = float(inst.rotation) if inst.rotation is not None else 0.0
                     inst_obj = self._pedb.padstacks.place(
                         position=position,
                         definition_name=inst.definition,
