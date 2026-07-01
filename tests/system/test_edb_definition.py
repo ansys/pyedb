@@ -30,9 +30,6 @@ from pyedb.grpc.database.definition.wirebond_def import ApdBondwireDef, Jedec4Bo
 from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
-# Path to the fully-parameterised configuration JSON used by the regression tests
-_PARAMETRIC_CONFIG_JSON = os.path.join(local_path, "debug", "test.json")
-
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
@@ -224,93 +221,128 @@ class TestClass(BaseTestClass):
         assert result is None
         edbapp.close(terminate_rpc_session=False)
 
-    def test_parametric_config_creates_padstack_definitions(self):
-        """Parameterised config: padstack definitions must be created with correct names.
+    @pytest.mark.skipif(not config["use_grpc"], reason="Regression test for gRPC Value owner requirement.")
+    def test_parametric_padstack_definitions_created(self):
+        """set_pad_parameters must accept project-variable strings as pad/hole sizes.
 
-        Regression for the bug where raw parameter strings (e.g. ``"$CORE_VIA_pad_diameter"``)
-        were passed directly to ``CorePadstackDefData.set_pad_parameters(sizes=...)``
-        without being wrapped in a ``Value`` object with an owner, causing the
-        gRPC backend to silently produce an empty design.
+        Regression: raw parameter strings such as ``"$PAD_DIAM"`` were passed
+        directly to the gRPC ``CorePadstackDefData.set_pad_parameters(sizes=...)``
+        call without being wrapped in a ``Value`` object that carries an owner
+        (``active_db`` for ``$``-prefixed project variables).  The gRPC server
+        silently dropped the geometry, producing empty pad definitions.
+
+        Fix: every dimension in ``set_pad_parameters`` / ``set_hole_parameters``
+        is now routed through ``self._pedb._value_setter()``.
         """
         edbapp = self.edb_examples.create_empty_edb()
-        assert edbapp.configuration.load(_PARAMETRIC_CONFIG_JSON, apply_file=True)
 
-        defs = edbapp.padstacks.definitions
-        assert "CORE_VIA" in defs, "CORE_VIA padstack definition must be created"
-        assert "MICRO_VIA" in defs, "MICRO_VIA padstack definition must be created"
-        assert "BGA_VIA" in defs, "BGA_VIA padstack definition must be created"
+        # A minimal two-layer stackup is required before padstack operations
+        edbapp.stackup.add_layer("Top", layer_type="signal", material="copper", thickness="35um")
+        edbapp.stackup.add_layer("Bot", method="add_on_bottom", layer_type="signal", thickness="35um")
+
+        # Declare project-level variables ($-prefixed → owner is active_db)
+        edbapp["$PAD_DIAM"] = "0.25mm"
+        edbapp["$HOLE_DIAM"] = "0.1mm"
+
+        signal_layers = list(edbapp.stackup.signal_layers.keys())
+        assert signal_layers, "Stackup must expose at least one signal layer"
+
+        # Create the definition shell and apply parameterised pad/hole data directly
+        edbapp.padstacks.create(padstackname="PARAM_VIA", holediam=0)
+        pdef = edbapp.padstacks.definitions["PARAM_VIA"]
+
+        pad_params = {
+            "regular_pad": [
+                {"layer_name": layer, "shape": "circle", "diameter": "$PAD_DIAM"} for layer in signal_layers
+            ]
+        }
+        pdef.set_pad_parameters(pad_params)
+        pdef.set_hole_parameters({"shape": "circle", "diameter": "$HOLE_DIAM"})
+
+        assert "PARAM_VIA" in edbapp.padstacks.definitions, "PARAM_VIA definition must exist after creation"
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Regression test for gRPC Value owner requirement.")
+    def test_parametric_padstack_pad_sizes_resolved(self):
+        """Pad/hole sizes expressed as project variables must resolve to correct numeric values.
+
+        After ``set_pad_parameters`` and ``set_hole_parameters`` are called with
+        ``"$PAD_DIAM"`` / ``"$HOLE_DIAM"``, ``pad_by_layer[layer].parameters_values``
+        must return the evaluated float (e.g. 0.00025 for ``"0.25mm"``).
+        """
+        edbapp = self.edb_examples.create_empty_edb()
+
+        # Minimal stackup
+        edbapp.stackup.add_layer("Top", layer_type="signal", material="copper", thickness="35um")
+        first_layer = "Top"
+
+        edbapp["$PAD_DIAM"] = "0.25mm"
+        edbapp["$HOLE_DIAM"] = "0.1mm"
+
+        edbapp.padstacks.create(padstackname="PARAM_VIA2", holediam=0)
+        pdef = edbapp.padstacks.definitions["PARAM_VIA2"]
+        pdef.set_pad_parameters(
+            {"regular_pad": [{"layer_name": first_layer, "shape": "circle", "diameter": "$PAD_DIAM"}]}
+        )
+        pdef.set_hole_parameters({"shape": "circle", "diameter": "$HOLE_DIAM"})
+
+        # Pad diameter must resolve to 0.25 mm
+        pad = pdef.pad_by_layer.get(first_layer)
+        assert pad is not None, f"Pad not found on layer {first_layer}"
+        params = pad.parameters_values
+        assert params and len(params) > 0, "parameters_values must be non-empty after set_pad_parameters"
+        assert abs(float(params[0]) - 0.00025) < 1e-9, (
+            f"Pad diameter expected 0.00025 m (0.25 mm), got {float(params[0])}"
+        )
+
+        # Hole diameter must resolve to 0.1 mm
+        hole_diam = float(pdef.hole_diameter)
+        assert abs(hole_diam - 0.0001) < 1e-9, f"Hole diameter expected 0.0001 m (0.1 mm), got {hole_diam}"
 
         edbapp.close(terminate_rpc_session=False)
 
-    def test_parametric_config_pad_sizes_resolved_via_variables(self):
-        """Parameterised config: pad diameters must resolve to the correct numeric values.
+    @pytest.mark.skipif(not config["use_grpc"], reason="Regression test for gRPC net-name handling.")
+    def test_parametric_padstack_place_no_ghost_nets(self):
+        """padstacks.place() must assign the exact requested net — no ghost net_XXXX nets.
 
-        After ``apply_file=True`` the design variables (``$CORE_VIA_pad_diameter = 0.25 mm``,
-        ``$CORE_VIA_hole_diameter = 0.1 mm``) must be set and reflected in the
-        padstack definition so that the pad geometry is non-zero.
+        Regression: ``PadstackInstance.create()`` used ``dict.get(name, Net.create(...random...))``
+        which Python always evaluates eagerly, so a randomly-named ``net_XXXX`` net was
+        created on every single ``place()`` call, even when the net already existed.
+
+        Fix: replaced with ``dict.get(name) or Net.create(layout, name)`` so the
+        fallback only fires when the net is genuinely absent, and always uses the
+        correct name.
         """
+        import re
+
         edbapp = self.edb_examples.create_empty_edb()
-        assert edbapp.configuration.load(_PARAMETRIC_CONFIG_JSON, apply_file=True)
 
-        # Design variable must be present and have the expected value
-        assert edbapp.variable_exists("$CORE_VIA_pad_diameter")
-        assert edbapp.variable_exists("$CORE_VIA_hole_diameter")
+        # Minimal stackup required for padstack placement
+        edbapp.stackup.add_layer("Top", layer_type="signal", material="copper", thickness="35um")
+        edbapp.stackup.add_layer("Bot", method="add_on_bottom", layer_type="signal", thickness="35um")
 
-        core_via = edbapp.padstacks.definitions.get("CORE_VIA")
-        assert core_via is not None
+        edbapp.padstacks.create(padstackname="VIA_NET_TEST", paddiam="0.2mm", holediam="0.1mm")
 
-        # Pad diameter on PCB_L1 must match $CORE_VIA_pad_diameter = 0.25 mm
-        pad_on_l1 = core_via.pad_by_layer.get("PCB_L1")
-        assert pad_on_l1 is not None, "CORE_VIA must have a pad defined on PCB_L1"
-        params = pad_on_l1.parameters_values
-        assert params is not None and len(params) > 0, "Pad parameters must be non-empty"
-        pad_diameter_m = float(params[0])
-        assert abs(pad_diameter_m - 0.00025) < 1e-9, (
-            f"CORE_VIA pad diameter on PCB_L1 expected 0.00025 m (0.25 mm), got {pad_diameter_m}"
-        )
+        # Place instances on two named nets — neither exists yet when first placed
+        edbapp.padstacks.place([0, 0], "VIA_NET_TEST", net_name="SIG")
+        edbapp.padstacks.place([1e-3, 0], "VIA_NET_TEST", net_name="GND")
+        edbapp.padstacks.place([2e-3, 0], "VIA_NET_TEST", net_name="SIG")
 
-        # Hole diameter must match $CORE_VIA_hole_diameter = 0.1 mm
-        hole_diameter_m = float(core_via.hole_diameter)
-        assert abs(hole_diameter_m - 0.0001) < 1e-9, (
-            f"CORE_VIA hole diameter expected 0.0001 m (0.1 mm), got {hole_diameter_m}"
-        )
+        net_names = list(edbapp.nets.nets.keys())
 
-        edbapp.close(terminate_rpc_session=False)
+        # Both requested nets must exist with their exact names
+        assert "SIG" in net_names, f"Net 'SIG' not found; nets present: {net_names}"
+        assert "GND" in net_names, f"Net 'GND' not found; nets present: {net_names}"
 
-    def test_parametric_config_creates_modeler_geometry(self):
-        """Parameterised config: traces, padstack instances, and planes must all be created.
+        # No ghost net_XXXX nets should have been created
+        ghost_nets = [n for n in net_names if re.match(r"^net_[A-Z0-9]{4,}$", n, re.IGNORECASE)]
+        assert not ghost_nets, f"Ghost nets found after padstack placement: {ghost_nets}"
 
-        Verifies that the entire ``modeler`` section of the parameterised JSON is
-        applied: padstack instances (signal via + stitching vias), signal traces /
-        fanout segments, anti-pad circles, and GND plane rectangles.
-        """
-        edbapp = self.edb_examples.create_empty_edb()
-        assert edbapp.configuration.load(_PARAMETRIC_CONFIG_JSON, apply_file=True)
-
-        # --- padstack instances ---
-        instances = edbapp.padstacks.instances
-        assert len(instances) >= 7, f"Expected at least 7 padstack instances, got {len(instances)}"
-
-        # Signal via must be placed on the SIG net
-        sig_vias = [i for i in instances.values() if i.net_name == "SIG"]
-        assert len(sig_vias) >= 1, "At least one padstack instance must be on net SIG"
-
-        # Stitching vias must be placed on the GND net
-        gnd_vias = [i for i in instances.values() if i.net_name == "GND"]
-        assert len(gnd_vias) >= 6, f"Expected at least 6 GND stitching vias, got {len(gnd_vias)}"
-
-        # --- traces (path primitives) ---
-        paths = edbapp.layout.paths
-        assert len(paths) >= 3, f"Expected at least 3 path primitives (signal traces), got {len(paths)}"
-
-        # --- planes (rectangle primitives) ---
-        primitives = edbapp.layout.primitives
-        non_path_prims = [p for p in primitives if p.primitive_type != "path"]
-        assert len(non_path_prims) >= 6, (
-            f"Expected at least 6 non-path primitives (GND rectangles), got {len(non_path_prims)}"
-        )
-        # Verify that at least one rectangle has voids (anti-pad circles attached)
-        rectangles = [p for p in non_path_prims if p.primitive_type == "rectangle"]
-        assert len(rectangles) >= 6, f"Expected at least 6 GND rectangles, got {len(rectangles)}"
+        # Verify instance-to-net assignment is correct
+        instances = list(edbapp.padstacks.instances.values())
+        sig_count = sum(1 for i in instances if i.net_name == "SIG")
+        gnd_count = sum(1 for i in instances if i.net_name == "GND")
+        assert sig_count == 2, f"Expected 2 SIG instances, got {sig_count}"
+        assert gnd_count == 1, f"Expected 1 GND instance, got {gnd_count}"
 
         edbapp.close(terminate_rpc_session=False)

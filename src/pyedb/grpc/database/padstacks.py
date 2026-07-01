@@ -1382,7 +1382,7 @@ class Padstacks(object):
             sign_layers = list(sign_layers_values.keys())
             try:
                 from_layer = sign_layers_values[list(padstack_def.pad_by_layer.keys())[0]]
-            except KeyError:
+            except (KeyError, IndexError):
                 from_layer = sign_layers_values[sign_layers[0]]
 
         if not to_layer:
@@ -1392,7 +1392,7 @@ class Padstacks(object):
                 sign_layers = list(sign_layers_values.keys())
             try:
                 to_layer = sign_layers_values[list(padstack_def.pad_by_layer.keys())[-1]]
-            except KeyError:
+            except (KeyError, IndexError):
                 to_layer = sign_layers_values[sign_layers[-1]]
 
         if solder_ball_layer:

@@ -33,8 +33,10 @@ is_linux = os.name == "posix"
 
 from pyedb.generic.constants import unit_converter
 from pyedb.generic.settings import settings
-from tests.conftest import config
+from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
+
+_PARAMETRIC_CONFIG_JSON = os.path.join(local_path, "example_models", "test.json")
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -2958,4 +2960,95 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
         assert cutout.get("reference_nets", None) == ["GND"]
         assert cutout.get("extent_type", None) == "ConvexHull"
         assert cutout.get("expansion_size", None) == 3e-3
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_parametric_config_creates_padstack_definitions(self):
+        """Parameterised config: padstack definitions must be created with correct names.
+
+        Regression for the bug where raw parameter strings (e.g. ``"$CORE_VIA_pad_diameter"``)
+        were passed directly to ``CorePadstackDefData.set_pad_parameters(sizes=...)``
+        without being wrapped in a ``Value`` object with an owner, causing the
+        gRPC backend to silently produce an empty design.
+        """
+        edbapp = self.edb_examples.create_empty_edb()
+        assert edbapp.configuration.load(_PARAMETRIC_CONFIG_JSON, apply_file=True)
+
+        defs = edbapp.padstacks.definitions
+        assert "CORE_VIA" in defs, "CORE_VIA padstack definition must be created"
+        assert "MICRO_VIA" in defs, "MICRO_VIA padstack definition must be created"
+        assert "BGA_VIA" in defs, "BGA_VIA padstack definition must be created"
+
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_parametric_config_pad_sizes_resolved_via_variables(self):
+        """Parameterised config: pad diameters must resolve to the correct numeric values.
+
+        After ``apply_file=True`` the design variables (``$CORE_VIA_pad_diameter = 0.25 mm``,
+        ``$CORE_VIA_hole_diameter = 0.1 mm``) must be set and reflected in the
+        padstack definition so that the pad geometry is non-zero.
+        """
+        edbapp = self.edb_examples.create_empty_edb()
+        assert edbapp.configuration.load(_PARAMETRIC_CONFIG_JSON, apply_file=True)
+
+        # Design variable must be present and have the expected value
+        assert edbapp.variable_exists("$CORE_VIA_pad_diameter")
+        assert edbapp.variable_exists("$CORE_VIA_hole_diameter")
+
+        core_via = edbapp.padstacks.definitions.get("CORE_VIA")
+        assert core_via is not None
+
+        # Pad diameter on PCB_L1 must match $CORE_VIA_pad_diameter = 0.25 mm
+        pad_on_l1 = core_via.pad_by_layer.get("PCB_L1")
+        assert pad_on_l1 is not None, "CORE_VIA must have a pad defined on PCB_L1"
+        params = pad_on_l1.parameters_values
+        assert params is not None and len(params) > 0, "Pad parameters must be non-empty"
+        pad_diameter_m = float(params[0])
+        assert abs(pad_diameter_m - 0.00025) < 1e-9, (
+            f"CORE_VIA pad diameter on PCB_L1 expected 0.00025 m (0.25 mm), got {pad_diameter_m}"
+        )
+
+        # Hole diameter must match $CORE_VIA_hole_diameter = 0.1 mm
+        hole_diameter_m = float(core_via.hole_diameter)
+        assert abs(hole_diameter_m - 0.0001) < 1e-9, (
+            f"CORE_VIA hole diameter expected 0.0001 m (0.1 mm), got {hole_diameter_m}"
+        )
+
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_parametric_config_creates_modeler_geometry(self):
+        """Parameterised config: traces, padstack instances, and planes must all be created.
+
+        Verifies that the entire ``modeler`` section of the parameterised JSON is
+        applied: padstack instances (signal via + stitching vias), signal traces /
+        fanout segments, anti-pad circles, and GND plane rectangles.
+        """
+        edbapp = self.edb_examples.create_empty_edb()
+        assert edbapp.configuration.load(_PARAMETRIC_CONFIG_JSON, apply_file=True)
+
+        # --- padstack instances ---
+        instances = edbapp.padstacks.instances
+        assert len(instances) >= 7, f"Expected at least 7 padstack instances, got {len(instances)}"
+
+        # Signal via must be placed on the SIG net
+        sig_vias = [i for i in instances.values() if i.net_name == "SIG"]
+        assert len(sig_vias) >= 1, "At least one padstack instance must be on net SIG"
+
+        # Stitching vias must be placed on the GND net
+        gnd_vias = [i for i in instances.values() if i.net_name == "GND"]
+        assert len(gnd_vias) >= 6, f"Expected at least 6 GND stitching vias, got {len(gnd_vias)}"
+
+        # --- traces (path primitives) ---
+        paths = edbapp.layout.paths
+        assert len(paths) >= 3, f"Expected at least 3 path primitives (signal traces), got {len(paths)}"
+
+        # --- planes (rectangle primitives) ---
+        primitives = edbapp.layout.primitives
+        non_path_prims = [p for p in primitives if p.primitive_type != "path"]
+        assert len(non_path_prims) >= 6, (
+            f"Expected at least 6 non-path primitives (GND rectangles), got {len(non_path_prims)}"
+        )
+        # Verify that at least one rectangle has voids (anti-pad circles attached)
+        rectangles = [p for p in non_path_prims if p.primitive_type == "rectangle"]
+        assert len(rectangles) >= 6, f"Expected at least 6 GND rectangles, got {len(rectangles)}"
+
         edbapp.close(terminate_rpc_session=False)
