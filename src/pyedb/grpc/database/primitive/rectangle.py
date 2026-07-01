@@ -118,8 +118,6 @@ class Rectangle(Primitive):
         ------
         ValueError
             If the `layer` parameter is not provided.
-        ValueError
-            If the `net` parameter is not provided.
 
         Notes
         -----
@@ -134,8 +132,6 @@ class Rectangle(Primitive):
             raise ValueError("Layout must be provided.")
         if not layer:
             raise ValueError("Layer must be provided.")
-        if not net:
-            raise ValueError("Net must be provided.")
 
         rep_type_mapping = {
             "center_width_height": CoreRectangleRepresentationType.CENTER_WIDTH_HEIGHT,

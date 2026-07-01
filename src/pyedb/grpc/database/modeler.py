@@ -659,7 +659,7 @@ class Modeler(object):
             rect = Rectangle(self._pedb).create(
                 layout=self._pedb.active_layout,
                 layer=layer_name,
-                net=net.core,
+                net=net.core if net is not None else None,
                 rep_type=representation_type,
                 param1=self._pedb.value(lower_left_point[0]),
                 param2=self._pedb.value(lower_left_point[1]),
@@ -687,7 +687,7 @@ class Modeler(object):
             rect = Rectangle.create(
                 layout=self._pedb.active_layout,
                 layer=layer_name,
-                net=net.core,
+                net=net.core if net is not None else None,
                 rep_type=rep_type,
                 param1=self._pedb.value(center_point[0]),
                 param2=self._pedb.value(center_point[1]),

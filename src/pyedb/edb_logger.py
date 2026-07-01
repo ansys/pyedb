@@ -29,6 +29,22 @@ import tempfile
 import time
 
 
+class _SafeRotatingFileHandler(RotatingFileHandler):
+    """RotatingFileHandler that silently skips rollover on Windows file-lock errors.
+
+    On Windows, another process (e.g. a parallel test worker) may hold the log
+    file open, causing ``os.rename`` to raise ``PermissionError`` (WinError 32).
+    Rather than crashing the logging subsystem, we catch that error and continue
+    writing to the existing file.
+    """
+
+    def rotate(self, source, dest):
+        try:
+            super().rotate(source, dest)
+        except PermissionError:
+            pass  # skip rotation; keep writing to the existing file
+
+
 class Msg:
     (INFO, WARNING, ERROR, FATAL) = range(4)
 
@@ -115,7 +131,7 @@ class EdbLogger(object):
                     global_handler = True
                     break
             log_file = os.path.join(tempfile.gettempdir(), settings.global_log_file_name)
-            my_handler = RotatingFileHandler(
+            my_handler = _SafeRotatingFileHandler(
                 log_file,
                 mode="a",
                 maxBytes=float(settings.global_log_file_size) * 1024 * 1024,
