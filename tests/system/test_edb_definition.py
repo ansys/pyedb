@@ -224,7 +224,6 @@ class TestClass(BaseTestClass):
         assert result is None
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Regression test for gRPC-specific bug.")
     def test_parametric_config_creates_padstack_definitions(self):
         """Parameterised config: padstack definitions must be created with correct names.
 
@@ -243,7 +242,6 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Regression test for gRPC-specific bug.")
     def test_parametric_config_pad_sizes_resolved_via_variables(self):
         """Parameterised config: pad diameters must resolve to the correct numeric values.
 
@@ -279,7 +277,6 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Regression test for gRPC-specific bug.")
     def test_parametric_config_creates_modeler_geometry(self):
         """Parameterised config: traces, padstack instances, and planes must all be created.
 
