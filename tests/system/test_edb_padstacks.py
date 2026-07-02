@@ -964,3 +964,42 @@ class TestPadstackCreation:
         )
         assert pad_name == "test2"
         edb.close(terminate_rpc_session=False)
+
+    def test_place_padstack_net_name_no_ghost_nets(self):
+        """Placing a padstack with a new net name must not create ghost nets."""
+        import re
+
+        from pyedb import Edb
+        from tests.conftest import desktop_version
+
+        edb = Edb(
+            os.path.join(self.local_scratch.path, "no_ghost_nets.aedb"),
+            version=desktop_version,
+            grpc=GRPC,
+        )
+
+        # A minimal two-layer stackup is required for padstack placement
+        edb.stackup.add_layer("Top", layer_type="signal", material="copper", thickness="35um")
+        edb.stackup.add_layer("Bot", method="add_on_bottom", layer_type="signal", thickness="35um")
+
+        edb.padstacks.create(pad_shape="Circle", padstackname="TestVia", paddiam="200um", holediam="100um")
+
+        # Place three instances on a brand-new net that does not yet exist
+        edb.padstacks.place([0, 0], "TestVia", net_name="MY_NET")
+        edb.padstacks.place([1e-3, 0], "TestVia", net_name="MY_NET")
+        edb.padstacks.place([2e-3, 0], "TestVia", net_name="MY_NET")
+
+        net_names = list(edb.nets.nets.keys())
+
+        # The net must exist with the exact requested name
+        assert "MY_NET" in net_names, f"Expected net 'MY_NET' to be created, got nets: {net_names}"
+
+        # No ghost nets of the form net_XXXXXX should exist
+        ghost_nets = [n for n in net_names if re.match(r"^net_[A-Z0-9]{4,}$", n, re.IGNORECASE)]
+        assert not ghost_nets, f"Ghost nets created by padstack placement: {ghost_nets}"
+
+        # All three instances must be on MY_NET (not a random net)
+        placed = [i for i in edb.padstacks.instances.values() if i.net_name == "MY_NET"]
+        assert len(placed) == 3, f"Expected 3 instances on MY_NET, got {len(placed)}"
+
+        edb.close(terminate_rpc_session=False)

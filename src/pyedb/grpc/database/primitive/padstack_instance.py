@@ -127,7 +127,14 @@ class PadstackInstance(conn_obj.ConnObj):
             PadstackInstance object.
         """
         if isinstance(net, str):
-            net = layout._pedb.nets.nets.get(net, Net.create(layout, generate_unique_name("net")))
+            if not net:
+                # Empty string → "no net".  Do NOT call gRPC (server rejects
+                # empty-string find/create); build a null Net wrapper locally so
+                # net.core is None, which CorePadstackInstance.create accepts.
+                net = Net(layout._pedb, None)
+            else:
+                # Look up by name; create with the correct name only if absent.
+                net = layout._pedb.nets.nets.get(net) or Net.create(layout, net)
         if isinstance(padstack_definition, PadstackDef):
             padstack_def = padstack_definition.core
             padstack_definition = padstack_definition.name
@@ -151,7 +158,7 @@ class PadstackInstance(conn_obj.ConnObj):
             bottom_layer = layout._pedb.stackup.layers[bottom_layer].core
         inst = CorePadstackInstance.create(
             layout=layout.core,
-            net=net.core,
+            net=net.core if net is not None else None,
             padstack_def=padstack_def,
             position_x=layout._pedb._value_setter(position_x),
             position_y=layout._pedb._value_setter(position_y),
@@ -710,8 +717,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @net_name.setter
     def net_name(self, val):
-        if not self.core.is_null and not self.core.net.is_null:
-            self.net = self._pedb.nets.nets[val]
+        if not self.core.is_null:
+            self.net = self._pedb.nets.find_or_create_net(val)
 
     @property
     def layout_object_instance(self):
