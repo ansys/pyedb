@@ -91,7 +91,7 @@ class TestClass(BaseTestClass):
         assert setup.sweep_data[0].enforce_causality
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"] and is_linux, reason="Crash on DotNet and gRPC on Linux.")
+    @pytest.mark.skipif(not config["use_grpc"], reason="Crash on DotNet.")
     def test_hfss_simulation_setup(self):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
