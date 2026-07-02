@@ -9,6 +9,76 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.80.0 <https://github.com/ansys/pyedb/releases/tag/v0.80.0>`_ - July 02, 2026
+===============================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Exterior_boundary_with_arcs support
+          - `#2337 <https://github.com/ansys/pyedb/pull/2337>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Edb version defaulting to latest installed
+          - `#2335 <https://github.com/ansys/pyedb/pull/2335>`_
+
+        * - Parametrized padstack creation with config
+          - `#2341 <https://github.com/ansys/pyedb/pull/2341>`_
+
+        * - Fix all HFSS adaptive settings properties setter with grpc
+          - `#2347 <https://github.com/ansys/pyedb/pull/2347>`_
+
+        * - Set all antipad value to \"0mm\" failing
+          - `#2348 <https://github.com/ansys/pyedb/pull/2348>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ruff from 0.15.17 to 0.15.18
+          - `#2331 <https://github.com/ansys/pyedb/pull/2331>`_
+
+        * - Bump pytest from 9.1.0 to 9.1.1
+          - `#2332 <https://github.com/ansys/pyedb/pull/2332>`_
+
+        * - Bump actions/checkout from 6.0.3 to 7.0.0
+          - `#2338 <https://github.com/ansys/pyedb/pull/2338>`_
+
+        * - Bump jupytext from 1.19.3 to 1.19.4
+          - `#2339 <https://github.com/ansys/pyedb/pull/2339>`_
+
+        * - Bump ruff from 0.15.18 to 0.15.19
+          - `#2344 <https://github.com/ansys/pyedb/pull/2344>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.79.1
+          - `#2330 <https://github.com/ansys/pyedb/pull/2330>`_
+
+        * - Pre-commit automatic update
+          - `#2340 <https://github.com/ansys/pyedb/pull/2340>`_
+
+
 `0.79.1 <https://github.com/ansys/pyedb/releases/tag/v0.79.1>`_ - June 26, 2026
 ===============================================================================
 
