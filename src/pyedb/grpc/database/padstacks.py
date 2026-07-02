@@ -938,10 +938,22 @@ class Padstacks(object):
                 layers_name = cloned_padstack_data.layer_names
                 for layer in layers_name:
                     try:
-                        geom_type, points, offset_x, offset_y, rotation = cloned_padstack_data.get_pad_parameters(
-                            layer, CorePadType.ANTI_PAD
-                        )
-                        if geom_type == CorePadGeometryType.PADGEOMTYPE_CIRCLE.name:
+                        padparams = cloned_padstack_data.get_pad_parameters(layer, CorePadType.ANTI_PAD)
+                        if not padparams:
+                            self._logger.info(
+                                f"No anti-pad defined for padstack definition {padstack.name}, layer {layer}"
+                            )
+                            continue
+                        geom_type = padparams[0]
+                        offset_x = padparams[2] if len(padparams) == 5 else padparams[1]
+                        offset_y = padparams[3] if len(padparams) == 5 else padparams[2]
+                        rotation = padparams[4] if len(padparams) == 5 else padparams[3]
+                        if geom_type == CorePadGeometryType.PADGEOMTYPE_NO_GEOMETRY:
+                            self._logger.info(
+                                f"Pad-stack definition {padstack.name}, anti-pad on layer {layer} has no geometry,"
+                                f" skipping."
+                            )
+                        elif geom_type == CorePadGeometryType.PADGEOMTYPE_CIRCLE:
                             cloned_padstack_data.set_pad_parameters(
                                 layer=layer,
                                 pad_type=CorePadType.ANTI_PAD,
@@ -955,16 +967,15 @@ class Padstacks(object):
                                 f"Pad-stack definition {padstack.name}, anti-pad on layer {layer}, has been set "
                                 f"to {str(value)}"
                             )
-
                         else:  # pragma no cover
                             self._logger.error(
-                                f"Failed to reassign anti-pad value {value} on Pads-stack definition {padstack.name},"
-                                f" layer{layer}. This feature only support circular shape anti-pads."
+                                f"Failed to reassign anti-pad value {value} on padstack definition {padstack.name},"
+                                f" layer {layer}. This feature only supports circular anti-pads."
                             )
                             all_succeed = False
-                    except:
+                    except Exception:
                         self._pedb.logger.info(
-                            f"No antipad defined for padstack definition {padstack.name}-layer{layer}"
+                            f"No anti-pad defined for padstack definition {padstack.name}, layer {layer}"
                         )
                 padstack.core.data = cloned_padstack_data
             return all_succeed

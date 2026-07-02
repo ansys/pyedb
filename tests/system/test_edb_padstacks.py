@@ -919,6 +919,13 @@ class TestPadstackInstanceEMProperties(BaseTestClass):
         assert edb.padstacks.set_all_antipad_value(0.0)
         edb.close(terminate_rpc_session=False)
 
+    def test_set_all_antipad_value(self):
+        """Verify that set_all_antipad_value correctly updates circular anti-pads."""
+        edbapp = self.edb_examples.get_si_verse()
+        result = edbapp.padstacks.set_all_antipad_value("0mm")
+        assert result
+        edbapp.close(terminate_rpc_session=False)
+
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPadstackCreation:
