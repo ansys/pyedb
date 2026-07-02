@@ -1,0 +1,377 @@
+{
+  "stackup": {
+    "layers": [
+      {"name": "PCB_SMB", "layer_type": "dielectric", "material": "solder_mask", "fill_material": "", "thickness": "0.02mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_L1", "layer_type": "signal", "material": "copper", "fill_material": "pcb_prepreg", "thickness": "0.017mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_DE1", "layer_type": "dielectric", "material": "pcb_prepreg", "fill_material": "", "thickness": "0.12mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_L2", "layer_type": "signal", "material": "copper", "fill_material": "pcb_prepreg", "thickness": "0.017mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_DE2", "layer_type": "dielectric", "material": "pcb_core", "fill_material": "", "thickness": "0.12mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_L3", "layer_type": "signal", "material": "copper", "fill_material": "pcb_prepreg", "thickness": "0.017mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_DE3", "layer_type": "dielectric", "material": "pcb_prepreg", "fill_material": "", "thickness": "0.12mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_L4", "layer_type": "signal", "material": "copper", "fill_material": "pcb_prepreg", "thickness": "0.017mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_DE4", "layer_type": "dielectric", "material": "pcb_core", "fill_material": "", "thickness": "0.12mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_L5", "layer_type": "signal", "material": "copper", "fill_material": "pcb_prepreg", "thickness": "0.017mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_DE5", "layer_type": "dielectric", "material": "pcb_prepreg", "fill_material": "", "thickness": "0.12mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_L6", "layer_type": "signal", "material": "copper", "fill_material": "pcb_prepreg", "thickness": "0.017mm", "roughness": null, "etching": null, "color": null},
+      {"name": "PCB_SMT", "layer_type": "dielectric", "material": "solder_mask", "fill_material": "", "thickness": "0.02mm", "roughness": null, "etching": null, "color": null}
+    ], "materials": [
+      {"conductivity": null, "dielectric_loss_tangent": 0.01, "magnetic_loss_tangent": null, "mass_density": null, "permittivity": 4, "permeability": null, "poisson_ratio": null, "specific_heat": null, "thermal_conductivity": null, "youngs_modulus": null, "thermal_expansion_coefficient": null, "dc_conductivity": null, "dc_permittivity": null, "dielectric_model_frequency": null, "loss_tangent_at_frequency": null, "permittivity_at_frequency": null, "name": "pcb_core", "thermal_modifiers": null},
+      {"conductivity": null, "dielectric_loss_tangent": 0.01, "magnetic_loss_tangent": null, "mass_density": null, "permittivity": 4, "permeability": null, "poisson_ratio": null, "specific_heat": null, "thermal_conductivity": null, "youngs_modulus": null, "thermal_expansion_coefficient": null, "dc_conductivity": null, "dc_permittivity": null, "dielectric_model_frequency": null, "loss_tangent_at_frequency": null, "permittivity_at_frequency": null, "name": "pcb_prepreg", "thermal_modifiers": null},
+      {"conductivity": null, "dielectric_loss_tangent": 0.006, "magnetic_loss_tangent": null, "mass_density": null, "permittivity": 3.5, "permeability": null, "poisson_ratio": null, "specific_heat": null, "thermal_conductivity": null, "youngs_modulus": null, "thermal_expansion_coefficient": null, "dc_conductivity": null, "dc_permittivity": null, "dielectric_model_frequency": null, "loss_tangent_at_frequency": null, "permittivity_at_frequency": null, "name": "pkg_core", "thermal_modifiers": null},
+      {"conductivity": null, "dielectric_loss_tangent": 0.006, "magnetic_loss_tangent": null, "mass_density": null, "permittivity": 3.5, "permeability": null, "poisson_ratio": null, "specific_heat": null, "thermal_conductivity": null, "youngs_modulus": null, "thermal_expansion_coefficient": null, "dc_conductivity": null, "dc_permittivity": null, "dielectric_model_frequency": null, "loss_tangent_at_frequency": null, "permittivity_at_frequency": null, "name": "pkg_prepreg", "thermal_modifiers": null},
+      {"conductivity": 58000000.0, "dielectric_loss_tangent": null, "magnetic_loss_tangent": null, "mass_density": null, "permittivity": null, "permeability": null, "poisson_ratio": null, "specific_heat": null, "thermal_conductivity": null, "youngs_modulus": null, "thermal_expansion_coefficient": null, "dc_conductivity": null, "dc_permittivity": null, "dielectric_model_frequency": null, "loss_tangent_at_frequency": null, "permittivity_at_frequency": null, "name": "copper", "thermal_modifiers": null},
+      {"conductivity": 7000000, "dielectric_loss_tangent": null, "magnetic_loss_tangent": null, "mass_density": null, "permittivity": null, "permeability": null, "poisson_ratio": null, "specific_heat": null, "thermal_conductivity": null, "youngs_modulus": null, "thermal_expansion_coefficient": null, "dc_conductivity": null, "dc_permittivity": null, "dielectric_model_frequency": null, "loss_tangent_at_frequency": null, "permittivity_at_frequency": null, "name": "solder", "thermal_modifiers": null},
+      {"conductivity": null, "dielectric_loss_tangent": 0.035, "magnetic_loss_tangent": null, "mass_density": null, "permittivity": 3.3, "permeability": null, "poisson_ratio": null, "specific_heat": null, "thermal_conductivity": null, "youngs_modulus": null, "thermal_expansion_coefficient": null, "dc_conductivity": null, "dc_permittivity": null, "dielectric_model_frequency": null, "loss_tangent_at_frequency": null, "permittivity_at_frequency": null, "name": "solder_mask", "thermal_modifiers": null},
+      {"conductivity": null, "dielectric_loss_tangent": 0, "magnetic_loss_tangent": null, "mass_density": null, "permittivity": 1, "permeability": null, "poisson_ratio": null, "specific_heat": null, "thermal_conductivity": null, "youngs_modulus": null, "thermal_expansion_coefficient": null, "dc_conductivity": null, "dc_permittivity": null, "dielectric_model_frequency": null, "loss_tangent_at_frequency": null, "permittivity_at_frequency": null, "name": "air", "thermal_modifiers": null}
+    ]
+  }, "variables": [
+  {"name": "pitch", "value": "1mm", "description": ""},
+  {"name": "$CORE_VIA_pad_diameter", "value": "0.25mm", "description": ""},
+  {"name": "$CORE_VIA_hole_diameter", "value": "0.1mm", "description": ""},
+  {"name": "pitch", "value": "1mm", "description": ""},
+  {"name": "$CORE_VIA_pad_diameter", "value": "0.25mm", "description": ""},
+  {"name": "$CORE_VIA_hole_diameter", "value": "0.1mm", "description": ""},
+  {"name": "$MICRO_VIA_pad_diameter", "value": "0.1mm", "description": ""},
+  {"name": "$MICRO_VIA_hole_diameter", "value": "0.05mm", "description": ""},
+  {"name": "pitch", "value": "1mm", "description": ""},
+  {"name": "$CORE_VIA_pad_diameter", "value": "0.25mm", "description": ""},
+  {"name": "$CORE_VIA_hole_diameter", "value": "0.1mm", "description": ""},
+  {"name": "$MICRO_VIA_pad_diameter", "value": "0.1mm", "description": ""},
+  {"name": "$MICRO_VIA_hole_diameter", "value": "0.05mm", "description": ""},
+  {"name": "$BGA_VIA_pad_diameter", "value": "0.5mm", "description": ""},
+  {"name": "$BGA_VIA_hole_diameter", "value": "0.4mm", "description": ""},
+  {"name": "SIG_PCB_L1_PCB_L6_dx", "value": "0mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_PCB_L6_dy", "value": "0mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_PCB_L6_anti_pad_diameter", "value": "0.8mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_PCB_L6_trace_width", "value": "0.1mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_PCB_L6_trace_clearance", "value": "0.1mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_PCB_L6_trace__dx_1", "value": "SIG_PCB_L1_PCB_L6_dx", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_PCB_L6_trace__dy_1", "value": "SIG_PCB_L1_PCB_L6_dy", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_fanout_width", "value": "0.1mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_fanout_clearance", "value": "0.1mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_fanout__dx_1", "value": "0mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_fanout__dy_1", "value": "0.5mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L6_fanout_width", "value": "0.1mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L6_fanout_clearance", "value": "0.1mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L6_fanout__dx_1", "value": "0mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L6_fanout__dy_1", "value": "0.5mm", "description": "Net name = SIG"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_0_dx", "value": "cos(0deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_0_dy", "value": "sin(0deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_1_dx", "value": "cos(60deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_1_dy", "value": "sin(60deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_2_dx", "value": "cos(120deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_2_dy", "value": "sin(120deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_3_dx", "value": "cos(180deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_3_dy", "value": "sin(180deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_4_dx", "value": "cos(240deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_4_dy", "value": "sin(240deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_5_dx", "value": "cos(300deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "SIG_PCB_L1_PCB_L6_stitching_via_5_dy", "value": "sin(300deg)*(0.125mm+SIG_PCB_L1_PCB_L6_anti_pad_diameter/2)", "description": "Net name = GND"},
+  {"name": "pitch", "value": "1mm", "description": ""},
+  {"name": "$CORE_VIA_pad_diameter", "value": "0.25mm", "description": ""},
+  {"name": "$CORE_VIA_hole_diameter", "value": "0.1mm", "description": ""},
+  {"name": "$MICRO_VIA_pad_diameter", "value": "0.1mm", "description": ""},
+  {"name": "$MICRO_VIA_hole_diameter", "value": "0.05mm", "description": ""},
+  {"name": "$BGA_VIA_pad_diameter", "value": "0.5mm", "description": ""},
+  {"name": "$BGA_VIA_hole_diameter", "value": "0.4mm", "description": ""},
+  {"name": "outline_extent_x_p", "value": "1mm"},
+  {"name": "outline_extent_x_n", "value": "1mm"},
+  {"name": "outline_extent_y_p", "value": "1mm"},
+  {"name": "outline_extent_y_n", "value": "1mm"}
+], "ports": [
+  {
+    "name": "port_SIG_PCB_L1_fanout", "type": "wave_port", "primitive_name": "SIG_PCB_L1_fanout", "point_on_edge": [
+    "0*pitch+SIG_PCB_L1_PCB_L6_dx+(SIG_PCB_L1_fanout__dx_1*1)",
+    "0*pitch+SIG_PCB_L1_PCB_L6_dy+(SIG_PCB_L1_fanout__dy_1*1)"
+  ], "horizontal_extent_factor": 6, "vertical_extent_factor": 4, "pec_launch_width": "0.02mm"
+  },
+  {
+    "name": "port_SIG_PCB_L6_fanout", "type": "wave_port", "primitive_name": "SIG_PCB_L6_fanout", "point_on_edge": [
+    "0*pitch+SIG_PCB_L1_PCB_L6_dx+(SIG_PCB_L6_fanout__dx_1*1)",
+    "0*pitch+SIG_PCB_L1_PCB_L6_dy+(SIG_PCB_L6_fanout__dy_1*-1)"
+  ], "horizontal_extent_factor": 6, "vertical_extent_factor": 4, "pec_launch_width": "0.02mm"
+  }
+], "setups": [], "modeler": {
+  "traces": [
+    {
+      "name": "SIG_PCB_L1_PCB_L6_trace", "layer": "PCB_L6", "width": "SIG_PCB_L1_PCB_L6_trace_width", "path": [
+      [
+        "0*pitch",
+        "0*pitch"
+      ],
+      [
+        "0*pitch+(SIG_PCB_L1_PCB_L6_trace__dx_1*1)",
+        "0*pitch+(SIG_PCB_L1_PCB_L6_trace__dy_1*1)"
+      ]
+    ], "net_name": "SIG", "start_cap_style": "round", "end_cap_style": "round", "corner_style": "round"
+    },
+    {
+      "name": "SIG_PCB_L1_PCB_L6_trace_void", "layer": "PCB_L6", "width": "SIG_PCB_L1_PCB_L6_trace_width+2*SIG_PCB_L1_PCB_L6_trace_clearance", "path": [
+      [
+        "0*pitch",
+        "0*pitch"
+      ],
+      [
+        "0*pitch+(SIG_PCB_L1_PCB_L6_trace__dx_1*1)",
+        "0*pitch+(SIG_PCB_L1_PCB_L6_trace__dy_1*1)"
+      ]
+    ], "net_name": "SIG", "start_cap_style": "round", "end_cap_style": "round", "corner_style": "round"
+    },
+    {
+      "name": "SIG_PCB_L1_fanout", "layer": "PCB_L1", "width": "SIG_PCB_L1_fanout_width", "path": [
+      [
+        "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+        "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+      ],
+      [
+        "0*pitch+SIG_PCB_L1_PCB_L6_dx+(SIG_PCB_L1_fanout__dx_1*1)",
+        "0*pitch+SIG_PCB_L1_PCB_L6_dy+(SIG_PCB_L1_fanout__dy_1*1)"
+      ]
+    ], "net_name": "SIG", "start_cap_style": "round", "end_cap_style": "flat", "corner_style": "round"
+    },
+    {
+      "name": "SIG_PCB_L1_fanout_void", "layer": "PCB_L1", "width": "SIG_PCB_L1_fanout_width+2*SIG_PCB_L1_fanout_clearance", "path": [
+      [
+        "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+        "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+      ],
+      [
+        "0*pitch+SIG_PCB_L1_PCB_L6_dx+(SIG_PCB_L1_fanout__dx_1*1)",
+        "0*pitch+SIG_PCB_L1_PCB_L6_dy+(SIG_PCB_L1_fanout__dy_1*1)"
+      ]
+    ], "net_name": "SIG", "start_cap_style": "round", "end_cap_style": "round", "corner_style": "round"
+    },
+    {
+      "name": "SIG_PCB_L6_fanout", "layer": "PCB_L6", "width": "SIG_PCB_L6_fanout_width", "path": [
+      [
+        "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+        "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+      ],
+      [
+        "0*pitch+SIG_PCB_L1_PCB_L6_dx+(SIG_PCB_L6_fanout__dx_1*1)",
+        "0*pitch+SIG_PCB_L1_PCB_L6_dy+(SIG_PCB_L6_fanout__dy_1*-1)"
+      ]
+    ], "net_name": "SIG", "start_cap_style": "round", "end_cap_style": "flat", "corner_style": "round"
+    },
+    {
+      "name": "SIG_PCB_L6_fanout_void", "layer": "PCB_L6", "width": "SIG_PCB_L6_fanout_width+2*SIG_PCB_L6_fanout_clearance", "path": [
+      [
+        "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+        "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+      ],
+      [
+        "0*pitch+SIG_PCB_L1_PCB_L6_dx+(SIG_PCB_L6_fanout__dx_1*1)",
+        "0*pitch+SIG_PCB_L1_PCB_L6_dy+(SIG_PCB_L6_fanout__dy_1*-1)"
+      ]
+    ], "net_name": "SIG", "start_cap_style": "round", "end_cap_style": "round", "corner_style": "round"
+    }
+  ], "planes": [
+    {
+      "type": "circle", "name": "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L1", "layer": "PCB_L1", "net_name": "SIG", "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+    ], "radius": "SIG_PCB_L1_PCB_L6_anti_pad_diameter/2"
+    },
+    {
+      "type": "circle", "name": "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L2", "layer": "PCB_L2", "net_name": "SIG", "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+    ], "radius": "SIG_PCB_L1_PCB_L6_anti_pad_diameter/2"
+    },
+    {
+      "type": "circle", "name": "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L3", "layer": "PCB_L3", "net_name": "SIG", "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+    ], "radius": "SIG_PCB_L1_PCB_L6_anti_pad_diameter/2"
+    },
+    {
+      "type": "circle", "name": "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L4", "layer": "PCB_L4", "net_name": "SIG", "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+    ], "radius": "SIG_PCB_L1_PCB_L6_anti_pad_diameter/2"
+    },
+    {
+      "type": "circle", "name": "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L5", "layer": "PCB_L5", "net_name": "SIG", "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+    ], "radius": "SIG_PCB_L1_PCB_L6_anti_pad_diameter/2"
+    },
+    {
+      "type": "circle", "name": "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L6", "layer": "PCB_L6", "net_name": "SIG", "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+    ], "radius": "SIG_PCB_L1_PCB_L6_anti_pad_diameter/2"
+    },
+    {
+      "type": "rectangle", "name": "GND_PCB_L1", "layer": "PCB_L1", "net_name": "GND", "lower_left_point": [
+      "-1*(outline_extent_x_n)",
+      "-1*(outline_extent_y_n)"
+    ], "upper_right_point": [
+      "(outline_extent_x_p)+(1-1)*pitch",
+      "(outline_extent_y_p)+(1-1)*pitch"
+    ], "voids": [
+      "SIG_PCB_L1_fanout_void",
+      "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L1"
+    ]
+    },
+    {
+      "type": "rectangle", "name": "GND_PCB_L2", "layer": "PCB_L2", "net_name": "GND", "lower_left_point": [
+      "-1*(outline_extent_x_n)",
+      "-1*(outline_extent_y_n)"
+    ], "upper_right_point": [
+      "(outline_extent_x_p)+(1-1)*pitch",
+      "(outline_extent_y_p)+(1-1)*pitch"
+    ], "voids": [
+      "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L2"
+    ]
+    },
+    {
+      "type": "rectangle", "name": "GND_PCB_L3", "layer": "PCB_L3", "net_name": "GND", "lower_left_point": [
+      "-1*(outline_extent_x_n)",
+      "-1*(outline_extent_y_n)"
+    ], "upper_right_point": [
+      "(outline_extent_x_p)+(1-1)*pitch",
+      "(outline_extent_y_p)+(1-1)*pitch"
+    ], "voids": [
+      "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L3"
+    ]
+    },
+    {
+      "type": "rectangle", "name": "GND_PCB_L4", "layer": "PCB_L4", "net_name": "GND", "lower_left_point": [
+      "-1*(outline_extent_x_n)",
+      "-1*(outline_extent_y_n)"
+    ], "upper_right_point": [
+      "(outline_extent_x_p)+(1-1)*pitch",
+      "(outline_extent_y_p)+(1-1)*pitch"
+    ], "voids": [
+      "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L4"
+    ]
+    },
+    {
+      "type": "rectangle", "name": "GND_PCB_L5", "layer": "PCB_L5", "net_name": "GND", "lower_left_point": [
+      "-1*(outline_extent_x_n)",
+      "-1*(outline_extent_y_n)"
+    ], "upper_right_point": [
+      "(outline_extent_x_p)+(1-1)*pitch",
+      "(outline_extent_y_p)+(1-1)*pitch"
+    ], "voids": [
+      "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L5"
+    ]
+    },
+    {
+      "type": "rectangle", "name": "GND_PCB_L6", "layer": "PCB_L6", "net_name": "GND", "lower_left_point": [
+      "-1*(outline_extent_x_n)",
+      "-1*(outline_extent_y_n)"
+    ], "upper_right_point": [
+      "(outline_extent_x_p)+(1-1)*pitch",
+      "(outline_extent_y_p)+(1-1)*pitch"
+    ], "voids": [
+      "SIG_PCB_L1_PCB_L6_trace_void",
+      "SIG_PCB_L6_fanout_void",
+      "SIG_PCB_L1_PCB_L6_anti_pad_PCB_L6"
+    ]
+    }
+  ], "padstack_definitions": [
+    {
+      "name": "CORE_VIA", "hole_range": "upper_pad_to_lower_pad", "solder_ball_parameters": null, "material": "copper", "pad_parameters": {
+      "regular_pad": [
+        {"layer_name": "PCB_L1", "shape": "circle", "diameter": "$CORE_VIA_pad_diameter"},
+        {"layer_name": "PCB_L2", "shape": "circle", "diameter": "$CORE_VIA_pad_diameter"},
+        {"layer_name": "PCB_L3", "shape": "circle", "diameter": "$CORE_VIA_pad_diameter"},
+        {"layer_name": "PCB_L4", "shape": "circle", "diameter": "$CORE_VIA_pad_diameter"},
+        {"layer_name": "PCB_L5", "shape": "circle", "diameter": "$CORE_VIA_pad_diameter"},
+        {"layer_name": "PCB_L6", "shape": "circle", "diameter": "$CORE_VIA_pad_diameter"}
+      ]
+    }, "hole_parameters": {"shape": "circle", "diameter": "$CORE_VIA_hole_diameter"}
+    },
+    {
+      "name": "MICRO_VIA", "hole_range": "upper_pad_to_lower_pad", "solder_ball_parameters": null, "material": "copper", "pad_parameters": {
+      "regular_pad": [
+        {"layer_name": "PCB_L1", "shape": "circle", "diameter": "$MICRO_VIA_pad_diameter"},
+        {"layer_name": "PCB_L2", "shape": "circle", "diameter": "$MICRO_VIA_pad_diameter"},
+        {"layer_name": "PCB_L3", "shape": "circle", "diameter": "$MICRO_VIA_pad_diameter"},
+        {"layer_name": "PCB_L4", "shape": "circle", "diameter": "$MICRO_VIA_pad_diameter"},
+        {"layer_name": "PCB_L5", "shape": "circle", "diameter": "$MICRO_VIA_pad_diameter"},
+        {"layer_name": "PCB_L6", "shape": "circle", "diameter": "$MICRO_VIA_pad_diameter"}
+      ]
+    }, "hole_parameters": {"shape": "circle", "diameter": "$MICRO_VIA_hole_diameter"}
+    },
+    {
+      "name": "BGA_VIA", "hole_range": "upper_pad_to_lower_pad", "solder_ball_parameters": {"shape": "cylinder", "diameter": "0.4mm", "mid_diameter": "0.5mm", "placement": "above_padstack", "material": "solder"}, "material": "copper", "pad_parameters": {
+      "regular_pad": [
+        {"layer_name": "PCB_L1", "shape": "circle", "diameter": "$BGA_VIA_pad_diameter"},
+        {"layer_name": "PCB_L2", "shape": "circle", "diameter": "$BGA_VIA_pad_diameter"},
+        {"layer_name": "PCB_L3", "shape": "circle", "diameter": "$BGA_VIA_pad_diameter"},
+        {"layer_name": "PCB_L4", "shape": "circle", "diameter": "$BGA_VIA_pad_diameter"},
+        {"layer_name": "PCB_L5", "shape": "circle", "diameter": "$BGA_VIA_pad_diameter"},
+        {"layer_name": "PCB_L6", "shape": "circle", "diameter": "$BGA_VIA_pad_diameter"}
+      ]
+    }, "hole_parameters": {"shape": "circle", "diameter": "$BGA_VIA_hole_diameter"}
+    }
+  ], "padstack_instances": [
+    {
+      "name": "SIG_PCB_L1_PCB_L6", "definition": "CORE_VIA", "layer_range": [
+      "PCB_L1",
+      "PCB_L6"
+    ], "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy"
+    ], "net_name": "SIG", "backdrill_parameters": {"from_top": null, "from_bottom": null}
+    },
+    {
+      "name": "SIG_PCB_L1_PCB_L6_stitching_via_0", "definition": "CORE_VIA", "layer_range": [
+      "PCB_L1",
+      "PCB_L6"
+    ], "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx+SIG_PCB_L1_PCB_L6_stitching_via_0_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy+SIG_PCB_L1_PCB_L6_stitching_via_0_dy"
+    ], "net_name": "GND"
+    },
+    {
+      "name": "SIG_PCB_L1_PCB_L6_stitching_via_1", "definition": "CORE_VIA", "layer_range": [
+      "PCB_L1",
+      "PCB_L6"
+    ], "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx+SIG_PCB_L1_PCB_L6_stitching_via_1_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy+SIG_PCB_L1_PCB_L6_stitching_via_1_dy"
+    ], "net_name": "GND"
+    },
+    {
+      "name": "SIG_PCB_L1_PCB_L6_stitching_via_2", "definition": "CORE_VIA", "layer_range": [
+      "PCB_L1",
+      "PCB_L6"
+    ], "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx+SIG_PCB_L1_PCB_L6_stitching_via_2_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy+SIG_PCB_L1_PCB_L6_stitching_via_2_dy"
+    ], "net_name": "GND"
+    },
+    {
+      "name": "SIG_PCB_L1_PCB_L6_stitching_via_3", "definition": "CORE_VIA", "layer_range": [
+      "PCB_L1",
+      "PCB_L6"
+    ], "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx+SIG_PCB_L1_PCB_L6_stitching_via_3_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy+SIG_PCB_L1_PCB_L6_stitching_via_3_dy"
+    ], "net_name": "GND"
+    },
+    {
+      "name": "SIG_PCB_L1_PCB_L6_stitching_via_4", "definition": "CORE_VIA", "layer_range": [
+      "PCB_L1",
+      "PCB_L6"
+    ], "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx+SIG_PCB_L1_PCB_L6_stitching_via_4_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy+SIG_PCB_L1_PCB_L6_stitching_via_4_dy"
+    ], "net_name": "GND"
+    },
+    {
+      "name": "SIG_PCB_L1_PCB_L6_stitching_via_5", "definition": "CORE_VIA", "layer_range": [
+      "PCB_L1",
+      "PCB_L6"
+    ], "position": [
+      "0*pitch+SIG_PCB_L1_PCB_L6_dx+SIG_PCB_L1_PCB_L6_stitching_via_5_dx",
+      "0*pitch+SIG_PCB_L1_PCB_L6_dy+SIG_PCB_L1_PCB_L6_stitching_via_5_dy"
+    ], "net_name": "GND"
+    }
+  ]
+}
+}

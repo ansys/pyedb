@@ -109,9 +109,26 @@ class PackageDef:
         Returns
         -------
         :class:`PolygonData <class: PolygonData>`
+            return boundary without arcs e.g. arcs are discretized instead.
 
         """
         return PolygonData(self._pedb, self.core.exterior_boundary.without_arcs())
+
+    @property
+    def exterior_boundary_with_arcs(self) -> PolygonData:
+        """Get the exterior boundary of a package definition with arcs if exists.
+
+        Returns
+        -------
+        :class:`PolygonData <class: PolygonData>`
+            return boundary without arcs if exists.
+
+        Note
+        ----
+        This property does not have setter just use `exterior_boundary` setter.
+
+        """
+        return PolygonData(self._pedb, self.core.exterior_boundary)
 
     @exterior_boundary.setter
     def exterior_boundary(self, value):

@@ -1145,55 +1145,55 @@ class PadstackDef:
 
                 # Handle Circle geometry type
                 if p == CorePadGeometryType.PADGEOMTYPE_CIRCLE.name:
-                    temp_param.append(layer_data["diameter"])
+                    temp_param.append(self._pedb._value_setter(layer_data["diameter"]))
                     pad_shape = CorePadGeometryType.PADGEOMTYPE_CIRCLE
 
                 # Handle Square geometry type
                 elif p == CorePadGeometryType.PADGEOMTYPE_SQUARE.name:
-                    temp_param.append(layer_data["size"])
+                    temp_param.append(self._pedb._value_setter(layer_data["size"]))
                     pad_shape = CorePadGeometryType.PADGEOMTYPE_SQUARE
 
                 elif p == CorePadGeometryType.PADGEOMTYPE_RECTANGLE.name:
-                    temp_param.append(layer_data["x_size"])
-                    temp_param.append(layer_data["y_size"])
+                    temp_param.append(self._pedb._value_setter(layer_data["x_size"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["y_size"]))
                     pad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
 
                 # Handle Oval geometry type
                 elif p == CorePadGeometryType.PADGEOMTYPE_OVAL.name:
-                    temp_param.append(layer_data["x_size"])
-                    temp_param.append(layer_data["y_size"])
-                    temp_param.append(layer_data["corner_radius"])
+                    temp_param.append(self._pedb._value_setter(layer_data["x_size"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["y_size"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["corner_radius"]))
                     pad_shape = CorePadGeometryType.PADGEOMTYPE_OVAL
 
                 # Handle Bullet geometry type
                 elif p == CorePadGeometryType.PADGEOMTYPE_BULLET.name:
-                    temp_param.append(layer_data["x_size"])
-                    temp_param.append(layer_data["y_size"])
-                    temp_param.append(layer_data["corner_radius"])
+                    temp_param.append(self._pedb._value_setter(layer_data["x_size"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["y_size"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["corner_radius"]))
                     pad_shape = CorePadGeometryType.PADGEOMTYPE_BULLET
 
                 # Handle Round45 geometry type
                 elif p == CorePadGeometryType.PADGEOMTYPE_SQUARE45.name:
-                    temp_param.append(layer_data["inner"])
-                    temp_param.append(layer_data["channel_width"])
-                    temp_param.append(layer_data["isolation_gap"])
+                    temp_param.append(self._pedb._value_setter(layer_data["inner"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["channel_width"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["isolation_gap"]))
                     pad_shape = CorePadGeometryType.PADGEOMTYPE_SQUARE45
 
                 # Handle Round90 geometry type
                 elif p == CorePadGeometryType.PADGEOMTYPE_SQUARE90.name:
-                    temp_param.append(layer_data["inner"])
-                    temp_param.append(layer_data["channel_width"])
-                    temp_param.append(layer_data["isolation_gap"])
+                    temp_param.append(self._pedb._value_setter(layer_data["inner"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["channel_width"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["isolation_gap"]))
                     pad_shape = CorePadGeometryType.PADGEOMTYPE_SQUARE90
                 elif p == CorePadGeometryType.PADGEOMTYPE_ROUND90.name:
-                    temp_param.append(layer_data["inner"])
-                    temp_param.append(layer_data["channel_width"])
-                    temp_param.append(layer_data["isolation_gap"])
+                    temp_param.append(self._pedb._value_setter(layer_data["inner"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["channel_width"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["isolation_gap"]))
                     pad_shape = CorePadGeometryType.PADGEOMTYPE_ROUND90
                 elif p == CorePadGeometryType.PADGEOMTYPE_ROUND45.name:
-                    temp_param.append(layer_data["inner"])
-                    temp_param.append(layer_data["channel_width"])
-                    temp_param.append(layer_data["isolation_gap"])
+                    temp_param.append(self._pedb._value_setter(layer_data["inner"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["channel_width"]))
+                    temp_param.append(self._pedb._value_setter(layer_data["isolation_gap"]))
                     pad_shape = CorePadGeometryType.PADGEOMTYPE_ROUND45
                 else:
                     continue

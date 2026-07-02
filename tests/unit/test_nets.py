@@ -215,16 +215,22 @@ class TestIsPowerGroundNet:
         assert nets.is_power_gound_net(["SIG_A", "SIG_B"]) is False
 
 
-# Nets.find_or_create_net
 class TestFindOrCreateNet:
-    def test_no_args_generates_unique_name_and_creates_net(self):
+    def test_no_args_returns_null_net_without_gRPC(self):
+        """find_or_create_net() with no name must return a local null Net — no gRPC call.
+
+        The old behaviour (generate random unique name + Net.create) produced ghost nets.
+        The new behaviour constructs Net(pedb, None) entirely in Python so the gRPC
+        server is never called with an empty string (which it rejects).
+        """
         nets, _ = _make_nets()
-        created_net = _make_mock_net("NET_abc123")
-        with patch("pyedb.grpc.database.nets.Net.create", return_value=created_net) as mock_create:
-            with patch("pyedb.grpc.database.nets.generate_unique_name", return_value="NET_abc123"):
-                result = nets.find_or_create_net()
-        mock_create.assert_called_once_with(nets._active_layout, "NET_abc123")
-        assert result is created_net
+        with patch("pyedb.grpc.database.nets.Net.create") as mock_create:
+            result = nets.find_or_create_net()
+        # No gRPC Net.create call must have been made
+        mock_create.assert_not_called()
+        # Result must be a Net wrapper whose core is None (null / no-net)
+        assert result is not None
+        assert result.core is None
 
     def test_net_name_found_returns_existing(self):
         nets, _ = _make_nets()

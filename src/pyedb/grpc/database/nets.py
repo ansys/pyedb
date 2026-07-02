@@ -28,7 +28,6 @@ import warnings
 from ansys.edb.core.net.net_class import NetClass as CoreNetClass
 
 from pyedb.common.nets import CommonNets
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.net.net_class import NetClass
 from pyedb.grpc.database.primitive.bondwire import Bondwire
@@ -777,9 +776,12 @@ class Nets(CommonNets):
         >>> pos_nets = edb.nets.find_or_create_net(end_with="_P")
         """
         if not net_name and not start_with and not contain and not end_with:
-            net_name = generate_unique_name("NET_")
-            net = Net.create(self._active_layout, net_name)
-            return net
+            # Empty / no net name → return a null Net wrapper without making any
+            # gRPC call.  The gRPC server rejects both Net.find_by_name and
+            # Net.create when given an empty string.  Callers that need "no net"
+            # can use net.core which will be None (accepted by CorePath /
+            # CoreRectangle / CoreCircle / CorePadstackInstance.create).
+            return Net(self._active_layout._pedb, None)
         else:
             if not start_with and not contain and not end_with:
                 net = Net.find_by_name(layout=self._active_layout, name=net_name)
