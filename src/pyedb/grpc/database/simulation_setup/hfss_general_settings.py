@@ -26,9 +26,15 @@ from pyedb.misc.decorators import deprecated_property
 
 
 class BroadbandAdaptiveSolution:
-    def __init__(self, pedb, core):
+    def __init__(self, pedb, core, parent_core=None):
         self._pedb = pedb
         self.core = core
+        self._parent_core = parent_core
+
+    def _commit(self):
+        """Write the modified core object back to the gRPC general settings."""
+        if self._parent_core is not None:
+            self._parent_core.broadband_adaptive_solution = self.core
 
     @property
     def high_frequency(self) -> str:
@@ -45,6 +51,7 @@ class BroadbandAdaptiveSolution:
     @high_frequency.setter
     def high_frequency(self, value):
         self.core.high_frequency = str(value)
+        self._commit()
 
     @property
     def low_frequency(self) -> str:
@@ -61,6 +68,7 @@ class BroadbandAdaptiveSolution:
     @low_frequency.setter
     def low_frequency(self, value):
         self.core.low_frequency = str(value)
+        self._commit()
 
     @property
     def max_delta(self) -> str:
@@ -77,6 +85,7 @@ class BroadbandAdaptiveSolution:
     @max_delta.setter
     def max_delta(self, value):
         self.core.max_delta = str(value)
+        self._commit()
 
     @property
     def max_num_passes(self) -> int:
@@ -93,6 +102,7 @@ class BroadbandAdaptiveSolution:
     @max_num_passes.setter
     def max_num_passes(self, value):
         self.core.max_num_passes = value
+        self._commit()
 
     @property
     def max_passes(self) -> int:
@@ -112,10 +122,20 @@ class BroadbandAdaptiveSolution:
 
 
 class AdaptiveFrequency:
-    def __init__(self, pedb, core):
+    def __init__(self, pedb, core, parent_mfs=None, parent_index=None):
         """Represents an adaptive frequency."""
         self._pedb = pedb
         self.core = core
+        self._parent_mfs = parent_mfs  # MultiFrequencyAdaptiveSolution wrapper (knows how to commit to general)
+        self._parent_index = parent_index
+
+    def _commit(self):
+        """Write the modified core back into the parent multi-frequency list then propagate to general settings."""
+        if self._parent_mfs is not None and self._parent_index is not None:
+            freqs = self._parent_mfs.core.adaptive_frequencies
+            freqs[self._parent_index] = self.core
+            self._parent_mfs.core.adaptive_frequencies = freqs
+            self._parent_mfs._commit()  # second level: write multi_freq back to settings.general
 
     @property
     def adaptive_frequency(self) -> str:
@@ -132,6 +152,7 @@ class AdaptiveFrequency:
     @adaptive_frequency.setter
     def adaptive_frequency(self, value):
         self.core.adaptive_frequency = str(value)
+        self._commit()
 
     @property
     def max_delta(self) -> str:
@@ -148,6 +169,7 @@ class AdaptiveFrequency:
     @max_delta.setter
     def max_delta(self, value):
         self.core.max_delta = str(value)
+        self._commit()
 
     @property
     def output_variables(self) -> dict[str, float]:
@@ -175,6 +197,7 @@ class AdaptiveFrequency:
         variables = self.output_variables
         variables[name] = delta_s
         self.core.output_variables = variables
+        self._commit()
 
     def delete_output_variable(self, name: str) -> bool:
         """Delete an output variable from the adaptive frequency.
@@ -193,20 +216,35 @@ class AdaptiveFrequency:
         if name in variables:
             del variables[name]
             self.core.output_variables = variables
-            return True  #
+            self._commit()
+            return True
         else:
             self._pedb.logger.warning(f"Output variable '{name}' not found.")
         return False
 
 
 class MultiFrequencyAdaptiveSolution:
-    def __init__(self, pedb, core):
+    def __init__(self, pedb, core, parent_core=None):
         self._pedb = pedb
         self.core = core
+        self._parent_core = parent_core
+
+    def _commit(self):
+        """Write the modified core object back to the gRPC general settings."""
+        if self._parent_core is not None:
+            self._parent_core.multi_frequency_adaptive_solution = self.core
 
     @property
     def adaptive_frequencies(self) -> list[AdaptiveFrequency]:
-        return [AdaptiveFrequency(self._pedb, freq) for freq in self.core.adaptive_frequencies]
+        return [
+            AdaptiveFrequency(self._pedb, freq, parent_mfs=self, parent_index=idx)
+            for idx, freq in enumerate(self.core.adaptive_frequencies)
+        ]
+
+    @adaptive_frequencies.setter
+    def adaptive_frequencies(self, value):
+        self.core.adaptive_frequencies = [freq.core if isinstance(freq, AdaptiveFrequency) else freq for freq in value]
+        self._commit()
 
     @property
     def max_passes(self) -> int:
@@ -223,6 +261,7 @@ class MultiFrequencyAdaptiveSolution:
     @max_passes.setter
     def max_passes(self, value):
         self.core.max_passes = value
+        self._commit()
 
 
 class MatrixConvergenceDataEntry:
@@ -440,9 +479,15 @@ class MatrixConvergenceData:
 
 
 class SingleFrequencyAdaptiveSolution:
-    def __init__(self, pedb, core):
+    def __init__(self, pedb, core, parent_core=None):
         self._pedb = pedb
         self.core = core
+        self._parent_core = parent_core
+
+    def _commit(self):
+        """Write the modified core object back to the gRPC general settings."""
+        if self._parent_core is not None:
+            self._parent_core.single_frequency_adaptive_solution = self.core
 
     @property
     def adaptive_frequency(self) -> float:
@@ -459,6 +504,7 @@ class SingleFrequencyAdaptiveSolution:
     @adaptive_frequency.setter
     def adaptive_frequency(self, value):
         self.core.adaptive_frequency = str(self._pedb.value(value))
+        self._commit()
 
     @property
     def max_delta(self) -> float:
@@ -475,6 +521,7 @@ class SingleFrequencyAdaptiveSolution:
     @max_delta.setter
     def max_delta(self, value):
         self.core.max_delta = str(value)
+        self._commit()
 
     @property
     def max_passes(self) -> int:
@@ -491,6 +538,7 @@ class SingleFrequencyAdaptiveSolution:
     @max_passes.setter
     def max_passes(self, value):
         self.core.max_passes = value
+        self._commit()
 
     @property
     def mx_conv_data(self) -> MatrixConvergenceData:
@@ -520,6 +568,7 @@ class SingleFrequencyAdaptiveSolution:
     @use_mx_conv_data.setter
     def use_mx_conv_data(self, value: bool):
         self.core.use_mx_conv_data = value
+        self._commit()
 
 
 class HFSSGeneralSettings:
@@ -603,7 +652,7 @@ class HFSSGeneralSettings:
             Broadband adaptive solution settings object.
 
         """
-        return BroadbandAdaptiveSolution(self._pedb, self.core.broadband_adaptive_solution)
+        return BroadbandAdaptiveSolution(self._pedb, self.core.broadband_adaptive_solution, parent_core=self.core)
 
     @property
     def mesh_region_name(self) -> str:
@@ -623,7 +672,9 @@ class HFSSGeneralSettings:
 
     @property
     def multi_frequency_adaptive_solution(self) -> MultiFrequencyAdaptiveSolution:
-        return MultiFrequencyAdaptiveSolution(self._pedb, self.core.multi_frequency_adaptive_solution)
+        return MultiFrequencyAdaptiveSolution(
+            self._pedb, self.core.multi_frequency_adaptive_solution, parent_core=self.core
+        )
 
     @property
     def save_fields(self) -> bool:
@@ -675,7 +726,9 @@ class HFSSGeneralSettings:
 
     @property
     def single_frequency_adaptive_solution(self):
-        return SingleFrequencyAdaptiveSolution(self._pedb, self.core.single_frequency_adaptive_solution)
+        return SingleFrequencyAdaptiveSolution(
+            self._pedb, self.core.single_frequency_adaptive_solution, parent_core=self.core
+        )
 
     @property
     def use_mesh_region(self) -> bool:

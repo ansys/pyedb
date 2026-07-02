@@ -91,7 +91,7 @@ class TestClass(BaseTestClass):
         assert setup.sweep_data[0].enforce_causality
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"] and is_linux, reason="Crash on DotNet and gRPC on Linux.")
+    @pytest.mark.skipif(not config["use_grpc"], reason="Crash on DotNet.")
     def test_hfss_simulation_setup(self):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
@@ -101,11 +101,14 @@ class TestClass(BaseTestClass):
             assert setup1.adaptive_settings.adaptive_solution_type == "single"
         else:
             assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 1
-        assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"))
+        assert setup1.set_solution_multi_frequencies(frequencies=("5GHz", "10GHz", "100GHz"), max_passes=15)
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
             assert setup1.adaptive_settings.adaptive_solution_type == "multi_frequencies"
         else:
             assert len(setup1.adaptive_settings.adaptive_frequency_data_list) == 3
+        assert setup1.settings.general.multi_frequency_adaptive_solution.max_passes == 15
+        setup1.settings.general.multi_frequency_adaptive_solution.max_passes = 20
+        assert setup1.settings.general.multi_frequency_adaptive_solution.max_passes == 20
         assert setup1.set_solution_broadband()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
             assert setup1.adaptive_settings.adaptive_solution_type == "broadband"
@@ -949,4 +952,115 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_q3d_setup(name="q3d_no_sweep")
         assert setup is not None
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Adaptive solution setter write-back is gRPC-only.")
+    def test_hfss_adaptive_solution_setters(self):
+        """Verify all adaptive solution getter/setter pairs persist via gRPC write-back."""
+        edbapp = self.edb_examples.create_empty_edb()
+        setup = edbapp.hfss.add_setup("adaptive_setter_test")
+
+        # Single-frequency adaptive solution
+        setup.set_solution_single_frequency(frequency="5GHz", max_num_passes=10, max_delta_s=0.02)
+        general = edbapp.setups["adaptive_setter_test"].settings.general
+        assert general.adaptive_solution_type == "single"
+
+        # adaptive_frequency is stored in base units via pedb.value(); verify it was committed (non-empty string)
+        sfs = general.single_frequency_adaptive_solution
+        sfs.adaptive_frequency = "3GHz"
+        reloaded_sfs = edbapp.setups["adaptive_setter_test"].settings.general.single_frequency_adaptive_solution
+        assert reloaded_sfs.adaptive_frequency  # stored as Hz decimal string, just verify commit happened
+
+        sfs = edbapp.setups["adaptive_setter_test"].settings.general.single_frequency_adaptive_solution
+        sfs.max_delta = "0.01"
+        reloaded_sfs = edbapp.setups["adaptive_setter_test"].settings.general.single_frequency_adaptive_solution
+        assert reloaded_sfs.max_delta == "0.01"
+
+        sfs = edbapp.setups["adaptive_setter_test"].settings.general.single_frequency_adaptive_solution
+        sfs.max_passes = 7
+        reloaded_sfs = edbapp.setups["adaptive_setter_test"].settings.general.single_frequency_adaptive_solution
+        assert reloaded_sfs.max_passes == 7
+
+        sfs = edbapp.setups["adaptive_setter_test"].settings.general.single_frequency_adaptive_solution
+        sfs.use_mx_conv_data = True
+        reloaded_sfs = edbapp.setups["adaptive_setter_test"].settings.general.single_frequency_adaptive_solution
+        assert reloaded_sfs.use_mx_conv_data
+
+        sfs = edbapp.setups["adaptive_setter_test"].settings.general.single_frequency_adaptive_solution
+        sfs.use_mx_conv_data = False
+        reloaded_sfs = edbapp.setups["adaptive_setter_test"].settings.general.single_frequency_adaptive_solution
+        assert not reloaded_sfs.use_mx_conv_data
+
+        # Multi-frequency adaptive solution
+        setup.set_solution_multi_frequencies(frequencies=["1GHz", "5GHz", "10GHz"], max_delta_s=0.02, max_passes=12)
+        general = edbapp.setups["adaptive_setter_test"].settings.general
+        assert general.adaptive_solution_type == "multi_frequencies"
+
+        mfs = edbapp.setups["adaptive_setter_test"].settings.general.multi_frequency_adaptive_solution
+        mfs.max_passes = 18
+        assert edbapp.setups["adaptive_setter_test"].settings.general.multi_frequency_adaptive_solution.max_passes == 18
+
+        # AdaptiveFrequency entry setter – modify first entry's frequency and delta
+        mfs = edbapp.setups["adaptive_setter_test"].settings.general.multi_frequency_adaptive_solution
+        first_freq = mfs.adaptive_frequencies[0]
+        first_freq.adaptive_frequency = "2GHz"
+        assert (
+            edbapp.setups["adaptive_setter_test"]
+            .settings.general.multi_frequency_adaptive_solution.adaptive_frequencies[0]
+            .adaptive_frequency
+            == "2GHz"
+        )
+
+        mfs = edbapp.setups["adaptive_setter_test"].settings.general.multi_frequency_adaptive_solution
+        second_freq = mfs.adaptive_frequencies[1]
+        second_freq.max_delta = "0.03"
+        assert (
+            edbapp.setups["adaptive_setter_test"]
+            .settings.general.multi_frequency_adaptive_solution.adaptive_frequencies[1]
+            .max_delta
+            == "0.03"
+        )
+
+        # adaptive_frequencies list setter (replace whole list via wrapper)
+        mfs = edbapp.setups["adaptive_setter_test"].settings.general.multi_frequency_adaptive_solution
+        existing_freqs = mfs.adaptive_frequencies
+        mfs.adaptive_frequencies = existing_freqs
+        assert (
+            len(
+                edbapp.setups[
+                    "adaptive_setter_test"
+                ].settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
+            )
+            == 3
+        )
+
+        # Broadband adaptive solution
+        setup.set_solution_broadband(low_frequency="1GHz", high_frequency="10GHz", max_delta_s=0.02, max_num_passes=10)
+        general = edbapp.setups["adaptive_setter_test"].settings.general
+        assert general.adaptive_solution_type == "broadband"
+
+        bbs = edbapp.setups["adaptive_setter_test"].settings.general.broadband_adaptive_solution
+        bbs.low_frequency = "500MHz"
+        assert (
+            edbapp.setups["adaptive_setter_test"].settings.general.broadband_adaptive_solution.low_frequency == "500MHz"
+        )
+
+        bbs = edbapp.setups["adaptive_setter_test"].settings.general.broadband_adaptive_solution
+        bbs.high_frequency = "20GHz"
+        assert (
+            edbapp.setups["adaptive_setter_test"].settings.general.broadband_adaptive_solution.high_frequency == "20GHz"
+        )
+
+        bbs = edbapp.setups["adaptive_setter_test"].settings.general.broadband_adaptive_solution
+        bbs.max_delta = "0.03"
+        assert edbapp.setups["adaptive_setter_test"].settings.general.broadband_adaptive_solution.max_delta == "0.03"
+
+        bbs = edbapp.setups["adaptive_setter_test"].settings.general.broadband_adaptive_solution
+        bbs.max_num_passes = 8
+        assert edbapp.setups["adaptive_setter_test"].settings.general.broadband_adaptive_solution.max_num_passes == 8
+
+        bbs = edbapp.setups["adaptive_setter_test"].settings.general.broadband_adaptive_solution
+        bbs.max_passes = 6
+        assert edbapp.setups["adaptive_setter_test"].settings.general.broadband_adaptive_solution.max_passes == 6
+
         edbapp.close(terminate_rpc_session=False)

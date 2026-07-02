@@ -234,7 +234,7 @@ class HfssSimulationSetup(SimulationSetup):
         self.core.settings.general.single_frequency_adaptive_solution = sfs
         return True
 
-    def set_solution_multi_frequencies(self, frequencies="5GHz", max_delta_s=0.02) -> bool:
+    def set_solution_multi_frequencies(self, frequencies="5GHz", max_delta_s=0.02, max_passes=10) -> bool:
         """Set HFSS setup multi frequencies adaptive.
 
         Parameters
@@ -243,6 +243,8 @@ class HfssSimulationSetup(SimulationSetup):
             Adaptive frequencies.
         max_delta_s : float, List[float].
             Max delta S values.
+        max_passes : int, optional
+            Maximum number of passes. Default value ``10``.
 
         Returns
         -------
@@ -250,17 +252,20 @@ class HfssSimulationSetup(SimulationSetup):
 
         """
         self.settings.general.adaptive_solution_type = "multi_frequencies"
-        if not isinstance(frequencies, list):
+        if not isinstance(frequencies, list | tuple):
             frequencies = [frequencies]
-        if not isinstance(max_delta_s, list):
+        if not isinstance(max_delta_s, list | tuple):
             max_delta_s = [max_delta_s]
-            if len(max_delta_s) < len(frequencies):
-                for _ in frequencies[len(max_delta_s) :]:
-                    max_delta_s.append(max_delta_s[-1])
+        if len(max_delta_s) < len(frequencies):
+            for _ in frequencies[len(max_delta_s) :]:
+                max_delta_s.append(max_delta_s[-1])
         adapt_frequencies = [
             CoreAdaptiveFrequency(frequencies[ind], str(max_delta_s[ind])) for ind in range(len(frequencies))
         ]
-        self.core.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
+        mfs = self.core.settings.general.multi_frequency_adaptive_solution
+        mfs.adaptive_frequencies = adapt_frequencies
+        mfs.max_passes = max_passes
+        self.core.settings.general.multi_frequency_adaptive_solution = mfs
         return True
 
     def set_solution_broadband(self, low_frequency="1GHz", high_frequency="10GHz", max_delta_s=0.02, max_num_passes=10):
