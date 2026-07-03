@@ -1078,6 +1078,10 @@ class Padstacks(object):
         lo, hi = sorted((start_idx, stop_idx))
         return layers[lo : hi + 1]
 
+    def _create(self, name:str)->PadstackDef:
+        """Create a clean padstack definition."""
+        return PadstackDef.create(self._pedb, name)
+
     def create(
         self,
         padstackname: Optional[str] = None,
@@ -1299,7 +1303,7 @@ class Padstacks(object):
                     sizes=antipad_array,
                 )
 
-        padstack_definition = PadstackDef.create(self._pedb, padstackname)
+        padstack_definition = self._create(padstackname)
         padstack_definition.data = padstack_data
         self._logger.info(f"Padstack {padstackname} successfully created.")
         return padstackname
