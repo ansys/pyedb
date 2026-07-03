@@ -28,8 +28,7 @@ class PadstackDef(ObjBase):
         super().__init__(pedb, core)
 
     @classmethod
-    def create(cls, pedb, name:str):
+    def create(cls, pedb, name: str):
         """Create a clean padstack definition."""
         core = pedb.core.Definition.PadstackDef.Create(pedb.active_db, name)
         return cls(pedb, core)
-

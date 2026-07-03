@@ -31,6 +31,7 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 
 from pyedb.dotnet.clr_module import Array
+from pyedb.dotnet.database.definition.padstack_def import PadstackDef
 from pyedb.dotnet.database.edb_data.padstacks_data import (
     EDBPadstack,
     EDBPadstackInstance,
@@ -40,7 +41,6 @@ from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.misc.decorators import deprecated
-from pyedb.dotnet.database.definition.padstack_def import PadstackDef
 
 
 class EdbPadstacks(object):
@@ -920,7 +920,7 @@ class EdbPadstacks(object):
                     via_list.append(lobj)
         return via_list
 
-    def _create(self, name: str)->PadstackDef:
+    def _create(self, name: str) -> PadstackDef:
         """Create a clean padstack definition."""
         return PadstackDef.create(self._pedb, name)
 

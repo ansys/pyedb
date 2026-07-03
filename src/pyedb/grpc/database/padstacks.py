@@ -1078,7 +1078,7 @@ class Padstacks(object):
         lo, hi = sorted((start_idx, stop_idx))
         return layers[lo : hi + 1]
 
-    def _create(self, name:str)->PadstackDef:
+    def _create(self, name: str) -> PadstackDef:
         """Create a clean padstack definition."""
         return PadstackDef.create(self._pedb, name)
 
