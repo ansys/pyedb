@@ -662,8 +662,8 @@ class Configuration:
 
         if modeler.padstack_defs:
             for p in modeler.padstack_defs:
-                pdef = self._pedb.padstacks.create(p.name)
-                set_padstack_definition(p, self._pedb.padstacks[pdef])
+                pdef = self._pedb.padstacks._create(p.name)
+                set_padstack_definition(p, self._pedb.padstacks[pdef.name])
 
         if modeler.padstack_instances:
             for p in modeler.padstack_instances:
