@@ -837,6 +837,44 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    def test_grpc_set_solder_ball_ic_component_properties_persisted(self):
+        """set_solder_ball correctly persists all solder-ball and die properties for an IC component.
+
+        Regression test for the bug where ICComponentProperty sub-property getters return
+        server-side copies that were mutated but never linked back via the typed setter
+        (SetSolderBallProperty / SetDieProperty / SetPortProperty), so no changes were
+        reflected on the component.
+        """
+        edb = self.edb_examples.get_si_verse()
+        comp = edb.components["U1"]
+        assert comp.component_type == "ic", "U1 must be an IC component for this test to be meaningful"
+
+        sball_diam = 330e-6
+        sball_height = 330e-6
+        assert edb.components.set_solder_ball("U1", sball_diam=sball_diam, sball_height=sball_height)
+
+        # Height must be persisted
+        height = edb.components.get_solder_ball_height("U1")
+        assert isinstance(height, float)
+        assert height == pytest.approx(sball_height, rel=1e-3), f"Expected height {sball_height}, got {height}"
+
+        # Shape must be cylinder (default)
+        assert comp.solder_ball_shape == "cylinder"
+
+        # Diameter must be persisted
+        diam_result = comp.solder_ball_diameter
+        assert diam_result is not None, "solder_ball_diameter should not be None after set_solder_ball"
+        top_diam = float(diam_result[0])
+        assert top_diam == pytest.approx(sball_diam, rel=1e-3), f"Expected diameter {sball_diam}, got {top_diam}"
+
+        # IC die type must be set to flipchip
+        die_props = comp.ic_die_properties
+        assert die_props is not None, "ic_die_properties should be available for IC component"
+        assert die_props.die_type == "flipchip", f"Expected die_type 'flipchip', got '{die_props.die_type}'"
+
+        edb.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
     def test_grpc_get_aedt_pin_name(self):
         """get_aedt_pin_name returns a string AEDT pin name."""
         edb = self.edb_examples.get_si_verse()

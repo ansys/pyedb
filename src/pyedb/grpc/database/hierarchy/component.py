@@ -576,6 +576,8 @@ class Component(Group):
             cmp_property = self.core.component_property
             solder_ball_prop = cmp_property.solder_ball_property
             solder_ball_prop.height = Value(value)
+            cmp_property.solder_ball_property = solder_ball_prop
+            self.core.component_property = cmp_property.clone()
 
     @property
     def solder_ball_shape(self) -> str | None:
@@ -622,7 +624,7 @@ class Component(Group):
                 solder_ball_prop = cmp_property.solder_ball_property
                 solder_ball_prop.shape = shape
                 cmp_property.solder_ball_property = solder_ball_prop
-                self.core.component_property = cmp_property
+                self.core.component_property = cmp_property.clone()
 
     @property
     def solder_ball_diameter(self) -> Union[tuple[float, float], None]:
@@ -657,7 +659,7 @@ class Component(Group):
             solder_ball_prop = cmp_property.solder_ball_property
             solder_ball_prop.set_diameter(diameter, mid_diameter)
             cmp_property.solder_ball_property = solder_ball_prop
-            self.core.component_property = cmp_property
+            self.core.component_property = cmp_property.clone()
 
     @property
     def solder_ball_material(self) -> str:
@@ -1539,19 +1541,27 @@ class SolderBallProperty:
         return self._component.core.component_property.solder_ball_property
 
     def _write(self, mutate_fn):
-        """Helper: fetch raw core solder ball property → mutate → write back if needed.
+        """Helper: fetch raw core solder ball property → mutate → write back via clone.
 
-        With ansys-edb-core >= 0.4 (typed component property API) each SolderBallProperty
-        mutation method issues its own direct RPC call, so no write-back is required.
-        With older releases the entire component property must be written back.
+        ansys-edb-core issue: ``ComponentGroup.component_property`` returns a *reference* to the
+        live property object.  Calling ``SetComponentProperty`` with the same reference is a
+        server-side no-op and the change is silently lost on save.
+
+        Correct pattern (mirrors dotnet ``GetComponentProperty().Clone()``):
+        1. Fetch the live reference and update its ``solder_ball_property`` link via
+           ``SetSolderBallProperty`` so the change is queued in the server buffer.
+        2. Clone the reference *after* the mutation is buffered — the clone is made from the
+           already-mutated reference and therefore carries the change.
+        3. Call ``SetComponentProperty`` with the clone (a distinct object) so the server
+           registers the update and persists it on save.
         """
         cmp_property = self._component.core.component_property
         sbp = cmp_property.solder_ball_property
         mutate_fn(sbp)
-        if not _EDB_CORE_TYPED_COMPONENT_PROPERTY:
-            # Old API: mutations on sbp are local; write the whole property back.
-            cmp_property.solder_ball_property = sbp
-            self._component.core.component_property = cmp_property
+        # Step 1 – update the reference's solder-ball link.
+        cmp_property.solder_ball_property = sbp
+        # Steps 2 & 3 – clone then commit so the save picks up the change.
+        self._component.core.component_property = cmp_property.clone()
 
     @property
     def is_null(self) -> bool:
@@ -1672,7 +1682,7 @@ class ICDieProperty:
         else:
             return
         component_property.die_property = die_property
-        self._component.component_property = component_property
+        self._component.core.component_property = component_property.clone()
 
     @property
     def die_type(self) -> str:
@@ -1699,7 +1709,7 @@ class ICDieProperty:
         else:
             return
         component_property.die_property = die_property
-        self._component.component_property = component_property
+        self._component.core.component_property = component_property.clone()
 
     @property
     def height(self) -> float:
@@ -1719,7 +1729,7 @@ class ICDieProperty:
         die_property = component_property.die_property
         die_property.height = Value(value)
         component_property.die_property = die_property
-        self._component.component_property = component_property
+        self._component.core.component_property = component_property.clone()
 
     @property
     def is_null(self) -> bool:
