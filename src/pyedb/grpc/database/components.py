@@ -1345,16 +1345,10 @@ class Components(object):
             # ansys-edb-core typed component property (ICComponentProperty / IOComponentProperty).
             #
             # ansys-edb-core issue: ComponentGroup.component_property returns a *reference* to
+            # issue #752 amd #753
             # the live property object.  Calling SetComponentProperty with the same reference is
             # treated as a no-op by the server and the changes are silently lost on save.  The
-            # fix (mirroring the dotnet pattern of GetComponentProperty().Clone()) is to:
-            #   1. Fetch the live reference and mutate its sub-properties via the typed setters
-            #      (SetDieProperty / SetSolderBallProperty / SetPortProperty) so those changes
-            #      are in the server-side buffer.
-            #   2. Clone the reference AFTER all mutations are buffered — the clone is created
-            #      from the already-mutated reference, so it carries all the changes.
-            #   3. Call SetComponentProperty with the clone (a distinct object) so EDB registers
-            #      the update and persists it on save.
+            # fix (mirroring the dotnet pattern of GetComponentProperty().Clone())
             cmp_property = cmp.core.component_property
             if cmp_property is None:
                 self._logger.error(f"Component {cmp.name} has no component property.")
