@@ -31,6 +31,7 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 
 from pyedb.dotnet.clr_module import Array
+from pyedb.dotnet.database.definition.padstack_def import PadstackDef
 from pyedb.dotnet.database.edb_data.padstacks_data import (
     EDBPadstack,
     EDBPadstackInstance,
@@ -919,6 +920,10 @@ class EdbPadstacks(object):
                     via_list.append(lobj)
         return via_list
 
+    def _create(self, name: str) -> PadstackDef:
+        """Create a clean padstack definition."""
+        return PadstackDef.create(self._pedb, name)
+
     def create(
         self,
         padstackname=None,
@@ -1140,7 +1145,7 @@ class EdbPadstacks(object):
                     rotation,
                 )
 
-        padstackDefinition = self._edb.Definition.PadstackDef.Create(self.db, padstackname)
+        padstackDefinition = self._create(padstackname).core
         padstackDefinition.SetData(padstackData)
         self._logger.info("Padstack %s create correctly", padstackname)
         return padstackname

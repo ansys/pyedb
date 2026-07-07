@@ -36,11 +36,15 @@ from ansys.edb.core.definition.solder_ball_property import (
 )
 from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
 
-# ansys-edb-core >= 0.4 introduced type-specific component property classes (ICComponentProperty,
-# IOComponentProperty, RLCComponentProperty) whose sub-property setters (die_property,
-# solder_ball_property, port_property) each issue their own direct RPC calls — no monolithic
-# SetComponentProperty write-back is required or accepted.  Older releases expose a flat
-# ComponentProperty object that must be written back via the component setter.
+# ansys-edb-core introduced type-specific component property classes (ICComponentProperty,
+# IOComponentProperty, RLCComponentProperty) when ICComponentProperty became importable.
+# These typed classes return **server-side copies** from their sub-property getters
+# (solder_ball_property, die_property, port_property).  Mutations on those copies are
+# persisted on the copy via direct RPC stubs, but the copy must be linked back to the
+# parent typed property via its setter (SetSolderBallProperty / SetDieProperty /
+# SetPortProperty) — no full SetComponentProperty write-back on the component is required.
+# Older releases expose a flat ComponentProperty whose mutations must be committed via a
+# full SetComponentProperty write-back on the component.
 try:
     from ansys.edb.core.definition.ic_component_property import (  # noqa: F401
         ICComponentProperty as _ICComponentProperty,
@@ -1338,9 +1342,13 @@ class Components(object):
             sball_shape = CoreSolderballShape.SOLDERBALL_SPHEROID
 
         if _EDB_CORE_TYPED_COMPONENT_PROPERTY:
-            # ansys-edb-core >= 0.4: typed component property — each sub-property setter
-            # issues its own direct RPC call; no SetComponentProperty write-back is needed
-            # (and would fail on the new server).
+            # ansys-edb-core typed component property (ICComponentProperty / IOComponentProperty).
+            #
+            # ansys-edb-core issue: ComponentGroup.component_property returns a *reference* to
+            # issue #752 amd #753
+            # the live property object.  Calling SetComponentProperty with the same reference is
+            # treated as a no-op by the server and the changes are silently lost on save.  The
+            # fix (mirroring the dotnet pattern of GetComponentProperty().Clone())
             cmp_property = cmp.core.component_property
             if cmp_property is None:
                 self._logger.error(f"Component {cmp.name} has no component property.")
@@ -1358,6 +1366,7 @@ class Components(object):
                     ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
                 else:
                     ic_die_prop.die_orientation = CoreDieOrientation.CHIP_DOWN
+                cmp_property.die_property = ic_die_prop
 
             solder_ball_prop = cmp_property.solder_ball_property
             solder_ball_prop.set_diameter(
@@ -1369,6 +1378,7 @@ class Components(object):
                 if not material_name in self._pedb.materials:
                     self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
                 solder_ball_prop.material_name = material_name
+            cmp_property.solder_ball_property = solder_ball_prop
 
             port_prop = cmp_property.port_property
             port_prop.reference_height = self._pedb._value_setter(reference_height)
@@ -1377,6 +1387,12 @@ class Components(object):
                 port_prop.set_reference_size(
                     self._pedb._value_setter(reference_size_x), self._pedb._value_setter(reference_size_y)
                 )
+            cmp_property.port_property = port_prop
+            # Clone the reference AFTER all sub-property mutations have been buffered so that the
+            # clone captures every change.  Pass the clone to SetComponentProperty — using a
+            # distinct (cloned) object is required for the server to register the update and
+            # persist it on save.
+            cmp.core.component_property = cmp_property.clone()
         else:
             # ansys-edb-core < 0.4: flat ComponentProperty — must write back via SetComponentProperty.
             cmp_property = cmp.component_property
