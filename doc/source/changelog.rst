@@ -9,6 +9,60 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.80.1 <https://github.com/ansys/pyedb/releases/tag/v0.80.1>`_ - July 07, 2026
+===============================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Padstack def creation
+          - `#2351 <https://github.com/ansys/pyedb/pull/2351>`_
+
+        * - Solder balls silent failure on IC component fix
+          - `#2358 <https://github.com/ansys/pyedb/pull/2358>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/setup-python from 6.2.0 to 6.3.0
+          - `#2353 <https://github.com/ansys/pyedb/pull/2353>`_
+
+        * - Bump typer from 0.26.7 to 0.26.8
+          - `#2354 <https://github.com/ansys/pyedb/pull/2354>`_
+
+        * - Bump ruff from 0.15.19 to 0.15.20
+          - `#2355 <https://github.com/ansys/pyedb/pull/2355>`_
+
+        * - Bump scikit-rf from 1.12.0 to 2.0.0
+          - `#2356 <https://github.com/ansys/pyedb/pull/2356>`_
+
+        * - Bump jupyterlab from 4.6.0 to 4.6.1
+          - `#2357 <https://github.com/ansys/pyedb/pull/2357>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.80.0
+          - `#2349 <https://github.com/ansys/pyedb/pull/2349>`_
+
+        * - Bump release 0.81.dev0
+          - `#2350 <https://github.com/ansys/pyedb/pull/2350>`_
+
+
 `0.80.0 <https://github.com/ansys/pyedb/releases/tag/v0.80.0>`_ - July 02, 2026
 ===============================================================================
 
