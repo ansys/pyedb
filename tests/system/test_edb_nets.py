@@ -138,8 +138,10 @@ class TestClass(BaseTestClass):
         edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
         edbapp.layout_validation.illegal_net_names(True)
         edbapp.layout_validation.illegal_rlc_values(True)
-
-        # assert len(dc_shorts) == 20
+        if edbapp.grpc:
+            assert len(dc_shorts) == 50
+        else:
+            assert len(dc_shorts) == 47  # dotnet is giving slightly different primitives.
         assert ["SFPA_Tx_Fault", "PCIe_Gen4_CLKREQ_L"] in dc_shorts
         assert ["VDD_DDR", "GND"] in dc_shorts
         assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0

@@ -1383,14 +1383,18 @@ class Edb(EdbInit):
                     layout_obj_type = i.layout_obj.layout_obj_type.name
                     if layout_obj_type == "PADSTACK_INSTANCE":
                         temp.append(PadstackInstance(self, i.layout_obj))
-                    elif layout_obj_type == "PATH":
-                        temp.append(Path(self, i.layout_obj))
-                    elif layout_obj_type == "RECTANGLE":
-                        temp.append(Rectangle(self, i.layout_obj))
-                    elif layout_obj_type == "CIRCLE":
-                        temp.append(Circle(self, i.layout_obj))
-                    elif layout_obj_type == "POLYGON":
-                        temp.append(Polygon(self, i.layout_obj))
+                    elif layout_obj_type == "PRIMITIVE":
+                        prim_type = i.layout_obj.primitive_type.name
+                        if prim_type == "PATH":
+                            temp.append(Path(self, i.layout_obj))
+                        elif prim_type == "RECTANGLE":
+                            temp.append(Rectangle(self, i.layout_obj))
+                        elif prim_type == "CIRCLE":
+                            temp.append(Circle(self, i.layout_obj))
+                        elif prim_type == "POLYGON":
+                            temp.append(Polygon(self, i.layout_obj))
+                        else:
+                            continue
                     else:
                         continue
         except (
