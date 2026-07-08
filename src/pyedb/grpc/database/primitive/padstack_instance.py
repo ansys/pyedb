@@ -561,7 +561,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
         """
         if not self._object_instance:
-            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self.core, None)
+            self._object_instance = self._pedb.layout_instance.get_layout_obj_instance_in_context(self.core, None)
         return self._object_instance
 
     @property
@@ -730,7 +730,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
         """
         if not self._object_instance:
-            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self.core, None)
+            self._object_instance = self._pedb.layout_instance.get_layout_obj_instance_in_context(self.core, None)
         return self._object_instance
 
     @property
