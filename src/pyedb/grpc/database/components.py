@@ -1360,9 +1360,6 @@ class Components(object):
             if cmp.core.component_type == CoreComponentType.IC:
                 ic_die_prop = cmp_property.die_property
                 ic_die_prop.die_type = CoreDieType.FLIPCHIP
-                # Auto-detect orientation when caller did not provide one.
-                # Use signal_layers (not all layers) so that non-signal layers (e.g. dielectric)
-                # do not skew the top-layer comparison.
                 if chip_orientation is None:
                     if cmp.placement_layer == list(self._pedb.stackup.signal_layers.keys())[0]:
                         chip_orientation = "chip_down"
@@ -1394,10 +1391,6 @@ class Components(object):
                     self._pedb._value_setter(reference_size_x), self._pedb._value_setter(reference_size_y)
                 )
             cmp_property.port_property = port_prop
-            # Clone the reference AFTER all sub-property mutations have been buffered so that the
-            # clone captures every change.  Pass the clone to SetComponentProperty — using a
-            # distinct (cloned) object is required for the server to register the update and
-            # persist it on save.
             cmp.core.component_property = cmp_property.clone()
         else:
             # ansys-edb-core < 0.4: flat ComponentProperty — must write back via SetComponentProperty.
@@ -1405,9 +1398,6 @@ class Components(object):
             if cmp.core.component_type == CoreComponentType.IC:
                 ic_die_prop = cmp_property.die_property
                 ic_die_prop.die_type = CoreDieType.FLIPCHIP
-                # Auto-detect orientation when caller did not provide one.
-                # Use signal_layers (not all layers) so that non-signal layers (e.g. dielectric)
-                # do not skew the top-layer comparison.
                 if chip_orientation is None:
                     if cmp.placement_layer == list(self._pedb.stackup.signal_layers.keys())[0]:
                         chip_orientation = "chip_down"
