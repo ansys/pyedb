@@ -1732,14 +1732,21 @@ class PadstackInstance(conn_obj.ConnObj):
             pinlist_position=pinlist_position,
         )
 
-    def get_connected_objects(self):
+    def get_connected_objects(self, touching_only: bool = False):
         """Get connected objects.
+
+        Parameters
+        ----------
+        touching_only : bool, optional
+            Whether to get only layout object instances touching the origin on its placement layer.
+            If ``False`` (default), all layout object instances across all layers that are
+            electrically connected to the origin are returned.
 
         Returns
         -------
         List[:class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`]
         """
-        return self._pedb.get_connected_objects(self.object_instance)
+        return self._pedb.get_connected_objects(self.object_instance, touching_only)
 
     def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
         """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on

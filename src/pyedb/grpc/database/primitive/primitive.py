@@ -283,15 +283,22 @@ class Primitive:
     def aedt_name(self, value):
         self.core.set_product_property(CoreProductIdType.DESIGNER, 1, value)
 
-    def get_connected_objects(self) -> list[Any]:
+    def get_connected_objects(self, touching_only: bool = False) -> list[Any]:
         """Get connected objects.
+
+        Parameters
+        ----------
+        touching_only : bool, optional
+            Whether to get only layout object instances touching the origin on its placement layer.
+            If ``False`` (default), all layout object instances across all layers that are
+            electrically connected to the origin are returned.
 
         Returns
         -------
         List[:class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`]
 
         """
-        return self._pedb.get_connected_objects(self.object_instance)
+        return self._pedb.get_connected_objects(self.object_instance, touching_only)
 
     def area(self, include_voids=True) -> float:
         """Return the total area.
