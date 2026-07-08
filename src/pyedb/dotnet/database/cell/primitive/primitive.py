@@ -81,7 +81,7 @@ class Primitive(Connectable):
         str
         """
         try:
-            return self.core.GetPrimitiveType().ToString()
+            return self.core.GetPrimitiveType().ToString().lower()
         except AttributeError:  # pragma: no cover
             return ""
 

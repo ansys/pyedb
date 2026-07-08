@@ -64,35 +64,21 @@ class TestClass(BaseTestClass):
             assert poly0.points_raw()[0].x.value >= 0.0
         else:
             assert poly0.points_raw()[0].X.ToDouble() >= 0.0
-        # TODO check is polygon.type should return "polygon" instead of "Polygon",
-        assert poly0.type.lower() == "polygon"
+        assert poly0.type == "polygon"
         if edbapp.grpc:
             assert not poly0.points_raw()[0].is_arc
         else:
             assert not poly0.points_raw()[0].IsArc()
         assert isinstance(poly0.voids, list)
-        # TODO check bug 455
-        # assert isinstance(poly0.get_closest_point([0.07, 0.0027]), list)
+        assert isinstance(poly0.get_closest_point([0.07, 0.0027]), list)
         assert isinstance(poly0.get_closest_arc_midpoint([0, 0]), list)
         assert isinstance(poly0.arcs, list)
         assert isinstance(poly0.longest_arc.length, float)
         assert isinstance(poly0.shortest_arc.length, float)
         assert not poly0.in_polygon([0, 0])
-        # TODO make grpc arc.is_segment a property
-        if edbapp.grpc:
-            assert poly0.arcs[0].is_segment()
-        else:
-            assert poly0.arcs[0].is_segment
-        # TODO make grpc arc.is_point a property
-        if edbapp.grpc:
-            assert not poly0.arcs[0].is_point()
-        else:
-            assert not poly0.arcs[0].is_point
-        # TODO make grpc arc.is_cww a property
-        if edbapp.grpc:
-            assert not poly0.arcs[0].is_ccw()
-        else:
-            assert not poly0.arcs[0].is_ccw
+        assert poly0.arcs[0].is_segment
+        assert not poly0.arcs[0].is_point
+        assert not poly0.arcs[0].is_ccw
         assert isinstance(poly0.arcs[0].points, list)
         assert isinstance(poly0.intersection_type(poly0), int)
         assert poly0.is_intersecting(poly0)

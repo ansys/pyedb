@@ -54,7 +54,7 @@ class ArcData:
         return str(self.core.direction)
 
     @property
-    def center(self) -> list[float]:
+    def center(self) -> list[float | int]:
         """Arc data center.
 
         Returns
@@ -66,7 +66,7 @@ class ArcData:
         return [Value(self.core.center.x), Value(self.core.center.y)]
 
     @property
-    def start(self) -> list[float]:
+    def start(self) -> list[float | int]:
         """Arc data start point.
 
         Returns
@@ -78,7 +78,7 @@ class ArcData:
         return [Value(self.core.start.x), Value(self.core.start.y)]
 
     @property
-    def end(self) -> list[float]:
+    def end(self) -> list[float | int]:
         """Arc data end point.
 
         Returns
@@ -90,7 +90,7 @@ class ArcData:
         return [Value(self.core.end.x), Value(self.core.end.y)]
 
     @property
-    def midpoint(self) -> list[float]:
+    def midpoint(self) -> list[float | int]:
         """Arc data mid point.
 
         Returns
@@ -102,7 +102,7 @@ class ArcData:
         return [Value(self.core.midpoint.x), Value(self.core.midpoint.y)]
 
     @property
-    def points(self) -> list[list[float]]:
+    def points(self) -> list[list[float | int]]:
         """Arc data points.
 
         Returns
@@ -113,6 +113,7 @@ class ArcData:
         """
         return [[Value(pt.x), Value(pt.y)] for pt in self.core.points]
 
+    @property
     def is_segment(self) -> bool:
         """Check if arc data is a segment.
 
@@ -125,7 +126,7 @@ class ArcData:
         return self.core.is_segment()
 
     @property
-    def length(self) -> list[float]:
+    def length(self) -> list[float | int]:
         """Arc data length.
 
         Returns
@@ -136,6 +137,7 @@ class ArcData:
         """
         return self.core.length
 
+    @property
     def is_point(self):
         """Check if arc data is a point.
 
@@ -147,6 +149,7 @@ class ArcData:
         """
         return self.core.is_point()
 
+    @property
     def is_ccw(self):
         """Check if arc data is counter-clockwise.
 
@@ -159,7 +162,7 @@ class ArcData:
         return self.core.is_ccw()
 
     @property
-    def radius(self) -> float:
+    def radius(self) -> float | int:
         """Arc data radius.
 
         Returns
