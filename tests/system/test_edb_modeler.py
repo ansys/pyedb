@@ -55,7 +55,6 @@ class TestClass(BaseTestClass):
         assert poly0.net.name == "GND"
         assert edbapp.modeler.polygons[0].clone()
         assert isinstance(poly0.voids, list)
-        # TODO convert point_raw as property in dotnet to be compliant with grpc.
         assert isinstance(poly0.points_raw(), list)
         assert isinstance(poly0.points(), tuple)
         assert isinstance(poly0.points()[0], list)
