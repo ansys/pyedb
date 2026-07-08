@@ -58,7 +58,6 @@ class TestClass(BaseTestClass):
         assert edb.components["U6"].pins["R3"].id
         assert edb.terminals
         assert edb.ports
-        # TODO check with grpc it was only 1 object returned. Check for bug fixed.
         assert len(edb.components["U6"].pins["R3"].get_connected_objects()) == 17
         edb.close(terminate_rpc_session=False)
 
