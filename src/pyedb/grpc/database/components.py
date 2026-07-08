@@ -1265,15 +1265,15 @@ class Components(object):
     def set_solder_ball(
         self,
         component: Union[str, Component] = "",
-        sball_diam: Optional[float] = None,
-        sball_height: Optional[float] = None,
+        sball_diam: Optional[float | int] = None,
+        sball_height: Optional[float | int] = None,
         shape: str = "Cylinder",
-        sball_mid_diam: Optional[float] = None,
-        chip_orientation: str = "chip_down",
+        sball_mid_diam: Optional[float | int] = None,
+        chip_orientation: Optional[str] = None,
         auto_reference_size: bool = True,
-        reference_size_x: float = 0,
-        reference_size_y: float = 0,
-        reference_height: float = 0,
+        reference_size_x: float | int = 0,
+        reference_size_y: float | int = 0,
+        reference_height: float | int = 0,
         material_name: str = None,
     ) -> bool:
         """Set solder ball properties for a component.
@@ -1290,8 +1290,11 @@ class Components(object):
             Solder ball shape ("Cylinder" or "Spheroid").
         sball_mid_diam : float, optional
             Solder ball mid diameter.
-        chip_orientation : str, optional
-            Chip orientation ("chip_down" or "chip_up").
+        chip_orientation : str or None, optional
+            Chip orientation (``"chip_down"`` or ``"chip_up"``). When ``None`` (default), the
+            orientation is auto-detected from the component placement layer: components placed on
+            the top signal layer receive ``"chip_down"``; those on any other signal layer receive
+            ``"chip_up"``. Pass an explicit value to override the auto-detection.
         auto_reference_size : bool, optional
             Use auto reference size.
         reference_size_x : float, optional
@@ -1357,11 +1360,14 @@ class Components(object):
             if cmp.core.component_type == CoreComponentType.IC:
                 ic_die_prop = cmp_property.die_property
                 ic_die_prop.die_type = CoreDieType.FLIPCHIP
-                # Top layer → chip_down (die faces down toward board), bottom layer → chip_up
-                if cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
-                    chip_orientation = "chip_down"
-                else:
-                    chip_orientation = "chip_up"
+                # Auto-detect orientation when caller did not provide one.
+                # Use signal_layers (not all layers) so that non-signal layers (e.g. dielectric)
+                # do not skew the top-layer comparison.
+                if chip_orientation is None:
+                    if cmp.placement_layer == list(self._pedb.stackup.signal_layers.keys())[0]:
+                        chip_orientation = "chip_down"
+                    else:
+                        chip_orientation = "chip_up"
                 if chip_orientation.lower() == "chip_up":
                     ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
                 else:
@@ -1399,10 +1405,14 @@ class Components(object):
             if cmp.core.component_type == CoreComponentType.IC:
                 ic_die_prop = cmp_property.die_property
                 ic_die_prop.die_type = CoreDieType.FLIPCHIP
-                if cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
-                    chip_orientation = "chip_down"
-                else:
-                    chip_orientation = "chip_up"
+                # Auto-detect orientation when caller did not provide one.
+                # Use signal_layers (not all layers) so that non-signal layers (e.g. dielectric)
+                # do not skew the top-layer comparison.
+                if chip_orientation is None:
+                    if cmp.placement_layer == list(self._pedb.stackup.signal_layers.keys())[0]:
+                        chip_orientation = "chip_down"
+                    else:
+                        chip_orientation = "chip_up"
                 if chip_orientation.lower() == "chip_up":
                     ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
                 else:

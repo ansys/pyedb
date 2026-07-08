@@ -2793,7 +2793,7 @@ class TestSetSolderBall:
 
         comps = _make_components({"U1": cmp})
         comps._pedb._value_setter = lambda v: v
-        comps._pedb.stackup.layers = layers
+        comps._pedb.stackup.signal_layers = layers
         comps._pedb.materials = {}
 
         result = comps.set_solder_ball("U1", sball_diam=0.5e-3, sball_height=0.3e-3)
@@ -2911,7 +2911,7 @@ class TestSetSolderBallICChipUp:
 
         comps = _make_components({"U1": cmp})
         comps._pedb._value_setter = lambda v: v
-        comps._pedb.stackup.layers = layers
+        comps._pedb.stackup.signal_layers = layers
         comps._pedb.materials = MagicMock()
         comps._pedb.materials.__contains__ = MagicMock(return_value=True)
 
@@ -2946,6 +2946,122 @@ class TestSetSolderBallAutoRefSize:
             reference_size_y=1e-3,
         )
         assert result is True
+
+
+@_grpc_only
+class TestSetSolderBallChipOrientationFix:
+    """Tests for the two bugs fixed in set_solder_ball:
+
+    1. signal_layers (not layers) must be used to determine the top-layer boundary.
+    2. An explicit chip_orientation argument overrides the auto-detection logic.
+    """
+
+    def _make_ic_comps(self, placement_layer: str, signal_layer_order):
+        """Return a (comps, ic_die_prop) pair for an IC component.
+
+        The typed branch (``_EDB_CORE_TYPED_COMPONENT_PROPERTY=True``) reads
+        ``cmp.core.component_property`` and writes back through ``.clone()``.
+        We capture ``cmp.core.component_property.die_property`` so assertions
+        check the exact object that the production code mutates.
+        """
+        from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
+
+        pin = MagicMock()
+        pin.padstack_def.data.layer_names = [signal_layer_order[0]]
+
+        cmp = _make_component("U1", "ic", num_pins=1)
+        cmp.pins = {"1": pin}
+        cmp.placement_layer = placement_layer
+        cmp.core.component_type = CoreComponentType.IC
+
+        core_comp_prop = cmp.core.component_property
+        ic_die_prop = core_comp_prop.die_property
+        # clone() must return the same property object so assertions hold
+        core_comp_prop.clone.return_value = core_comp_prop
+
+        signal_layers = MagicMock()
+        signal_layers.keys.return_value = iter(signal_layer_order)
+
+        comps = _make_components({"U1": cmp})
+        comps._pedb._value_setter = lambda v: v
+        comps._pedb.stackup.signal_layers = signal_layers
+        comps._pedb.materials = MagicMock()
+        comps._pedb.materials.__contains__ = MagicMock(return_value=True)
+        return comps, ic_die_prop
+
+    # Bug 1: signal_layers (not layers) must be used for auto-detection
+
+    def test_auto_detect_top_signal_layer_gives_chip_down(self):
+        """IC placed on the first signal layer must auto-detect chip_down."""
+        from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
+
+        comps, ic_die_prop = self._make_ic_comps(placement_layer="TOP", signal_layer_order=["TOP", "BOT"])
+        result = comps.set_solder_ball("U1", sball_diam=0.5e-3, sball_height=0.3e-3)
+
+        assert result is True
+        assert ic_die_prop.die_orientation == CoreDieOrientation.CHIP_DOWN
+
+    def test_auto_detect_non_top_signal_layer_gives_chip_up(self):
+        """IC placed on a non-first signal layer must auto-detect chip_up."""
+        from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
+
+        comps, ic_die_prop = self._make_ic_comps(placement_layer="BOT", signal_layer_order=["TOP", "BOT"])
+        result = comps.set_solder_ball("U1", sball_diam=0.5e-3, sball_height=0.3e-3)
+
+        assert result is True
+        assert ic_die_prop.die_orientation == CoreDieOrientation.CHIP_UP
+
+    def test_signal_layers_used_not_all_layers(self):
+        """Verify signal_layers dict is consulted, not the generic layers dict.
+
+        If the code still used stackup.layers the test would fail because only
+        stackup.signal_layers is configured with a meaningful key list.
+        """
+        from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
+
+        comps, ic_die_prop = self._make_ic_comps(placement_layer="TOP", signal_layer_order=["TOP", "BOT"])
+        # Deliberately leave stackup.layers unconfigured (MagicMock with empty iter).
+        # If the production code used layers instead of signal_layers, list(...)[0]
+        # would raise IndexError and the test would fail.
+        result = comps.set_solder_ball("U1", sball_diam=0.5e-3, sball_height=0.3e-3)
+
+        assert result is True
+        assert ic_die_prop.die_orientation == CoreDieOrientation.CHIP_DOWN
+
+    # Bug 2: explicit chip_orientation argument must override auto-detection
+
+    def test_explicit_chip_up_overrides_top_layer_autodetect(self):
+        """chip_orientation='chip_up' must be respected even when the component
+        sits on the top signal layer (which would auto-detect as chip_down)."""
+        from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
+
+        comps, ic_die_prop = self._make_ic_comps(placement_layer="TOP", signal_layer_order=["TOP", "BOT"])
+        result = comps.set_solder_ball("U1", sball_diam=0.5e-3, sball_height=0.3e-3, chip_orientation="chip_up")
+
+        assert result is True
+        assert ic_die_prop.die_orientation == CoreDieOrientation.CHIP_UP
+
+    def test_explicit_chip_down_overrides_bottom_layer_autodetect(self):
+        """chip_orientation='chip_down' must be respected even when the component
+        sits on a non-top signal layer (which would auto-detect as chip_up)."""
+        from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
+
+        comps, ic_die_prop = self._make_ic_comps(placement_layer="BOT", signal_layer_order=["TOP", "BOT"])
+        result = comps.set_solder_ball("U1", sball_diam=0.5e-3, sball_height=0.3e-3, chip_orientation="chip_down")
+
+        assert result is True
+        assert ic_die_prop.die_orientation == CoreDieOrientation.CHIP_DOWN
+
+    def test_chip_orientation_none_triggers_autodetect(self):
+        """Passing chip_orientation=None explicitly should behave like the
+        default (auto-detect from placement layer)."""
+        from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
+
+        comps, ic_die_prop = self._make_ic_comps(placement_layer="TOP", signal_layer_order=["TOP", "BOT"])
+        result = comps.set_solder_ball("U1", sball_diam=0.5e-3, sball_height=0.3e-3, chip_orientation=None)
+
+        assert result is True
+        assert ic_die_prop.die_orientation == CoreDieOrientation.CHIP_DOWN
 
 
 @_grpc_only
