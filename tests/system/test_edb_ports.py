@@ -181,6 +181,10 @@ class TestClass(BaseTestClass):
             terminal_point=port_location,
             reference_point=ref_location,
         )
+        terminal = list(edb.ports.values())[0]
+        assert terminal.reference_terminal
+        assert terminal.reference_object
+        assert terminal.reference_object.layer.name == "sig2"
         port_poly = [poly for poly in poly_list if poly.id == 23][0]
         ref_poly = [poly for poly in poly_list if poly.id == 22][0]
         port_location = [-65e-3, -10e-3]

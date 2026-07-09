@@ -1515,10 +1515,8 @@ class PadstackInstance(conn_obj.ConnObj):
         >>> padstack_inst = list_of_padstack_instances[0]
         >>> padstack_inst.create_rectangle_in_pad("TOP")
         """
-        # TODO check if still used anf fix if yes.
         padstack_center = self.position
         rotation = self.rotation  # in radians
-        # padstack = self._pedb.padstacks.definitions[self.padstack_def.name]
         try:
             padstack_pad = PadstackDef(self._pedb, self.padstack_def).pad_by_layer[layer_name]
         except KeyError:  # pragma: no cover

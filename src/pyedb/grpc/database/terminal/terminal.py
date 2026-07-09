@@ -152,7 +152,8 @@ class Terminal(ConnObj):
     @property
     def reference_layer(self):
         """Get layer of the terminal."""
-        self._pedb.logger.error("Cannot determine terminal layer")
+        if self.reference_object:
+            return self.reference_object.layer.name
         return None
 
     @_hfss_port_property.setter
@@ -478,16 +479,11 @@ class Terminal(ConnObj):
         -------
         :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
         """
-        # TODO check this method most likely does not work : issue #1903
-        ref_layer = self.reference_layer
-        edges = self.core.edges
-        _, _, point_data = edges[0].get_parameters()
-        layer_name = ref_layer.name
-        for primitive in self._pedb.layout.primitives:
-            if primitive.layer.name == layer_name:
-                if primitive.polygon_data.point_in_polygon(point_data):
-                    return Primitive(primitive, self._pedb)
-        return None  # pragma: no cover
+        try:
+            edge = self.reference_terminal.core.edges[0]
+            return Primitive(self._pedb, self.reference_terminal.core.edges[0].primitive)
+        except IndexError:
+            return None  # pragma: no cover
 
     def get_point_terminal_reference_primitive(self) -> Primitive | PadstackInstance | bool:
         """
