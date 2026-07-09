@@ -1764,8 +1764,6 @@ class PadstackInstance(conn_obj.ConnObj):
             # Neighbours are plain traces/pads without terminals, so the electrical query works.
             directly_touching = self._pedb.get_connected_objects(self.object_instance, True)
             if directly_touching:
-                from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
-
                 seen_ids: set = set()
                 all_connected: list = []
                 for neighbor in directly_touching:
