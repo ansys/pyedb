@@ -2081,18 +2081,31 @@ class Components(object):
         return True
 
     def create_pin_group(
-        self, reference_designator: str, pin_numbers: Union[str, List[str]], group_name: Optional[str] = None
+        self,
+        reference_designator: Optional[str] = None,
+        pin_numbers: Optional[Union[str, List[str]]] = None,
+        group_name: Optional[str] = None,
+        pins_by_id: Optional[List[int]] = None,
+        pins_by_aedt_name: Optional[Union[str, List[str]]] = None,
+        pins_by_name: Optional[Union[str, List[str]]] = None,
     ) -> Union[Tuple[str, PinGroup], bool]:
-        """Create pin group on a component.
+        """Create pin group on a component or from layout-level padstack instances.
 
         Parameters
         ----------
-        reference_designator : str
-            Reference designator.
-        pin_numbers : list[str]
-            List of pin names.
+        reference_designator : str, optional
+            Reference designator of the component. Required when ``pin_numbers`` is provided.
+        pin_numbers : list[str] or str, optional
+            List of pin names belonging to the component identified by ``reference_designator``.
         group_name : str, optional
-            Group name.
+            Pin group name. Auto-generated when not provided.
+        pins_by_id : list[int], optional
+            List of padstack instance IDs used to resolve pins at the layout level.
+            Cannot be combined with ``reference_designator``/``pin_numbers``.
+        pins_by_aedt_name : list[str] or str, optional
+            List of padstack AEDT names used to resolve pins at the layout level.
+        pins_by_name : list[str] or str, optional
+            List of padstack names used to resolve pins at the layout level.
 
         Returns
         -------
@@ -2102,12 +2115,60 @@ class Components(object):
         Examples
         --------
         >>> name, group = edbapp.components.create_pin_group("U1", ["1", "2"])
+        >>> name, group = edbapp.components.create_pin_group(group_name="pg1", pins_by_name=["U1-1", "U1-2"])
         """
+        if group_name is None:
+            group_name = PinGroup.unique_name(self._active_layout, "")
+
+        # --- layout-level path (pins_by_id / pins_by_aedt_name / pins_by_name) ---
+        if pins_by_id is not None or pins_by_aedt_name is not None or pins_by_name is not None:
+            pins = {}
+            if pins_by_id:
+                if isinstance(pins_by_id, int):
+                    pins_by_id = [pins_by_id]
+                for p in pins_by_id:
+                    if p in self._pedb.padstacks.instances:
+                        edb_pin = self._pedb.padstacks.instances[p]
+                        if p not in pins:
+                            pins[p] = edb_pin
+            if not pins_by_aedt_name:
+                pins_by_aedt_name = []
+            if not pins_by_name:
+                pins_by_name = []
+            if isinstance(pins_by_aedt_name, str):
+                pins_by_aedt_name = [pins_by_aedt_name]
+            if isinstance(pins_by_name, str):
+                pins_by_name = [pins_by_name]
+            if pins_by_aedt_name or pins_by_name:
+                p_inst = self._pedb.layout.padstack_instances
+                _pins = {
+                    pin.id: pin for pin in p_inst if pin.aedt_name in pins_by_aedt_name or pin.name in pins_by_name
+                }
+                for pid, pin in _pins.items():
+                    if pid not in pins:
+                        pins[pid] = pin
+            if not pins:
+                self._pedb.logger.error("No pin found to create pin group.")
+                return False
+            pin_list = list(pins.values())
+            obj = PinGroup.create(layout=self._active_layout, name=group_name, padstack_instances=pin_list)
+            if obj.is_null:  # pragma: no cover
+                raise RuntimeError(f"Failed to create pin group {group_name}.")
+            net_objs = [p.net for p in pin_list if not p.net.is_null]
+            if net_objs:
+                obj.net = net_objs[0]
+            return group_name, obj
+
+        # --- component-level path (reference_designator + pin_numbers) ---
+        if reference_designator is None or pin_numbers is None:
+            self._pedb.logger.error(
+                "Either reference_designator and pin_numbers, or at least one of pins_by_id / "
+                "pins_by_aedt_name / pins_by_name must be provided."
+            )
+            return False
         if not isinstance(pin_numbers, list):
             pin_numbers = [pin_numbers]
         pin_numbers = [str(p) for p in pin_numbers]
-        if group_name is None:
-            group_name = PinGroup.unique_name(self._active_layout, "")
         comp = self.instances[reference_designator]
         pins = [pin for pin_name, pin in comp.pins.items() if pin_name in pin_numbers]
         if not pins:

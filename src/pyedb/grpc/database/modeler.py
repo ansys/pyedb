@@ -1198,6 +1198,10 @@ class Modeler(object):
     ) -> bool:
         """Create pin group.
 
+        .. deprecated:: Use :meth:`pyedb.grpc.database.components.Components.create_pin_group` instead.
+            ``edb.modeler.create_pin_group()`` is deprecated and will be removed in a future release.
+            Use ``edb.components.create_pin_group(reference_designator, pin_numbers, group_name)`` instead.
+
         Parameters
         ----------
         name : str
@@ -1214,46 +1218,18 @@ class Modeler(object):
         :class:`pyedb.grpc.database.siwave.pin_group.PinGroup` or bool
             PinGroup object if created, False otherwise.
         """
-        # TODO move this method to components and merge with existing one
-        pins = {}
-        if pins_by_id:
-            if isinstance(pins_by_id, int):
-                pins_by_id = [pins_by_id]
-            for p in pins_by_id:
-                edb_pin = None
-                if p in self._pedb.padstacks.instances:
-                    edb_pin = self._pedb.padstacks.instances[p]
-                if edb_pin and not p in pins:
-                    pins[p] = edb_pin
-        if not pins_by_aedt_name:
-            pins_by_aedt_name = []
-        if not pins_by_name:
-            pins_by_name = []
-        if pins_by_aedt_name or pins_by_name:
-            if isinstance(pins_by_aedt_name, str):
-                pins_by_aedt_name = [pins_by_aedt_name]
-            if isinstance(pins_by_name, str):
-                pins_by_name = [pins_by_name]
-            p_inst = self._pedb.layout.padstack_instances
-            _pins = {pin.id: pin for pin in p_inst if pin.aedt_name in pins_by_aedt_name or pin.name in pins_by_name}
-            if not pins:
-                pins = _pins
-            else:
-                for id, pin in _pins.items():
-                    if not id in pins:
-                        pins[id] = pin
-        if not pins:
-            self._pedb.logger.error("No pin found.")
-            return False
-        pins = list(pins.values())
-        obj = PinGroup.create(layout=self._pedb.active_layout, name=name, padstack_instances=pins)
-        if obj.is_null:
-            raise RuntimeError(f"Failed to create pin group {name}.")
-        else:
-            net_obj = [i.net for i in pins if not i.net.is_null]
-            if net_obj:
-                obj.net = net_obj[0]
-        return self._pedb.siwave.pin_groups[name]
+        warnings.warn(
+            "edb.modeler.create_pin_group() is deprecated and will be removed in a future release. "
+            "Use edb.components.create_pin_group(reference_designator, pin_numbers, group_name) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._pedb.components.create_pin_group(
+            group_name=name,
+            pins_by_id=pins_by_id,
+            pins_by_aedt_name=pins_by_aedt_name,
+            pins_by_name=pins_by_name,
+        )
 
     @staticmethod
     def add_void(shape: "Primitive", void_shape: Union["Primitive", List["Primitive"]]) -> bool:
