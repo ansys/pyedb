@@ -376,8 +376,6 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     def test_modeler_path_convert_to_polygon(self):
-        # Done
-        target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
         target_path = self.edb_examples.copy_test_files_into_local_folder("convert_and_merge_path.aedb")[0]
         edbapp = self.edb_examples.load_edb(target_path)
         for path in edbapp.modeler.paths:
