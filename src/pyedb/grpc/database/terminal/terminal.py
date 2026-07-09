@@ -480,7 +480,6 @@ class Terminal(ConnObj):
         :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
         """
         try:
-            edge = self.reference_terminal.core.edges[0]
             return Primitive(self._pedb, self.reference_terminal.core.edges[0].primitive)
         except IndexError:
             return None  # pragma: no cover
