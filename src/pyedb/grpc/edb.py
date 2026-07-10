@@ -1351,13 +1351,19 @@ class Edb(EdbInit):
             self._layout_instance = self.layout.core.layout_instance
         return self._layout_instance
 
-    def get_connected_objects(self, layout_object_instance) -> list[PadstackInstance | Path | Polygon]:
+    def get_connected_objects(
+        self, layout_object_instance, touching_only: bool = False
+    ) -> list[PadstackInstance | Path | Polygon]:
         """Get objects connected to a layout object.
 
         Parameters
         ----------
         layout_object_instance :
             Target layout object.
+        touching_only : bool, optional
+            Whether to get only layout object instances touching the origin on its placement layer.
+            If ``False`` (default), all layout object instances across all layers that are
+            electrically connected to the origin are returned.
 
         Returns
         -------
@@ -1370,21 +1376,25 @@ class Edb(EdbInit):
 
         temp = []
         try:
-            for i in self.layout_instance.get_connected_objects(layout_object_instance, True):
+            for i in self.layout_instance.get_connected_objects(layout_object_instance, touching_only):
                 if isinstance(i.layout_obj, GrpcPadstackInstanceTerminal):
                     temp.append(PadstackInstanceTerminal(self, i.layout_obj))
                 else:
                     layout_obj_type = i.layout_obj.layout_obj_type.name
                     if layout_obj_type == "PADSTACK_INSTANCE":
                         temp.append(PadstackInstance(self, i.layout_obj))
-                    elif layout_obj_type == "PATH":
-                        temp.append(Path(self, i.layout_obj))
-                    elif layout_obj_type == "RECTANGLE":
-                        temp.append(Rectangle(self, i.layout_obj))
-                    elif layout_obj_type == "CIRCLE":
-                        temp.append(Circle(self, i.layout_obj))
-                    elif layout_obj_type == "POLYGON":
-                        temp.append(Polygon(self, i.layout_obj))
+                    elif layout_obj_type == "PRIMITIVE":
+                        prim_type = i.layout_obj.primitive_type.name
+                        if prim_type == "PATH":
+                            temp.append(Path(self, i.layout_obj))
+                        elif prim_type == "RECTANGLE":
+                            temp.append(Rectangle(self, i.layout_obj))
+                        elif prim_type == "CIRCLE":
+                            temp.append(Circle(self, i.layout_obj))
+                        elif prim_type == "POLYGON":
+                            temp.append(Polygon(self, i.layout_obj))
+                        else:
+                            continue
                     else:
                         continue
         except (

@@ -766,8 +766,6 @@ class Stackup:
             self.core.mode = CoreLayerCollectionMode.OVERLAPPING
         elif value == 2 or value == CoreLayerCollectionMode.MULTIZONE or value == "multizone" or value == "MultiZone":
             self.core.mode = CoreLayerCollectionMode.MULTIZONE
-        # self.core.update_layout()
-        # TODO check if still needed with gRPC
 
     def _set_layout_stackup(
         self, layer_clone: CoreStackupLayer, operation: str, base_layer: Optional[str] = None, method: int = 1
@@ -1705,7 +1703,6 @@ class Stackup:
         cell_inst2.transform3d = transform
         transform = cell_inst2.transform3d.create_from_offset(offset=point3d_t)
         cell_inst2.transform3d = transform
-        # TODO check if component is properly placed.
         return True
 
     def place_instance(

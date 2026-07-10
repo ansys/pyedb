@@ -131,17 +131,17 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_nets_dc_shorts(self):
-        # TODO get_connected_object return empty list.
         edbapp = self.edb_examples.get_si_verse()
         dc_shorts = edbapp.layout_validation.dc_shorts()
         assert dc_shorts
         edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
         edbapp.layout_validation.illegal_net_names(True)
         edbapp.layout_validation.illegal_rlc_values(True)
-
-        # assert len(dc_shorts) == 20
+        if edbapp.grpc:
+            assert len(dc_shorts) == 50
+        else:
+            assert len(dc_shorts) == 47  # dotnet is giving slightly different primitives.
         assert ["SFPA_Tx_Fault", "PCIe_Gen4_CLKREQ_L"] in dc_shorts
         assert ["VDD_DDR", "GND"] in dc_shorts
         assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0

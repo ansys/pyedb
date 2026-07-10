@@ -86,6 +86,10 @@ class LayoutValidation:
                 _padstacks_list[n_name].append(pad)
             else:
                 _padstacks_list[n_name] = [pad]
+        # Refresh the layout instance once before the loop so the connectivity model is
+        # up-to-date for all subsequent get_connected_objects calls (refresh=False avoids
+        # an expensive per-net refresh inside the hot loop).
+        self._layout_instance.refresh()
         dc_shorts = []
         all_shorted_nets = []
         for net in net_list:

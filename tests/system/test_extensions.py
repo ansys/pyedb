@@ -21,13 +21,11 @@
 # SOFTWARE.
 
 import os
-from pathlib import Path
 
-import ansys.edb.core
 import pytest
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
-from tests.conftest import GRPC, config, desktop_version
+from tests.conftest import config, desktop_version
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
