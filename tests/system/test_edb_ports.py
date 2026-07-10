@@ -161,10 +161,7 @@ class TestClass(BaseTestClass):
         )
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
+    @pytest.mark.skipif(not config["use_grpc"], reason="Test skipped for DotNet")
     def test_create_edge_port_on_polygon(self):
         """Create lumped and vertical port."""
         target_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/edge_ports.aedb")[0]
