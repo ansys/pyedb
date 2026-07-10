@@ -161,10 +161,7 @@ class TestClass(BaseTestClass):
         )
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
+    @pytest.mark.skipif(not config["use_grpc"], reason="Test skipped for DotNet")
     def test_create_edge_port_on_polygon(self):
         """Create lumped and vertical port."""
         target_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/edge_ports.aedb")[0]
@@ -181,6 +178,10 @@ class TestClass(BaseTestClass):
             terminal_point=port_location,
             reference_point=ref_location,
         )
+        terminal = list(edb.ports.values())[0]
+        assert terminal.reference_terminal
+        assert terminal.reference_object
+        assert terminal.reference_object.layer.name == "sig2"
         port_poly = [poly for poly in poly_list if poly.id == 23][0]
         ref_poly = [poly for poly in poly_list if poly.id == 22][0]
         port_location = [-65e-3, -10e-3]
