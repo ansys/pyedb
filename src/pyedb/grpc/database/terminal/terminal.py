@@ -152,8 +152,11 @@ class Terminal(ConnObj):
     @property
     def reference_layer(self):
         """Get layer of the terminal."""
-        if self.reference_object:
-            return self.reference_object.layer.name
+        try:
+            if self.reference_object:
+                return self.reference_object.layer.name
+        except Exception as e:
+            self._pedb.logger.error(f"Failed to get reference_layer: {e}")
         return None
 
     @_hfss_port_property.setter
