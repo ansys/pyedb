@@ -55,7 +55,6 @@ class TestClass(BaseTestClass):
         assert poly0.net.name == "GND"
         assert edbapp.modeler.polygons[0].clone()
         assert isinstance(poly0.voids, list)
-        # TODO convert point_raw as property in dotnet to be compliant with grpc.
         assert isinstance(poly0.points_raw(), list)
         assert isinstance(poly0.points(), tuple)
         assert isinstance(poly0.points()[0], list)
@@ -64,35 +63,21 @@ class TestClass(BaseTestClass):
             assert poly0.points_raw()[0].x.value >= 0.0
         else:
             assert poly0.points_raw()[0].X.ToDouble() >= 0.0
-        # TODO check is polygon.type should return "polygon" instead of "Polygon",
-        assert poly0.type.lower() == "polygon"
+        assert poly0.type == "polygon"
         if edbapp.grpc:
             assert not poly0.points_raw()[0].is_arc
         else:
             assert not poly0.points_raw()[0].IsArc()
         assert isinstance(poly0.voids, list)
-        # TODO check bug 455
-        # assert isinstance(poly0.get_closest_point([0.07, 0.0027]), list)
+        assert isinstance(poly0.get_closest_point([0.07, 0.0027]), list)
         assert isinstance(poly0.get_closest_arc_midpoint([0, 0]), list)
         assert isinstance(poly0.arcs, list)
         assert isinstance(poly0.longest_arc.length, float)
         assert isinstance(poly0.shortest_arc.length, float)
         assert not poly0.in_polygon([0, 0])
-        # TODO make grpc arc.is_segment a property
-        if edbapp.grpc:
-            assert poly0.arcs[0].is_segment()
-        else:
-            assert poly0.arcs[0].is_segment
-        # TODO make grpc arc.is_point a property
-        if edbapp.grpc:
-            assert not poly0.arcs[0].is_point()
-        else:
-            assert not poly0.arcs[0].is_point
-        # TODO make grpc arc.is_cww a property
-        if edbapp.grpc:
-            assert not poly0.arcs[0].is_ccw()
-        else:
-            assert not poly0.arcs[0].is_ccw
+        assert poly0.arcs[0].is_segment
+        assert not poly0.arcs[0].is_point
+        assert not poly0.arcs[0].is_ccw
         assert isinstance(poly0.arcs[0].points, list)
         assert isinstance(poly0.intersection_type(poly0), int)
         assert poly0.is_intersecting(poly0)
@@ -391,8 +376,6 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     def test_modeler_path_convert_to_polygon(self):
-        # Done
-        target_path = os.path.join(local_path, "example_models", "convert_and_merge_path.aedb")
         target_path = self.edb_examples.copy_test_files_into_local_folder("convert_and_merge_path.aedb")[0]
         edbapp = self.edb_examples.load_edb(target_path)
         for path in edbapp.modeler.paths:

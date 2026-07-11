@@ -561,7 +561,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
         """
         if not self._object_instance:
-            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self.core, None)
+            self._object_instance = self._pedb.layout_instance.get_layout_obj_instance_in_context(self.core, None)
         return self._object_instance
 
     @property
@@ -730,7 +730,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
         """
         if not self._object_instance:
-            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self.core, None)
+            self._object_instance = self._pedb.layout_instance.get_layout_obj_instance_in_context(self.core, None)
         return self._object_instance
 
     @property
@@ -1515,10 +1515,8 @@ class PadstackInstance(conn_obj.ConnObj):
         >>> padstack_inst = list_of_padstack_instances[0]
         >>> padstack_inst.create_rectangle_in_pad("TOP")
         """
-        # TODO check if still used anf fix if yes.
         padstack_center = self.position
         rotation = self.rotation  # in radians
-        # padstack = self._pedb.padstacks.definitions[self.padstack_def.name]
         try:
             padstack_pad = PadstackDef(self._pedb, self.padstack_def).pad_by_layer[layer_name]
         except KeyError:  # pragma: no cover
@@ -1732,14 +1730,56 @@ class PadstackInstance(conn_obj.ConnObj):
             pinlist_position=pinlist_position,
         )
 
-    def get_connected_objects(self):
+    def get_connected_objects(self, touching_only: bool = False):
         """Get connected objects.
+
+        Parameters
+        ----------
+        touching_only : bool, optional
+            Whether to get only layout object instances touching the origin on its placement layer.
+            If ``False`` (default), all layout object instances across all layers that are
+            electrically connected to the origin are returned.
+
+            .. note::
+                If this padstack instance has a port/terminal attached (e.g. a coax port), the
+                EDB electrical-model query (``touching_only=False``) treats the terminal as an
+                electrical boundary and returns nothing.  In that case the method automatically
+                falls back to a two-hop approach: first finding geometrically touching neighbours
+                (``touching_only=True``), then collecting everything electrically connected to
+                each neighbour.  This replicates the behaviour of the DotNet ``GetConnectedObjects``
+                API which does not respect port boundaries.
 
         Returns
         -------
-        List[:class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`]
+        list
         """
-        return self._pedb.get_connected_objects(self.object_instance)
+        result = self._pedb.get_connected_objects(self.object_instance, touching_only)
+        if not result and not touching_only:
+            # The padstack may have a terminal (e.g. a coax port) that acts as an electrical
+            # boundary, causing the full electrical query to return nothing.
+            # Fall back: collect geometrically touching neighbours on the placement layer,
+            # then from each neighbour collect all electrically connected objects.
+            # Neighbours are plain traces/pads without terminals, so the electrical query works.
+            directly_touching = self._pedb.get_connected_objects(self.object_instance, True)
+            if directly_touching:
+                seen_ids: set = set()
+                all_connected: list = []
+                for neighbor in directly_touching:
+                    if isinstance(neighbor, PadstackInstanceTerminal):
+                        continue  # terminals have no object_instance; skip
+                    n_id = getattr(neighbor, "id", None)
+                    if n_id is None or n_id in seen_ids:
+                        continue
+                    seen_ids.add(n_id)
+                    all_connected.append(neighbor)
+                    if hasattr(neighbor, "object_instance"):
+                        for c in self._pedb.get_connected_objects(neighbor.object_instance, False):
+                            c_id = getattr(c, "id", None)
+                            if c_id is not None and c_id not in seen_ids:
+                                seen_ids.add(c_id)
+                                all_connected.append(c)
+                return all_connected
+        return result
 
     def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
         """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on

@@ -1329,4 +1329,3 @@ class PadstackDef:
         "above_padstack": SolderballPlacement.ABOVE_PADSTACK,
         "below_padstack": SolderballPlacement.BELOW_PADSTACK,
     }
-    # TODO check if update layer name is needed.

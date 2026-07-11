@@ -81,7 +81,7 @@ class Primitive(Connectable):
         str
         """
         try:
-            return self.core.GetPrimitiveType().ToString()
+            return self.core.GetPrimitiveType().ToString().lower()
         except AttributeError:  # pragma: no cover
             return ""
 
@@ -257,7 +257,7 @@ class Primitive(Connectable):
             Polygon when successful, ``False`` when failed.
 
         """
-        if self.type == "Path":
+        if self.type in ["path", "Path"]:
             polygon_data = self.core.GetPolygonData()
             polygon = self._app.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name)
             self.delete()
@@ -314,7 +314,7 @@ class Primitive(Connectable):
         list of float
         """
         if isinstance(point, (list, tuple)):
-            point = self._app.core.geometry.point_data(self._app.edb_value(point[0]), self._app.edb_value(point[1]))
+            point = self._app.core.Geometry.PointData(self._app.edb_value(point[0]), self._app.edb_value(point[1]))
 
         p0 = self.polygon_data.core.GetClosestPoint(point)
         return [p0.X.ToDouble(), p0.Y.ToDouble()]

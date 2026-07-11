@@ -1265,15 +1265,15 @@ class Components(object):
     def set_solder_ball(
         self,
         component: Union[str, Component] = "",
-        sball_diam: Optional[float] = None,
-        sball_height: Optional[float] = None,
+        sball_diam: Optional[float | int] = None,
+        sball_height: Optional[float | int] = None,
         shape: str = "Cylinder",
-        sball_mid_diam: Optional[float] = None,
-        chip_orientation: str = "chip_down",
+        sball_mid_diam: Optional[float | int] = None,
+        chip_orientation: Optional[str] = None,
         auto_reference_size: bool = True,
-        reference_size_x: float = 0,
-        reference_size_y: float = 0,
-        reference_height: float = 0,
+        reference_size_x: float | int = 0,
+        reference_size_y: float | int = 0,
+        reference_height: float | int = 0,
         material_name: str = None,
     ) -> bool:
         """Set solder ball properties for a component.
@@ -1290,8 +1290,11 @@ class Components(object):
             Solder ball shape ("Cylinder" or "Spheroid").
         sball_mid_diam : float, optional
             Solder ball mid diameter.
-        chip_orientation : str, optional
-            Chip orientation ("chip_down" or "chip_up").
+        chip_orientation : str or None, optional
+            Chip orientation (``"chip_down"`` or ``"chip_up"``). When ``None`` (default), the
+            orientation is auto-detected from the component placement layer: components placed on
+            the top signal layer receive ``"chip_down"``; those on any other signal layer receive
+            ``"chip_up"``. Pass an explicit value to override the auto-detection.
         auto_reference_size : bool, optional
             Use auto reference size.
         reference_size_x : float, optional
@@ -1357,11 +1360,11 @@ class Components(object):
             if cmp.core.component_type == CoreComponentType.IC:
                 ic_die_prop = cmp_property.die_property
                 ic_die_prop.die_type = CoreDieType.FLIPCHIP
-                # Top layer → chip_down (die faces down toward board), bottom layer → chip_up
-                if cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
-                    chip_orientation = "chip_down"
-                else:
-                    chip_orientation = "chip_up"
+                if chip_orientation is None:
+                    if cmp.placement_layer == list(self._pedb.stackup.signal_layers.keys())[0]:
+                        chip_orientation = "chip_down"
+                    else:
+                        chip_orientation = "chip_up"
                 if chip_orientation.lower() == "chip_up":
                     ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
                 else:
@@ -1388,10 +1391,6 @@ class Components(object):
                     self._pedb._value_setter(reference_size_x), self._pedb._value_setter(reference_size_y)
                 )
             cmp_property.port_property = port_prop
-            # Clone the reference AFTER all sub-property mutations have been buffered so that the
-            # clone captures every change.  Pass the clone to SetComponentProperty — using a
-            # distinct (cloned) object is required for the server to register the update and
-            # persist it on save.
             cmp.core.component_property = cmp_property.clone()
         else:
             # ansys-edb-core < 0.4: flat ComponentProperty — must write back via SetComponentProperty.
@@ -1399,10 +1398,11 @@ class Components(object):
             if cmp.core.component_type == CoreComponentType.IC:
                 ic_die_prop = cmp_property.die_property
                 ic_die_prop.die_type = CoreDieType.FLIPCHIP
-                if cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
-                    chip_orientation = "chip_down"
-                else:
-                    chip_orientation = "chip_up"
+                if chip_orientation is None:
+                    if cmp.placement_layer == list(self._pedb.stackup.signal_layers.keys())[0]:
+                        chip_orientation = "chip_down"
+                    else:
+                        chip_orientation = "chip_up"
                 if chip_orientation.lower() == "chip_up":
                     ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
                 else:
@@ -2081,18 +2081,31 @@ class Components(object):
         return True
 
     def create_pin_group(
-        self, reference_designator: str, pin_numbers: Union[str, List[str]], group_name: Optional[str] = None
+        self,
+        reference_designator: Optional[str] = None,
+        pin_numbers: Optional[Union[str, List[str]]] = None,
+        group_name: Optional[str] = None,
+        pins_by_id: Optional[List[int]] = None,
+        pins_by_aedt_name: Optional[Union[str, List[str]]] = None,
+        pins_by_name: Optional[Union[str, List[str]]] = None,
     ) -> Union[Tuple[str, PinGroup], bool]:
-        """Create pin group on a component.
+        """Create pin group on a component or from layout-level padstack instances.
 
         Parameters
         ----------
-        reference_designator : str
-            Reference designator.
-        pin_numbers : list[str]
-            List of pin names.
+        reference_designator : str, optional
+            Reference designator of the component. Required when ``pin_numbers`` is provided.
+        pin_numbers : list[str] or str, optional
+            List of pin names belonging to the component identified by ``reference_designator``.
         group_name : str, optional
-            Group name.
+            Pin group name. Auto-generated when not provided.
+        pins_by_id : list[int], optional
+            List of padstack instance IDs used to resolve pins at the layout level.
+            Cannot be combined with ``reference_designator``/``pin_numbers``.
+        pins_by_aedt_name : list[str] or str, optional
+            List of padstack AEDT names used to resolve pins at the layout level.
+        pins_by_name : list[str] or str, optional
+            List of padstack names used to resolve pins at the layout level.
 
         Returns
         -------
@@ -2102,12 +2115,60 @@ class Components(object):
         Examples
         --------
         >>> name, group = edbapp.components.create_pin_group("U1", ["1", "2"])
+        >>> name, group = edbapp.components.create_pin_group(group_name="pg1", pins_by_name=["U1-1", "U1-2"])
         """
+        if group_name is None:
+            group_name = PinGroup.unique_name(self._active_layout, "")
+
+        # --- layout-level path (pins_by_id / pins_by_aedt_name / pins_by_name) ---
+        if pins_by_id is not None or pins_by_aedt_name is not None or pins_by_name is not None:
+            pins = {}
+            if pins_by_id:
+                if isinstance(pins_by_id, int):
+                    pins_by_id = [pins_by_id]
+                for p in pins_by_id:
+                    if p in self._pedb.padstacks.instances:
+                        edb_pin = self._pedb.padstacks.instances[p]
+                        if p not in pins:
+                            pins[p] = edb_pin
+            if not pins_by_aedt_name:
+                pins_by_aedt_name = []
+            if not pins_by_name:
+                pins_by_name = []
+            if isinstance(pins_by_aedt_name, str):
+                pins_by_aedt_name = [pins_by_aedt_name]
+            if isinstance(pins_by_name, str):
+                pins_by_name = [pins_by_name]
+            if pins_by_aedt_name or pins_by_name:
+                p_inst = self._pedb.layout.padstack_instances
+                _pins = {
+                    pin.id: pin for pin in p_inst if pin.aedt_name in pins_by_aedt_name or pin.name in pins_by_name
+                }
+                for pid, pin in _pins.items():
+                    if pid not in pins:
+                        pins[pid] = pin
+            if not pins:
+                self._pedb.logger.error("No pin found to create pin group.")
+                return False
+            pin_list = list(pins.values())
+            obj = PinGroup.create(layout=self._active_layout, name=group_name, padstack_instances=pin_list)
+            if obj.is_null:  # pragma: no cover
+                raise RuntimeError(f"Failed to create pin group {group_name}.")
+            net_objs = [p.net for p in pin_list if not p.net.is_null]
+            if net_objs:
+                obj.net = net_objs[0]
+            return group_name, obj
+
+        # --- component-level path (reference_designator + pin_numbers) ---
+        if reference_designator is None or pin_numbers is None:
+            self._pedb.logger.error(
+                "Either reference_designator and pin_numbers, or at least one of pins_by_id / "
+                "pins_by_aedt_name / pins_by_name must be provided."
+            )
+            return False
         if not isinstance(pin_numbers, list):
             pin_numbers = [pin_numbers]
         pin_numbers = [str(p) for p in pin_numbers]
-        if group_name is None:
-            group_name = PinGroup.unique_name(self._active_layout, "")
         comp = self.instances[reference_designator]
         pins = [pin for pin_name, pin in comp.pins.items() if pin_name in pin_numbers]
         if not pins:

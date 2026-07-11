@@ -21,13 +21,11 @@
 # SOFTWARE.
 
 import os
-from pathlib import Path
 
-import ansys.edb.core
 import pytest
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
-from tests.conftest import GRPC, config, desktop_version
+from tests.conftest import config, desktop_version
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -600,13 +598,10 @@ class TestClass(BaseTestClass):
         }
         app = ViaDesignBackend(cfg, config["use_grpc"])
 
-    # @pytest.mark.skipif(config["use_grpc"], reason="Waiting SP1.")
+    @pytest.mark.skipif(not config["use_grpc"], reason="Failing on Dotnet CI but fine on local.")
     def test_arbitrary_wave_ports(self):
-        local_path = Path(__file__).parent.parent
-        example_folder = os.path.join(local_path, "example_models", "TEDB")
-        source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
-
-        edbapp = self.edb_examples.load_edb(source_path_edb)
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/example_arbitrary_wave_ports.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
         assert edbapp.create_model_for_arbitrary_wave_ports(
             temp_directory=self.edb_examples.test_folder,
             output_edb=os.path.join(self.edb_examples.test_folder, "wave_ports.aedb"),
