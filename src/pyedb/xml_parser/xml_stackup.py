@@ -24,7 +24,7 @@
 
 from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseModel, Field, AliasChoices
+from pydantic import AliasChoices, BaseModel, Field
 
 if TYPE_CHECKING:
     from pyedb.configuration.cfg_data import CfgStackup
