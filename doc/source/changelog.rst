@@ -9,6 +9,87 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.80.2 <https://github.com/ansys/pyedb/releases/tag/v0.80.2>`_ - July 11, 2026
+===============================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Chip orientation looking at all layers instead of only metal ones for auto die orientation evaluation
+          - `#2363 <https://github.com/ansys/pyedb/pull/2363>`_
+
+        * - Grpc find dc_short fixed
+          - `#2365 <https://github.com/ansys/pyedb/pull/2365>`_
+
+        * - EdgeTerminal.reference_object fixed
+          - `#2369 <https://github.com/ansys/pyedb/pull/2369>`_
+
+        * - Modeler create_pin_group from deprecated
+          - `#2371 <https://github.com/ansys/pyedb/pull/2371>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump pytest-rerunfailures from 16.3 to 16.4
+          - `#2368 <https://github.com/ansys/pyedb/pull/2368>`_
+
+        * - Bump ansys/actions/doc-changelog from 10.3.2 to 10.3.3
+          - `#2373 <https://github.com/ansys/pyedb/pull/2373>`_
+
+        * - Bump ansys/actions/doc-deploy-stable from 10.3.2 to 10.3.3
+          - `#2374 <https://github.com/ansys/pyedb/pull/2374>`_
+
+        * - Bump ansys/actions/doc-build from 10.3.2 to 10.3.3
+          - `#2375 <https://github.com/ansys/pyedb/pull/2375>`_
+
+        * - Bump ansys/actions/build-library from 10.3.2 to 10.3.3
+          - `#2376 <https://github.com/ansys/pyedb/pull/2376>`_
+
+        * - Bump ansys/actions/doc-deploy-dev from 10.3.2 to 10.3.3
+          - `#2377 <https://github.com/ansys/pyedb/pull/2377>`_
+
+        * - Bump ansys/actions/check-vulnerabilities from 10.3.2 to 10.3.3
+          - `#2379 <https://github.com/ansys/pyedb/pull/2379>`_
+
+        * - Bump ansys/actions/doc-deploy-changelog from 10.3.2 to 10.3.3
+          - `#2380 <https://github.com/ansys/pyedb/pull/2380>`_
+
+        * - Bump ansys/actions/check-actions-security from 10.3.2 to 10.3.3
+          - `#2381 <https://github.com/ansys/pyedb/pull/2381>`_
+
+        * - Bump ansys/actions/doc-style from 10.3.2 to 10.3.3
+          - `#2382 <https://github.com/ansys/pyedb/pull/2382>`_
+
+        * - Bump ansys/actions/build-wheelhouse from 10.3.2 to 10.3.3
+          - `#2383 <https://github.com/ansys/pyedb/pull/2383>`_
+
+        * - Bump scikit-rf from 2.0.0 to 2.0.1
+          - `#2384 <https://github.com/ansys/pyedb/pull/2384>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.80.1
+          - `#2361 <https://github.com/ansys/pyedb/pull/2361>`_
+
+        * - ArcData attributes defined as properties instead of methods
+          - `#2367 <https://github.com/ansys/pyedb/pull/2367>`_
+
+
 `0.80.1 <https://github.com/ansys/pyedb/releases/tag/v0.80.1>`_ - July 07, 2026
 ===============================================================================
 
