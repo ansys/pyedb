@@ -22,8 +22,8 @@
 
 """XML parser module for handling EDB XML configuration files."""
 
-import re
 from pathlib import Path
+import re
 from typing import Optional
 
 from pydantic import BaseModel, Field
