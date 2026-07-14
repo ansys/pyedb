@@ -24,7 +24,7 @@
 
 from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field
 
 if TYPE_CHECKING:
     from pyedb.configuration.cfg_data import CfgStackup
@@ -121,7 +121,7 @@ class XmlLayer(BaseModel):
     name: str = Field(alias="@Name")
     negative: bool | None = Field(None, alias="@Negative")
     thickness: str | float | None = Field(None, alias="@Thickness")
-    type: str | None = Field(None, alias="@Type")
+    type: str | None = Field(None, alias="@Type", validation_alias=AliasChoices("@Type", "layer_type"))
 
     huray_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HuraySurfaceRoughness")
     huray_bottom_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HurayBottomSurfaceRoughness")
