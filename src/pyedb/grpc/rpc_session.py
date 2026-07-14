@@ -218,7 +218,7 @@ class RpcSession:
             # A session was left over from a previous call — clear it so we can attach.
             try:
                 _SESSION_MOD.current_session = None
-            except Exception:
+            except Exception:  # nosec B110
                 pass
 
         try:
@@ -236,7 +236,7 @@ class RpcSession:
             settings.logger.error(f"Failed to connect to RPC server at {ip_address}:{port}: {exc}")
             try:
                 _SESSION_MOD.current_session = None
-            except Exception:
+            except Exception:  # nosec B110
                 pass
             return False
 
