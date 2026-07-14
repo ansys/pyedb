@@ -3360,16 +3360,27 @@ class Edb(EdbInit):
         Parameters
         ----------
         component_path : str
-            Layout component path (.aedbcomp file).
+            Layout component path. Must use the ``.aedbcomp`` extension.
 
         Returns
         -------
         bool
             `True` if layout component is successfully exported, `False` otherwise.
         """
-        return CoreLayoutComponent.export_layout_component(
-            layout=self.active_layout.core, output_aedb_comp_path=component_path
-        )
+        output = PathLib(component_path)
+        if output.suffix.lower() != ".aedbcomp":
+            self.logger.warning(
+                f"export_layout_component: unexpected file extension '{output.suffix}'. "
+                "Expected '.aedbcomp'. The export may fail."
+            )
+        output.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            return CoreLayoutComponent.export_layout_component(
+                layout=self.active_layout.core, output_aedb_comp_path=str(output)
+            )
+        except RuntimeError as e:
+            self.logger.error(f"export_layout_component failed: {e}")
+            return False
 
     def physical_merge(
         self,
