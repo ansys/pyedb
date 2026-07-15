@@ -420,10 +420,9 @@ class CfgComponent(CfgBase):
             cp = self.pyedb_obj.core.component_property
 
             # For IC components, solder balls imply a flip-chip die.  If the
-            # user did not explicitly configure a non-trivial die type (i.e. the
-            # effective die type is still "no_die"), override it with FLIPCHIP
+            # user did not explicitly configure die type override it with FLIPCHIP
             # and use the orientation stored in the solder-ball data.  This
-            # mirrors the behaviour of ``components.set_solder_ball`` which
+            # mirrors the behavior of ``components.set_solder_ball`` which
             # always sets die_type = FLIPCHIP when processing an IC.
             if self.pyedb_obj.type.lower() == "ic":
                 configured_die_type = (self.ic_die_properties.get("type") or "no_die").lower()
