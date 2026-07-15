@@ -287,12 +287,15 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-        self.settings.general.adaptive_solution_type = "broadband"
-        bfs = self.settings.general.broadband_adaptive_solution
-        bfs.low_frequency = low_frequency
-        bfs.high_frequency = high_frequency
-        bfs.max_delta = max_delta_s
-        bfs.max_num_passes = max_num_passes
+        # Access the raw proto directly (same pattern as set_solution_single_frequency) so that the
+        # final write-back uses the proto object, not a Python wrapper.  Passing a
+        # BroadbandAdaptiveSolution wrapper to a proto field setter raises a TypeError.
+        self.core.settings.general.adaptive_solution_type = CoreAdaptType.BROADBAND
+        bfs = self.core.settings.general.broadband_adaptive_solution
+        bfs.low_frequency = str(low_frequency)
+        bfs.high_frequency = str(high_frequency)
+        bfs.max_delta = str(max_delta_s)
+        bfs.max_num_passes = int(max_num_passes)
         self.core.settings.general.broadband_adaptive_solution = bfs
         return True
 
