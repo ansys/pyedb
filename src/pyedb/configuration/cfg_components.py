@@ -418,6 +418,24 @@ class CfgComponent(CfgBase):
             # ``cp.solder_ball_property`` does not persist on EDB 2026.1, even
             # with the base-class write-back).
             cp = self.pyedb_obj.core.component_property
+
+            # For IC components, solder balls imply a flip-chip die.  If the
+            # user did not explicitly configure a non-trivial die type (i.e. the
+            # effective die type is still "no_die"), override it with FLIPCHIP
+            # and use the orientation stored in the solder-ball data.  This
+            # mirrors the behaviour of ``components.set_solder_ball`` which
+            # always sets die_type = FLIPCHIP when processing an IC.
+            if self.pyedb_obj.type.lower() == "ic":
+                configured_die_type = (self.ic_die_properties.get("type") or "no_die").lower()
+                if configured_die_type in _NO_DIE_TYPES:
+                    ic_die_prop = CoreDieProperty.create()
+                    ic_die_prop.die_type = CoreDieType.FLIPCHIP
+                    orientation = (sbp_data.get("orientation") or "chip_down").lower()
+                    ic_die_prop.die_orientation = (
+                        CoreDieOrientation.CHIP_UP if orientation == "chip_up" else CoreDieOrientation.CHIP_DOWN
+                    )
+                    cp.die_property = ic_die_prop
+
             sbp = CoreSolderBallProperty.create()
             if shape_lower == "cylinder":
                 sbp.set_diameter(self._pedb.value(diameter), self._pedb.value(diameter))
