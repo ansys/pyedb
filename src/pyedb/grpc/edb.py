@@ -196,6 +196,15 @@ class Edb(EdbInit):
         Layer filter file for import.
     restart_rpc_server : bool, optional
         Restart gRPC server. Use with caution. Default False.
+    port : int, optional
+        TCP port of an **already-running** EDB RPC server to attach to.
+        When this is non-zero the ``version`` parameter is ignored for server
+        launch purposes — no new server process is started.  The default is
+        ``0`` (launch a fresh server using ``version``).
+    ip_address : str, optional
+        Hostname or IP address of the already-running RPC server referenced by
+        ``port``.  Only used when ``port`` is non-zero.  Default is
+        ``"localhost"``.
 
     Examples
     --------
@@ -211,6 +220,9 @@ class Edb(EdbInit):
 
     >>> # Import board file:
     >>> edb = Edb("my_board.brd")
+
+    >>> # Attach to an already-running RPC server on port 50051:
+    >>> edb = Edb("myproject.aedb", port=50051)
     """
 
     # Declare _init_objects and commonly-used property names for static analysis tools
@@ -233,6 +245,8 @@ class Edb(EdbInit):
         layer_filter: str = None,
         restart_rpc_server=False,
         remove_existing_aedt: bool = False,
+        port: int = 0,
+        ip_address: str = "localhost",
     ):
         if isinstance(edbpath, PathLib):
             edbpath = str(edbpath)
@@ -243,6 +257,8 @@ class Edb(EdbInit):
         self.oproject = oproject
         self._main = sys.modules["__main__"]
         self.version = edbversion
+        self._port = port
+        self._ip_address = ip_address
         # Internal cached objects (explicitly initialized to placate static analyzers and IDEs)
         self._components = None
         self._core_primitives = None
@@ -330,13 +346,19 @@ class Edb(EdbInit):
                 raise AttributeError("Translation was unsuccessful")
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
-            self.open(restart_rpc_server=restart_rpc_server)
+            if port:
+                self._open_on_existing_server(self.edbpath, self.isreadonly, port=port, ip_address=ip_address)
+            else:
+                self.open(restart_rpc_server=restart_rpc_server)
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
             self.create(restart_rpc_server=restart_rpc_server)
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
-            self.open(restart_rpc_server=restart_rpc_server)
+            if port:
+                self._open_on_existing_server(self.edbpath, self.isreadonly, port=port, ip_address=ip_address)
+            else:
+                self.open(restart_rpc_server=restart_rpc_server)
         if self.active_cell:
             self.logger.info("EDB initialized.")
         else:
@@ -741,6 +763,56 @@ class Edb(EdbInit):
             else:
                 self.logger.error("Builder was not initialized.")
             return True
+
+    def _open_on_existing_server(self, db_path, read_only, port, ip_address="localhost") -> bool:
+        """Open an EDB database against an already-running RPC server.
+
+        Parameters
+        ----------
+        db_path : str
+            Absolute path to the ``.aedb`` folder.
+        read_only : bool
+            Open in read-only mode when ``True``.
+        port : int
+            TCP port the RPC server is listening on.
+        ip_address : str, optional
+            Hostname or IP address of the RPC server.  Default is ``"localhost"``.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` otherwise.
+
+        Examples
+        --------
+        Connect to a server that another application already started on port 50051:
+
+        >>> edb = Edb.__new__(Edb)
+        >>> edb._open_on_existing_server("my_design.aedb", False, port=50051)
+        """
+        super()._open_on_existing_server(db_path, read_only, port=port, ip_address=ip_address)
+        if not self.db:
+            raise ValueError("Failed to open EDB on existing server.")
+        if self.db.is_null:
+            self.logger.warning("Error Opening db")
+            self._active_cell = None
+            return False
+        self.logger.info(f"Database {os.path.split(db_path)[-1]} opened via existing server on port {port}")
+        self._active_cell = None
+        if self.cellname:
+            for cell in self.active_db.circuit_cells:
+                if cell.name == self.cellname:
+                    self._active_cell = cell
+        if self._active_cell is None:
+            self._active_cell = self._db.circuit_cells[0]
+        self.logger.info("Cell %s Opened", self._active_cell.name)
+        if self._active_cell:
+            self._init_objects()
+            self.logger.info("Builder was initialized.")
+            return True
+        else:
+            self.logger.error("Builder was not initialized.")
+            return False
 
     def create(self, restart_rpc_server=False) -> "Edb | None":
         """Create new EDB database.
