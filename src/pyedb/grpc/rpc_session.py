@@ -27,7 +27,7 @@ import socket
 import sys
 import time
 
-from ansys.edb.core.session import MOD as _SESSION_MOD, launch_session
+from ansys.edb.core.session import MOD as _SESSION_MOD, _Session as _EdbSession, launch_session
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
@@ -169,6 +169,84 @@ class RpcSession:
                 settings.logger.info(f"Grpc session started: pid={RpcSession.server_pid}")
             else:
                 settings.logger.error("Failed to start EDB_RPC_server process")
+
+    @staticmethod
+    def connect_to_existing_server(port, ip_address="localhost"):
+        """Connect to an already-running RPC server without launching a new process.
+
+        Use this when an EDB RPC server is already running (started externally or by another
+        application) and you only want to open a gRPC channel to it.  Unlike :meth:`start`,
+        this method never spawns a server process and never *owns* the session — the server
+        will **not** be shut down when :meth:`close` is called.
+
+        Parameters
+        ----------
+        port : int
+            TCP port number on which the RPC server is listening.
+        ip_address : str, optional
+            Hostname or IP address of the machine running the server.
+            The default is ``"localhost"``.
+
+        Returns
+        -------
+        bool
+            ``True`` when the connection was established successfully, ``False`` otherwise.
+
+        Examples
+        --------
+        Connect from a second process to a server already started on port 50051:
+
+        >>> from pyedb.grpc.rpc_session import RpcSession
+        >>> RpcSession.connect_to_existing_server(50051)
+        True
+        >>> from pyedb.grpc.edb import Edb
+        >>> edb = Edb.__new__(Edb)  # bypass __init__ server launch
+        >>> # … or use the port= shortcut on Edb.__init__ (see Edb docs)
+        """
+        if RpcSession.rpc_session and RpcSession._is_server_alive():
+            if RpcSession.port == port:
+                settings.logger.info(f"Already connected to RPC server on port {port}. Reusing existing session.")
+                return True
+            else:
+                settings.logger.warning(
+                    f"Already connected to a different port ({RpcSession.port}). "
+                    f"Cannot attach to port {port} simultaneously."
+                )
+                return False
+
+        if _SESSION_MOD.current_session is not None:
+            # A session was left over from a previous call — clear it so we can attach.
+            try:
+                _SESSION_MOD.current_session = None
+            except Exception:  # nosec B110
+                pass
+
+        try:
+            # Passing ansys_em_root=None means _Session.is_launch() returns False,
+            # so connect() will open a gRPC channel without spawning a new process.
+            session_obj = _EdbSession(
+                ip_address=ip_address,
+                port_num=port,
+                ansys_em_root=None,
+                dump_traffic_log=False,
+            )
+            _SESSION_MOD.current_session = session_obj
+            session_obj.connect()
+        except Exception as exc:
+            settings.logger.error(f"Failed to connect to RPC server at {ip_address}:{port}: {exc}")
+            try:
+                _SESSION_MOD.current_session = None
+            except Exception:  # nosec B110
+                pass
+            return False
+
+        RpcSession.rpc_session = _SESSION_MOD.current_session
+        RpcSession.port = port
+        RpcSession._owns_session = False  # we did not launch the server
+        RpcSession.fast_grpc_mode_enabled = False  # shared memory not available for remote attach
+        start_managing(IOMangementType.READ_AND_WRITE)
+        settings.logger.info(f"Connected to existing RPC server at {ip_address}:{port}")
+        return True
 
     @staticmethod
     def __get_process_id():
