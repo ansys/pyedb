@@ -27,9 +27,6 @@ if TYPE_CHECKING:
 from typing import Union
 
 from ansys.edb.core.simulation_setup.adaptive_solutions import AdaptiveFrequency as CoreAdaptiveFrequency
-from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-    AdaptType as CoreAdaptType,
-)
 from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup as CoreHfssSimulationSetup,
 )
@@ -226,12 +223,12 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-        self.core.settings.general.adaptive_solution_type = CoreAdaptType.SINGLE
-        sfs = self.core.settings.general.single_frequency_adaptive_solution
+        general = self.settings.general
+        general.adaptive_solution_type = "single"
+        sfs = general.single_frequency_adaptive_solution
         sfs.adaptive_frequency = frequency
         sfs.max_passes = max_num_passes
         sfs.max_delta = str(max_delta_s)
-        self.core.settings.general.single_frequency_adaptive_solution = sfs
         return True
 
     def set_solution_multi_frequencies(self, frequencies="5GHz", max_delta_s=0.02, max_passes=10) -> bool:
@@ -251,7 +248,8 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-        self.settings.general.adaptive_solution_type = "multi_frequencies"
+        general = self.settings.general
+        general.adaptive_solution_type = "multi_frequencies"
         if not isinstance(frequencies, list | tuple):
             frequencies = [frequencies]
         if not isinstance(max_delta_s, list | tuple):
@@ -262,10 +260,9 @@ class HfssSimulationSetup(SimulationSetup):
         adapt_frequencies = [
             CoreAdaptiveFrequency(frequencies[ind], str(max_delta_s[ind])) for ind in range(len(frequencies))
         ]
-        mfs = self.core.settings.general.multi_frequency_adaptive_solution
+        mfs = general.multi_frequency_adaptive_solution
         mfs.adaptive_frequencies = adapt_frequencies
         mfs.max_passes = max_passes
-        self.core.settings.general.multi_frequency_adaptive_solution = mfs
         return True
 
     def set_solution_broadband(self, low_frequency="1GHz", high_frequency="10GHz", max_delta_s=0.02, max_num_passes=10):
@@ -287,16 +284,13 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-        # Access the raw proto directly (same pattern as set_solution_single_frequency) so that the
-        # final write-back uses the proto object, not a Python wrapper.  Passing a
-        # BroadbandAdaptiveSolution wrapper to a proto field setter raises a TypeError.
-        self.core.settings.general.adaptive_solution_type = CoreAdaptType.BROADBAND
-        bfs = self.core.settings.general.broadband_adaptive_solution
-        bfs.low_frequency = str(low_frequency)
-        bfs.high_frequency = str(high_frequency)
-        bfs.max_delta = str(max_delta_s)
-        bfs.max_num_passes = int(max_num_passes)
-        self.core.settings.general.broadband_adaptive_solution = bfs
+        general = self.settings.general
+        general.adaptive_solution_type = "broadband"
+        bbs = general.broadband_adaptive_solution
+        bbs.low_frequency = str(low_frequency)
+        bbs.high_frequency = str(high_frequency)
+        bbs.max_delta = str(max_delta_s)
+        bbs.max_num_passes = int(max_num_passes)
         return True
 
     def add_adaptive_frequency_data(self, frequency="5GHz", max_delta_s="0.01"):
