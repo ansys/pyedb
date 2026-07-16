@@ -31,6 +31,7 @@ from ansys.edb.core.definition.die_property import (
     DieType as CoreDieType,
 )
 from ansys.edb.core.definition.port_property import PortProperty as CorePortProperty
+from ansys.edb.core.definition.solder_ball_property import SolderBallProperty as CoreSolderBallProperty, SolderballShape
 from pydantic import BaseModel
 
 from pyedb.configuration.cfg_common import CfgBase
@@ -392,25 +393,27 @@ class CfgComponent(CfgBase):
             return
         shape = sbp_data.get("shape")
         if not shape:
-            return
+            raise ValueError("Solderball shape must be either cylinder or spheroid")
         diameter = sbp_data.get("diameter")
         height = sbp_data.get("height")
         mid_diameter = sbp_data.get("mid_diameter", diameter)
-        material = sbp_data.get("material")
+        material = sbp_data.get("material") or "solder"
 
-        # Delegate entirely to components.set_solder_ball(), which already
-        # handles IC die-type (FLIPCHIP) and orientation internally — no need
-        # to duplicate that logic here.
+        _shape_map = {
+            "cylinder": SolderballShape.SOLDERBALL_CYLINDER,
+            "spheroid": SolderballShape.SOLDERBALL_SPHEROID,
+        }
+        core_shape = _shape_map[shape.lower()]  # raises KeyError for unknown shapes
+
         if self._pedb.grpc:
-            self._pedb.components.set_solder_ball(
-                component=self.pyedb_obj.name,
-                sball_diam=diameter,
-                sball_height=height,
-                shape=shape.capitalize(),
-                sball_mid_diam=mid_diameter,
-                chip_orientation=sbp_data.get("orientation", "chip_down"),
-                material_name=material or "solder",
-            )
+            cp = self.pyedb_obj.component_property
+            sbp = CoreSolderBallProperty.create()
+            sbp.shape = core_shape
+            sbp.set_diameter(self._pedb.value(diameter), self._pedb.value(mid_diameter))
+            sbp.height = self._pedb.value(height)
+            sbp.material_name = material
+            cp.solder_ball_property = sbp
+            _persist_component_property(self.pyedb_obj.core, cp)
         else:
             self._pedb.components.set_solder_ball(
                 component=self.pyedb_obj.name,
@@ -419,7 +422,7 @@ class CfgComponent(CfgBase):
                 shape=shape.capitalize(),
                 sball_mid_diam=self._pedb.edb_value(mid_diameter).ToDouble() if mid_diameter else None,
                 chip_orientation=sbp_data.get("orientation", "chip_down"),
-                material_name=material or "solder",
+                material_name=material,
             )
 
     def _retrieve_ic_die_properties_from_edb(self):
