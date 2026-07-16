@@ -356,12 +356,7 @@ class Configuration:
                             raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
 
                     else:
-                        # gRPC path: use the dedicated set_solution_* methods which access the raw
-                        # proto directly and persist correctly.  Avoid the deprecated
-                        # ``adaptive_settings`` property and the wrapper write-back bug where
-                        # passing a SingleFrequencyAdaptiveSolution / BroadbandAdaptiveSolution
-                        # wrapper (instead of its ``.core`` proto) to the proto field setter would
-                        # raise a TypeError and abort before the frequency sweeps are added.
+                        # use the dedicated set_solution_* methods
                         if setup.adapt_type == "single":
                             edb_setup.set_solution_single_frequency(
                                 frequency=setup.single_frequency_adaptive_solution.adaptive_frequency,
