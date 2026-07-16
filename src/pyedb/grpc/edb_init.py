@@ -219,6 +219,32 @@ class EdbInit(object):
                     self.logger.error(f"gRPC call {func.__name__} failed after {max_attempts} attempts: {e}")
         return None
 
+    def _open_on_existing_server(self, db_path, read_only, port, ip_address="localhost"):
+        """Open a database against an already-running RPC server (no server launch).
+
+        Parameters
+        ----------
+        db_path : str
+            Path to the top-level ``.aedb`` folder.
+        read_only : bool
+            Open the database in read-only mode when ``True``.
+        port : int
+            TCP port of the already-running RPC server.
+        ip_address : str, optional
+            Hostname or IP of the server. Defaults to ``"localhost"``.
+
+        Returns
+        -------
+        Database or None
+        """
+        if not RpcSession.connect_to_existing_server(port=port, ip_address=ip_address):
+            self.logger.error(f"Could not connect to RPC server at {ip_address}:{port}.")
+            return None
+        self._db = self._grpc_retry(database.Database.open, db_path, read_only)
+        if self._db:
+            RpcSession.acquire()
+        return self._db
+
     def delete(self, db_path):
         """Delete a database at the specified file location.
 
