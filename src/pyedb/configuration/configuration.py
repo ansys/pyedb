@@ -295,15 +295,8 @@ class Configuration:
         self.apply_terminals()
         self._pedb.layout.use_cache = False
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
-        # Setups are applied BEFORE operations (cutout) because the cutout
-        # implementation saves the design to disk mid-run (save_as(legacy_path))
-        # to persist the clipped geometry.  If setups were applied after that
-        # save, the EDB file on disk would not contain them — only the
-        # subsequent edb.close() (without an explicit save) would discard them.
         # Applying setups first ensures they are present in the in-memory design
-        # when the cutout triggers its internal save.  The in-place multithread
-        # cutout only removes nets / primitives / padstack instances and never
-        # touches simulation setups, so setups created here are preserved.
+        # when the cutout triggers its internal save.
         self.apply_setups()
         self.apply_operations()
 
