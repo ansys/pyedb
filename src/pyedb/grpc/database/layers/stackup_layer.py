@@ -298,6 +298,42 @@ class StackupLayer:
         return False
 
     @property
+    def is_via_layer(self) -> bool:
+        """Flag indicating whether this layer is a via layer.
+
+        Returns
+        -------
+        bool
+            ``True`` if this layer is a :class:`ViaLayer` instance. Only via layers in an
+            overlapping stackup return ``True``.
+
+        Examples
+        --------
+        >>> layer = edb.stackup.layers["Layer1"]
+        >>> layer.is_via_layer
+        False
+        """
+        return self.core.is_via_layer
+
+    @property
+    def referencing_via_layer_ids(self) -> list:
+        """Layer IDs of all via layers that reference this stackup layer.
+
+        Returns
+        -------
+        list[int]
+            List of via layer IDs referencing this layer. Empty list when the layer is not
+            referenced by any via layer.
+
+        Examples
+        --------
+        >>> layer = edb.stackup.layers["Layer1"]
+        >>> layer.referencing_via_layer_ids
+        [42]
+        """
+        return self.core.referencing_via_layer_ids
+
+    @property
     def material(self) -> str:
         """Material.
 

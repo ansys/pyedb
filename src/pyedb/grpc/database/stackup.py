@@ -55,6 +55,7 @@ from ansys.edb.core.layer.layer_collection import (
     LayerTypeSet as CoreLayerTypeSet,
 )
 from ansys.edb.core.layer.stackup_layer import StackupLayer as CoreStackupLayer
+from ansys.edb.core.layer.via_layer import ViaLayer as CoreViaLayer
 from ansys.edb.core.layout.mcad_model import McadModel as CoreMcadModel
 import numpy as np
 
@@ -79,6 +80,7 @@ _CoreLayer.cast = _null_safe_layer_cast
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
+from pyedb.grpc.database.layers.via_layer import ViaLayer
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.decorators import deprecate_argument_name
@@ -430,6 +432,60 @@ class LayerCollection:
             obj.name: StackupLayer(self._pedb, obj) for obj in self.core.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
         }
 
+    @property
+    def via_layers(self) -> Dict[str, "ViaLayer"]:
+        """Retrieve the dictionary of via layers (overlapping stackup mode only).
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.layers.via_layer.ViaLayer`]
+            Dictionary mapping via layer name to :class:`ViaLayer` object.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> via_layers = edb.stackup.via_layers
+        """
+        result = {}
+        for layer in self.core.get_layers(CoreLayerTypeSet.ALL_LAYER_SET):
+            if layer.is_via_layer:
+                result[layer.name] = ViaLayer(self._pedb, CoreViaLayer(layer.msg))
+        return result
+
+    def add_via_layer(
+        self, name: str, lower_layer: str, upper_layer: str, material: str = "copper"
+    ) -> Optional["ViaLayer"]:
+        """Add a via layer to the layer collection (overlapping stackup mode only).
+
+        Parameters
+        ----------
+        name : str
+            Name of the via layer.
+        lower_layer : str
+            Name of the lower reference stackup layer.
+        upper_layer : str
+            Name of the upper reference stackup layer.
+        material : str, optional
+            Conductor material for the via layer. The default is ``"copper"``.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.layers.via_layer.ViaLayer` or None
+            Via layer object when successful, ``None`` otherwise.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> via = edb.stackup.add_via_layer("Via1_2", "Layer1", "Layer2")
+        """
+        core_via = CoreViaLayer.create(name=name, lr_layer=lower_layer, ur_layer=upper_layer, material=material)
+        result = self.core.add_via_layer(core_via)
+        if result is not None and not result.is_null:
+            return ViaLayer(self._pedb, CoreViaLayer(result.msg))
+        return None
+
 
 class Stackup:
     """Manages EDB methods for stackup operations.
@@ -537,6 +593,108 @@ class Stackup:
         >>> layers = edb.stackup.layers
         """
         return {obj.name: StackupLayer(self._pedb, obj) for obj in self._get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)}
+
+    @property
+    def via_layers(self) -> Dict[str, ViaLayer]:
+        """Retrieve the dictionary of via layers (overlapping stackup mode only).
+
+        In overlapping stackup mode each via layer spans vertically between two
+        named signal layers. The property returns an empty dictionary for laminate
+        or multizone stackups.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.layers.via_layer.ViaLayer`]
+            Dictionary mapping via layer name to :class:`ViaLayer` object.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.stackup.mode = "overlapping"
+        >>> via_layers = edb.stackup.via_layers
+        """
+        result = {}
+        for layer in self._get_layers(CoreLayerTypeSet.ALL_LAYER_SET):
+            if layer.is_via_layer:
+                result[layer.name] = ViaLayer(self._pedb, CoreViaLayer(layer.msg))
+        return result
+
+    def add_via_layer(
+        self,
+        name: str,
+        lower_layer: str,
+        upper_layer: str,
+        material: str = "copper",
+    ) -> Optional[ViaLayer]:
+        """Add a via layer between two signal layers in an overlapping stackup.
+
+        Via layers are only supported when the stackup mode is ``"overlapping"``.
+        A via layer defines the vertical extent (from ``lower_layer`` to
+        ``upper_layer``) of vias that can be placed between the two reference
+        layers.
+
+        Parameters
+        ----------
+        name : str
+            Name of the new via layer.
+        lower_layer : str
+            Name of the lower reference stackup (signal) layer.
+        upper_layer : str
+            Name of the upper reference stackup (signal) layer.
+        material : str, optional
+            Conductor material for the via layer. The default is ``"copper"``.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.layers.via_layer.ViaLayer` or None
+            Via layer object when successful, ``None`` otherwise.
+
+        Raises
+        ------
+        ValueError
+            If the stackup mode is not ``"overlapping"``, or if either reference
+            layer does not exist in the current stackup.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> edb.stackup.mode = "overlapping"
+        >>> edb.stackup.add_layer("Layer1", elevation=0.0, thickness="35um")
+        >>> edb.stackup.add_layer("Layer2", elevation="100um", thickness="35um")
+        >>> via = edb.stackup.add_via_layer("Via1_2", "Layer1", "Layer2")
+        """
+        if self.mode != "overlapping":
+            raise ValueError(
+                f"Via layers are only supported in 'overlapping' stackup mode. Current mode is '{self.mode}'."
+            )
+        layers = self.layers
+        if lower_layer not in layers:
+            raise ValueError(f"Lower reference layer '{lower_layer}' not found in stackup.")
+        if upper_layer not in layers:
+            raise ValueError(f"Upper reference layer '{upper_layer}' not found in stackup.")
+        if name in self.via_layers:
+            logger.error(f"Via layer '{name}' already exists.")
+            return None
+
+        material_db = self._pedb.materials
+        if material not in material_db:
+            mat_props = self._pedb.materials.read_syslib_material(material)
+            if mat_props:
+                logger.info(f"Material {material} found in syslib. Adding it to aedb project.")
+                if material.lower() not in material_db.materials:
+                    material_db.add_material(material, **mat_props)
+                else:
+                    material = material.lower()
+            else:
+                logger.warning(f"Material {material} not found. Check the library and retry.")
+
+        core_via = CoreViaLayer.create(name=name, lr_layer=lower_layer, ur_layer=upper_layer, material=material)
+        result = self.core.add_via_layer(core_via)
+        if result is not None and not result.is_null:
+            return ViaLayer(self._pedb, CoreViaLayer(result.msg))
+        return None
 
     @property
     def non_stackup_layers(self):
@@ -903,6 +1061,8 @@ class Stackup:
         is_negative: bool = False,
         enable_roughness: bool = False,
         elevation: Optional[float] = None,
+        lower_layer: Optional[str] = None,
+        upper_layer: Optional[str] = None,
     ) -> bool:
         """Insert a layer into stackup.
 
@@ -923,6 +1083,7 @@ class Stackup:
             Type of layer. The default is ``"signal"``. Options are:
             - ``"signal"``
             - ``"dielectric"``
+            - ``"via"``
             - ``"conducting"``
             - ``"air_lines"``
             - ``"error"``
@@ -950,12 +1111,30 @@ class Stackup:
             Whether roughness is enabled.
         elevation : float, optional
             Elevation of new layer. Only valid for Overlapping Stackup.
+        lower_layer : str, optional
+            Name of the lower reference layer. Only used when ``layer_type="via"``
+            in an overlapping stackup.
+        upper_layer : str, optional
+            Name of the upper reference layer. Only used when ``layer_type="via"``
+            in an overlapping stackup.
 
         Returns
         -------
-        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
-            Layer object created.
+        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer` or bool
+            Layer object created, or ``True`` / ``False`` for non-stackup layer types.
         """
+        if layer_type == "via":
+            if lower_layer is None or upper_layer is None:
+                logger.error("Both 'lower_layer' and 'upper_layer' must be specified for via layer type.")
+                return False
+            via = self.add_via_layer(
+                name=layer_name,
+                lower_layer=lower_layer,
+                upper_layer=upper_layer,
+                material=material,
+            )
+            return via is not None
+
         if layer_name in self.layers:
             logger.error("layer {} exists.".format(layer_name))
             return False
