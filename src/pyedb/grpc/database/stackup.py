@@ -189,7 +189,6 @@ class LayerCollection:
             Additional keyword arguments. Possible keys are:
             - ``thickness`` : float, layer thickness.
             - ``material`` : str, layer material.
-            - ``fill_material`` : str, fill material.
 
         Returns
         -------
@@ -1056,11 +1055,11 @@ class Stackup:
         layer_type: str = "signal",
         material: str = "copper",
         filling_material: str = "FR4_epoxy",
-        thickness: Union[str, float] = "35um",
-        etch_factor: Optional[float] = None,
+        thickness: Union[str, float | int] = "35um",
+        etch_factor: Optional[float | int] = None,
         is_negative: bool = False,
         enable_roughness: bool = False,
-        elevation: Optional[float] = None,
+        elevation: Optional[float | int] = None,
         lower_layer: Optional[str] = None,
         upper_layer: Optional[str] = None,
     ) -> bool:
@@ -1110,7 +1109,7 @@ class Stackup:
         enable_roughness : bool, optional
             Whether roughness is enabled.
         elevation : float, optional
-            Elevation of new layer. Only valid for Overlapping Stackup.
+            Elevation of new layer. Only valid for overlapping stackup mode.
         lower_layer : str, optional
             Name of the lower reference layer. Only used when ``layer_type="via"``
             in an overlapping stackup.
@@ -1838,18 +1837,32 @@ class Stackup:
         if edb_cell.name not in self._pedb.cell_names:
             list_cells = self._pedb.copy_cells(edb_cell)
             edb_cell = list_cells[0]
-        self._pedb.active_cell.is_blackbox = True
+        for cell in self._pedb.active_db.top_circuit_cells:
+            if cell.name == edb_cell.name:
+                edb_cell = cell
+        # Keep Cell Independent
+        edb_cell.is_blackbox = True
+        rotation = 0.0
+        if flipped_stackup:
+            rotation = math.pi
+
+        _offset_x = offset_x
+        _offset_y = offset_y
+
+        instance_name = generate_unique_name(edb_cell.name, n=2)
+
         cell_inst2 = CoreCellInstance.create(
-            layout=edb_cell.layout, name=self._pedb.active_cell.name, ref=self._pedb.active_layout.core
+            layout=self._pedb.active_layout.core, name=instance_name, ref=edb_cell.layout
         )
 
-        stackup_target = edb_cell.layout.layer_collection
-        stackup_source = self._pedb.layout.core.layer_collection
+        stackup_source = edb_cell.layout.layer_collection
+        stackup_target = self._pedb.layout.core.layer_collection
         if place_on_top:
-            cell_inst2.placement_layer = list(LayerCollection(self._pedb, stackup_target).layers.values())[0].core
+            cell_inst2.placement_3d = True
+            cell_inst2.placement_layer = stackup_target.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)[0]
         else:
-            cell_inst2.placement_layer = list(LayerCollection(self._pedb, stackup_target).layers.values())[-1].core
-        cell_inst2.placement_3d = True
+            cell_inst2.placement_3d = True
+            cell_inst2.placement_layer = stackup_target.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)[-1]
         res = stackup_target.get_top_bottom_stackup_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
         target_bottom_elevation = res[3]
@@ -1868,7 +1881,7 @@ class Stackup:
             elevation = target_bottom_elevation - source_stack_top_elevation
             solder_height = -solder_height
 
-        h_stackup = self._pedb._value_setter(elevation + solder_height)
+        h_stackup = elevation + solder_height
 
         zero_data = 0.0
         one_data = 1.0
@@ -1882,6 +1895,7 @@ class Stackup:
         cell_inst2.transform3d = transform
         transform = cell_inst2.transform3d.create_from_offset(offset=point3d_t)
         cell_inst2.transform3d = transform
+        # TODO check is position is correct.
         return True
 
     def place_instance(
