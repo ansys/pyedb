@@ -77,11 +77,10 @@ def _null_safe_layer_cast(self):
 
 _CoreLayer.cast = _null_safe_layer_cast
 
-from pyedb.grpc.database.layers.via_layer import ViaLayer
-
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
+from pyedb.grpc.database.layers.via_layer import ViaLayer
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.decorators import deprecate_argument_name
@@ -452,39 +451,6 @@ class LayerCollection:
             if layer.is_via_layer:
                 result[layer.name] = ViaLayer(self._pedb, CoreViaLayer(layer.msg))
         return result
-
-    def add_via_layer(
-        self, name: str, lower_layer: str, upper_layer: str, material: str = "copper"
-    ) -> Optional["ViaLayer"]:
-        """Add a via layer to the layer collection (overlapping stackup mode only).
-
-        Parameters
-        ----------
-        name : str
-            Name of the via layer.
-        lower_layer : str
-            Name of the lower reference stackup layer.
-        upper_layer : str
-            Name of the upper reference stackup layer.
-        material : str, optional
-            Conductor material for the via layer. The default is ``"copper"``.
-
-        Returns
-        -------
-        :class:`pyedb.grpc.database.layers.via_layer.ViaLayer` or None
-            Via layer object when successful, ``None`` otherwise.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb = Edb()
-        >>> via = edb.stackup.add_via_layer("Via1_2", "Layer1", "Layer2")
-        """
-        core_via = CoreViaLayer.create(name=name, lr_layer=lower_layer, ur_layer=upper_layer, material=material)
-        result = self.core.add_via_layer(core_via)
-        if result is not None and not result.is_null:
-            return ViaLayer(self._pedb, CoreViaLayer(result.msg))
-        return None
 
 
 class Stackup:
