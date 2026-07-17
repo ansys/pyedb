@@ -77,11 +77,10 @@ def _null_safe_layer_cast(self):
 
 _CoreLayer.cast = _null_safe_layer_cast
 
-from pyedb.grpc.database.layers.via_layer import ViaLayer
-
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
+from pyedb.grpc.database.layers.via_layer import ViaLayer
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.decorators import deprecate_argument_name
@@ -581,11 +580,8 @@ class Stackup:
         >>> edb.stackup.mode = "overlapping"
         >>> via_layers = edb.stackup.via_layers
         """
-        result = {}
-        for layer in self._get_layers(CoreLayerTypeSet.ALL_LAYER_SET):
-            if layer.is_via_layer:
-                result[layer.name] = ViaLayer(self._pedb, CoreViaLayer(layer.msg))
-        return result
+        self.layer_collection.core = self.core
+        return self.layer_collection.via_layers
 
     def add_via_layer(
         self,
@@ -1808,23 +1804,23 @@ class Stackup:
         for cell in self._pedb.active_db.top_circuit_cells:
             if cell.name == edb_cell.name:
                 edb_cell = cell
-        # Keep Cell Independent
-        edb_cell.is_blackbox = True
-        rotation = 0.0
-        if flipped_stackup:
-            rotation = math.pi
+        # Keep the current cell (self) independent – it is the one being placed.
+        self._pedb.active_cell.is_blackbox = True
 
         _offset_x = offset_x
         _offset_y = offset_y
 
         instance_name = generate_unique_name(edb_cell.name, n=2)
 
+        # Place self (current cell) inside edb_cell (the target/host layout).
+        # edb_cell  = host layout (receives the instance)
+        # self._pedb = cell being placed (used as ref)
         cell_inst2 = CoreCellInstance.create(
-            layout=self._pedb.active_layout.core, name=instance_name, ref=edb_cell.layout
+            layout=edb_cell.layout, name=instance_name, ref=self._pedb.active_layout.core
         )
 
-        stackup_source = edb_cell.layout.layer_collection
-        stackup_target = self._pedb.layout.core.layer_collection
+        stackup_source = self._pedb.layout.core.layer_collection  # current cell – being placed
+        stackup_target = edb_cell.layout.layer_collection  # host – receives the instance
         if place_on_top:
             cell_inst2.placement_3d = True
             cell_inst2.placement_layer = stackup_target.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)[0]
@@ -1869,13 +1865,13 @@ class Stackup:
     def place_instance(
         self,
         component_edb: "Edb",
-        angle: float = 0.0,
-        offset_x: float = 0.0,
-        offset_y: float = 0.0,
-        offset_z: float = 0.0,
+        angle: float | int = 0.0,
+        offset_x: float | int = 0.0,
+        offset_y: float | int = 0.0,
+        offset_z: float | int = 0.0,
         flipped_stackup: bool = True,
         place_on_top: bool = True,
-        solder_height: float = 0,
+        solder_height: float | int = 0,
     ) -> CoreCellInstance:
         """Place a component instance in the layout using 3D placement.
 
@@ -1944,9 +1940,6 @@ class Stackup:
                 edb_cell = cell
         # Keep Cell Independent
         edb_cell.is_blackbox = True
-        rotation = 0.0
-        if flipped_stackup:
-            rotation = math.pi
 
         _offset_x = offset_x
         _offset_y = offset_y
@@ -2004,10 +1997,10 @@ class Stackup:
     def place_a3dcomp_3d_placement(
         self,
         a3dcomp_path: str,
-        angle: float = 0.0,
-        offset_x: float = 0.0,
-        offset_y: float = 0.0,
-        offset_z: float = 0.0,
+        angle: float | int = 0.0,
+        offset_x: float | int = 0.0,
+        offset_y: float | int = 0.0,
+        offset_z: float | int = 0.0,
         place_on_top: bool = True,
     ) -> bool:
         """Place a 3D component into the current layout.
