@@ -77,11 +77,10 @@ def _null_safe_layer_cast(self):
 
 _CoreLayer.cast = _null_safe_layer_cast
 
-from pyedb.grpc.database.layers.via_layer import ViaLayer
-
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
+from pyedb.grpc.database.layers.via_layer import ViaLayer
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.decorators import deprecate_argument_name
