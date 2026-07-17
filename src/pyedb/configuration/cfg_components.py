@@ -398,6 +398,7 @@ class CfgComponent(CfgBase):
         height = sbp_data.get("height")
         mid_diameter = sbp_data.get("mid_diameter", diameter)
         material = sbp_data.get("material") or "solder"
+        orientation = sbp_data.get("orientation", "chip_down")
 
         _shape_map = {
             "cylinder": SolderballShape.SOLDERBALL_CYLINDER,
@@ -406,7 +407,21 @@ class CfgComponent(CfgBase):
         core_shape = _shape_map[shape.lower()]  # raises KeyError for unknown shapes
 
         if self._pedb.grpc:
-            cp = self.pyedb_obj.component_property
+            cp = self.pyedb_obj.core.component_property
+            # For IC components whose die type is NONE, default it to FLIPCHIP so
+            # that HFSS recognises the solder balls during simulation.
+            # This is the only way to get solder balls defined with release 2026.1.
+            # the die property MUST be a brand-new CoreDieProperty.create() object
+            # mutating the fetched instance and re-assigning it does NOT persist.
+            comp_type = getattr(self.pyedb_obj, "type", "") or ""
+            if comp_type.lower() == "ic":
+                if cp.die_property.die_type in (None, CoreDieType.NONE):
+                    new_die_prop = CoreDieProperty.create()
+                    new_die_prop.die_type = CoreDieType.FLIPCHIP
+                    new_die_prop.die_orientation = (
+                        CoreDieOrientation.CHIP_UP if orientation.lower() == "chip_up" else CoreDieOrientation.CHIP_DOWN
+                    )
+                    cp.die_property = new_die_prop
             sbp = CoreSolderBallProperty.create()
             sbp.shape = core_shape
             sbp.set_diameter(self._pedb.value(diameter), self._pedb.value(mid_diameter))
@@ -421,7 +436,7 @@ class CfgComponent(CfgBase):
                 sball_height=self._pedb.edb_value(height).ToDouble() if height else None,
                 shape=shape.capitalize(),
                 sball_mid_diam=self._pedb.edb_value(mid_diameter).ToDouble() if mid_diameter else None,
-                chip_orientation=sbp_data.get("orientation", "chip_down"),
+                chip_orientation=orientation,
                 material_name=material,
             )
 
@@ -439,6 +454,11 @@ class CfgComponent(CfgBase):
     def _retrieve_solder_ball_properties_from_edb(self):
         cp = self.pyedb_obj
         diam = cp.solder_ball_diameter
+        if diam is None:
+            # Component has no solder ball configured yet — leave empty so that
+            # set_solder_ball_properties() can populate it from scratch.
+            self.solder_ball_properties = {}
+            return
         self.solder_ball_properties = {
             "uses_solder_ball": cp.uses_solderball,
             "shape": cp.solder_ball_shape,
@@ -452,11 +472,12 @@ class CfgComponent(CfgBase):
         if self.type.lower() not in ("ic", "io", "other"):
             return
         pp = self.pyedb_obj.component_property.port_property
+        ref_size = pp.get_reference_size() if callable(getattr(pp, "get_reference_size", None)) else None
         self.port_properties = {
             "reference_height": str(pp.reference_height),
             "reference_size_auto": pp.reference_size_auto,
-            "reference_size_x": str(pp.get_reference_size()[0]),
-            "reference_size_y": str(pp.get_reference_size()[1]),
+            "reference_size_x": str(ref_size[0]) if ref_size is not None else "0",
+            "reference_size_y": str(ref_size[1]) if ref_size is not None else "0",
         }
 
     def set_parameters_to_edb(self):
