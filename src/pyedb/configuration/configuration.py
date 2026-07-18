@@ -295,8 +295,10 @@ class Configuration:
         self.apply_terminals()
         self._pedb.layout.use_cache = False
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
-        self.apply_operations()
+        # Applying setups first ensures they are present in the in-memory design
+        # when the cutout triggers its internal save.
         self.apply_setups()
+        self.apply_operations()
 
         return True
 
@@ -328,10 +330,10 @@ class Configuration:
             else:
                 if setup.type == "hfss":
                     edb_setup = self._pedb.simulation_setups.create(name=setup.name, solver="hfss")
-                    edb_setup.adaptive_settings.adapt_type = FAdaptTypeMapper.get(
-                        setup.adapt_type, as_grpc=settings.is_grpc
-                    )
                     if not settings.is_grpc:
+                        edb_setup.adaptive_settings.adapt_type = FAdaptTypeMapper.get(
+                            setup.adapt_type, as_grpc=settings.is_grpc
+                        )
                         edb_setup.adaptive_settings.clean_adaptive_frequency_data_list()
                         if setup.adapt_type == "single":
                             edb_setup.adaptive_settings.add_adaptive_frequency_data(
@@ -354,19 +356,20 @@ class Configuration:
                             raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
 
                     else:
+                        # use the dedicated set_solution_* methods
                         if setup.adapt_type == "single":
-                            s_f_adapt = edb_setup.settings.general.single_frequency_adaptive_solution
-                            s_f_adapt.adaptive_frequency = setup.single_frequency_adaptive_solution.adaptive_frequency
-                            s_f_adapt.max_passes = setup.single_frequency_adaptive_solution.max_passes
-                            s_f_adapt.max_delta = setup.single_frequency_adaptive_solution.max_delta
-                            edb_setup.core.settings.general.single_frequency_adaptive_solution = s_f_adapt
+                            edb_setup.set_solution_single_frequency(
+                                frequency=setup.single_frequency_adaptive_solution.adaptive_frequency,
+                                max_num_passes=setup.single_frequency_adaptive_solution.max_passes,
+                                max_delta_s=setup.single_frequency_adaptive_solution.max_delta,
+                            )
                         elif setup.adapt_type == "broadband":
-                            b_f_adapt = edb_setup.settings.general.broadband_adaptive_solution
-                            b_f_adapt.low_frequency = setup.broadband_adaptive_solution.low_frequency
-                            b_f_adapt.high_frequency = setup.broadband_adaptive_solution.high_frequency
-                            b_f_adapt.max_delta = setup.broadband_adaptive_solution.max_delta
-                            b_f_adapt.max_passes = setup.broadband_adaptive_solution.max_passes
-                            edb_setup.core.settings.general.broadband_adaptive_solution = b_f_adapt
+                            edb_setup.set_solution_broadband(
+                                low_frequency=setup.broadband_adaptive_solution.low_frequency,
+                                high_frequency=setup.broadband_adaptive_solution.high_frequency,
+                                max_delta_s=setup.broadband_adaptive_solution.max_delta,
+                                max_num_passes=setup.broadband_adaptive_solution.max_passes,
+                            )
                         else:
                             raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
 

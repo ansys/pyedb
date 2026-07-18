@@ -775,7 +775,7 @@ class GrpcCutout:
 
         # components
         _t1 = time.time()
-        components_to_delete = [comp for comp in all_components if comp.numpins == 0]
+        components_to_delete = [comp for comp in all_components if comp.num_pins == 0]
         for comp in components_to_delete:
             comp.delete()
         if self.remove_single_pin_components:

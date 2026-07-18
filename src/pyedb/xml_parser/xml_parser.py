@@ -23,6 +23,7 @@
 """XML parser module for handling EDB XML configuration files."""
 
 from pathlib import Path
+import re
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -173,7 +174,10 @@ class XmlParser(BaseModel):
         stackup.setdefault("@schemaVersion", "1.0")
 
         d = {root_name: root}
-        return xmltodict.unparse(d, pretty=pretty)
+        xml_str = xmltodict.unparse(d, pretty=pretty)
+        # Convert empty elements (e.g. <Layer ...></Layer>) to self-closing (<Layer .../>)
+        xml_str = re.sub(r"></(\w+)>", r"/>", xml_str)
+        return xml_str
 
     def to_xml_file(self, file_path: str | Path) -> str:
         """Write the parser configuration to an XML file.

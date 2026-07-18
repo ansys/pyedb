@@ -411,6 +411,97 @@ class TestCfgComponentSolderBallGrpc:
         # (recorded as ``_persisted_component_property`` by the fixture stub).
         assert hasattr(obj.core, "_persisted_component_property")
 
+    def test_ic_die_type_none_defaults_to_flipchip(self, _mock_core_property_factories):
+        """When an IC component's die_type is NONE, _set_solder_ball_properties_to_edb
+        must default it to FLIPCHIP so HFSS recognises the solder balls."""
+        from ansys.edb.core.definition.die_property import DieType as CoreDieType
+
+        pedb = _make_pedb(grpc=True)
+        obj = _make_pyedb_obj("ic")
+        # Simulate die_type = NONE (uninitialized IC)
+        obj.core.component_property.die_property.die_type = CoreDieType.NONE
+
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={"shape": "cylinder", "diameter": "150um", "height": "100um"},
+        )
+        c._set_solder_ball_properties_to_edb()
+
+        # die_type must have been updated to FLIPCHIP on the die_property object
+        ic_die_prop = obj.core.component_property.die_property
+        assert ic_die_prop.die_type == CoreDieType.FLIPCHIP
+        # Solder ball property must still be created and persisted
+        assert _mock_core_property_factories.last_sbp is not None
+        assert hasattr(obj.core, "_persisted_component_property")
+
+    def test_ic_die_type_already_set_is_not_overridden(self, _mock_core_property_factories):
+        """When die_type is already WIREBOND (or FLIPCHIP), it must not be changed."""
+        from ansys.edb.core.definition.die_property import DieType as CoreDieType
+
+        pedb = _make_pedb(grpc=True)
+        obj = _make_pyedb_obj("ic")
+        obj.core.component_property.die_property.die_type = CoreDieType.WIREBOND
+
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={"shape": "cylinder", "diameter": "150um", "height": "100um"},
+        )
+        c._set_solder_ball_properties_to_edb()
+
+        # die_type must remain WIREBOND — only NONE triggers the default
+        assert obj.core.component_property.die_property.die_type == CoreDieType.WIREBOND
+
+
+class TestRetrieveSolderBallProperties:
+    """Regression: _retrieve_solder_ball_properties_from_edb must not crash
+    when the component has no solder ball configured (solder_ball_diameter == None).
+    This was the root cause of cfg.components.get("U1") silently losing U1.
+    """
+
+    def test_no_solder_ball_yields_empty_dict(self):
+        """solder_ball_diameter returning None → solder_ball_properties = {}."""
+        pedb = _make_pedb(grpc=True)
+        obj = _make_pyedb_obj("ic")
+        obj.solder_ball_diameter = None  # simulate unconfigured component
+        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic")
+        c._retrieve_solder_ball_properties_from_edb()
+        assert c.solder_ball_properties == {}
+
+    def test_no_solder_ball_then_set_overrides(self):
+        """After retrieve returns {}, set_solder_ball_properties populates correctly."""
+        pedb = _make_pedb(grpc=True)
+        obj = _make_pyedb_obj("ic")
+        obj.solder_ball_diameter = None
+        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic")
+        c._retrieve_solder_ball_properties_from_edb()
+        c.set_solder_ball_properties(shape="cylinder", diameter="300um", height="200um")
+        assert c.solder_ball_properties["shape"] == "cylinder"
+        assert c.solder_ball_properties["diameter"] == "300um"
+
+    def test_configured_solder_ball_is_read(self):
+        """When solder_ball_diameter is present, properties are read normally."""
+        from unittest.mock import MagicMock
+
+        pedb = _make_pedb(grpc=True)
+        obj = _make_pyedb_obj("ic")
+        d0, d1 = MagicMock(), MagicMock()
+        d0.__str__ = lambda self: "150um"
+        d1.__str__ = lambda self: "150um"
+        obj.solder_ball_diameter = (d0, d1)
+        obj.uses_solderball = True
+        obj.solder_ball_shape = "cylinder"
+        obj.solder_ball_height = MagicMock(__str__=lambda self: "100um")
+        obj.solder_ball_material = "solder"
+        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic")
+        c._retrieve_solder_ball_properties_from_edb()
+        assert c.solder_ball_properties.get("shape") == "cylinder"
+
 
 class TestCfgComponentPortPropertiesGrpcRegression:
     """Lightweight regression check that the write-back helper is invoked.
