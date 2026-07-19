@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 import math
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
@@ -58,9 +58,9 @@ class Path(Primitive):
         Returns
         -------
         float
-            Path width or None.
+            Path width in meters.
         """
-        return Value(self.core.width)
+        return float(Value(self.core.width))
 
     @width.setter
     def width(self, value):
@@ -91,13 +91,13 @@ class Path(Primitive):
     def create(
         cls,
         layout,
-        layer: Union[str, Layer] = None,
-        net: Union[str, "Net"] = None,
-        width: float = 100e-6,
-        end_cap1: Union[str, CorePathEndCapType] = "flat",
-        end_cap2: Union[str, CorePathEndCapType] = "flat",
-        corner_style: Union[str, CorePathCornerType] = "sharp",
-        points: Union[list, CorePolygonData] = None,
+        layer: str | Layer = None,
+        net: "str | Net" = None,
+        width: float | int | str | Value = 100e-6,
+        end_cap1: str | CorePathEndCapType = "flat",
+        end_cap2: str | CorePathEndCapType = "flat",
+        corner_style: str | CorePathCornerType = "sharp",
+        points: list | CorePolygonData = None,
     ):
         """
         Create a path in the specified layout, layer, and net with the given parameters.
@@ -111,8 +111,10 @@ class Path(Primitive):
             The layer in which the path will be created. This parameter is required and must be specified.
         net : Union[str, Net], optional
             The net to which the path will belong. If not provided, the path will not be associated with a net.
-        width : float, optional
-            The width of the path in meters. The default value is `100e-6`.
+        width : Union[float, str, Value], optional
+            The width of the path. Accepts a numeric value in meters, a string with units (e.g. ``"100um"``),
+            or a :class:`Value <pyedb.grpc.database.utility.value.Value>` object for parameterized widths.
+            The default value is ``100e-6``.
         end_cap1 : str, optional
             The style of the first end cap. Options are `"flat"`, `"round"`, `"extended"`, and `"clipped"`.
             The default value is `"flat"`.
@@ -169,7 +171,7 @@ class Path(Primitive):
             layout=layout.core,
             layer=layer,
             net=net.core,
-            width=Value(width),
+            width=layout._pedb._value_setter(width),
             end_cap1=end_cap1,
             end_cap2=end_cap2,
             corner_style=corner_style,
