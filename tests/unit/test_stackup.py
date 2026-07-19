@@ -128,13 +128,6 @@ class TestGrpcStackupUnit:
         stackup = GrpcStackup.__new__(GrpcStackup)
         stackup._pedb = pedb
         stackup.core = core
-        # Provide a minimal layer_collection
-        from pyedb.grpc.database.stackup import LayerCollection
-
-        lc = LayerCollection.__new__(LayerCollection)
-        lc.core = core
-        lc._pedb = pedb
-        stackup.layer_collection = lc
         return stackup
 
     def test_grpc_get_layout_thickness_multiple_layers(self):
