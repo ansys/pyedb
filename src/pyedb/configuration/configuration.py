@@ -748,7 +748,7 @@ class Configuration:
             flag = False
             for i in all_names:
                 if i in str(v.value):
-                    """If the variable value contains another variable name, we will append it to the end of the list 
+                    """If the variable value contains another variable name, we will append it to the end of the list
                     and process it later"""
                     all_v.append(v)
                     flag = True
