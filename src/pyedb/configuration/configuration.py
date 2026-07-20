@@ -739,8 +739,24 @@ class Configuration:
 
     def apply_variables(self):
         """Set variables into database."""
-        inst = self.cfg_data.variables
-        for i in inst.variables:
+        inst = self.cfg_data.variables.variables
+        all_v = deepcopy(inst)
+        inst_ = []
+        while len(all_v):
+            v = all_v.pop(0)
+            all_names = [i.name for i in all_v]  #  All variable names
+            flag = False
+            for i in all_names:
+                if i in str(v.value):
+                    """If the variable value contains another variable name, we will append it to the end of the list 
+                    and process it later"""
+                    all_v.append(v)
+                    flag = True
+                    break
+            if not flag:
+                inst_.append(v)
+
+        for i in inst_:
             if i.name.startswith("$"):
                 self._pedb.add_project_variable(i.name, i.value, i.description)
             else:
