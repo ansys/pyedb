@@ -54,18 +54,12 @@ class TestClass(BaseTestClass):
         assert "my_parameter" in edbapp.get_all_variable_names()
         variable_value = edbapp.get_variable("my_parameter")
         assert variable_value.value == 2e-3
-        if edbapp.grpc:
-            assert not edbapp.add_design_variable("my_parameter", "2mm", "test description")
-        else:
-            with pytest.raises(RuntimeError):
-                edbapp.add_design_variable("my_parameter", "2mm", True)
+        with pytest.raises(RuntimeError):
+            edbapp.add_design_variable("my_parameter", "2mm", "test description" if edbapp.grpc else True)
         edbapp.add_project_variable("$my_project_variable", "3mm")
         assert edbapp.get_variable("$my_project_variable").value == 3e-3
-        if edbapp.grpc:
-            assert not edbapp.add_project_variable("$my_project_variable", "3mm")
-        else:
-            with pytest.raises(RuntimeError):
-                edbapp.add_project_variable("$my_project_variable", "3mm")
+        with pytest.raises(RuntimeError):
+            edbapp.add_project_variable("$my_project_variable", "3mm")
         edbapp.close(terminate_rpc_session=False)
 
     def test_save_edb_as(self):
