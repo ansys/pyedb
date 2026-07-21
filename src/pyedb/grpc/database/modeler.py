@@ -1189,6 +1189,10 @@ class Modeler(object):
         )
         return bw
 
+    @deprecated(
+        "``edb.modeler.create_pin_group()`` is deprecated and will be removed in a future release. "
+        "Use ``edb.components.create_pin_group(reference_designator, pin_numbers, group_name)`` instead."
+    )
     def create_pin_group(
         self,
         name: str,

@@ -52,7 +52,7 @@ class Path(Primitive):
         self._pedb = pedb
 
     @property
-    def width(self) -> float:
+    def width(self) -> float | int:
         """Path width.
 
         Returns
@@ -60,14 +60,14 @@ class Path(Primitive):
         float
             Path width in meters.
         """
-        return float(Value(self.core.width))
+        return self.core.width.value
 
     @width.setter
     def width(self, value):
         self.core.width = self._pedb._value_setter(value)
 
     @property
-    def length(self) -> float:
+    def length(self) -> float | int:
         """Path length in meters.
 
         Returns
