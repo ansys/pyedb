@@ -26,8 +26,10 @@ from __future__ import absolute_import, annotations
 
 from ansys.edb.core.layer.via_layer import ViaLayer as CoreViaLayer
 
+from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 
-class ViaLayer:
+
+class ViaLayer(StackupLayer):
     """Represents a via layer in an overlapping stackup.
 
     A via layer defines the vertical extent of a via between two signal (reference)
@@ -41,10 +43,6 @@ class ViaLayer:
     core : :class:`ansys.edb.core.layer.via_layer.ViaLayer`
         Core via layer object.
     """
-
-    def __init__(self, pedb, core: CoreViaLayer):
-        self._pedb = pedb
-        self.core = core
 
     @classmethod
     def create(cls, pedb, name: str, lower_layer: str, upper_layer: str, material: str = "copper") -> "ViaLayer":
@@ -75,34 +73,6 @@ class ViaLayer:
         """
         core = CoreViaLayer.create(name=name, lr_layer=lower_layer, ur_layer=upper_layer, material=material)
         return cls(pedb, core)
-
-    @property
-    def name(self) -> str:
-        """Via layer name.
-
-        Returns
-        -------
-        str
-            Name of the via layer.
-
-        Examples
-        --------
-        >>> via = edb.stackup.via_layers["Via1_2"]
-        >>> via.name
-        'Via1_2'
-        """
-        return self.core.name
-
-    @name.setter
-    def name(self, value: str):
-        """Set the via layer name.
-
-        Parameters
-        ----------
-        value : str
-            New name for the via layer.
-        """
-        self.core.name = value
 
     @property
     def lower_ref_layer_name(self) -> str:
@@ -165,27 +135,6 @@ class ViaLayer:
         if layer_name not in layers:
             raise ValueError(f"Layer '{layer_name}' not found in stackup.")
         self.core.set_ref_layer(layers[layer_name].core, upper_ref=True)
-
-    @property
-    def material(self) -> str:
-        """Conductor material of the via layer.
-
-        Returns
-        -------
-        str
-            Material name.
-
-        Examples
-        --------
-        >>> via = edb.stackup.via_layers["Via1_2"]
-        >>> via.material
-        'copper'
-        """
-        return self.core.get_material()
-
-    @material.setter
-    def material(self, value: str):
-        self.core.set_material(value)
 
     @property
     def is_tsv(self) -> bool:
