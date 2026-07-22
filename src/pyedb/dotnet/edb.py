@@ -3069,8 +3069,8 @@ class Edb:
             if description:
                 var_server[1].SetVariableDescription(variable_name, description)
             return True, var_server[1]
-        self.logger.error("Variable %s already exists.", variable_name)
-        return False, var_server[1]
+        else:
+            raise RuntimeError("Variable %s already exists.", variable_name)
 
     def change_design_variable_value(self, variable_name, variable_value):
         """Change a variable value.
