@@ -826,17 +826,25 @@ class Modeler:
                         if not var_server:
                             if not variable_value:
                                 variable_value = p.width
-                            _, var_server = self._pedb.add_design_variable(
-                                parameter_name, variable_value, is_parameter=True
-                            )
+                            existing = self._pedb.variable_exists(parameter_name)
+                            if existing[0]:
+                                var_server = existing[1]
+                            else:
+                                _, var_server = self._pedb.add_design_variable(
+                                    parameter_name, variable_value, is_parameter=True
+                                )
                         p.width = self._pedb.edb_value(parameter_name)
                     elif p.layer.name in layers_name:
                         if not var_server:
                             if not variable_value:
                                 variable_value = p.width
-                            _, var_server = self._pedb.add_design_variable(
-                                parameter_name, variable_value, is_parameter=True
-                            )
+                            existing = self._pedb.variable_exists(parameter_name)
+                            if existing[0]:
+                                var_server = existing[1]
+                            else:
+                                _, var_server = self._pedb.add_design_variable(
+                                    parameter_name, variable_value, is_parameter=True
+                                )
                         p.width = self._pedb.edb_value(parameter_name)
         return True
 

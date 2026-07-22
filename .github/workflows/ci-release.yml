@@ -649,7 +649,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build documentation
-        uses: ansys/actions/doc-build@a5b0351dc277d68c2dc1beca2d2674c7dfa4fc55 # v10.3.3
+        uses: ansys/actions/doc-build@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -672,7 +672,7 @@ jobs:
       id-token: write # Required for OIDC token generation (for provenance signing)
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@a5b0351dc277d68c2dc1beca2d2674c7dfa4fc55 # v10.3.3
+        uses: ansys/actions/build-library@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -718,7 +718,7 @@ jobs:
       contents: write # Needed to update files on the gh-pages branch
     steps:
       - name: Deploy the stable documentation
-        uses: ansys/actions/doc-deploy-stable@a5b0351dc277d68c2dc1beca2d2674c7dfa4fc55 # v10.3.3
+        uses: ansys/actions/doc-deploy-stable@7419880d64bb0bba83f968ca803611df0b76faf0 # v10.3.4
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
