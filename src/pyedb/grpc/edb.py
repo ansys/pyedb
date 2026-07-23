@@ -2253,8 +2253,7 @@ class Edb(EdbInit):
                 self.active_db.set_variable_desc(name=variable_name, desc=description)
             return var
         else:
-            self.logger.error(f"Variable {variable_name} already exists.")
-            return False
+            raise RuntimeError("Variable %s already exists.", variable_name)
 
     def add_design_variable(self, variable_name, variable_value, description: str = "") -> bool:
         """Add design variable.
@@ -2281,8 +2280,7 @@ class Edb(EdbInit):
                 self.active_cell.set_variable_desc(name=variable_name, desc=description)
             return var
         else:
-            self.logger.error(f"Variable {variable_name} already exists.")
-            return False
+            raise RuntimeError("Variable %s already exists.", variable_name)
 
     def change_design_variable_value(self, variable_name, variable_value):
         """Update variable value.
