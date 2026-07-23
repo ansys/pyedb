@@ -96,6 +96,65 @@ class TestClass(BaseTestClass):
             assert k.expand(0.0005)
         edbapp.close(terminate_rpc_session=False)
 
+    def test_modeler_polygon_move_rotate_scale(self):
+        """Evaluate polygon move, rotate and scale operations."""
+        edbapp = self.edb_examples.get_si_verse()
+        poly = edbapp.modeler.polygons[0]
+        original_points = poly.points()
+        # move
+        assert poly.move(["100um", "100um"])
+        moved_points = poly.points()
+        assert moved_points != original_points
+        # move back to original position
+        assert poly.move(["-100um", "-100um"])
+        # rotate
+        assert poly.rotate(angle=90)
+        # scale
+        assert poly.scale(factor=2)
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_modeler_polygon_operations_ic_mode(self):
+        """Create primitives, switch to IC mode and apply polygon operations."""
+        edbapp = self.edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+
+        # Create two polygons on the top signal layer
+        layer_name = list(edbapp.stackup.signal_layers.keys())[0]
+        points1 = [
+            [0.0, 0.0],
+            [100e-6, 0.0],
+            [100e-6, 100e-6],
+            [0.0, 100e-6],
+        ]
+        points2 = [
+            [200e-6, 0.0],
+            [300e-6, 0.0],
+            [300e-6, 100e-6],
+            [200e-6, 100e-6],
+        ]
+        poly1 = edbapp.modeler.create_polygon(points=points1, layer_name=layer_name, net_name="GND")
+        poly2 = edbapp.modeler.create_polygon(points=points2, layer_name=layer_name, net_name="VCC")
+        assert poly1
+        assert poly2
+
+        # Switch to IC mode
+        assert edbapp.design_mode == "general"
+        edbapp.design_mode = "ic"
+        assert edbapp.design_mode == "ic"
+
+        # move poly1
+        original_points = poly1.points()
+        assert poly1.move(["50um", "50um"])
+        assert poly1.points() != original_points
+
+        # rotate poly2
+        assert poly2.rotate(angle=45)
+
+        # scale poly1
+        assert poly1.scale(factor=1.5)
+
+        edbapp.close(terminate_rpc_session=False)
+
     def test_modeler_paths(self):
         """Evaluate modeler paths"""
         edbapp = self.edb_examples.get_si_verse()

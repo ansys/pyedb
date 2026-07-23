@@ -249,7 +249,7 @@ class Polygon(Primitive):
         """
         if vector and isinstance(vector, list) and len(vector) == 2:
             _vector = [self._pedb._value_setter(pt) for pt in vector]
-            self.polygon_data = PolygonData(self.polygon_data.core.move(_vector))
+            self.polygon_data = PolygonData(self._pedb, self.polygon_data.core.move(_vector))
             return True
         return False
 
