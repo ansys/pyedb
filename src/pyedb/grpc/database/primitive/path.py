@@ -52,15 +52,16 @@ class Path(Primitive):
         self._pedb = pedb
 
     @property
-    def width(self) -> float | int:
-        """Path width.
+    def width(self) -> Value | float | int:
+        """Path width in meters.
 
         Returns
         -------
-        float
-            Path width in meters.
+        :class:`Value <pyedb.grpc.database.utility.value.Value>` or float or int
+            Width of the path. Returns a :class:`Value` object that evaluates to a ``float`` or ``int``
+            for numeric widths, and supports variable expressions for parameterized width definitions.
         """
-        return self.core.width.value
+        return Value(self.core.width)
 
     @width.setter
     def width(self, value):

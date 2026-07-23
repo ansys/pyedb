@@ -1004,18 +1004,18 @@ class TestClass(BaseTestClass):
         )
         assert trace_float
         assert not trace_float.is_null
-        assert trace_float.width == pytest.approx(100e-6)
+        assert float(trace_float.width) == pytest.approx(100e-6)
 
         trace_str = edbapp.modeler.create_trace(
             path_list=[[0, 0], [1e-3, 0]], layer_name="sig", width="100um", net_name="SIG"
         )
         assert trace_str
         assert not trace_str.is_null
-        assert trace_str.width == pytest.approx(100e-6)
+        assert float(trace_str.width) == pytest.approx(100e-6)
 
         edbapp["trace_w"] = "200um"
         trace_str.width = edbapp.value("trace_w")
-        assert trace_str.width == pytest.approx(200e-6)
+        assert float(trace_str.width) == pytest.approx(200e-6)
 
         edbapp.close(terminate_rpc_session=False)
 
