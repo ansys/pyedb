@@ -991,6 +991,34 @@ class TestClass(BaseTestClass):
         assert not trace.is_null
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — width as string and Value")
+    def test_modeler_create_trace_width_types(self):
+        """create_trace accepts width as float or string with units.
+        Width setter accepts parameterized Value."""
+        edbapp = self.edb_examples.create_empty_edb()
+        edbapp.stackup.add_layer("sig")
+
+        # float width (baseline)
+        trace_float = edbapp.modeler.create_trace(
+            path_list=[[0, 0], [1e-3, 0]], layer_name="sig", width=100e-6, net_name="SIG"
+        )
+        assert trace_float
+        assert not trace_float.is_null
+        assert float(trace_float.width) == pytest.approx(100e-6)
+
+        trace_str = edbapp.modeler.create_trace(
+            path_list=[[0, 0], [1e-3, 0]], layer_name="sig", width="100um", net_name="SIG"
+        )
+        assert trace_str
+        assert not trace_str.is_null
+        assert float(trace_str.width) == pytest.approx(100e-6)
+
+        edbapp["trace_w"] = "200um"
+        trace_str.width = edbapp.value("trace_w")
+        assert float(trace_str.width) == pytest.approx(200e-6)
+
+        edbapp.close(terminate_rpc_session=False)
+
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — _validatePoint branches")
     def test_modeler_validate_point(self):
         """_validatePoint validates 2-element, 3-element, and 5-element point formats."""
