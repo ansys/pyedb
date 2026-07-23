@@ -401,6 +401,99 @@ class TestCreatePortOnComponentValidation:
         assert result is False
 
 
+class TestCreatePortOnComponentReferenceNetFixes:
+    """Tests for the reference_net / net_list mutation fixes (issue: coax hard-fail on missing ref pins)."""
+
+    pytestmark = [pytest.mark.grpc]
+
+    def _make_signal_pin(self, net_name):
+        pin = MagicMock()
+        pin.net_name = net_name
+        pin.is_layout_pin = False
+        pad_def = MagicMock()
+        pad_def.data.layer_names = ["TOP", "BOTTOM"]
+        pin.padstack_def = pad_def
+        return pin
+
+    def test_reference_net_none_does_not_crash(self):
+        """reference_net=None must not raise; if no signal pins are found it returns False."""
+        exc, pedb = _make_excitation()
+        comp = MagicMock()
+        comp.name = "U1"
+        comp.pins = {}
+        pedb.components.instances = {"U1": comp}
+        # Should return False (no pins) without raising TypeError/AttributeError
+        result = exc.create_port_on_component("U1", ["NET1"], port_type="coax_port", reference_net=None)
+        assert result is False
+
+    def test_net_list_not_mutated_by_caller(self):
+        """The caller's net_list must not be modified after the call."""
+        exc, pedb = _make_excitation()
+        comp = MagicMock()
+        comp.name = "U1"
+        comp.pins = {}
+        pedb.components.instances = {"U1": comp}
+        original = ["NET1", "GND"]
+        caller_list = list(original)
+        exc.create_port_on_component("U1", caller_list, port_type="coax_port", reference_net="GND")
+        assert caller_list == original, "create_port_on_component must not mutate the caller's net_list"
+
+    def test_coax_port_no_ref_pins_warns_not_errors(self):
+        """For coax_port, missing reference pins should only warn, not hard-fail.
+
+        The method must continue past the ref-pin check and attempt solder-ball creation.
+        """
+        exc, pedb = _make_excitation()
+
+        signal_pin = self._make_signal_pin("NET1")
+        comp = MagicMock()
+        comp.name = "U1"
+        # Component has a signal pin on NET1 but nothing on GND
+        comp.pins = {"Pin1": signal_pin}
+        pedb.components.instances = {"U1": comp}
+
+        # Stub out the downstream calls that follow the ref-pin check
+        pedb.padstacks.get_pad_parameters.return_value = (1, [100e-6, 100e-6])
+        pedb.components.instances["U1"].solder_ball_height = 50e-6
+        pedb.components.instances["U1"].solder_ball_diameter = [100e-6, 100e-6]
+
+        logged_warnings = []
+        mock_logger = MagicMock()
+        mock_logger.warning.side_effect = lambda msg: logged_warnings.append(msg)
+
+        with patch.object(type(exc), "_logger", new_callable=lambda: property(lambda self: mock_logger)):
+            with (
+                patch.object(exc._pedb.components, "set_solder_ball"),
+                patch.object(exc._pedb.excitation_manager, "create_coax_port"),
+            ):
+                exc.create_port_on_component("U1", ["NET1"], port_type="coax_port", reference_net="GND")
+
+        # A warning (not an error) must have been emitted about missing ref pins
+        assert any("reference" in (w or "").lower() for w in logged_warnings), (
+            "Expected a warning about missing reference pins, got: " + str(logged_warnings)
+        )
+        # The error logger must NOT have been called for this path
+        mock_logger.error.assert_not_called()
+
+    def test_coax_port_reference_net_none_empty_list_no_warning(self):
+        """When reference_net is None, no warning about missing ref pins should be emitted."""
+        exc, pedb = _make_excitation()
+        comp = MagicMock()
+        comp.name = "U1"
+        comp.pins = {}
+        pedb.components.instances = {"U1": comp}
+        logged_warnings = []
+        mock_logger = MagicMock()
+        mock_logger.warning.side_effect = lambda msg: logged_warnings.append(msg)
+
+        with patch.object(type(exc), "_logger", new_callable=lambda: property(lambda self: mock_logger)):
+            exc.create_port_on_component("U1", ["NET1"], port_type="coax_port", reference_net=None)
+
+        # warning about ref pins is only issued when reference_net was explicitly provided
+        for w in logged_warnings:
+            assert "reference" not in (w or "").lower(), f"Unexpected ref-pin warning when reference_net=None: {w}"
+
+
 class TestCreatePortOnPinsValidation:
     def test_no_pins_raises_runtime_warning(self):
         exc, pedb = _make_excitation()
