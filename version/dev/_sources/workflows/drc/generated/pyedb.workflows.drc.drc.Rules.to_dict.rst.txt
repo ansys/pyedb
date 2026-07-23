@@ -1,0 +1,6 @@
+to\_dict
+========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: Rules.to_dict

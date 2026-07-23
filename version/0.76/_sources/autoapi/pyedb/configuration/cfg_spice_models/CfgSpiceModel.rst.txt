@@ -1,0 +1,224 @@
+
+
+
+
+
+
+:class:`CfgSpiceModel`
+======================
+
+
+.. py:class:: pyedb.configuration.cfg_spice_models.CfgSpiceModel(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Represent one SPICE subcircuit model assignment.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgSpiceModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_post_init`
+            - Set private runtime attributes from excluded fields.
+          * - :py:attr:`~apply`
+            - Apply Spice model on layout.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~component_definition`
+            - 
+          * - :py:attr:`~file_path`
+            - 
+          * - :py:attr:`~sub_circuit_name`
+            - 
+          * - :py:attr:`~apply_to_all`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~terminal_pairs`
+            - 
+          * - :py:attr:`~pedb`
+            - 
+          * - :py:attr:`~path_lib`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_spice_models import CfgSpiceModel
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: name
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: component_definition
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: file_path
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: sub_circuit_name
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: apply_to_all
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: components
+   :type:  list
+   :value: None
+
+
+.. py:attribute:: terminal_pairs
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: pedb
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: path_lib
+   :type:  Optional[str]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: model_post_init(__context: Any) -> None
+
+   
+   Set private runtime attributes from excluded fields.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Apply Spice model on layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

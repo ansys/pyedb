@@ -1,0 +1,1490 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Configuration API: practical examples &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=fb294b3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=fb294b3b" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=137c1688"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'configuration/configuration_api_examples';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.17.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.76';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The configuration package" href="../autoapi/pyedb/configuration/index.html" />
+    <link rel="prev" title="Configuration API guide and complete example" href="configuration_api_guide.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.76.0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/configuration/configuration_api_examples.html" />
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Configuration guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.76/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    
+<!--
+  Announcement Version Loader
+  Dynamically loads the announcement.html content into the announcement_msg div.
+-->
+<div id="announcement_msg" aria-live="polite"></div>
+<script>
+  // Fetch and inject the announcement HTML content
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} Announcement.html file not found, Please ignore this, if you are in dev/stable documentation`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      var msgDiv = document.getElementById("announcement_msg");
+      if (msgDiv) {
+        msgDiv.innerHTML = text;
+      }
+    })
+    .catch((error) => {
+      // Log only unexpected fetch errors
+      if (!(error.message && error.message.startsWith("HTTP error: 404"))) {
+        console.error(`Fetch problem: ${error.message} Announcement.html could not be loaded.`);
+      }
+    });
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Configuration guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.76/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="file_architecture.html">Configuration file architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration_api_guide.html">Configuration API guide and complete example</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Configuration API: practical examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/pyedb/configuration/index.html">The <code class="docutils literal notranslate"><span class="pre">configuration</span></code> package</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Configuration guides</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Configuration API: practical examples</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="configuration-api-practical-examples">
+<h1>Configuration API: practical examples<a class="headerlink" href="#configuration-api-practical-examples" title="Link to this heading">#</a></h1>
+<section id="what-is-cfgdata">
+<h2>What is <code class="docutils literal notranslate"><span class="pre">CfgData</span></code>?<a class="headerlink" href="#what-is-cfgdata" title="Link to this heading">#</a></h2>
+<p>Think of <code class="docutils literal notranslate"><span class="pre">CfgData</span></code> as a <strong>live blueprint</strong> of your PCB design setup.
+Instead of manually crafting a JSON file, you describe what you want—nets,
+components, ports, setups, and geometry—through a clean Python object-oriented
+API.  When you are happy with the blueprint, you hand it to PyEDB and it
+applies every change to the open layout in a single atomic operation.</p>
+<p>The key insight is that the builder <strong>separates intent from execution</strong>:</p>
+<ul class="simple">
+<li><p>You populate the builder incrementally—in any order, across multiple helper
+functions, or from data read from external sources.</p></li>
+<li><p>Nothing touches the EDB layout until you call <code class="docutils literal notranslate"><span class="pre">edb.configuration.run(cfg)</span></code>.</p></li>
+<li><p>The same builder can also be serialized to a portable JSON or TOML file for
+version control, review, or reuse in another project.</p></li>
+</ul>
+<p>This separates three concerns that are often tangled together in scripted
+workflows: <em>definition</em>, <em>validation</em>, and <em>application</em>.</p>
+</section>
+<section id="creating-a-builder">
+<h2>Creating a builder<a class="headerlink" href="#creating-a-builder" title="Link to this heading">#</a></h2>
+<p><strong>From an active EDB session (recommended)</strong></p>
+<p>When you already have an open EDB layout the preferred way is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;my_design.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">create_config_builder()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">CfgData</span></code> instance that is <em>bound</em> to
+the live session. Bound builders can read existing objects from the database.
+This is useful for <code class="docutils literal notranslate"><span class="pre">cfg.components.get(&quot;U1&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg.stackup.get_layer(&quot;1_Top&quot;)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">cfg.nets.get(&quot;GND&quot;)</span></code>, etc.</p>
+<p><strong>Standalone (no session required)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">CfgData</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">CfgData</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Standalone builders are ideal for templates, CI pipelines, or situations where
+you want to author a configuration before opening any design.</p>
+</section>
+<section id="loading-from-an-existing-file-or-dictionary">
+<h2>Loading from an existing file or dictionary<a class="headerlink" href="#loading-from-an-existing-file-or-dictionary" title="Link to this heading">#</a></h2>
+<p>You can initialize a builder from a previously saved configuration so that you
+only override the values that need to change:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">CfgData</span>
+
+<span class="c1"># Start from a JSON baseline and tweak one setup</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">CfgData</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s2">&quot;baseline_config.json&quot;</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">setups</span><span class="o">.</span><span class="n">add_hfss_setup</span><span class="p">(</span><span class="s2">&quot;new_setup&quot;</span><span class="p">,</span> <span class="n">adapt_type</span><span class="o">=</span><span class="s2">&quot;broadband&quot;</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="s2">&quot;updated_config.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># Or build from a plain dictionary (for example, loaded from a database)</span>
+<span class="n">cfg2</span> <span class="o">=</span> <span class="n">CfgData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="s2">&quot;nets&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;signal_nets&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CLK&quot;</span><span class="p">,</span> <span class="s2">&quot;DATA&quot;</span><span class="p">]}})</span>
+</pre></div>
+</div>
+</section>
+<section id="applying-a-configuration-to-the-layout">
+<h2>Applying a configuration to the layout<a class="headerlink" href="#applying-a-configuration-to-the-layout" title="Link to this heading">#</a></h2>
+<p>Passing a builder directly to <code class="docutils literal notranslate"><span class="pre">run()</span></code> serializes it internally, so you never
+need to call <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> yourself:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>  <span class="c1"># load + apply in one call</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;my.json&quot;</span><span class="p">)</span>  <span class="c1"># from a file</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">({</span><span class="s2">&quot;nets&quot;</span><span class="p">:</span> <span class="p">{}})</span>  <span class="c1"># from a raw dict</span>
+</pre></div>
+</div>
+</section>
+<section id="exporting-to-a-file-or-dictionary">
+<h2>Exporting to a file or dictionary<a class="headerlink" href="#exporting-to-a-file-or-dictionary" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="s2">&quot;my_config.json&quot;</span><span class="p">)</span>  <span class="c1"># human-readable JSON</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">to_toml</span><span class="p">(</span><span class="s2">&quot;my_config.toml&quot;</span><span class="p">)</span>  <span class="c1"># TOML alternative</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>  <span class="c1"># plain Python dict (for inspection or APIs)</span>
+</pre></div>
+</div>
+<p>The exported file can later be applied without any Python script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;my_config.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="practical-examples">
+<h2>Practical examples<a class="headerlink" href="#practical-examples" title="Link to this heading">#</a></h2>
+<p>The following examples are derived from the integration test suite and
+demonstrate real-world usage patterns, from simple coaxial-port workflows to
+full stackup and modeler operations.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All examples assume <code class="docutils literal notranslate"><span class="pre">edb</span></code> is an open <code class="xref py py-class docutils literal notranslate"><span class="pre">Edb</span></code> session.
+examples below assume that the design <em>ANSYS-HSD_V1</em> is open.
+Replace it with <code class="docutils literal notranslate"><span class="pre">Edb(&quot;your_design.aedb&quot;,</span> <span class="pre">...)</span></code>.</p>
+</div>
+<section id="example-1-coax-ports-with-explicit-solder-ball-geometry">
+<h3>Example 1: Coax ports with explicit solder-ball geometry<a class="headerlink" href="#example-1-coax-ports-with-explicit-solder-ball-geometry" title="Link to this heading">#</a></h3>
+<p>Perform a PCIe Gen4 channel cut-out, assign cylindrical solder balls on the
+BGA component, place one coax port per signal net, and add an HFSS setup with a
+linear sweep, all in about fifteen lines.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+
+<span class="c1"># Signal nets of interest</span>
+<span class="n">signal_nets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX0_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX1_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX1_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX2_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX2_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX3_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX3_N&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="c1"># Classify nets — signal_nets / reference_nets are reusable list properties</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_signal_nets</span><span class="p">(</span><span class="n">signal_nets</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_reference_nets</span><span class="p">([</span><span class="s2">&quot;GND&quot;</span><span class="p">])</span>
+
+<span class="c1"># Cut the board to the nets of interest (3 mm expansion, convex hull)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">operations</span><span class="o">.</span><span class="n">add_cutout</span><span class="p">(</span>
+    <span class="n">signal_nets</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">signal_nets</span><span class="p">,</span>
+    <span class="n">reference_nets</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">reference_nets</span><span class="p">,</span>
+    <span class="n">extent_type</span><span class="o">=</span><span class="s2">&quot;ConvexHull&quot;</span><span class="p">,</span>
+    <span class="n">expansion_size</span><span class="o">=</span><span class="mf">3e-3</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># HFSS setup + linear sweep from 1 GHz to 10 GHz in 0.5 GHz steps</span>
+<span class="n">setup</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">setups</span><span class="o">.</span><span class="n">add_hfss_setup</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;HFSS_PCIe&quot;</span><span class="p">)</span>
+<span class="n">setup</span><span class="o">.</span><span class="n">add_frequency_sweep</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Sweep_LIN&quot;</span><span class="p">,</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">&quot;1GHz&quot;</span><span class="p">,</span>
+    <span class="n">stop</span><span class="o">=</span><span class="s2">&quot;10GHz&quot;</span><span class="p">,</span>
+    <span class="n">step_or_count</span><span class="o">=</span><span class="s2">&quot;0.5GHz&quot;</span><span class="p">,</span>  <span class="c1"># step string → linear_scale distribution</span>
+<span class="p">)</span>
+
+<span class="c1"># Set 300 µm cylindrical solder balls on U1 before placing coax ports</span>
+<span class="c1"># (solder-ball geometry is a component property, not a port property)</span>
+<span class="n">u1</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">)</span>
+<span class="n">u1</span><span class="o">.</span><span class="n">set_solder_ball_properties</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="s2">&quot;cylinder&quot;</span><span class="p">,</span> <span class="n">diameter</span><span class="o">=</span><span class="s2">&quot;300um&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="s2">&quot;300um&quot;</span><span class="p">)</span>
+
+<span class="c1"># One coax port per signal net on U1</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">ports</span><span class="o">.</span><span class="n">add_coax_port</span><span class="p">(</span><span class="n">reference_designator</span><span class="o">=</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="n">net_list</span><span class="o">=</span><span class="n">signal_nets</span><span class="p">)</span>
+
+<span class="c1"># Apply everything to the layout</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-2-circuit-ports-via-pin-groups">
+<h3>Example 2: Circuit ports via pin groups<a class="headerlink" href="#example-2-circuit-ports-via-pin-groups" title="Link to this heading">#</a></h3>
+<p>Use pin groups to bundle the GND pins on U1 into a single reference and create
+one differential circuit port per signal net pair.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+
+<span class="n">signal_nets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX0_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX1_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX1_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX2_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX2_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX3_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX3_N&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_signal_nets</span><span class="p">(</span><span class="n">signal_nets</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_reference_nets</span><span class="p">([</span><span class="s2">&quot;GND&quot;</span><span class="p">])</span>
+
+<span class="c1"># Same convex-hull cutout as before</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">operations</span><span class="o">.</span><span class="n">add_cutout</span><span class="p">(</span>
+    <span class="n">signal_nets</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">signal_nets</span><span class="p">,</span>
+    <span class="n">reference_nets</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">reference_nets</span><span class="p">,</span>
+    <span class="n">extent_type</span><span class="o">=</span><span class="s2">&quot;ConvexHull&quot;</span><span class="p">,</span>
+    <span class="n">expansion_size</span><span class="o">=</span><span class="mf">3e-3</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># HFSS setup</span>
+<span class="n">setup</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">setups</span><span class="o">.</span><span class="n">add_hfss_setup</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;HFSS_PCIe&quot;</span><span class="p">)</span>
+<span class="n">setup</span><span class="o">.</span><span class="n">add_frequency_sweep</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Sweep_LIN&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="s2">&quot;1GHz&quot;</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="s2">&quot;10GHz&quot;</span><span class="p">,</span> <span class="n">step_or_count</span><span class="o">=</span><span class="s2">&quot;0.5GHz&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Create one pin group per net on U1 — the builder accepts a list for bulk creation</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">pin_groups</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">reference_designator</span><span class="o">=</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="n">nets</span><span class="o">=</span><span class="s2">&quot;GND&quot;</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">pin_groups</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">reference_designator</span><span class="o">=</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="n">nets</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">signal_nets</span><span class="p">)</span>
+
+<span class="c1"># One circuit port per signal net: positive on the signal net, negative on GND</span>
+<span class="k">for</span> <span class="n">net</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">signal_nets</span><span class="p">:</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">ports</span><span class="o">.</span><span class="n">add_circuit_port</span><span class="p">(</span>
+        <span class="n">reference_designator</span><span class="o">=</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span>
+        <span class="n">positive_net</span><span class="o">=</span><span class="n">net</span><span class="p">,</span>
+        <span class="n">negative_net</span><span class="o">=</span><span class="s2">&quot;GND&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-3-auto-discover-solder-ball-dimensions-from-existing-component-data">
+<h3>Example 3: Auto-discover solder-ball dimensions from existing component data<a class="headerlink" href="#example-3-auto-discover-solder-ball-dimensions-from-existing-component-data" title="Link to this heading">#</a></h3>
+<p>When solder-ball dimensions are already encoded in the component definition,
+omit <code class="docutils literal notranslate"><span class="pre">diameter</span></code> and <code class="docutils literal notranslate"><span class="pre">height</span></code> and let PyEDB read them from the footprint.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+
+<span class="n">signal_nets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX0_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX1_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX1_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX2_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX2_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX3_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX3_N&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_signal_nets</span><span class="p">(</span><span class="n">signal_nets</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_reference_nets</span><span class="p">([</span><span class="s2">&quot;GND&quot;</span><span class="p">])</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">operations</span><span class="o">.</span><span class="n">add_cutout</span><span class="p">(</span>
+    <span class="n">signal_nets</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">signal_nets</span><span class="p">,</span>
+    <span class="n">reference_nets</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">reference_nets</span><span class="p">,</span>
+    <span class="n">extent_type</span><span class="o">=</span><span class="s2">&quot;ConvexHull&quot;</span><span class="p">,</span>
+    <span class="n">expansion_size</span><span class="o">=</span><span class="mf">3e-3</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">setup</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">setups</span><span class="o">.</span><span class="n">add_hfss_setup</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;HFSS_PCIe&quot;</span><span class="p">)</span>
+<span class="n">setup</span><span class="o">.</span><span class="n">add_frequency_sweep</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Sweep_LIN&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="s2">&quot;1GHz&quot;</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="s2">&quot;10GHz&quot;</span><span class="p">,</span> <span class="n">step_or_count</span><span class="o">=</span><span class="s2">&quot;0.5GHz&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Pass only shape + reference_designator — diameter and height are inferred</span>
+<span class="c1"># from the existing padstack geometry of component U1</span>
+<span class="n">u1</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">)</span>
+<span class="n">u1</span><span class="o">.</span><span class="n">set_solder_ball_properties</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="s2">&quot;cylinder&quot;</span><span class="p">,</span> <span class="n">reference_designator</span><span class="o">=</span><span class="s2">&quot;U1&quot;</span><span class="p">)</span>
+
+<span class="n">cfg</span><span class="o">.</span><span class="n">ports</span><span class="o">.</span><span class="n">add_coax_port</span><span class="p">(</span><span class="n">reference_designator</span><span class="o">=</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="n">net_list</span><span class="o">=</span><span class="n">signal_nets</span><span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-4-net-classification-and-live-querying">
+<h3>Example 4: Net classification and live querying<a class="headerlink" href="#example-4-net-classification-and-live-querying" title="Link to this heading">#</a></h3>
+<p>The builder exposes a <code class="docutils literal notranslate"><span class="pre">nets.get()</span></code> method that queries the live EDB session so
+you can inspect a net’s current classification before deciding how to categorize
+it.  <code class="docutils literal notranslate"><span class="pre">add_signal_nets</span></code> / <code class="docutils literal notranslate"><span class="pre">add_power_ground_nets</span></code> are mutually exclusive: a
+net is automatically removed from any other list when it is added to a new one.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="c1"># Query a net that currently exists in the EDB layout</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">classification</span><span class="p">)</span>  <span class="c1"># &quot;signal&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">is_power_ground</span><span class="p">)</span>  <span class="c1"># False</span>
+
+<span class="c1"># Reclassify it as power/ground …</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_power_ground_nets</span><span class="p">([</span><span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">power_ground_nets</span><span class="p">)</span>  <span class="c1"># True</span>
+
+<span class="c1"># … then move it back to signal — it is removed from power_ground_nets automatically</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_signal_nets</span><span class="p">([</span><span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">signal_nets</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">power_ground_nets</span><span class="p">)</span>  <span class="c1"># False</span>
+
+<span class="c1"># Finalise as power/ground and apply — the EDB layout is updated</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_power_ground_nets</span><span class="p">([</span><span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span><span class="p">])</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="c1"># Verify the change was written to the database</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">nets</span><span class="p">[</span><span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">is_power_ground</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-5-gap-port-on-an-existing-polygon">
+<h3>Example 5: Gap port on an existing polygon<a class="headerlink" href="#example-5-gap-port-on-an-existing-polygon" title="Link to this heading">#</a></h3>
+<p>Attach a gap port to the midpoint of the first arc of an existing polygon.
+The primitive and its edge point are read directly from the live EDB layout.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="c1"># Pick the first polygon in the layout and one of its edge midpoints</span>
+<span class="n">polygon</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">polygons</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">midpoint</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">arcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">midpoint</span>
+
+<span class="c1"># add_gap_port accepts live EDB primitives directly</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">ports</span><span class="o">.</span><span class="n">add_gap_port</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_gap_port&quot;</span><span class="p">,</span>
+    <span class="n">primitive</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span>
+    <span class="n">point_on_edge</span><span class="o">=</span><span class="n">midpoint</span><span class="p">,</span>
+    <span class="n">pec_launch_width</span><span class="o">=</span><span class="s2">&quot;0.02mm&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;my_gap_port&quot;</span> <span class="ow">in</span> <span class="n">edb</span><span class="o">.</span><span class="n">ports</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-6-differential-wave-port">
+<h3>Example 6: Differential wave port<a class="headerlink" href="#example-6-differential-wave-port" title="Link to this heading">#</a></h3>
+<p>Define a differential wave port on two existing trace primitives. The positive
+and negative terminals are placed at the start and end of each trace center line
+for a clean modal excitation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="c1"># Retrieve the two complementary traces from the live layout</span>
+<span class="n">path_p</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">nets</span><span class="p">[</span><span class="s2">&quot;PCIe_Gen4_RX3_P&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">primitives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">path_n</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">nets</span><span class="p">[</span><span class="s2">&quot;PCIe_Gen4_RX3_N&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">primitives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Use the centre-line endpoints as edge probe points</span>
+<span class="n">point_p</span> <span class="o">=</span> <span class="n">path_p</span><span class="o">.</span><span class="n">center_line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">point_n</span> <span class="o">=</span> <span class="n">path_p</span><span class="o">.</span><span class="n">center_line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">cfg</span><span class="o">.</span><span class="n">ports</span><span class="o">.</span><span class="n">add_diff_wave_port</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;diff_wave_RX3&quot;</span><span class="p">,</span>
+    <span class="n">positive_primitive</span><span class="o">=</span><span class="n">path_p</span><span class="p">,</span>
+    <span class="n">positive_terminal_point</span><span class="o">=</span><span class="n">point_p</span><span class="p">,</span>
+    <span class="n">negative_primitive</span><span class="o">=</span><span class="n">path_n</span><span class="p">,</span>
+    <span class="n">negative_terminal_point</span><span class="o">=</span><span class="n">point_n</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="n">port</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">ports</span><span class="p">[</span><span class="s2">&quot;diff_wave_RX3&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">port</span><span class="o">.</span><span class="n">hfss_type</span><span class="p">)</span>  <span class="c1"># &quot;Wave&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">port</span><span class="o">.</span><span class="n">terminals</span><span class="p">))</span>  <span class="c1"># 2</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-7-single-ended-wave-port">
+<h3>Example 7: Single-ended wave port<a class="headerlink" href="#example-7-single-ended-wave-port" title="Link to this heading">#</a></h3>
+<p>Place a wave port on the start of a single trace. The primitive is looked up
+from the active net object so you never need to know the internal primitive ID.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="c1"># Get the first primitive on the RX3_P net and use its first centre-line point</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">nets</span><span class="p">[</span><span class="s2">&quot;PCIe_Gen4_RX3_P&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">primitives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">point_on_edge</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">center_line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">cfg</span><span class="o">.</span><span class="n">ports</span><span class="o">.</span><span class="n">add_wave_port</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;wave_RX3_P&quot;</span><span class="p">,</span>
+    <span class="n">primitive</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+    <span class="n">point_on_edge</span><span class="o">=</span><span class="n">point_on_edge</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="n">port</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">ports</span><span class="p">[</span><span class="s2">&quot;wave_RX3_P&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">port</span><span class="o">.</span><span class="n">hfss_type</span><span class="p">)</span>  <span class="c1"># &quot;Wave&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">port</span><span class="o">.</span><span class="n">net_name</span><span class="p">)</span>  <span class="c1"># &quot;PCIe_Gen4_RX3_P&quot;</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-8-full-hfss-setup-with-broadband-adaptation-and-auto-mesh">
+<h3>Example 8: Full HFSS setup with broadband adaptation and auto mesh<a class="headerlink" href="#example-8-full-hfss-setup-with-broadband-adaptation-and-auto-mesh" title="Link to this heading">#</a></h3>
+<p>Configure an HFSS setup with broadband adaptive meshing, automatic mesh
+seeding, and a linear-scale sweep, all from the builder.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="n">signal_nets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;PCIe_Gen4_RX0_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX0_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX1_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX1_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX2_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX2_N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX3_P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PCIe_Gen4_RX3_N&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Solder balls + coax ports are needed so auto-mesh can target the right nets</span>
+<span class="n">u1</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">)</span>
+<span class="n">u1</span><span class="o">.</span><span class="n">set_solder_ball_properties</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="s2">&quot;cylinder&quot;</span><span class="p">,</span> <span class="n">reference_designator</span><span class="o">=</span><span class="s2">&quot;U1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">ports</span><span class="o">.</span><span class="n">add_coax_port</span><span class="p">(</span><span class="n">reference_designator</span><span class="o">=</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="n">net_list</span><span class="o">=</span><span class="n">signal_nets</span><span class="p">)</span>
+
+<span class="c1"># Create the HFSS setup</span>
+<span class="n">hfss</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">setups</span><span class="o">.</span><span class="n">add_hfss_setup</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;HFSS_Full&quot;</span><span class="p">)</span>
+
+<span class="c1"># Linear sweep in 0.5 GHz steps from 1 GHz to 10 GHz</span>
+<span class="n">hfss</span><span class="o">.</span><span class="n">add_frequency_sweep</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Sweep_LIN&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="s2">&quot;1GHz&quot;</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="s2">&quot;10GHz&quot;</span><span class="p">,</span> <span class="n">step_or_count</span><span class="o">=</span><span class="s2">&quot;0.5GHz&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Automatic mesh seeding — seeds trace widths and via side counts</span>
+<span class="n">hfss</span><span class="o">.</span><span class="n">set_auto_mesh_operation</span><span class="p">(</span>
+    <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">trace_ratio_seeding</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+    <span class="n">signal_via_side_number</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Broadband adaptive solution (sweeps 5–10 GHz, tight 0.05 tolerance)</span>
+<span class="n">hfss</span><span class="o">.</span><span class="n">set_broadband_adaptive</span><span class="p">(</span>
+    <span class="n">low_freq</span><span class="o">=</span><span class="s2">&quot;5GHz&quot;</span><span class="p">,</span>
+    <span class="n">high_freq</span><span class="o">=</span><span class="s2">&quot;10GHz&quot;</span><span class="p">,</span>
+    <span class="n">max_delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">max_passes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="n">setup</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">setups</span><span class="p">[</span><span class="s2">&quot;HFSS_Full&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">setup</span><span class="o">.</span><span class="n">frequency_sweeps</span><span class="p">[</span><span class="s2">&quot;Sweep_LIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">frequency_string</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># &quot;LIN 1GHz 10GHz 0.5GHz&quot;</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-9-siwave-ac-setup">
+<h3>Example 9: SIwave AC setup<a class="headerlink" href="#example-9-siwave-ac-setup" title="Link to this heading">#</a></h3>
+<p>Add a SIwave AC setup tuned for SI accuracy and a fine linear sweep from DC to
+35 GHz.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="c1"># si_slider_position: 0 = Speed, 1 = Balanced, 2 = Accuracy</span>
+<span class="n">siwave_ac</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">setups</span><span class="o">.</span><span class="n">add_siwave_ac_setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SIwave_AC&quot;</span><span class="p">,</span>
+    <span class="n">use_si_settings</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">si_slider_position</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Linear sweep from 0 GHz to 35 GHz in 0.1 GHz steps</span>
+<span class="n">siwave_ac</span><span class="o">.</span><span class="n">add_frequency_sweep</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Sweep_SIwave&quot;</span><span class="p">,</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">&quot;0GHz&quot;</span><span class="p">,</span>
+    <span class="n">stop</span><span class="o">=</span><span class="s2">&quot;35GHz&quot;</span><span class="p">,</span>
+    <span class="n">step_or_count</span><span class="o">=</span><span class="s2">&quot;0.1GHz&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="n">setup</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">setups</span><span class="p">[</span><span class="s2">&quot;SIwave_AC&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">setup</span><span class="o">.</span><span class="n">si_slider_position</span><span class="p">)</span>  <span class="c1"># 2</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-10-siwave-dc-setup-with-thermal-export">
+<h3>Example 10: SIwave DC setup with thermal export<a class="headerlink" href="#example-10-siwave-dc-setup-with-thermal-export" title="Link to this heading">#</a></h3>
+<p>Create a SIwave DC IR-drop setup at maximum accuracy and enable thermal loss
+data export for downstream thermal analysis.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="c1"># dc_slider_position: 0 = Speed, 1 = Balanced, 2 = Accuracy</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">setups</span><span class="o">.</span><span class="n">add_siwave_dc_setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SIwave_DC&quot;</span><span class="p">,</span>
+    <span class="n">dc_slider_position</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">export_dc_thermal_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># write thermal CSV after solve</span>
+<span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="n">edb_setup</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">setups</span><span class="p">[</span><span class="s2">&quot;SIwave_DC&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edb_setup</span><span class="o">.</span><span class="n">dc_settings</span><span class="o">.</span><span class="n">dc_slider_position</span><span class="p">)</span>  <span class="c1"># 2</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edb_setup</span><span class="o">.</span><span class="n">dc_ir_settings</span><span class="o">.</span><span class="n">export_dc_thermal_data</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-11-define-a-new-padstack-and-place-an-instance">
+<h3>Example 11: Define a new padstack and place an instance<a class="headerlink" href="#example-11-define-a-new-padstack-and-place-an-instance" title="Link to this heading">#</a></h3>
+<p>Define a custom via padstack (including hole, pad, and anti-pad sizes) and
+place one instance at a specific XY coordinate on the board.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="c1"># Define the via padstack — through all layers</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">padstacks</span><span class="o">.</span><span class="n">add_definition</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_via&quot;</span><span class="p">,</span>
+    <span class="n">hole_plating_thickness</span><span class="o">=</span><span class="s2">&quot;10um&quot;</span><span class="p">,</span>
+    <span class="n">material</span><span class="o">=</span><span class="s2">&quot;copper&quot;</span><span class="p">,</span>
+    <span class="n">hole_range</span><span class="o">=</span><span class="s2">&quot;through&quot;</span><span class="p">,</span>
+    <span class="n">hole_diameter</span><span class="o">=</span><span class="s2">&quot;200um&quot;</span><span class="p">,</span>
+    <span class="n">pad_diameter</span><span class="o">=</span><span class="s2">&quot;300um&quot;</span><span class="p">,</span>
+    <span class="n">anti_pad_diameter</span><span class="o">=</span><span class="s2">&quot;400um&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Place one instance of the new definition at (1 mm, 2 mm) on net &quot;GND&quot;</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">padstacks</span><span class="o">.</span><span class="n">add_instance</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_via_inst&quot;</span><span class="p">,</span>
+    <span class="n">net_name</span><span class="o">=</span><span class="s2">&quot;GND&quot;</span><span class="p">,</span>
+    <span class="n">definition</span><span class="o">=</span><span class="s2">&quot;my_via&quot;</span><span class="p">,</span>
+    <span class="n">position</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">2e-3</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="c1"># Verify the definition and instance were created</span>
+<span class="n">via_def</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">padstacks</span><span class="o">.</span><span class="n">definitions</span><span class="p">[</span><span class="s2">&quot;my_via&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">via_def</span><span class="o">.</span><span class="n">hole_diameter</span><span class="p">)</span>  <span class="c1"># 200e-6</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">via_def</span><span class="o">.</span><span class="n">hole_plating_thickness</span><span class="p">)</span>  <span class="c1"># 10e-6</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">via_def</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># &quot;my_via_inst&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>  <span class="c1"># [0.001, 0.002]</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-12-geometry-creation-via-the-modeler-section">
+<h3>Example 12: Geometry creation via the modeler section<a class="headerlink" href="#example-12-geometry-creation-via-the-modeler-section" title="Link to this heading">#</a></h3>
+<p>Create traces, circles, rectangles, and polygons entirely through the builder
+without touching the low-level geometry API.  All primitives are created when
+<code class="docutils literal notranslate"><span class="pre">run()</span></code> is called.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="c1"># ── Trace ────────────────────────────────────────────────────────────────</span>
+<span class="c1"># An L-shaped 100 µm trace on layer 1_Top going right then up</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_trace&quot;</span><span class="p">,</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s2">&quot;1_Top&quot;</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="s2">&quot;100um&quot;</span><span class="p">,</span>
+    <span class="n">net_name</span><span class="o">=</span><span class="s2">&quot;SIG&quot;</span><span class="p">,</span>
+    <span class="n">start_cap_style</span><span class="o">=</span><span class="s2">&quot;flat&quot;</span><span class="p">,</span>
+    <span class="n">end_cap_style</span><span class="o">=</span><span class="s2">&quot;flat&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">],</span> <span class="p">[</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">]],</span>
+<span class="p">)</span>
+
+<span class="c1"># ── Circular plane ───────────────────────────────────────────────────────</span>
+<span class="c1"># A 2 mm radius circle centred at (5 mm, 5 mm)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">add_circular_plane</span><span class="p">(</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s2">&quot;1_Top&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_circle&quot;</span><span class="p">,</span>
+    <span class="n">net_name</span><span class="o">=</span><span class="s2">&quot;GND&quot;</span><span class="p">,</span>
+    <span class="n">radius</span><span class="o">=</span><span class="s2">&quot;2mm&quot;</span><span class="p">,</span>
+    <span class="n">position</span><span class="o">=</span><span class="p">[</span><span class="mf">5e-3</span><span class="p">,</span> <span class="mf">5e-3</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># ── Rectangular plane ────────────────────────────────────────────────────</span>
+<span class="c1"># A rectangle from (0,0) to (0, 5 mm)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">add_rectangular_plane</span><span class="p">(</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s2">&quot;1_Top&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_rectangle&quot;</span><span class="p">,</span>
+    <span class="n">lower_left_point</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="n">upper_right_point</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">5e-3</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># ── Polygon plane ────────────────────────────────────────────────────────</span>
+<span class="c1"># A small triangle (polygon must be closed — first == last point)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">add_polygon_plane</span><span class="p">(</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s2">&quot;1_Top&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_polygon&quot;</span><span class="p">,</span>
+    <span class="n">net_name</span><span class="o">=</span><span class="s2">&quot;SIG2&quot;</span><span class="p">,</span>
+    <span class="n">points</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2e-3</span><span class="p">],</span> <span class="p">[</span><span class="mf">2e-3</span><span class="p">,</span> <span class="mf">2e-3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span>
+<span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="c1"># Verify each primitive was created with the expected attributes</span>
+<span class="n">trace</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">find_primitive</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_trace&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">layer_name</span><span class="p">)</span>  <span class="c1"># &quot;1_Top&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">net_name</span><span class="p">)</span>  <span class="c1"># &quot;SIG&quot;</span>
+
+<span class="n">circle</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">find_primitive</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_circle&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">circle</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>  <span class="c1"># (0.005, 0.005)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">circle</span><span class="o">.</span><span class="n">radius</span><span class="p">)</span>  <span class="c1"># ~0.002</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-13-stackup-materials-and-layers">
+<h3>Example 13: Stackup materials and layers<a class="headerlink" href="#example-13-stackup-materials-and-layers" title="Link to this heading">#</a></h3>
+<p>Add custom dielectric and conductor materials to the material library and
+insert a new dielectric layer into the stackup.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="c1"># Inspect how many layers the design already has</span>
+<span class="n">layers</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">stackup</span><span class="o">.</span><span class="n">get_layers</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Design has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span><span class="si">}</span><span class="s2"> layers&quot;</span><span class="p">)</span>
+
+<span class="c1"># Define a low-loss dielectric material</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">stackup</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_dielectric&quot;</span><span class="p">,</span>
+    <span class="n">permittivity</span><span class="o">=</span><span class="mf">3.48</span><span class="p">,</span>
+    <span class="n">dielectric_loss_tangent</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Define a high-conductivity metal material</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">stackup</span><span class="o">.</span><span class="n">add_material</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_metal&quot;</span><span class="p">,</span>
+    <span class="n">conductivity</span><span class="o">=</span><span class="mf">6e7</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Insert a new dielectric layer using the custom material</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">stackup</span><span class="o">.</span><span class="n">add_dielectric_layer</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_diel_layer&quot;</span><span class="p">,</span>
+    <span class="n">material</span><span class="o">=</span><span class="s2">&quot;my_dielectric&quot;</span><span class="p">,</span>
+    <span class="n">thickness</span><span class="o">=</span><span class="s2">&quot;250um&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="c1"># Verify the materials and layer were registered in the design</span>
+<span class="n">diel</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">materials</span><span class="p">[</span><span class="s2">&quot;my_dielectric&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">diel</span><span class="o">.</span><span class="n">permittivity</span><span class="p">)</span>  <span class="c1"># ~3.48</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">diel</span><span class="o">.</span><span class="n">dielectric_loss_tangent</span><span class="p">)</span>  <span class="c1"># ~0.02</span>
+
+<span class="n">metal</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">materials</span><span class="p">[</span><span class="s2">&quot;my_metal&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metal</span><span class="o">.</span><span class="n">conductivity</span><span class="p">)</span>  <span class="c1"># ~6e7</span>
+
+<span class="n">layer</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">stackup</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s2">&quot;my_diel_layer&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">material</span><span class="p">)</span>  <span class="c1"># &quot;my_dielectric&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>  <span class="c1"># 250e-6</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="exporting-the-builder-as-json-for-review-and-reuse">
+<h2>Exporting the builder as JSON for review and reuse<a class="headerlink" href="#exporting-the-builder-as-json-for-review-and-reuse" title="Link to this heading">#</a></h2>
+<p>Any of the builder objects from the examples above can be serialized to a
+self-contained JSON file. This is useful for code review, archiving a known-
+good configuration, or sharing a setup with another team member who can apply
+it without running the Python script themselves.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;ANSYS-HSD_V1.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">create_config_builder</span><span class="p">()</span>
+
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_signal_nets</span><span class="p">([</span><span class="s2">&quot;CLK&quot;</span><span class="p">,</span> <span class="s2">&quot;DATA&quot;</span><span class="p">])</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">add_reference_nets</span><span class="p">([</span><span class="s2">&quot;GND&quot;</span><span class="p">])</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">setups</span><span class="o">.</span><span class="n">add_hfss_setup</span><span class="p">(</span><span class="s2">&quot;review_setup&quot;</span><span class="p">,</span> <span class="n">adapt_type</span><span class="o">=</span><span class="s2">&quot;broadband&quot;</span><span class="p">)</span>
+
+<span class="c1"># Export before applying — useful for review in version control</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="s2">&quot;review_config.json&quot;</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">to_toml</span><span class="p">(</span><span class="s2">&quot;review_config.toml&quot;</span><span class="p">)</span>
+
+<span class="c1"># Inspect as a plain dict if you need to post-process the payload</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>  <span class="c1"># [&#39;nets&#39;, &#39;setups&#39;]</span>
+
+<span class="c1"># Apply from the file later (no Python script required)</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;review_config.json&quot;</span><span class="p">)</span>
+<span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="file_architecture.html"><span class="doc">Configuration file architecture</span></a>: complete field-by-field reference for the JSON/TOML
+file format produced by <code class="docutils literal notranslate"><span class="pre">to_json()</span></code> / <code class="docutils literal notranslate"><span class="pre">to_toml()</span></code>.</p></li>
+<li><p><a class="reference internal" href="configuration_api_guide.html"><span class="doc">Configuration API guide and complete example</span></a>: full API reference including all section
+builders, parameter tables, and session-aware <code class="docutils literal notranslate"><span class="pre">get()</span></code> helpers.</p></li>
+<li><p><a class="reference internal" href="../autoapi/pyedb/configuration/index.html"><span class="doc">The configuration package</span></a>: AutoAPI class reference for
+every configuration module.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-cfgdata">What is <code class="docutils literal notranslate"><span class="pre">CfgData</span></code>?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-builder">Creating a builder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-from-an-existing-file-or-dictionary">Loading from an existing file or dictionary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-a-configuration-to-the-layout">Applying a configuration to the layout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exporting-to-a-file-or-dictionary">Exporting to a file or dictionary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-examples">Practical examples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-coax-ports-with-explicit-solder-ball-geometry">Example 1: Coax ports with explicit solder-ball geometry</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-circuit-ports-via-pin-groups">Example 2: Circuit ports via pin groups</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3-auto-discover-solder-ball-dimensions-from-existing-component-data">Example 3: Auto-discover solder-ball dimensions from existing component data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-4-net-classification-and-live-querying">Example 4: Net classification and live querying</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-5-gap-port-on-an-existing-polygon">Example 5: Gap port on an existing polygon</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-6-differential-wave-port">Example 6: Differential wave port</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-7-single-ended-wave-port">Example 7: Single-ended wave port</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-8-full-hfss-setup-with-broadband-adaptation-and-auto-mesh">Example 8: Full HFSS setup with broadband adaptation and auto mesh</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-9-siwave-ac-setup">Example 9: SIwave AC setup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-10-siwave-dc-setup-with-thermal-export">Example 10: SIwave DC setup with thermal export</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-11-define-a-new-padstack-and-place-an-instance">Example 11: Define a new padstack and place an instance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-12-geometry-creation-via-the-modeler-section">Example 12: Geometry creation via the modeler section</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-13-stackup-materials-and-layers">Example 13: Stackup materials and layers</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exporting-the-builder-as-json-for-review-and-reuse">Exporting the builder as JSON for review and reuse</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+
+  
+  <nav class="tocsection editthispage" aria-label="Edit this page">
+    <a href="https://github.com/ansys/pyedb/edit/main/doc/source/configuration/configuration_api_examples.rst" rel="noopener noreferrer">
+      <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </nav>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../_sources/configuration/configuration_api_examples.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.8.1.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

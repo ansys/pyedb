@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``spice_model.py`` module
+=============================
+
+.. py:module:: pyedb.grpc.database.hierarchy.spice_model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: spice_model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.hierarchy.spice_model.SpiceModel`
+            - Manage :class:`SpiceModel <ansys.edb.core.hierarchy.spice_model.SpiceModel>`
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SpiceModel</autoapi/pyedb/grpc/database/hierarchy/spice_model/SpiceModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

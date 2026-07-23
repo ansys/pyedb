@@ -1,0 +1,273 @@
+
+
+
+
+
+
+:class:`Q3DAdvancedMeshingSettings`
+===================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.q3d_advanced_meshing_settings.Q3DAdvancedMeshingSettings(pedb, core: ansys.edb.core.simulation_setup.q3d_simulation_settings.Q3DAdvancedMeshingSettings)
+
+   
+   Q3D advanced meshing settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Q3DAdvancedMeshingSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~arc_step_size`
+            - Arc step size in micrometers.
+          * - :py:attr:`~arc_to_chord_error`
+            - Arc to chord error in micrometers.
+          * - :py:attr:`~circle_start_azimuth`
+            - Circle start azimuth in degrees.
+          * - :py:attr:`~layer_alignment`
+            - Snapping tolerance for hierarchical layer alignment.
+          * - :py:attr:`~max_num_arc_points`
+            - Maximum number of points used to approximate arcs.
+          * - :py:attr:`~use_arc_chord_error_approx`
+            - Flag indicating if arc to chord error approximation is used.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.q3d_advanced_meshing_settings import Q3DAdvancedMeshingSettings
+
+Property detail
+---------------
+
+.. py:property:: arc_step_size
+   :type: float
+
+
+   
+   Arc step size in micrometers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Arc step size in micrometers.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arc_to_chord_error
+   :type: float
+
+
+   
+   Arc to chord error in micrometers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Arc to chord error in micrometers.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: circle_start_azimuth
+   :type: float
+
+
+   
+   Circle start azimuth in degrees.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Circle start azimuth in degrees.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer_alignment
+   :type: str
+
+
+   
+   Snapping tolerance for hierarchical layer alignment.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Snapping tolerance for hierarchical layer alignment.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_num_arc_points
+   :type: int
+
+
+   
+   Maximum number of points used to approximate arcs.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum number of arc points.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_arc_chord_error_approx
+   :type: bool
+
+
+   
+   Flag indicating if arc to chord error approximation is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if arc to chord error approximation is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

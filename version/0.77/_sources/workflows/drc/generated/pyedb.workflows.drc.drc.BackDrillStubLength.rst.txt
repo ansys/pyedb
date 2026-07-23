@@ -1,0 +1,101 @@
+﻿BackDrillStubLength
+===================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoclass:: BackDrillStubLength
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      BackDrillStubLength.construct
+      
+      
+      BackDrillStubLength.copy
+      
+      
+      BackDrillStubLength.dict
+      
+      
+      BackDrillStubLength.from_orm
+      
+      
+      BackDrillStubLength.json
+      
+      
+      BackDrillStubLength.model_construct
+      
+      
+      BackDrillStubLength.model_copy
+      
+      
+      BackDrillStubLength.model_dump
+      
+      
+      BackDrillStubLength.model_dump_json
+      
+      
+      BackDrillStubLength.model_json_schema
+      
+      
+      BackDrillStubLength.model_parametrized_name
+      
+      
+      BackDrillStubLength.model_post_init
+      
+      
+      BackDrillStubLength.model_rebuild
+      
+      
+      BackDrillStubLength.model_validate
+      
+      
+      BackDrillStubLength.model_validate_json
+      
+      
+      BackDrillStubLength.model_validate_strings
+      
+      
+      BackDrillStubLength.parse_file
+      
+      
+      BackDrillStubLength.parse_obj
+      
+      
+      BackDrillStubLength.parse_raw
+      
+      
+      BackDrillStubLength.schema
+      
+      
+      BackDrillStubLength.schema_json
+      
+      
+      BackDrillStubLength.update_forward_refs
+      
+      
+      BackDrillStubLength.validate
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      BackDrillStubLength.model_computed_fields
+      BackDrillStubLength.model_config
+      BackDrillStubLength.model_fields
+      BackDrillStubLength.name
+      BackDrillStubLength.value
+   
+   

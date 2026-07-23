@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``hfss_solver_settings.py`` module
+======================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.hfss_solver_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_solver_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_solver_settings.HFSSSolverSettings`
+            - HFSS solver settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HFSSSolverSettings</autoapi/pyedb/grpc/database/simulation_setup/hfss_solver_settings/HFSSSolverSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

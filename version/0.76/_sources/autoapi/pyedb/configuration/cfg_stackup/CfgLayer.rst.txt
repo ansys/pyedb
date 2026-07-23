@@ -1,0 +1,343 @@
+
+
+
+
+
+
+:class:`CfgLayer`
+=================
+
+
+.. py:class:: pyedb.configuration.cfg_stackup.CfgLayer(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Represent one signal or dielectric layer entry.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgLayer
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_huray_roughness`
+            - Configure Huray surface roughness on selected surfaces.
+          * - :py:attr:`~set_groisse_roughness`
+            - Configure Groisse surface roughness on selected surfaces.
+          * - :py:attr:`~set_etching`
+            - Configure trapezoidal etching on this conductor layer.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - Alias for ``layer_type`` for backward compatibility.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~layer_type`
+            - 
+          * - :py:attr:`~material`
+            - 
+          * - :py:attr:`~fill_material`
+            - 
+          * - :py:attr:`~thickness`
+            - 
+          * - :py:attr:`~roughness`
+            - 
+          * - :py:attr:`~etching`
+            - 
+          * - :py:attr:`~color`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_stackup import CfgLayer
+
+Property detail
+---------------
+
+.. py:property:: type
+   :type: Optional[str]
+
+
+   
+   Alias for ``layer_type`` for backward compatibility.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: layer_type
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: material
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: fill_material
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: thickness
+   :type:  Optional[float | int | str]
+   :value: None
+
+
+.. py:attribute:: roughness
+   :type:  Optional[CfgRoughnessModel]
+   :value: None
+
+
+.. py:attribute:: etching
+   :type:  Optional[EtchingModel]
+   :value: None
+
+
+.. py:attribute:: color
+   :type:  Optional[tuple | list]
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_huray_roughness(nodule_radius: str | float | int, surface_ratio: str | float | int, enabled: bool = True, top: bool = True, bottom: bool = True, side: bool = True) -> CfgLayer
+
+   
+   Configure Huray surface roughness on selected surfaces.
+
+
+   :Parameters:
+
+       **nodule_radius** : :class:`python:str` , :class:`python:float`, :obj:`or` :class:`python:int`
+           Huray nodule radius, e.g. ``"0.1um"``.
+
+       **surface_ratio** : :class:`python:str` , :class:`python:float`, :obj:`or` :class:`python:int`
+           Huray surface ratio.
+
+       **enabled** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable roughness on this layer.  Default is ``True``.
+
+       **top** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Apply roughness to the top surface.  Default is ``True``.
+
+       **bottom** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Apply roughness to the bottom surface.  Default is ``True``.
+
+       **side** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Apply roughness to the side surfaces.  Default is ``True``.
+
+
+
+   :Returns:
+
+       :obj:`CfgLayer`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> layer.set_huray_roughness("0.1um", "2.9", top=True, bottom=False)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_groisse_roughness(roughness_value: str | float | int, enabled: bool = True, top: bool = True, bottom: bool = True, side: bool = True) -> CfgLayer
+
+   
+   Configure Groisse surface roughness on selected surfaces.
+
+
+   :Parameters:
+
+       **roughness_value** : :class:`python:str` , :class:`python:float`, :obj:`or` :class:`python:int`
+           RMS roughness, e.g. ``0.3e-6`` (in metres).
+
+       **enabled** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable roughness.  Default is ``True``.
+
+       **top** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Default is ``True``.
+
+       **bottom** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Default is ``True``.
+
+       **side** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Default is ``True``.
+
+
+
+   :Returns:
+
+       :obj:`CfgLayer`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_etching(factor: float | int | str = 0.5, etch_power_ground_nets: bool = False, enabled: bool = True) -> CfgLayer
+
+   
+   Configure trapezoidal etching on this conductor layer.
+
+
+   :Parameters:
+
+       **factor** : :obj:`optional`, :class:`python:str` , :class:`python:float`, :obj:`or` :class:`python:int`
+           Etch factor (ratio).  Default is ``0.5``.
+
+       **etch_power_ground_nets** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Apply etching to power/ground nets as well.  Default is ``False``.
+
+       **enabled** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable etching.  Default is ``True``.
+
+
+
+   :Returns:
+
+       :obj:`CfgLayer`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> layer.set_etching(factor=0.4, etch_power_ground_nets=True)
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

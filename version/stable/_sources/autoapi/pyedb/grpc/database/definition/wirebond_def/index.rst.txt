@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``wirebond_def.py`` module
+==============================
+
+.. py:module:: pyedb.grpc.database.definition.wirebond_def
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: wirebond_def
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.wirebond_def.BondwireDef`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.wirebond_def.Jedec4BondwireDef`
+            - Class representing a JEDEC 4 bondwire definition.
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.wirebond_def.Jedec5BondwireDef`
+            - Class representing a JEDEC 5 bondwire definition.
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.wirebond_def.ApdBondwireDef`
+            - Class representing an Apd bondwire definition.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> BondwireDef</autoapi/pyedb/grpc/database/definition/wirebond_def/BondwireDef>
+    <span class="nf nf-cod-symbol_class"></span> Jedec4BondwireDef</autoapi/pyedb/grpc/database/definition/wirebond_def/Jedec4BondwireDef>
+    <span class="nf nf-cod-symbol_class"></span> Jedec5BondwireDef</autoapi/pyedb/grpc/database/definition/wirebond_def/Jedec5BondwireDef>
+    <span class="nf nf-cod-symbol_class"></span> ApdBondwireDef</autoapi/pyedb/grpc/database/definition/wirebond_def/ApdBondwireDef>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

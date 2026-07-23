@@ -1,0 +1,268 @@
+
+
+
+
+
+
+:class:`ViaLayer`
+=================
+
+
+.. py:class:: pyedb.grpc.database.layers.via_layer.ViaLayer(pedb, core=None)
+
+   Bases: :py:obj:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+
+
+   
+   Represents a via layer in an overlapping stackup.
+
+   A via layer defines the vertical extent of a via between two signal (reference)
+   layers in an overlapping stackup. It is identified by its name, the lower and
+   upper reference layer names, and the conductor material.
+
+   :Parameters:
+
+       **pedb** : :class:`pyedb.Edb`
+           EDB object.
+
+       **core** : :class:`ansys.edb.core.layer.via_layer.ViaLayer`
+           Core via layer object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: ViaLayer
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a via layer.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~lower_ref_layer_name`
+            - Name of the lower reference layer.
+          * - :py:attr:`~upper_ref_layer_name`
+            - Name of the upper reference layer.
+          * - :py:attr:`~is_tsv`
+            - Flag indicating whether the via layer is a through-silicon via (TSV).
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__repr__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.layers.via_layer import ViaLayer
+
+Property detail
+---------------
+
+.. py:property:: lower_ref_layer_name
+   :type: str
+
+
+   
+   Name of the lower reference layer.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the lower reference stackup layer.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> via = edb.stackup.via_layers["Via1_2"]
+   >>> via.lower_ref_layer_name
+   'Layer1'
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: upper_ref_layer_name
+   :type: str
+
+
+   
+   Name of the upper reference layer.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the upper reference stackup layer.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> via = edb.stackup.via_layers["Via1_2"]
+   >>> via.upper_ref_layer_name
+   'Layer2'
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_tsv
+   :type: bool
+
+
+   
+   Flag indicating whether the via layer is a through-silicon via (TSV).
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the layer is a TSV layer.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> via = edb.stackup.via_layers["Via1_2"]
+   >>> via.is_tsv
+   False
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(pedb, name: str, lower_layer: str, upper_layer: str, material: str = 'copper') -> ViaLayer
+   :classmethod:
+
+
+   
+   Create a via layer.
+
+
+   :Parameters:
+
+       **pedb** : :class:`pyedb.Edb`
+           EDB object.
+
+       **name** : :class:`python:str`
+           Name of the via layer.
+
+       **lower_layer** : :class:`python:str`
+           Name of the lower reference stackup layer.
+
+       **upper_layer** : :class:`python:str`
+           Name of the upper reference stackup layer.
+
+       **material** : :class:`python:str`, :obj:`optional`
+           Conductor material of the via layer. The default is ``"copper"``.
+
+
+
+   :Returns:
+
+       :class:`ViaLayer`
+           Via layer object created.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.grpc.database.layers.via_layer import ViaLayer
+   >>> via = ViaLayer.create(pedb, "Via1_2", "Layer1", "Layer2", material="copper")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __repr__() -> str
+
+
+
+

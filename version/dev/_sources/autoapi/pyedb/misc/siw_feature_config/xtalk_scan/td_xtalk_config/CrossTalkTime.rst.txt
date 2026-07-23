@@ -1,0 +1,279 @@
+
+
+
+
+
+
+:class:`CrossTalkTime`
+======================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.xtalk_scan.td_xtalk_config.CrossTalkTime(pedb)
+
+   
+   Time domain crosstalk configuration class handler.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`object`
+           PyEDB instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("path/to/aedb")
+   >>> xtalk = CrossTalkTime(edb)
+   >>> xtalk.add_single_ended_net("CLK", driver_rise_time=5.0, voltage=1.8)
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CrossTalkTime
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_single_ended_net`
+            - Add single ended net.
+          * - :py:attr:`~add_driver_pins`
+            - Add driver pins.
+          * - :py:attr:`~add_receiver_pin`
+            - Add receiver pin.
+          * - :py:attr:`~extend_xml`
+            - Extend XML tree with crosstalk configuration.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~nets`
+            - 
+          * - :py:attr:`~driver_pins`
+            - 
+          * - :py:attr:`~receiver_pins`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.xtalk_scan.td_xtalk_config import CrossTalkTime
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: nets
+
+.. py:attribute:: driver_pins
+   :value: []
+
+
+.. py:attribute:: receiver_pins
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_single_ended_net(name: str, driver_rise_time: float | str = 5.0, voltage: float | str = 10, driver_impedance: float | str = 5.0, termination_impedance: float | str = 5.0) -> bool
+
+   
+   Add single ended net.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Net name.
+
+       **driver_rise_time** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Driver rise time value.
+           The default is ``5.0``.
+
+       **voltage** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Voltage value.
+           The default is ``10``.
+
+       **driver_impedance** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Driver impedance value.
+           The default is ``5.0``.
+
+       **termination_impedance** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Termination impedance value.
+           The default is ``5.0``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the net was added successfully, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> xtalk = CrossTalkTime(pedb)
+   >>> xtalk.add_single_ended_net("DDR_DQ0", driver_rise_time=2.0, voltage=1.2)
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_driver_pins(name: str, ref_des: str, rise_time: str = '100ps', voltage: float = 1.0, impedance: float = 50.0) -> None
+
+   
+   Add driver pins.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Pin name.
+
+       **ref_des** : :class:`python:str`
+           Reference designator of the component.
+
+       **rise_time** : :class:`python:str`, :obj:`optional`
+           Driver rise time.
+           The default is ``"100ps"``.
+
+       **voltage** : :class:`python:float`, :obj:`optional`
+           Voltage value.
+           The default is ``1.0``.
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Driver impedance value.
+           The default is ``50.0``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> xtalk = CrossTalkTime(pedb)
+   >>> xtalk.add_driver_pins("A1", "U1", rise_time="50ps", voltage=1.8, impedance=40.0)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_receiver_pin(name: str, ref_des: str, impedance: float) -> None
+
+   
+   Add receiver pin.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Pin name.
+
+       **ref_des** : :class:`python:str`
+           Reference designator of the component.
+
+       **impedance** : :class:`python:float`
+           Receiver impedance value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> xtalk = CrossTalkTime(pedb)
+   >>> xtalk.add_receiver_pin("B1", "U2", impedance=75.0)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: extend_xml(parent) -> None
+
+   
+   Extend XML tree with crosstalk configuration.
+
+
+   :Parameters:
+
+       **parent** : :obj:`xml.etree.ElementTree.Element`
+           Parent XML element to extend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
