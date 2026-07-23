@@ -113,6 +113,7 @@ class TestClass(BaseTestClass):
         assert poly.scale(factor=2)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.grpc
     def test_modeler_polygon_operations_ic_mode(self):
         """Create primitives, switch to IC mode and apply polygon operations."""
         edbapp = self.edb_examples.create_empty_edb()
