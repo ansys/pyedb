@@ -768,8 +768,12 @@ class SourceExcitation(SourceExcitationInternal):
         do_pingroup : bool
             True activate pingroup during port creation (only used with combination of CircPort),
             False will take the closest reference pin and generate one port per signal pin.
-        reference_net : string or list of string.
-            list of the reference net.
+        reference_net : string or list of string, optional
+            List of reference nets. For ``coax_port`` this argument is not used to build the port
+            (coax ports are self-contained solder-ball ports) so it can be ``None`` or empty.
+            If supplied, any net that appears in both ``net_list`` and ``reference_net`` is removed
+            from ``net_list`` before port creation. For ``circuit_port`` a reference net is required
+            to pair each signal terminal with a reference terminal.
         port_name : str
             Port name for overwriting the default port-naming convention,
             which is ``[component][net][pin]``. The port name must be unique.
@@ -814,6 +818,8 @@ class SourceExcitation(SourceExcitationInternal):
             component = self._pedb.components.instances[component]
         if not isinstance(net_list, list):
             net_list = [net_list]
+        # Defensive copy so the caller's list is never mutated.
+        net_list = list(net_list)
         for net in net_list:
             if not isinstance(net, str):
                 try:
@@ -825,6 +831,8 @@ class SourceExcitation(SourceExcitationInternal):
                         f"A(n) {type(e).__name__} error occurred while attempting to append 'name' "
                         f"of net {net} to list of nets {net_list}: {str(e)}"
                     )
+        if reference_net is None:
+            reference_net = []
         if isinstance(reference_net, str) or isinstance(reference_net, Net):
             reference_net = [reference_net]
         _reference_net = [ref.name if isinstance(ref, Net) else ref for ref in reference_net]
@@ -848,13 +856,14 @@ class SourceExcitation(SourceExcitationInternal):
             if not solder_balls_mid_size:
                 solder_balls_mid_size = self._pedb.components.instances[component.name].solder_ball_diameter[1]
             ref_pins = [p for p in list(component.pins.values()) if p.net_name in reference_net]
-            if not ref_pins:
-                self._logger.error(
-                    "No reference pins found on component. You might consider"
-                    "using Circuit port instead since reference pins can be extended"
-                    "outside the component when not found if argument extend_reference_pins_outside_component is True."
+            if not ref_pins and reference_net:
+                self._logger.warning(
+                    "No reference pins found on component for coax port. "
+                    "Coax ports do not require a reference net — proceeding without reference pins. "
+                    "If a circuit port with a reference terminal is needed, use port_type='circuit_port'. "
+                    "Reference pins can also be extended outside the component by setting "
+                    "extend_reference_pins_outside_component=True."
                 )
-                return False
             pad_params = self._pedb.padstacks.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
             if not pad_params[0] == 7:
                 if not solder_balls_size:  # pragma no cover
