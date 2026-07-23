@@ -272,6 +272,305 @@ class GrpcCutout:
         )[0]
         return extent
 
+    def _extract_pad_polygon(self, pad, padstack_instance):
+        """Extract PolygonData from a Pad object for padstack extent implementation.
+
+        Converts a pad geometry (circle, rectangle, polygon, etc.) into
+        CorePolygonData for use in conformal extent calculation.
+
+        Parameters
+        ----------
+        pad : PadProperties
+            Pad object from padstack_def.pad_by_layer
+        padstack_instance : PadstackInstance
+            Via instance containing position and rotation information
+
+        Returns
+        -------
+        CorePolygonData or None
+            Converted polygon data, or None if shape is unsupported/empty
+        """
+        try:
+            shape = pad.shape
+            if shape == "no_shape":
+                return None
+
+            pv = pad.parameters_values
+            pos = padstack_instance.position
+            x = float(pos[0]) + float(pad.offset_x)
+            y = float(pos[1]) + float(pad.offset_y)
+            via_rot = float(padstack_instance.rotation)
+            pad_rot = float(pad.rotation)
+
+            # Circle: parameters_values[0] = diameter (not radius)
+            if shape == "circle":
+                diameter = float(pv[0]) if pv else 0
+                if diameter <= 0:
+                    return None
+                points = self._circle_to_polygon([x, y], diameter / 2, segments=16)
+                if points:
+                    return CorePolygonData(points=points)
+
+            # Square: parameters_values[0] = side length
+            elif shape == "square":
+                size = float(pv[0]) if pv else 0
+                if size <= 0:
+                    return None
+                rotation = via_rot + pad_rot
+                points = self._rectangle_to_polygon(x, y, size, size, rotation)
+                if points:
+                    return CorePolygonData(points=points)
+
+            # Rectangle: parameters_values[0] = X size, [1] = Y size
+            elif shape == "rectangle":
+                w = float(pv[0]) if pv and len(pv) > 0 else 0
+                h = float(pv[1]) if pv and len(pv) > 1 else w
+                if w <= 0 or h <= 0:
+                    return None
+                rotation = via_rot + pad_rot
+                points = self._rectangle_to_polygon(x, y, w, h, rotation)
+                if points:
+                    return CorePolygonData(points=points)
+
+            # Oval: parameters_values[0] = X size, [1] = Y size
+            elif shape == "oval":
+                w = float(pv[0]) if pv and len(pv) > 0 else 0
+                h = float(pv[1]) if pv and len(pv) > 1 else w
+                if w <= 0 or h <= 0:
+                    return None
+                rotation = via_rot + pad_rot
+                points = self._oval_to_polygon(x, y, w, h, rotation, segments=24)
+                if points:
+                    return CorePolygonData(points=points)
+
+            # Bullet: parameters_values[0] = X size, [1] = Y size
+            elif shape == "bullet":
+                w = float(pv[0]) if pv and len(pv) > 0 else 0
+                h = float(pv[1]) if pv and len(pv) > 1 else w
+                if w <= 0 or h <= 0:
+                    return None
+                rotation = via_rot + pad_rot
+                points = self._bullet_to_polygon(x, y, w, h, rotation, segments=24)
+                if points:
+                    return CorePolygonData(points=points)
+
+            # Polygon: use polygon_data directly
+            elif shape == "polygon":
+                if hasattr(pad, "polygon_data") and pad.polygon_data:
+                    return pad.polygon_data
+
+            # Unhandled shapes (square45, square90, round45, round90, nsmd, etc.)
+            else:
+                self.logger.debug(f"[padstack_extent] Unhandled pad shape '{shape}' - skipping")
+                return None
+
+        except Exception as e:
+            self.logger.warning(f"Failed to extract pad polygon for shape '{pad.shape}': {str(e)}")
+            return None
+        return None
+
+    def _circle_to_polygon(self, center, radius, segments=16):
+        """Approximate a circle as a polygon.
+
+        Parameters
+        ----------
+        center : list[float]
+            [x, y] coordinates of circle center
+        radius : float
+            Circle radius
+        segments : int
+            Number of segments for polygon approximation
+
+        Returns
+        -------
+        list[list[float]]
+            Polygon points [[x0, y0], [x1, y1], ...]
+        """
+        import math
+
+        points = []
+        for i in range(segments):
+            angle = 2 * math.pi * i / segments
+            x = center[0] + radius * math.cos(angle)
+            y = center[1] + radius * math.sin(angle)
+            points.append([x, y])
+        return points
+
+    def _rectangle_to_polygon(self, center_x, center_y, width, height, rotation=0):
+        """Convert a rectangle to polygon points.
+
+        Parameters
+        ----------
+        center_x, center_y : float
+            Rectangle center coordinates
+        width, height : float
+            Rectangle dimensions
+        rotation : float
+            Rotation angle in radians
+
+        Returns
+        -------
+        list[list[float]]
+            Polygon points [[x0, y0], [x1, y1], ...]
+        """
+        import math
+
+        # Rectangle corners relative to center
+        half_w = width / 2
+        half_h = height / 2
+        corners = [
+            [-half_w, -half_h],
+            [half_w, -half_h],
+            [half_w, half_h],
+            [-half_w, half_h],
+        ]
+
+        # Apply rotation
+        cos_r = math.cos(rotation)
+        sin_r = math.sin(rotation)
+        rotated = []
+        for cx, cy in corners:
+            rx = cx * cos_r - cy * sin_r
+            ry = cx * sin_r + cy * cos_r
+            rotated.append([center_x + rx, center_y + ry])
+
+        return rotated
+
+    def _oval_to_polygon(self, center_x, center_y, width, height, rotation=0, segments=24):
+        """Approximate an oval (ellipse) as a polygon.
+
+        Parameters
+        ----------
+        center_x, center_y : float
+            Oval center coordinates
+        width, height : float
+            Oval dimensions
+        rotation : float
+            Rotation angle in radians
+        segments : int
+            Number of segments for polygon approximation
+
+        Returns
+        -------
+        list[list[float]]
+            Polygon points
+        """
+        import math
+
+        points = []
+        half_w = width / 2
+        half_h = height / 2
+
+        for i in range(segments):
+            angle = 2 * math.pi * i / segments
+            # Ellipse parametric equations
+            x = half_w * math.cos(angle)
+            y = half_h * math.sin(angle)
+
+            # Apply rotation
+            cos_r = math.cos(rotation)
+            sin_r = math.sin(rotation)
+            rx = x * cos_r - y * sin_r + center_x
+            ry = x * sin_r + y * cos_r + center_y
+            points.append([rx, ry])
+
+        return points
+
+    def _bullet_to_polygon(self, center_x, center_y, width, height, rotation=0, segments=24):
+        """Approximate a bullet shape as a polygon.
+
+        A bullet is a rectangle with semicircular caps on two ends.
+
+        Parameters
+        ----------
+        center_x, center_y : float
+            Bullet center coordinates
+        width, height : float
+            Bullet dimensions
+        rotation : float
+            Rotation angle in radians
+        segments : int
+            Number of segments for polygon approximation
+
+        Returns
+        -------
+        list[list[float]]
+            Polygon points
+        """
+        import math
+
+        points = []
+        half_w = width / 2
+        half_h = height / 2
+
+        # Determine which end has the cap (typically the longer dimension)
+        if width > height:
+            # Caps on left and right
+            cap_radius = half_h
+            rect_half_len = half_w - cap_radius
+
+            # Right cap (semicircle)
+            for i in range(segments // 2):
+                angle = math.pi * i / (segments // 2)
+                x = rect_half_len + cap_radius * math.cos(angle)
+                y = cap_radius * math.sin(angle)
+                cos_r, sin_r = math.cos(rotation), math.sin(rotation)
+                points.append([center_x + x * cos_r - y * sin_r, center_y + x * sin_r + y * cos_r])
+
+            # Bottom straight edge
+            for i in range(segments // 4):
+                x = rect_half_len - 2 * rect_half_len * i / (segments // 4)
+                y = cap_radius
+                cos_r, sin_r = math.cos(rotation), math.sin(rotation)
+                points.append([center_x + x * cos_r - y * sin_r, center_y + x * sin_r + y * cos_r])
+
+            # Left cap (semicircle)
+            for i in range(segments // 2):
+                angle = math.pi + math.pi * i / (segments // 2)
+                x = -rect_half_len + cap_radius * math.cos(angle)
+                y = cap_radius * math.sin(angle)
+                cos_r, sin_r = math.cos(rotation), math.sin(rotation)
+                points.append([center_x + x * cos_r - y * sin_r, center_y + x * sin_r + y * cos_r])
+
+            # Top straight edge
+            for i in range(segments // 4):
+                x = -rect_half_len + 2 * rect_half_len * i / (segments // 4)
+                y = -cap_radius
+                cos_r, sin_r = math.cos(rotation), math.sin(rotation)
+                points.append([center_x + x * cos_r - y * sin_r, center_y + x * sin_r + y * cos_r])
+        else:
+            # Caps on top and bottom
+            cap_radius = half_w
+            rect_half_len = half_h - cap_radius
+
+            for i in range(segments // 2):
+                angle = math.pi / 2 + math.pi * i / (segments // 2)
+                x = cap_radius * math.cos(angle)
+                y = rect_half_len + cap_radius * math.sin(angle)
+                cos_r, sin_r = math.cos(rotation), math.sin(rotation)
+                points.append([center_x + x * cos_r - y * sin_r, center_y + x * sin_r + y * cos_r])
+
+            for i in range(segments // 4):
+                y = rect_half_len - 2 * rect_half_len * i / (segments // 4)
+                x = cap_radius
+                cos_r, sin_r = math.cos(rotation), math.sin(rotation)
+                points.append([center_x + x * cos_r - y * sin_r, center_y + x * sin_r + y * cos_r])
+
+            for i in range(segments // 2):
+                angle = -math.pi / 2 + math.pi * i / (segments // 2)
+                x = cap_radius * math.cos(angle)
+                y = -rect_half_len + cap_radius * math.sin(angle)
+                cos_r, sin_r = math.cos(rotation), math.sin(rotation)
+                points.append([center_x + x * cos_r - y * sin_r, center_y + x * sin_r + y * cos_r])
+
+            for i in range(segments // 4):
+                y = -rect_half_len + 2 * rect_half_len * i / (segments // 4)
+                x = -cap_radius
+                cos_r, sin_r = math.cos(rotation), math.sin(rotation)
+                points.append([center_x + x * cos_r - y * sin_r, center_y + x * sin_r + y * cos_r])
+
+        return points
+
     def _create_conformal(
         self,
         tolerance: float = 1e-12,
@@ -292,22 +591,93 @@ class GrpcCutout:
         _pins_to_preserve, _ = self.pins_to_preserve()
         if _pins_to_preserve:
             for padstack_instance in _pins_to_preserve:
-                p = padstack_instance.position
-                layer = padstack_instance.start_layer
-                pos_1 = [i - 75e-6 for i in p]
-                pos_2 = [i + 75e-6 for i in p]
-                plane = self._edb.modeler.create_rectangle(
-                    layer_name=layer, lower_left_point=pos_1, upper_right_point=pos_2
-                )
-                rectangle_data = plane.polygon_data
-                _polys.append(rectangle_data)
+                # padstack_extent: Extract actual Via pad polygons instead of ±75μm rectangles
+                # Note: padstack_instance.padstack_definition returns a string (Padstack ID)
+                padstack_def_id = padstack_instance.padstack_definition
+                if padstack_def_id and padstack_def_id in self._edb.padstacks.definitions:
+                    padstack_def = self._edb.padstacks.definitions[padstack_def_id]
+                    # Only use pad_by_layer (actual copper pads), NOT antipad/thermal
+                    # antipad_by_layer = clearance voids (too large for conformal extent)
+                    for layer_name, pad in padstack_def.pad_by_layer.items():
+                        pad_poly = self._extract_pad_polygon(pad, padstack_instance)
+                        if pad_poly:
+                            _polys.append(pad_poly)
+                else:
+                    # Fallback: create ±75μm rectangle if padstack definition not found
+                    p = padstack_instance.position
+                    layer = padstack_instance.start_layer
+                    pos_1 = [i - 75e-6 for i in p]
+                    pos_2 = [i + 75e-6 for i in p]
+                    plane = self._edb.modeler.create_rectangle(
+                        layer_name=layer, lower_left_point=pos_1, upper_right_point=pos_2
+                    )
+                    rectangle_data = plane.polygon_data
+                    _polys.append(rectangle_data)
 
         for prim in self._edb.layout.primitives:
             if prim is not None and prim.net_name in self.signals:
                 _polys.append(prim)
+        
+        # padstack_extent: Add signal net vias/pins to conformal extent
+        # Via and Pin are both PadstackInstance - distinguished by via.component (None = standalone)
+        # _pins_to_preserve uses object identity which breaks across calls (new wrappers each time)
+        # => Process ALL signal net padstack instances here; padstack_extent handles _pins_to_preserve separately
+        _pins_to_preserve_names = {p.name for p in _pins_to_preserve}
+        for signal_net_name in self.signals:
+            net = self._edb.nets[signal_net_name] if signal_net_name in self._edb.nets else None
+            if not net or not hasattr(net, "padstack_instances"):
+                continue
+            vias = net.padstack_instances
+            if not vias:
+                continue
+            standalone = [v for v in vias if not v.component]
+            self.logger.info(
+                f"[padstack_extent] Net '{signal_net_name}': {len(vias)} total, {len(standalone)} standalone via(s)"
+            )
+            for via in vias:
+                # Skip component pins already processed by padstack_extent (_pins_to_preserve)
+                if via.name in _pins_to_preserve_names:
+                    continue
+                try:
+                    padstack_def_id = via.padstack_definition
+                    if not padstack_def_id or padstack_def_id not in self._edb.padstacks.definitions:
+                        self.logger.debug(
+                            f"[padstack_extent] Via '{via.name}': padstack '{padstack_def_id}' not found - skip"
+                        )
+                        continue
+                    padstack_def = self._edb.padstacks.definitions[padstack_def_id]
+                    pad_count = 0
+                    for layer_name, pad in padstack_def.pad_by_layer.items():
+                        pad_poly = self._extract_pad_polygon(pad, via)
+                        if pad_poly:
+                            _polys.append(pad_poly)
+                            pad_count += 1
+                    # Fallback: no pads found → use hole diameter as circle
+                    if pad_count == 0:
+                        hole_diameter = float(getattr(padstack_def, "hole_diameter", 0) or 0)
+                        if hole_diameter > 0:
+                            pos = via.position
+                            x = float(pos[0]) + float(getattr(padstack_def, "hole_offset_x", 0) or 0)
+                            y = float(pos[1]) + float(getattr(padstack_def, "hole_offset_y", 0) or 0)
+                            points = self._circle_to_polygon([x, y], hole_diameter / 2, segments=16)
+                            if points:
+                                _polys.append(CorePolygonData(points=points))
+                                pad_count = 1
+                                self.logger.debug(f"[padstack_extent] Via '{via.name}': no pads, using hole_diameter={hole_diameter:.4f}m")
+                    comp_name = getattr(getattr(via, "component", None), "name", None)
+                    self.logger.info(
+                        f"[padstack_extent] Via '{via.name}' (padstack='{padstack_def_id}', "
+                        f"component={comp_name}): {pad_count} polygon(s) added"
+                    )
+                except Exception as e:
+                    self.logger.warning(
+                        f"[padstack_extent] Failed to process via '{via.name}' in net '{signal_net_name}': {str(e)}"
+                    )
+        
         if self.smart_cutout:
             objs_data = self._smart_cut()
             _polys.extend(objs_data)
+        
         k = 0
         expansion_size = self.expansion_size
         delta = self.expansion_size / 5
@@ -317,6 +687,14 @@ class GrpcCutout:
             for i in _polys:
                 if hasattr(i, "polygon_data"):
                     obj_data = i.polygon_data.core.expand(
+                        offset=expansion_size,
+                        round_corner=self.use_round_corner,
+                        max_corner_ext=expansion_size,
+                        tol=tolerance,
+                    )
+                elif hasattr(i, "expand"):
+                    # padstack_extent: Direct CorePolygonData from extracted Via pads
+                    obj_data = i.expand(
                         offset=expansion_size,
                         round_corner=self.use_round_corner,
                         max_corner_ext=expansion_size,
@@ -372,6 +750,13 @@ class GrpcCutout:
             return _poly_unite[0]
         else:
             self.logger.info("Failed to Correctly computed Extension.")
+            # Use convex hull to create a single polygon that covers ALL disconnected regions.
+            # This ensures isolated vias (e.g., PlanarEMVia with small hole, no nearby traces)
+            # are included in the cutout extent, rather than being dropped by the "largest only" policy.
+            hull = CorePolygonData.convex_hull(_poly_unite)
+            if hull is not None:
+                return hull
+            # Final fallback: return largest polygon if convex hull fails
             areas = [i.area() for i in _poly_unite]
             return _poly_unite[areas.index(max(areas))]
 
