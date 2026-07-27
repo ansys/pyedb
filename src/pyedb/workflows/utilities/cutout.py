@@ -664,7 +664,8 @@ class GrpcCutout:
                                 _polys.append(CorePolygonData(points=points))
                                 pad_count = 1
                                 self.logger.debug(
-                                    f"[padstack_extent] Via '{via.name}': no pads, using hole_diameter={hole_diameter:.4f}m"
+                                    f"[padstack_extent] Via '{via.name}': no pads, "
+                                    f"using hole_diameter={hole_diameter:.4f}m"
                                 )
                     comp_name = getattr(getattr(via, "component", None), "name", None)
                     self.logger.info(
