@@ -617,7 +617,7 @@ class GrpcCutout:
         for prim in self._edb.layout.primitives:
             if prim is not None and prim.net_name in self.signals:
                 _polys.append(prim)
-        
+
         # padstack_extent: Add signal net vias/pins to conformal extent
         # Via and Pin are both PadstackInstance - distinguished by via.component (None = standalone)
         # _pins_to_preserve uses object identity which breaks across calls (new wrappers each time)
@@ -663,7 +663,9 @@ class GrpcCutout:
                             if points:
                                 _polys.append(CorePolygonData(points=points))
                                 pad_count = 1
-                                self.logger.debug(f"[padstack_extent] Via '{via.name}': no pads, using hole_diameter={hole_diameter:.4f}m")
+                                self.logger.debug(
+                                    f"[padstack_extent] Via '{via.name}': no pads, using hole_diameter={hole_diameter:.4f}m"
+                                )
                     comp_name = getattr(getattr(via, "component", None), "name", None)
                     self.logger.info(
                         f"[padstack_extent] Via '{via.name}' (padstack='{padstack_def_id}', "
@@ -673,11 +675,11 @@ class GrpcCutout:
                     self.logger.warning(
                         f"[padstack_extent] Failed to process via '{via.name}' in net '{signal_net_name}': {str(e)}"
                     )
-        
+
         if self.smart_cutout:
             objs_data = self._smart_cut()
             _polys.extend(objs_data)
-        
+
         k = 0
         expansion_size = self.expansion_size
         delta = self.expansion_size / 5
