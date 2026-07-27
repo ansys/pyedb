@@ -673,10 +673,10 @@ class GrpcCutout:
                         f"[padstack_extent] Via '{via.name}' (padstack='{padstack_def_id}', "
                         f"component={comp_name}): {pad_count} polygon(s) added"
                     )
-                except Exception as e:
-                    self.logger.warning(
-                        f"[padstack_extent] Failed to process via '{via.name}' in net '{signal_net_name}': {str(e)}"
-                    )
+                except (AttributeError, KeyError, ValueError, TypeError, ArithmeticError) as e:
+                     self.logger.warning(
+                         f"[padstack_extent] Failed to process via '{via.name}' in net '{signal_net_name}': {str(e)}"
+                     )
 
         if self.smart_cutout:
             objs_data = self._smart_cut()
