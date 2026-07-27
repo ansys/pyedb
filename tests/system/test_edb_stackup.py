@@ -1598,3 +1598,177 @@ class TestClass(BaseTestClass):
             assert last_result is False
         finally:
             edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    def test_stackup_overlapping_add_via_layer(self):
+        """Add a via layer between two signal layers in an overlapping stackup."""
+        edbapp = self.edb_examples.create_empty_edb()
+        try:
+            # Switch to overlapping mode
+            edbapp.stackup.mode = "overlapping"
+            assert edbapp.stackup.mode == "overlapping"
+
+            # Add two signal layers at known elevations
+            assert edbapp.stackup.add_layer(
+                "Layer1",
+                layer_type="signal",
+                material="copper",
+                thickness="35um",
+                elevation=0.0,
+                method="add_at_elevation",
+            )
+            assert edbapp.stackup.add_layer(
+                "Layer2",
+                layer_type="signal",
+                material="copper",
+                thickness="35um",
+                elevation="100um",
+                method="add_at_elevation",
+            )
+            assert "Layer1" in edbapp.stackup.layers
+            assert "Layer2" in edbapp.stackup.layers
+
+            # Add a via layer between the two signal layers
+            via = edbapp.stackup.add_via_layer("Via1_2", "Layer1", "Layer2", material="copper")
+            assert via is not None
+
+            # Verify it appears in via_layers
+            assert "Via1_2" in edbapp.stackup.via_layers
+
+            # Verify reference layer names
+            retrieved = edbapp.stackup.via_layers["Via1_2"]
+            assert retrieved.lower_ref_layer_name == "Layer1"
+            assert retrieved.upper_ref_layer_name == "Layer2"
+            assert retrieved.material == "copper"
+        finally:
+            edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    def test_stackup_overlapping_add_via_layer_via_add_layer(self):
+        """Add a via layer using the generic add_layer() method with layer_type='via'."""
+        edbapp = self.edb_examples.create_empty_edb()
+        try:
+            edbapp.stackup.mode = "overlapping"
+
+            edbapp.stackup.add_layer(
+                "L1",
+                layer_type="signal",
+                thickness="35um",
+                elevation=0.0,
+                method="add_at_elevation",
+            )
+            edbapp.stackup.add_layer(
+                "L2",
+                layer_type="signal",
+                thickness="35um",
+                elevation="100um",
+                method="add_at_elevation",
+            )
+
+            # Use add_layer with layer_type="via"
+            result = edbapp.stackup.add_layer(
+                "ViaL1_L2",
+                layer_type="via",
+                lower_layer="L1",
+                upper_layer="L2",
+                material="copper",
+            )
+            assert result is True
+            assert "ViaL1_L2" in edbapp.stackup.via_layers
+        finally:
+            edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    def test_stackup_overlapping_via_layer_errors(self):
+        """Validate error handling for via layer operations."""
+        edbapp = self.edb_examples.create_empty_edb()
+        try:
+            # add_via_layer on non-overlapping stackup must raise
+            assert edbapp.stackup.mode == "laminate"
+            import pytest as _pytest
+
+            with _pytest.raises(ValueError, match="overlapping"):
+                edbapp.stackup.add_via_layer("BadVia", "L1", "L2")
+
+            # Switch to overlapping and test missing reference layer
+            edbapp.stackup.mode = "overlapping"
+            edbapp.stackup.add_layer(
+                "L1",
+                layer_type="signal",
+                thickness="35um",
+                elevation=0.0,
+                method="add_at_elevation",
+            )
+            with _pytest.raises(ValueError, match="not found"):
+                edbapp.stackup.add_via_layer("BadVia", "L1", "NonExistent")
+
+            # add_layer with layer_type="via" but missing lower_layer/upper_layer
+            result = edbapp.stackup.add_layer("BadVia2", layer_type="via")
+            assert result is False
+        finally:
+            edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    def test_stackup_overlapping_via_layer_is_via_layer_flag(self):
+        """Verify is_via_layer property and referencing_via_layer_ids on signal layers."""
+        edbapp = self.edb_examples.create_empty_edb()
+        try:
+            edbapp.stackup.mode = "overlapping"
+            edbapp.stackup.add_layer(
+                "SigA",
+                layer_type="signal",
+                thickness="35um",
+                elevation=0.0,
+                method="add_at_elevation",
+            )
+            edbapp.stackup.add_layer(
+                "SigB",
+                layer_type="signal",
+                thickness="35um",
+                elevation="100um",
+                method="add_at_elevation",
+            )
+
+            # Before adding via layer, signal layers should not be via layers
+            assert not edbapp.stackup.layers["SigA"].is_via_layer
+            assert not edbapp.stackup.layers["SigB"].is_via_layer
+
+            edbapp.stackup.add_via_layer("ViaAB", "SigA", "SigB")
+
+            # Signal layers should still not be via layers
+            assert not edbapp.stackup.layers["SigA"].is_via_layer
+            assert not edbapp.stackup.layers["SigB"].is_via_layer
+
+            # referencing_via_layer_ids should now include the new via layer's ID
+            sig_a_refs = edbapp.stackup.layers["SigA"].referencing_via_layer_ids
+            sig_b_refs = edbapp.stackup.layers["SigB"].referencing_via_layer_ids
+            assert isinstance(sig_a_refs, list)
+            assert isinstance(sig_b_refs, list)
+        finally:
+            edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    def test_stackup_overlapping_via_layer_ref_rename(self):
+        """Verify that via layer reference layers can be updated after creation."""
+        edbapp = self.edb_examples.create_empty_edb()
+        try:
+            edbapp.stackup.mode = "overlapping"
+            for name, elev in [("L1", 0.0), ("L2", "100um"), ("L3", "200um")]:
+                edbapp.stackup.add_layer(
+                    name,
+                    layer_type="signal",
+                    thickness="35um",
+                    elevation=elev,
+                    method="add_at_elevation",
+                )
+
+            edbapp.stackup.add_via_layer("Via12", "L1", "L2")
+            via = edbapp.stackup.via_layers["Via12"]
+
+            # Change upper reference to L3
+            via.upper_ref_layer_name = "L3"
+            # Re-fetch to confirm persistence
+            updated = edbapp.stackup.via_layers["Via12"]
+            assert updated.upper_ref_layer_name == "L3"
+        finally:
+            edbapp.close(terminate_rpc_session=False)

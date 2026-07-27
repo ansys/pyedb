@@ -861,7 +861,7 @@ class TestClass(BaseTestClass):
     def test_19_variables(self):
         data = {
             "variables": [
-                {"name": "var_1", "value": "1mm", "description": "des1"},
+                {"name": "var_1", "value": "$var_2", "description": "des1"},
                 {"name": "$var_2", "value": "1mm", "description": "No description"},
             ]
         }
