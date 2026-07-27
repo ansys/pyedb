@@ -364,9 +364,10 @@ class GrpcCutout:
                 self.logger.debug(f"[padstack_extent] Unhandled pad shape '{shape}' - skipping")
                 return None
 
-        except Exception as e:
-            self.logger.warning(f"Failed to extract pad polygon for shape '{pad.shape}': {str(e)}")
-            return None
+        except (AttributeError, KeyError, ValueError, TypeError, ArithmeticError) as e:
+                     self.logger.warning(
+                         f"[padstack_extent] Failed to process via '{via.name}' in net '{signal_net_name}': {str(e)}"
+                     )
         return None
 
     def _circle_to_polygon(self, center, radius, segments=16):
