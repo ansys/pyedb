@@ -561,6 +561,7 @@ class GrpcCutout:
         # validate references in layout
         _netsClip = [net.core for net in self._edb.layout.nets if net.name in self.references]
         included_nets_list = net_signals + ref_nets
+        included_net_names = set(self.signals) | set(self.references)
         # included_nets = [net for net in self._edb.layout.nets if net.name in included_nets_list]
         _cutout = self._edb.active_cell.cutout(included_nets_list, _netsClip, _poly, True)
         # Analysis setups do not come over with the clipped design copy,
@@ -576,7 +577,7 @@ class GrpcCutout:
             db2.copy_cells(_dbCells)  # Copies cutout cell/design to db2 project
             if len(list(db2.top_circuit_cells)) > 0:
                 for net in db2.top_circuit_cells[0].layout.nets:
-                    if not net.name in included_nets_list:
+                    if net.name not in included_net_names:
                         net.delete()
                 _success = db2.save()
             for c in self._edb._db.top_circuit_cells:
@@ -858,7 +859,7 @@ class GrpcCutout:
                     if not self.open_cutout_at_end and self._edb.edbpath != legacy_path:
                         self._edb.close()
                         self._edb.edbpath = legacy_path
-                        self._edb.open_edb()
+                        self._edb.open()
                     break
                 self._edb.close()
                 self._edb.edbpath = legacy_path
@@ -1712,11 +1713,11 @@ class DotNetCutout:
                     if not self.open_cutout_at_end and self._edb.edbpath != legacy_path:
                         self._edb.close()
                         self._edb.edbpath = legacy_path
-                        self._edb.open_edb()
+                        self._edb.open()
                     break
                 self._edb.close()
                 self._edb.edbpath = legacy_path
-                self._edb.open_edb()
+                self._edb.open()
                 i += 1
                 expansion = expansion_size * i
             if working_cutout:
