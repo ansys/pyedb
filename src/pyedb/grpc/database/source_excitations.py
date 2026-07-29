@@ -3498,11 +3498,12 @@ class SourceExcitation(SourceExcitationInternal):
 
     def create_point_terminal(
         self,
-        x,
-        y,
-        layer,
-        net,
+        x: float | int | str,
+        y: float | int | str,
+        layer: str,
+        net: str,
         name="",
+        reference_terminal=None,
         reference_net=None,
         reference_layer=None,
         reference_x=None,
@@ -3522,12 +3523,21 @@ class SourceExcitation(SourceExcitationInternal):
             Net name for the signal (positive) terminal.
         name : str, optional
             Terminal name. If empty, a name is auto-generated from the layer and coordinates.
+        reference_terminal : :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`,\
+ optional
+            An **existing** terminal object to use as the reference (return path). Use this
+            when a shared reference terminal has already been created and you want multiple
+            signal terminals to point to the same reference — for example, one GND terminal
+            shared across all pins of a die component.  When supplied, ``reference_net``,
+            ``reference_layer``, ``reference_x``, and ``reference_y`` are ignored.
+            Assigning a reference terminal turns the signal terminal into a circuit port in
+            AEDT (``boundary_type=PORT``, ``is_circuit_port=True``).
         reference_net : str, optional
-            Net name for the reference (negative/return) terminal. When provided, a reference
-            point terminal is created and linked to the signal terminal. This is required for
-            HFSS 3D Layout to collect the port geometry for meshing — without a proper reference
-            terminal the solver may fail with *"failed to collect the port geometry needed for
-            meshing"*.
+            Net name for the reference (negative/return) terminal. When provided **and**
+            ``reference_terminal`` is ``None``, a new reference point terminal is created
+            and linked to the signal terminal. This is required for HFSS 3D Layout to
+            collect the port geometry for meshing — without a proper reference terminal the
+            solver may fail with *"failed to collect the port geometry needed for meshing"*.
 
             Two geometrically valid configurations are supported:
 
@@ -3554,9 +3564,8 @@ class SourceExcitation(SourceExcitationInternal):
         Returns
         -------
         :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
-            The created signal point terminal. The linked reference terminal (when
-            ``reference_net`` is provided) is accessible via
-            ``terminal.reference_terminal``.
+            The created signal point terminal. The linked reference terminal is accessible
+            via ``terminal.reference_terminal``.
 
         Raises
         ------
@@ -3569,31 +3578,26 @@ class SourceExcitation(SourceExcitationInternal):
         --------
         >>> from pyedb import Edb
         >>> edb = Edb()
-        >>> # Signal terminal only (no port reference)
+        >>> # Signal terminal only — no circuit port (e.g. Q3D conductor)
         >>> term = edb.excitation_manager.create_point_terminal(
         ...     x=0.001, y=0.002, layer="1_Top", net="SIG", name="T_SIG"
         ... )
-        >>> # Vertical port — same x/y, reference on a different (ground) layer
+        >>> # Vertical circuit port — new reference terminal on a different layer
         >>> term = edb.excitation_manager.create_point_terminal(
-        ...     x=0.001,
-        ...     y=0.002,
-        ...     layer="1_Top",
-        ...     net="SIG",
-        ...     name="T_SIG",
-        ...     reference_net="GND",
-        ...     reference_layer="ground_plane",
+        ...     x=0.001, y=0.002, layer="1_Top", net="SIG", name="T_SIG",
+        ...     reference_net="GND", reference_layer="ground_plane",
         ... )
-        >>> # Coplanar port — reference at a different (x, y) on the same layer
-        >>> term = edb.excitation_manager.create_point_terminal(
-        ...     x=0.001,
-        ...     y=0.002,
-        ...     layer="1_Top",
-        ...     net="SIG",
-        ...     name="T_SIG",
-        ...     reference_net="GND",
-        ...     reference_x=0.001,
-        ...     reference_y=0,
+        >>> # Shared reference — one GND terminal reused for every signal pin
+        >>> gnd_ref = edb.excitation_manager.create_point_terminal(
+        ...     x=0.0, y=0.0, layer="ground_plane", net="GND", name="shared_ref"
         ... )
+        >>> for pin in die_component.pinlist:
+        ...     edb.excitation_manager.create_point_terminal(
+        ...         x=pin.position[0], y=pin.position[1],
+        ...         layer=pin.start_layer, net=pin.net_name,
+        ...         name=f"T_{pin.aedt_name}",
+        ...         reference_terminal=gnd_ref,
+        ...     )
         """
         from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 
@@ -3605,7 +3609,10 @@ class SourceExcitation(SourceExcitationInternal):
                 f"Failed to create terminal. Input arguments: x={x}, y={y}, layer={layer}, net={net}, name={name}."
             )
 
-        if reference_net is not None:
+        if reference_terminal is not None:
+            # Use the caller-supplied terminal object directly.
+            ref_terminal = reference_terminal
+        elif reference_net is not None:
             _ref_x = reference_x if reference_x is not None else x
             _ref_y = reference_y if reference_y is not None else y
             _ref_layer = reference_layer if reference_layer is not None else layer
@@ -3627,6 +3634,17 @@ class SourceExcitation(SourceExcitationInternal):
                     f"Failed to create reference terminal. Input arguments: x={_ref_x}, y={_ref_y}, "
                     f"layer={_ref_layer}, net={reference_net}, name={_ref_name}."
                 )
+        else:
+            ref_terminal = None
+
+        if ref_terminal is not None:
+            # Linking the reference terminal turns this pair into a circuit port in AEDT.
+            # Both terminals must carry the PORT boundary type and is_circuit_port=True so
+            # that HFSS 3D Layout recognises and meshes them correctly.
+            terminal.boundary_type = CoreBoundaryType.PORT
+            terminal.is_circuit_port = True
+            ref_terminal.boundary_type = CoreBoundaryType.PORT
+            ref_terminal.is_circuit_port = True
             terminal.core.reference_terminal = ref_terminal.core
 
         return terminal
