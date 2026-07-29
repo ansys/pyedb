@@ -454,8 +454,8 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
-                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.WavePort`,
                    :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
                    :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
                    :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
@@ -469,8 +469,8 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
-                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.WavePort`,
                    :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
                    :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
                    :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
@@ -1405,7 +1405,7 @@ class SourceExcitation(SourceExcitationInternal):
         """
         if not source_name:
             source_name = (
-                f"VSource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
+                f"VSource_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
             )
             if source_name in self._pedb.terminals:
                 source_name = self._get_unique_terminal_name(source_name)
@@ -1456,7 +1456,7 @@ class SourceExcitation(SourceExcitationInternal):
         """
         if not source_name:
             source_name = (
-                f"VSource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
+                f"VSource_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
             )
         return self._create_terminal_on_pins(
             positive_pin=pos_pin,
@@ -3496,7 +3496,18 @@ class SourceExcitation(SourceExcitationInternal):
             )
         return terminal
 
-    def create_point_terminal(self, x, y, layer, net, name="", reference_net=None, reference_layer=None):
+    def create_point_terminal(
+        self,
+        x,
+        y,
+        layer,
+        net,
+        name="",
+        reference_net=None,
+        reference_layer=None,
+        reference_x=None,
+        reference_y=None,
+    ):
         """Create a point terminal.
 
         Parameters
@@ -3513,13 +3524,32 @@ class SourceExcitation(SourceExcitationInternal):
             Terminal name. If empty, a name is auto-generated from the layer and coordinates.
         reference_net : str, optional
             Net name for the reference (negative/return) terminal. When provided, a reference
-            point terminal is created at the same ``(x, y)`` location and linked to the signal
-            terminal. This is required for HFSS 3D Layout to collect the port geometry for
-            meshing — without a proper reference terminal the solver may fail with
-            *"failed to collect the port geometry needed for meshing"*.
+            point terminal is created and linked to the signal terminal. This is required for
+            HFSS 3D Layout to collect the port geometry for meshing — without a proper reference
+            terminal the solver may fail with *"failed to collect the port geometry needed for
+            meshing"*.
+
+            Two geometrically valid configurations are supported:
+
+            * **Vertical port** (most common for die/package pins): same ``(x, y)`` as the
+              signal terminal but a different ``reference_layer`` (e.g. the ground plane
+              directly below the signal pad).  Supply ``reference_layer`` only.
+            * **Coplanar port**: different ``(x, y)`` position on the same or a different
+              layer.  Supply ``reference_x`` and/or ``reference_y``.
+
+            A ``ValueError`` is raised when the resolved reference position (x, y, layer)
+            is identical to the signal position, because such a degenerate port has zero
+            spatial extent and HFSS cannot collect its geometry for meshing.
         reference_layer : str, optional
-            Layer name for the reference terminal. Defaults to the same layer as ``layer``
-            when not specified.
+            Layer name for the reference terminal.  Must differ from ``layer`` when the
+            reference position equals the signal position (i.e. when neither ``reference_x``
+            nor ``reference_y`` is supplied).
+        reference_x : float or str, optional
+            X coordinate of the reference terminal.  Defaults to ``x`` (signal X) when not
+            provided.
+        reference_y : float or str, optional
+            Y coordinate of the reference terminal.  Defaults to ``y`` (signal Y) when not
+            provided.
 
         Returns
         -------
@@ -3528,17 +3558,41 @@ class SourceExcitation(SourceExcitationInternal):
             ``reference_net`` is provided) is accessible via
             ``terminal.reference_terminal``.
 
+        Raises
+        ------
+        ValueError
+            When ``reference_net`` is provided but the resolved reference position
+            ``(reference_x, reference_y, reference_layer)`` is identical to the signal
+            position ``(x, y, layer)``, which would produce a degenerate zero-length port.
+
         Examples
         --------
         >>> from pyedb import Edb
         >>> edb = Edb()
-        >>> # Simple terminal with no reference
+        >>> # Signal terminal only (no port reference)
         >>> term = edb.excitation_manager.create_point_terminal(
         ...     x=0.001, y=0.002, layer="1_Top", net="SIG", name="T_SIG"
         ... )
-        >>> # Terminal + reference terminal (required for HFSS meshing)
+        >>> # Vertical port — same x/y, reference on a different (ground) layer
         >>> term = edb.excitation_manager.create_point_terminal(
-        ...     x=0.001, y=0.002, layer="1_Top", net="SIG", name="T_SIG", reference_net="GND"
+        ...     x=0.001,
+        ...     y=0.002,
+        ...     layer="1_Top",
+        ...     net="SIG",
+        ...     name="T_SIG",
+        ...     reference_net="GND",
+        ...     reference_layer="ground_plane",
+        ... )
+        >>> # Coplanar port — reference at a different (x, y) on the same layer
+        >>> term = edb.excitation_manager.create_point_terminal(
+        ...     x=0.001,
+        ...     y=0.002,
+        ...     layer="1_Top",
+        ...     net="SIG",
+        ...     name="T_SIG",
+        ...     reference_net="GND",
+        ...     reference_x=0.001,
+        ...     reference_y=0,
         ... )
         """
         from pyedb.grpc.database.terminal.point_terminal import PointTerminal
@@ -3552,12 +3606,25 @@ class SourceExcitation(SourceExcitationInternal):
             )
 
         if reference_net is not None:
+            _ref_x = reference_x if reference_x is not None else x
+            _ref_y = reference_y if reference_y is not None else y
             _ref_layer = reference_layer if reference_layer is not None else layer
+
+            # Guard against a degenerate port where signal == reference (zero spatial extent).
+            if _ref_x == x and _ref_y == y and _ref_layer == layer:
+                raise ValueError(
+                    "The reference terminal position (reference_x, reference_y, reference_layer) is identical to "
+                    "the signal terminal position, which produces a degenerate zero-length port that HFSS cannot "
+                    "mesh. Supply a different 'reference_layer' (vertical port) or different 'reference_x'/"
+                    "'reference_y' coordinates (coplanar port)."
+                )
+
             _ref_name = f"{_name}_ref"
-            ref_terminal = PointTerminal.create(self._pedb.layout, reference_net, _ref_layer, _ref_name, location)
+            ref_location = [_ref_x, _ref_y]
+            ref_terminal = PointTerminal.create(self._pedb.layout, reference_net, _ref_layer, _ref_name, ref_location)
             if ref_terminal.is_null:
                 raise RuntimeError(
-                    f"Failed to create reference terminal. Input arguments: x={x}, y={y}, "
+                    f"Failed to create reference terminal. Input arguments: x={_ref_x}, y={_ref_y}, "
                     f"layer={_ref_layer}, net={reference_net}, name={_ref_name}."
                 )
             terminal.core.reference_terminal = ref_terminal.core

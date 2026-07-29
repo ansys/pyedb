@@ -698,17 +698,39 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
     def test_create_point_terminal_with_reference(self):
-        """create_point_terminal with reference_net creates a linked reference terminal."""
+        """create_point_terminal with reference_net + reference_layer creates a linked reference terminal."""
         edbapp = self.edb_examples.get_si_verse()
+        # Vertical port: same x/y, reference on a different layer
         term = edbapp.excitation_manager.create_point_terminal(
-            x="100mm", y="24mm", layer="1_Top", net="1V0", name="pt_term_sig", reference_net="GND"
+            x="100mm",
+            y="24mm",
+            layer="1_Top",
+            net="1V0",
+            name="pt_term_sig",
+            reference_net="GND",
+            reference_layer="16_Bottom",
         )
         assert term
         assert not term.is_null
-        # The signal terminal must have a reference terminal linked
         assert term.core.reference_terminal is not None
         assert not term.core.reference_terminal.is_null
         assert term.core.reference_terminal.net.name == "GND"
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    def test_create_point_terminal_degenerate_reference_raises(self):
+        """create_point_terminal raises ValueError when signal and reference positions are identical."""
+        edbapp = self.edb_examples.get_si_verse()
+        with pytest.raises(ValueError, match="degenerate zero-length port"):
+            edbapp.excitation_manager.create_point_terminal(
+                x="100mm",
+                y="24mm",
+                layer="1_Top",
+                net="1V0",
+                name="pt_term_degen",
+                reference_net="GND",
+                # no reference_layer, no reference_x/y → identical position → ValueError
+            )
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
