@@ -190,7 +190,12 @@ class RpcSession:
         Returns
         -------
         bool
-            ``True`` when the connection was established successfully, ``False`` otherwise.
+            ``True`` when the connection was established successfully.
+
+        Raises
+        ------
+        RuntimeError
+            When the connection to the RPC server fails.
 
         Examples
         --------
@@ -230,9 +235,8 @@ class RpcSession:
             _SESSION_MOD.current_session = session_obj
             session_obj.connect()
         except Exception as exc:
-            settings.logger.error(f"Failed to connect to RPC server at {ip_address}:{port}: {exc}")
             _SESSION_MOD.current_session = None
-            return False
+            raise RuntimeError(f"Failed to connect to RPC server at {ip_address}:{port}: {exc}") from exc
 
         RpcSession.rpc_session = _SESSION_MOD.current_session
         RpcSession.port = port
