@@ -3496,7 +3496,51 @@ class SourceExcitation(SourceExcitationInternal):
             )
         return terminal
 
-    def create_point_terminal(self, x, y, layer, net, name=""):
+    def create_point_terminal(self, x, y, layer, net, name="", reference_net=None, reference_layer=None):
+        """Create a point terminal.
+
+        Parameters
+        ----------
+        x : float or str
+            X coordinate of the terminal location.
+        y : float or str
+            Y coordinate of the terminal location.
+        layer : str
+            Layer name on which the terminal is placed.
+        net : str
+            Net name for the signal (positive) terminal.
+        name : str, optional
+            Terminal name. If empty, a name is auto-generated from the layer and coordinates.
+        reference_net : str, optional
+            Net name for the reference (negative/return) terminal. When provided, a reference
+            point terminal is created at the same ``(x, y)`` location and linked to the signal
+            terminal. This is required for HFSS 3D Layout to collect the port geometry for
+            meshing — without a proper reference terminal the solver may fail with
+            *"failed to collect the port geometry needed for meshing"*.
+        reference_layer : str, optional
+            Layer name for the reference terminal. Defaults to the same layer as ``layer``
+            when not specified.
+
+        Returns
+        -------
+        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+            The created signal point terminal. The linked reference terminal (when
+            ``reference_net`` is provided) is accessible via
+            ``terminal.reference_terminal``.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> # Simple terminal with no reference
+        >>> term = edb.excitation_manager.create_point_terminal(
+        ...     x=0.001, y=0.002, layer="1_Top", net="SIG", name="T_SIG"
+        ... )
+        >>> # Terminal + reference terminal (required for HFSS meshing)
+        >>> term = edb.excitation_manager.create_point_terminal(
+        ...     x=0.001, y=0.002, layer="1_Top", net="SIG", name="T_SIG", reference_net="GND"
+        ... )
+        """
         from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 
         _name = name if name else f"point_{layer}_{x}_{y}"
@@ -3506,6 +3550,18 @@ class SourceExcitation(SourceExcitationInternal):
             raise RuntimeError(
                 f"Failed to create terminal. Input arguments: x={x}, y={y}, layer={layer}, net={net}, name={name}."
             )
+
+        if reference_net is not None:
+            _ref_layer = reference_layer if reference_layer is not None else layer
+            _ref_name = f"{_name}_ref"
+            ref_terminal = PointTerminal.create(self._pedb.layout, reference_net, _ref_layer, _ref_name, location)
+            if ref_terminal.is_null:
+                raise RuntimeError(
+                    f"Failed to create reference terminal. Input arguments: x={x}, y={y}, "
+                    f"layer={_ref_layer}, net={reference_net}, name={_ref_name}."
+                )
+            terminal.core.reference_terminal = ref_terminal.core
+
         return terminal
 
     def create_edge_terminal(self, primitive_name, x, y, name=""):

@@ -697,6 +697,21 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    def test_create_point_terminal_with_reference(self):
+        """create_point_terminal with reference_net creates a linked reference terminal."""
+        edbapp = self.edb_examples.get_si_verse()
+        term = edbapp.excitation_manager.create_point_terminal(
+            x="100mm", y="24mm", layer="1_Top", net="1V0", name="pt_term_sig", reference_net="GND"
+        )
+        assert term
+        assert not term.is_null
+        # The signal terminal must have a reference terminal linked
+        assert term.core.reference_terminal is not None
+        assert not term.core.reference_terminal.is_null
+        assert term.core.reference_terminal.net.name == "GND"
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
     def test_create_voltage_source_on_pin_auto_name(self):
         """create_voltage_source_on_pin without explicit name uses auto-name."""
         edbapp = self.edb_examples.get_si_verse()
