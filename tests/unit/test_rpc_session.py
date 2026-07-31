@@ -209,7 +209,7 @@ def test_connect_to_existing_server_fails_when_already_on_different_port(monkeyp
 
 @pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
 def test_connect_to_existing_server_returns_false_on_connection_error(monkeypatch):
-    """If _EdbSession.connect() raises, the method must return False and clean up."""
+    """If _EdbSession.connect() raises, the method must re-raise as RuntimeError and clean up."""
     _reset_rpc_session_state()
 
     fake_mod = SimpleNamespace(current_session=None)
@@ -219,9 +219,9 @@ def test_connect_to_existing_server_returns_false_on_connection_error(monkeypatc
     FakeSession = _make_fake_session_cls(connect_raises=ConnectionRefusedError("port busy"))
     monkeypatch.setattr(rpc_session_module, "_EdbSession", FakeSession)
 
-    result = RpcSession.connect_to_existing_server(port=55500)
+    with pytest.raises(RuntimeError, match="Failed to connect to RPC server"):
+        RpcSession.connect_to_existing_server(port=55500)
 
-    assert result is False
     assert RpcSession.rpc_session is None
     assert fake_mod.current_session is None, "current_session must be cleared on failure"
 

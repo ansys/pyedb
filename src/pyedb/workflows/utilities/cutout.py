@@ -785,10 +785,6 @@ class GrpcCutout:
         self._edb.components.refresh_components()
         self.logger.info(f"[WRITE] All writes finished in {time.time() - _t:.3f} s")
 
-        # final save
-        if self.output_file:
-            self._edb.save_as(self.output_file)
-
         self.logger.info_timer("GRPC-safe cut-out completed", _t0)
         return [[pt.x.value, pt.y.value] for pt in extent_poly.without_arcs().points]
 
@@ -857,11 +853,15 @@ class GrpcCutout:
                         self._edb.save_as(legacy_path)
                     working_cutout = True
                     if not self.open_cutout_at_end and self._edb.edbpath != legacy_path:
-                        self._edb.close()
+                        # Keep the RPC server alive so the subsequent open() can reuse it
+                        # without a costly server restart.
+                        self._edb.close(terminate_rpc_session=False)
                         self._edb.edbpath = legacy_path
                         self._edb.open()
                     break
-                self._edb.close()
+                # Cutout attempt failed — restore the original database for the next iteration.
+                # terminate_rpc_session=False keeps the RPC server alive for the reopen.
+                self._edb.close(terminate_rpc_session=False)
                 self._edb.edbpath = legacy_path
                 self._edb.open()
                 i += 1
