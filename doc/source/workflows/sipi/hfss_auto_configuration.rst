@@ -26,7 +26,7 @@ What the helper does
 ~~~~~~~~~~~~~~~~~~~~
 1. Opens the source EDB (board layout)
 2. Identifies **signal** and **power/ground** nets automatically
-3. Picks the **best reference net** (GND, VSS, AGND …) using a curated regex table
+3. Picks the **best reference net** (GND, VSS, AGND …) using a curated regular expression table
 4. Optionally **groups nets into batches** (differential pairs are never split)
 5. Creates a **cut-out** for every batch (bounding box or convex-hull)
 6. Places **coaxial or circuit ports** on every component that touches the signal nets
