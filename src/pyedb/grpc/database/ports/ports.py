@@ -313,10 +313,10 @@ class CoaxPort(PadstackInstanceTerminal):
         float
             Radial extent value.
         """
-        return self._hfss_port_property["Radial Extent Factor"]
+        return self._hfss_port_property.radial_extent_factor
 
     @radial_extent_factor.setter
     def radial_extent_factor(self, value):
         p = self._hfss_port_property
-        p["Radial Extent Factor"] = value
+        p.radial_extent_factor = value
         self._hfss_port_property = p

@@ -750,3 +750,28 @@ class TestClass(BaseTestClass):
         result = edbapp.excitation_manager.create_port(pos_term, ref_term, is_circuit_port=True, name="gap_port_test")
         assert result
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    def test_coax_port_radial_extent_factor_setter(self):
+        """CoaxPort.radial_extent_factor setter must work without TypeError."""
+        edbapp = self.edb_examples.get_si_verse()
+        # Create a coax port on a known pin
+        assert edbapp.excitation_manager.create_coax_port_on_component("U1", "DDR4_DQS0_P")
+        # Retrieve the CoaxPort object
+        coax_port = None
+        for port_name, port in edbapp.ports.items():
+            from pyedb.grpc.database.ports.ports import CoaxPort
+
+            if isinstance(port, CoaxPort):
+                coax_port = port
+                break
+        assert coax_port is not None, "No CoaxPort found after create_coax_port_on_component"
+        # Verify getter returns a float
+        initial_value = coax_port.radial_extent_factor
+        assert isinstance(initial_value, (int, float))
+        # Set a new value — this previously raised TypeError
+        coax_port.radial_extent_factor = 0.5
+        assert coax_port.radial_extent_factor == 0.5
+        coax_port.radial_extent_factor = 1
+        assert coax_port.radial_extent_factor == 1
+        edbapp.close(terminate_rpc_session=False)
