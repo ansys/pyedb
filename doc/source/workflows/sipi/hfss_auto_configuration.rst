@@ -62,7 +62,7 @@ Minimal quick-start
    cfg.auto_populate_batch_groups()  # discover nets and group them
    cfg.create_projects()  # write one EDB + HFSS setup per batch
 
-The snippet above produces a folder ``../hfss/serdes.aedb`` that contains:
+The preceding snippet produces a folder ``../hfss/serdes.aedb`` that contains:
 
 * a cut-out with ≤ 50 nets
 * coaxial ports on every component pin
