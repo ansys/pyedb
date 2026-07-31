@@ -190,7 +190,12 @@ class RpcSession:
         Returns
         -------
         bool
-            ``True`` when the connection was established successfully, ``False`` otherwise.
+            ``True`` when the connection was established successfully.
+
+        Raises
+        ------
+        RuntimeError
+            When the connection to the RPC server fails.
 
         Examples
         --------
@@ -216,10 +221,7 @@ class RpcSession:
 
         if _SESSION_MOD.current_session is not None:
             # A session was left over from a previous call — clear it so we can attach.
-            try:
-                _SESSION_MOD.current_session = None
-            except Exception:  # nosec B110
-                pass
+            _SESSION_MOD.current_session = None
 
         try:
             # Passing ansys_em_root=None means _Session.is_launch() returns False,
@@ -233,12 +235,8 @@ class RpcSession:
             _SESSION_MOD.current_session = session_obj
             session_obj.connect()
         except Exception as exc:
-            settings.logger.error(f"Failed to connect to RPC server at {ip_address}:{port}: {exc}")
-            try:
-                _SESSION_MOD.current_session = None
-            except Exception:  # nosec B110
-                pass
-            return False
+            _SESSION_MOD.current_session = None
+            raise RuntimeError(f"Failed to connect to RPC server at {ip_address}:{port}: {exc}") from exc
 
         RpcSession.rpc_session = _SESSION_MOD.current_session
         RpcSession.port = port
@@ -348,15 +346,15 @@ class RpcSession:
             server_proc = None
             try:
                 server_proc = RpcSession.rpc_session.local_server_proc
-            except Exception as e:  # nosec B110
+            except Exception as e:
                 settings.logger.debug(f"Could not retrieve server process handle: {e}")
             try:
                 end_managing()
-            except Exception as e:  # nosec B110
+            except Exception as e:
                 settings.logger.debug(f"end_managing() raised during close: {e}")
             try:
                 RpcSession.rpc_session.disconnect()
-            except Exception as e:  # nosec B110
+            except Exception as e:
                 settings.logger.debug(f"disconnect() raised during close: {e}")
             # Wait for the server process to fully exit so the port is released
             # before the next session starts.
@@ -395,7 +393,7 @@ class RpcSession:
             try:
                 p.kill()
                 p.wait(timeout=3.0)
-            except Exception as e:  # nosec B110
+            except Exception as e:
                 settings.logger.debug(f"Failed to force-kill RPC server process {pid}: {e}")
         except Exception:
             time.sleep(1.0)
@@ -432,7 +430,7 @@ class RpcSession:
         try:
             if clear_upstream_session:
                 _SESSION_MOD.current_session = None
-        except Exception as e:  # nosec B110
+        except Exception as e:
             settings.logger.debug(f"Could not clear current_session: {e}")
 
     @staticmethod
