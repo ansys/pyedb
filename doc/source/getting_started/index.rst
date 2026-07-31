@@ -48,7 +48,7 @@ PyEDB is built on top of lower-level APIs and provides a simplified, high-level 
 **Component Stack:**
 
 1. **Ansys EDB (.NET Libraries):** The core Ansys Electronics Database engine written in .NET, installed with AEDT.
-   This contains all the fundamental EDB functionality for layout manipulation, simulation setup, etc.
+   This contains all the fundamental EDB capabilities for layout manipulation, simulation setup, etc.
 
 2. **PyEDB-Core:** A lower-level Python API (not to be confused with ansys-edb-core) that provides direct .NET bindings
    to the EDB libraries. Using PyEDB-Core requires deep knowledge of EDB architecture and class hierarchies.
