@@ -1,0 +1,6 @@
+update\_forward\_refs
+=====================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: Rules.update_forward_refs

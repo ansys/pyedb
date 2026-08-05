@@ -1,0 +1,680 @@
+
+
+
+
+
+
+:class:`Q3DAdvancedSettings`
+============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.q3d_advanced_settings.Q3DAdvancedSettings(pedb, core: ansys.edb.core.simulation_setup.q3d_simulation_settings.Q3DAdvancedSettings)
+
+   
+   Q3D advanced simulation settings.
+
+
+   :Parameters:
+
+       **pedb** : :class:`Edb < pyedb.grpc.edb.Edb>`
+           Inherited object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Q3DAdvancedSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~defeature_absolute_length`
+            - Absolute length used as tolerance when defeaturing polygons.
+          * - :py:attr:`~defeature_ratio`
+            - Extent ratio used as tolerance when defeaturing polygons.
+          * - :py:attr:`~healing_option`
+            - Healing option.
+          * - :py:attr:`~ic_mode_auto_resolution`
+            - Flag indicating if model resolution is automatically calculated for IC designs.
+          * - :py:attr:`~ic_mode_length`
+            - Model resolution to use when manually setting the model resolution of IC designs.
+          * - :py:attr:`~max_passes`
+            - Maximum number of mesh refinement cycles to perform.
+          * - :py:attr:`~max_refine_per_pass`
+            - How many tetrahedra are added at each iteration of the adaptive refinement process.
+          * - :py:attr:`~mesh_for_via_plating`
+            - Flag indicating whether to mesh the via plating.
+          * - :py:attr:`~min_converged_passes`
+            - Minimum number of converged passes before stopping the adaptive refinement process.
+          * - :py:attr:`~min_passes`
+            - Minimum number of mesh refinement cycles to perform.
+          * - :py:attr:`~num_via_density`
+            - Spacing between vias.
+          * - :py:attr:`~num_via_sides`
+            - Number of sides to use when meshing vias.
+          * - :py:attr:`~percent_error`
+            - Target percent error for adaptive mesh refinement.
+          * - :py:attr:`~remove_floating_geometry`
+            - Flag indicating if a geometry not connected to any other geometry is removed.
+          * - :py:attr:`~small_void_area`
+            - Voids with an area smaller than this value are ignored during simulation.
+          * - :py:attr:`~union_polygons`
+            - Flag indicating if polygons are united before meshing.
+          * - :py:attr:`~use_defeature`
+            - Flag indicating if defeaturing is used when meshing.
+          * - :py:attr:`~use_defeature_absolute_length`
+            - Flag indicating if absolute length or extent ratio is used when defeaturing polygons.
+          * - :py:attr:`~via_material`
+            - Material used for vias.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.q3d_advanced_settings import Q3DAdvancedSettings
+
+Property detail
+---------------
+
+.. py:property:: defeature_absolute_length
+   :type: float
+
+
+   
+   Absolute length used as tolerance when defeaturing polygons.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Defeature absolute length value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: defeature_ratio
+   :type: float
+
+
+   
+   Extent ratio used as tolerance when defeaturing polygons.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Defeature ratio value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: healing_option
+   :type: int
+
+
+   
+   Healing option.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Healing option value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ic_mode_auto_resolution
+   :type: bool
+
+
+   
+   Flag indicating if model resolution is automatically calculated for IC designs.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           IC mode auto resolution value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ic_mode_length
+   :type: float
+
+
+   
+   Model resolution to use when manually setting the model resolution of IC designs.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           IC mode length value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_passes
+   :type: int
+
+
+   
+   Maximum number of mesh refinement cycles to perform.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Max passes value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_refine_per_pass
+   :type: float
+
+
+   
+   How many tetrahedra are added at each iteration of the adaptive refinement process.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Max refine per pass value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_for_via_plating
+   :type: bool
+
+
+   
+   Flag indicating whether to mesh the via plating.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Mesh for via plating value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_converged_passes
+   :type: int
+
+
+   
+   Minimum number of converged passes before stopping the adaptive refinement process.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Min converged passes value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_passes
+   :type: int
+
+
+   
+   Minimum number of mesh refinement cycles to perform.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Min passes value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_via_density
+   :type: float
+
+
+   
+   Spacing between vias.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Num via density value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_via_sides
+   :type: int
+
+
+   
+   Number of sides to use when meshing vias.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Num via sides value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: percent_error
+   :type: float
+
+
+   
+   Target percent error for adaptive mesh refinement.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Percent error value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: remove_floating_geometry
+   :type: bool
+
+
+   
+   Flag indicating if a geometry not connected to any other geometry is removed.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Remove floating geometry value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: small_void_area
+   :type: float
+
+
+   
+   Voids with an area smaller than this value are ignored during simulation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Small void area value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: union_polygons
+   :type: bool
+
+
+   
+   Flag indicating if polygons are united before meshing.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Union polygons value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_defeature
+   :type: bool
+
+
+   
+   Flag indicating if defeaturing is used when meshing.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Use defeature value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_defeature_absolute_length
+   :type: bool
+
+
+   
+   Flag indicating if absolute length or extent ratio is used when defeaturing polygons.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Use defeature absolute length value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_material
+   :type: str
+
+
+   
+   Material used for vias.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Via material value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

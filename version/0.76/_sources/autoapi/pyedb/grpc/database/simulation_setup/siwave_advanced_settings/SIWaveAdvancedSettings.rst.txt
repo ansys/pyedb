@@ -1,0 +1,707 @@
+
+
+
+
+
+
+:class:`SIWaveAdvancedSettings`
+===============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_advanced_settings.SIWaveAdvancedSettings(pedb, core: ansys.edb.core.simulation_setup.siwave_simulation_settings.SIWaveAdvancedSettings)
+
+   
+   SIWave advanced settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SIWaveAdvancedSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ac_dc_merge_mode`
+            - AC/DC merge mode.
+          * - :py:attr:`~cross_talk_threshold`
+            - Cross talk threshold.
+          * - :py:attr:`~ignore_non_functional_pads`
+            - Ignore non-functional pads flag.
+          * - :py:attr:`~include_co_plane_coupling`
+            - Include co-plane coupling flag.
+          * - :py:attr:`~include_fringe_plane_coupling`
+            - Include fringe plane coupling flag.
+          * - :py:attr:`~include_inf_gnd`
+            - Include infinite ground flag.
+          * - :py:attr:`~include_inter_plane_coupling`
+            - Include inter-plane coupling flag.
+          * - :py:attr:`~include_split_plane_coupling`
+            - Include split plane coupling flag.
+          * - :py:attr:`~include_trace_plane_coupling`
+            - Include trace-plane coupling flag.
+          * - :py:attr:`~include_vi_sources`
+            - Include VI sources flag.
+          * - :py:attr:`~inf_gnd_location`
+            - Infinite ground location.
+          * - :py:attr:`~max_coupled_lines`
+            - Maximum coupled lines.
+          * - :py:attr:`~mesh_automatic`
+            - Automatic mesh flag.
+          * - :py:attr:`~mesh_frequency`
+            - Mesh frequency.
+          * - :py:attr:`~min_pad_area_to_mesh`
+            - Minimum pad area to mesh.
+          * - :py:attr:`~min_plane_area_to_mesh`
+            - Minimum plane area to mesh.
+          * - :py:attr:`~min_void_area`
+            - Minimum void area.
+          * - :py:attr:`~perform_erc`
+            - Perform ERC flag.
+          * - :py:attr:`~return_current_distribution`
+            - Return current distribution flag.
+          * - :py:attr:`~snap_length_threshold`
+            - Snap length threshold.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
+
+Property detail
+---------------
+
+.. py:property:: ac_dc_merge_mode
+   :type: int
+
+
+   
+   AC/DC merge mode.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           AC/DC merge mode.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cross_talk_threshold
+   :type: float
+
+
+   
+   Cross talk threshold.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Cross talk threshold.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ignore_non_functional_pads
+   :type: bool
+
+
+   
+   Ignore non-functional pads flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Ignore non-functional pads flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_co_plane_coupling
+   :type: bool
+
+
+   
+   Include co-plane coupling flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Include co-plane coupling flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_fringe_plane_coupling
+   :type: bool
+
+
+   
+   Include fringe plane coupling flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Include fringe plane coupling flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_inf_gnd
+   :type: bool
+
+
+   
+   Include infinite ground flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Include infinite ground flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_inter_plane_coupling
+   :type: bool
+
+
+   
+   Include inter-plane coupling flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Include inter-plane coupling flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_split_plane_coupling
+   :type: bool
+
+
+   
+   Include split plane coupling flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Include split plane coupling flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_trace_plane_coupling
+   :type: bool
+
+
+   
+   Include trace-plane coupling flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Include trace-plane coupling flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_vi_sources
+   :type: bool
+
+
+   
+   Include VI sources flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Include VI sources flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: inf_gnd_location
+   :type: float
+
+
+   
+   Infinite ground location.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Infinite ground location.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_coupled_lines
+   :type: int
+
+
+   
+   Maximum coupled lines.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum coupled lines.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_automatic
+   :type: bool
+
+
+   
+   Automatic mesh flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Automatic mesh flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_frequency
+   :type: float
+
+
+   
+   Mesh frequency.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Mesh frequency.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_pad_area_to_mesh
+   :type: float
+
+
+   
+   Minimum pad area to mesh.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Minimum pad area to mesh.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_plane_area_to_mesh
+   :type: float
+
+
+   
+   Minimum plane area to mesh.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Minimum plane area to mesh.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_void_area
+   :type: str
+
+
+   
+   Minimum void area.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Minimum void area.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: perform_erc
+   :type: bool
+
+
+   
+   Perform ERC flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Perform ERC flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: return_current_distribution
+   :type: bool
+
+
+   
+   Return current distribution flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Return current distribution flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: snap_length_threshold
+   :type: float
+
+
+   
+   Snap length threshold.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Snap length threshold.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

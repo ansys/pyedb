@@ -1,0 +1,211 @@
+
+
+
+
+
+
+:class:`RadialStub`
+===================
+
+
+.. py:class:: pyedb.libraries.rf_libraries.base_functions.RadialStub(edb_cell, radius: Union[str, float] = 0.0005, angle_deg: Union[str, float] = 60, width: Union[str, float] = 0.0002, layer: str = 'TOP', net: str = 'RF')
+
+   
+   Radial (fan) open stub for RF matching.
+
+
+   :Parameters:
+
+       **radius** : :class:`python:float`, :obj:`default` 500 µm
+           Radius of the fan [m].
+
+       **angle_deg** : :class:`python:float`, :obj:`default` 60°
+           Opening angle of the sector.
+
+       **width** : :class:`python:float`, :obj:`default` 0.2 :obj:`mm`
+           Width of the feeding micro-strip line [m].
+
+       **layer** : :class:`python:str`, :obj:`default` "TOP"
+           Metal layer.
+
+       **net** : :class:`python:str`, :obj:`default` "RF"
+           Net name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> stub = RadialStub(radius=1e-3, angle_deg=90)
+   >>> edb = Edb("radial.aedb")
+   >>> stub._pedb = edb
+   >>> stub.create()
+   >>> f"{stub.electrical_length_deg(2e9):.1f}°"
+   '108.0°'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RadialStub
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Draw the fan-shaped polygon and the feeding line.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~electrical_length_deg`
+            - Electrical length of the radial stub at a given frequency.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~radius`
+            - 
+          * - :py:attr:`~angle_deg`
+            - 
+          * - :py:attr:`~width`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~net`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.base_functions import RadialStub
+
+Property detail
+---------------
+
+.. py:property:: electrical_length_deg
+   :type: float
+
+
+   
+   Electrical length of the radial stub at a given frequency.
+
+
+   :Parameters:
+
+       **freq** : :class:`python:float`, :obj:`default` 2 :obj:`GHz`
+           Frequency in Hz.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Phase shift in degrees contributed by the stub.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: radius
+
+.. py:attribute:: angle_deg
+
+.. py:attribute:: width
+
+.. py:attribute:: layer
+   :value: 'TOP'
+
+
+.. py:attribute:: net
+   :value: 'RF'
+
+
+.. py:attribute:: substrate
+   :type:  pyedb.libraries.common.Substrate
+
+
+
+Method detail
+-------------
+
+.. py:method:: create() -> bool
+
+   
+   Draw the fan-shaped polygon and the feeding line.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True on success.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+value
+=====
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: MinLineWidth.value

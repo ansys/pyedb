@@ -1,0 +1,67 @@
+
+
+
+
+
+
+:class:`Comp`
+=============
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.component_tags.Comp(element)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages individual component configuration and properties.
+
+   This class handles component-specific attributes including component name, value,
+   device type, capacitor type, and physical location information. It also tracks
+   component characteristics such as clock driver, high-speed, IC, and oscillator status.
+
+   :Parameters:
+
+       **element** : :obj:`xml.etree.ElementTree.Element` or :data:`python:None`
+           XML element to initialize from.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.siw_feature_config.emc.component_tags import Comp
+   >>> comp = Comp(None)
+   >>> comp.CompName = "U1"
+   >>> comp.CompValue = "FPGA"
+   >>> comp.DeviceName = "XC7A35T"
+   >>> comp.isIC = "1"
+   >>> comp.isHighSpeed = "1"
+   >>> comp.xLoc = "10.5"
+   >>> comp.yLoc = "20.3"
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.component_tags import Comp
+
+
+
+
+

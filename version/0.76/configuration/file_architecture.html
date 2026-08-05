@@ -1,0 +1,1754 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Configuration file architecture &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=fb294b3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=fb294b3b" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=137c1688"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'configuration/file_architecture';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.17.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.76';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configuration API guide and complete example" href="configuration_api_guide.html" />
+    <link rel="prev" title="Configuration guides" href="index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.76.0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/configuration/file_architecture.html" />
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Configuration guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.76/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    
+<!--
+  Announcement Version Loader
+  Dynamically loads the announcement.html content into the announcement_msg div.
+-->
+<div id="announcement_msg" aria-live="polite"></div>
+<script>
+  // Fetch and inject the announcement HTML content
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} Announcement.html file not found, Please ignore this, if you are in dev/stable documentation`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      var msgDiv = document.getElementById("announcement_msg");
+      if (msgDiv) {
+        msgDiv.innerHTML = text;
+      }
+    })
+    .catch((error) => {
+      // Log only unexpected fetch errors
+      if (!(error.message && error.message.startsWith("HTTP error: 404"))) {
+        console.error(`Fetch problem: ${error.message} Announcement.html could not be loaded.`);
+      }
+    });
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Configuration guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.76/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Configuration file architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration_api_guide.html">Configuration API guide and complete example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration_api_examples.html">Configuration API: practical examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/pyedb/configuration/index.html">The <code class="docutils literal notranslate"><span class="pre">configuration</span></code> package</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Configuration guides</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Configuration file architecture</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="configuration-file-architecture">
+<h1>Configuration file architecture<a class="headerlink" href="#configuration-file-architecture" title="Link to this heading">#</a></h1>
+<p>PyEDB configuration files let you describe design setup, modeling content,
+excitations, and post-processing options in a single JSON or TOML document.
+The same data model can be consumed from a file <strong>or</strong> built entirely in Python
+through the programmatic API described in <a class="reference internal" href="configuration_api_guide.html"><span class="doc">Configuration API guide and complete example</span></a> under
+<a class="reference internal" href="../autoapi/pyedb/configuration/index.html#module-pyedb.configuration" title="pyedb.configuration"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyedb.configuration</span></code></a>.</p>
+<p>This page explains how the configuration file is organized, what each top-level
+section is used for, and which fields are supported by each section.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While this guide uses JSON fragments for readability, the same hierarchy can
+also be written as TOML.  The section names and nested field names are
+identical in both formats.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>A machine-readable <strong>JSON Schema</strong> is available for the complete
+configuration file. You can use it to validate your config files in any
+JSON-schema-aware editor (VS Code, PyCharm, etc.) or with tools such as
+<code class="docutils literal notranslate"><span class="pre">jsonschema</span></code>.</p>
+<p><a class="reference download internal" download="" href="../_downloads/aa510710be6f9805bdcef9026b44f617/pyedb_config.schema.json"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">pyedb_config.schema.json</span></code></a></p>
+</div>
+<section id="two-ways-to-configure-a-design">
+<h2>Two ways to configure a design<a class="headerlink" href="#two-ways-to-configure-a-design" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 40.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Approach</p></th>
+<th class="head"><p>When to use</p></th>
+<th class="head"><p>How to apply</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>File-based</strong> (this page)</p></td>
+<td><p>Reproducible, human-readable artifacts kept in version control.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.configuration.run(&quot;my_config.json&quot;)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Programmatic API</strong> (<a class="reference internal" href="configuration_api_guide.html"><span class="doc">Configuration API guide and complete example</span></a>)</p></td>
+<td><p>Scripted workflows, templates, conditional logic.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg</span> <span class="pre">=</span> <span class="pre">edb.configuration.create_config_builder()</span></code> → <code class="docutils literal notranslate"><span class="pre">edb.configuration.run(cfg)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code class="docutils literal notranslate"><span class="pre">edb.configuration.run()</span></code> accepts a file path, a plain dictionary, <strong>or</strong>
+a <code class="docutils literal notranslate"><span class="pre">CfgData</span></code> instance, so you can mix and match approaches in the
+same script.</p>
+</div>
+</section>
+<section id="how-a-configuration-file-is-consumed">
+<h2>How a configuration file is consumed<a class="headerlink" href="#how-a-configuration-file-is-consumed" title="Link to this heading">#</a></h2>
+<p>At runtime, PyEDB parses the file (or builder) into a dictionary, maps each
+top-level key to an internal section model, and then applies those models to
+the active EDB design.</p>
+</section>
+<section id="top-level-architecture">
+<h2>Top-level architecture<a class="headerlink" href="#top-level-architecture" title="Link to this heading">#</a></h2>
+<p>A configuration file is a single dictionary. Every top-level key is optional.
+If a section is omitted, PyEDB leaves that area unchanged.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Top-level sections</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 18.0%" />
+<col style="width: 14.0%" />
+<col style="width: 38.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Section</p></th>
+<th class="head"><p>JSON type</p></th>
+<th class="head"><p>Purpose</p></th>
+<th class="head"><p>Typical content</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">general</span></code></p></td>
+<td><p>object</p></td>
+<td><p>Global library paths and design flags.</p></td>
+<td><p>SPICE library path, S-parameter library path, pad options.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stackup</span></code></p></td>
+<td><p>object</p></td>
+<td><p>Material definitions and layer stack.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">materials[]</span></code>, <code class="docutils literal notranslate"><span class="pre">layers[]</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nets</span></code></p></td>
+<td><p>object</p></td>
+<td><p>Net classification.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">signal_nets[]</span></code>, <code class="docutils literal notranslate"><span class="pre">power_ground_nets[]</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">components</span></code></p></td>
+<td><p>array</p></td>
+<td><p>Component model and package settings.</p></td>
+<td><p>RLC, S-parameter, SPICE, die, solder-ball, port properties.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">padstacks</span></code></p></td>
+<td><p>object</p></td>
+<td><p>Padstack definitions and placed instances.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">definitions[]</span></code>, <code class="docutils literal notranslate"><span class="pre">instances[]</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pin_groups</span></code></p></td>
+<td><p>array</p></td>
+<td><p>Named groups of pins for ports and sources.</p></td>
+<td><p>Explicit pin lists or groups derived from nets.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">terminals</span></code></p></td>
+<td><p>array</p></td>
+<td><p>Low-level EDB terminal definitions.</p></td>
+<td><p>Padstack, pin-group, point, edge, and bundle terminals.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ports</span></code></p></td>
+<td><p>array</p></td>
+<td><p>Port definitions.</p></td>
+<td><p>Circuit, coax, wave, gap, and differential wave ports.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sources</span></code></p></td>
+<td><p>array</p></td>
+<td><p>Current and voltage sources.</p></td>
+<td><p>Positive and negative terminal specifiers, magnitude, impedance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">probes</span></code></p></td>
+<td><p>array</p></td>
+<td><p>Voltage probes.</p></td>
+<td><p>Positive and negative terminal specifiers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">setups</span></code></p></td>
+<td><p>array</p></td>
+<td><p>Simulation setups.</p></td>
+<td><p>HFSS, SIwave AC, SIwave DC, sweeps, mesh operations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">boundaries</span></code></p></td>
+<td><p>object</p></td>
+<td><p>HFSS region and dielectric extent settings.</p></td>
+<td><p>Radiation/PML, air-box extents, dielectric extent.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">operations</span></code></p></td>
+<td><p>object</p></td>
+<td><p>Layout operations applied after import.</p></td>
+<td><p>Cutout and auto HFSS region generation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">s_parameters</span></code></p></td>
+<td><p>array</p></td>
+<td><p>S-parameter model assignments.</p></td>
+<td><p>Touchstone path, component definition, reference net mapping.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">spice_models</span></code></p></td>
+<td><p>array</p></td>
+<td><p>SPICE model assignments.</p></td>
+<td><p>Model path, subcircuit, target components.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">package_definitions</span></code></p></td>
+<td><p>array</p></td>
+<td><p>Thermal package definitions.</p></td>
+<td><p>Theta values, power, geometry, heat sink.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">variables</span></code></p></td>
+<td><p>array</p></td>
+<td><p>Design and project variables.</p></td>
+<td><p>Name, value, description.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">modeler</span></code></p></td>
+<td><p>object</p></td>
+<td><p>Geometry-driven construction and cleanup.</p></td>
+<td><p>Traces, planes, padstacks, components, primitive deletion.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="minimal-file-shape">
+<h2>Minimal file shape<a class="headerlink" href="#minimal-file-shape" title="Link to this heading">#</a></h2>
+<p>The following skeleton shows the overall shape of a complete configuration
+payload:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;general&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">&quot;stackup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;materials&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;layers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;nets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;signal_nets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;power_ground_nets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;padstacks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;definitions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;instances&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;pin_groups&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;terminals&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;ports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;probes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;setups&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+
+<span class="w">  </span><span class="nt">&quot;boundaries&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">&quot;operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">&quot;s_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;spice_models&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;package_definitions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;modeler&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="supported-sections-and-fields">
+<h2>Supported sections and fields<a class="headerlink" href="#supported-sections-and-fields" title="Link to this heading">#</a></h2>
+<section id="general">
+<h3><code class="docutils literal notranslate"><span class="pre">general</span></code><a class="headerlink" href="#general" title="Link to this heading">#</a></h3>
+<p>Use this section for design-wide paths and a small number of global options.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">general</span></code> fields</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 28.0%" />
+<col style="width: 18.0%" />
+<col style="width: 54.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">spice_model_library</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Base folder used to resolve relative paths in <code class="docutils literal notranslate"><span class="pre">spice_models</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">s_parameter_library</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Base folder used to resolve relative paths in <code class="docutils literal notranslate"><span class="pre">s_parameters</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">anti_pads_always_on</span></code></p></td>
+<td><p>Boolean</p></td>
+<td><p>Controls the design option that keeps anti-pads enabled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">suppress_pads</span></code></p></td>
+<td><p>Boolean</p></td>
+<td><p>Controls the design option that suppresses pads where supported.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="stackup">
+<h3><code class="docutils literal notranslate"><span class="pre">stackup</span></code><a class="headerlink" href="#stackup" title="Link to this heading">#</a></h3>
+<p>This section defines materials and the layer sequence.</p>
+<p><code class="docutils literal notranslate"><span class="pre">stackup.materials[]</span></code> objects support these keys:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conductivity</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dielectric_loss_tangent</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">magnetic_loss_tangent</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mass_density</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">permittivity</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">permeability</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">poisson_ratio</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">specific_heat</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thermal_conductivity</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">youngs_modulus</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thermal_expansion_coefficient</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dc_conductivity</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dc_permittivity</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dielectric_model_frequency</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">loss_tangent_at_frequency</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">permittivity_at_frequency</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thermal_modifiers</span></code></p>
+<p>Each entry in <code class="docutils literal notranslate"><span class="pre">thermal_modifiers</span></code> is an object with these fields:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">property_name</span></code>: material property this modifier applies to (required)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">basic_quadratic_c1</span></code>: first quadratic coefficient (default <code class="docutils literal notranslate"><span class="pre">0</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">basic_quadratic_c2</span></code>: second quadratic coefficient (default <code class="docutils literal notranslate"><span class="pre">0</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">basic_quadratic_temperature_reference</span></code>: reference temperature in °C
+(default <code class="docutils literal notranslate"><span class="pre">22</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">advanced_quadratic_lower_limit</span></code>: lower temperature limit in °C
+(default <code class="docutils literal notranslate"><span class="pre">-273.15</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">advanced_quadratic_upper_limit</span></code>: upper temperature limit in °C
+(default <code class="docutils literal notranslate"><span class="pre">1000</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">advanced_quadratic_auto_calculate</span></code>: auto-calculate quadratic constants
+(default <code class="docutils literal notranslate"><span class="pre">true</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">advanced_quadratic_lower_constant</span></code>: lower constant (default <code class="docutils literal notranslate"><span class="pre">1</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">advanced_quadratic_upper_constant</span></code>: upper constant (default <code class="docutils literal notranslate"><span class="pre">1</span></code>)</p></li>
+</ul>
+</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">stackup.layers[]</span></code> objects support these keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">material</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fill_material</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thickness</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">roughness</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">etching</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">roughness</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">top</span></code> / <code class="docutils literal notranslate"><span class="pre">bottom</span></code> / <code class="docutils literal notranslate"><span class="pre">side</span></code></p></li>
+<li><p>Each surface can use either a Huray roughness model
+(<code class="docutils literal notranslate"><span class="pre">model</span></code>, <code class="docutils literal notranslate"><span class="pre">nodule_radius</span></code>, <code class="docutils literal notranslate"><span class="pre">surface_ratio</span></code>)
+or a Groiss roughness model (<code class="docutils literal notranslate"><span class="pre">model</span></code>, <code class="docutils literal notranslate"><span class="pre">roughness</span></code>).</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">etching</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">factor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">etch_power_ground_nets</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code></p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;stackup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;materials&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;copper&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;conductivity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">58000000.0</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fr4&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;permittivity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.4</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;dielectric_loss_tangent&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.02</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;layers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;top&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;signal&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;material&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;copper&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;fill_material&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fr4&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;thickness&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;35um&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;diel1&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dielectric&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;material&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fr4&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;thickness&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;100um&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="nets">
+<h3><code class="docutils literal notranslate"><span class="pre">nets</span></code><a class="headerlink" href="#nets" title="Link to this heading">#</a></h3>
+<p>Use this section to classify nets by intent.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id3">
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">nets</span></code> fields</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 28.0%" />
+<col style="width: 18.0%" />
+<col style="width: 54.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">signal_nets</span></code></p></td>
+<td><p>array of strings</p></td>
+<td><p>Nets treated as signal nets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">power_ground_nets</span></code></p></td>
+<td><p>array of strings</p></td>
+<td><p>Nets treated as power or ground nets.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="components">
+<h3><code class="docutils literal notranslate"><span class="pre">components</span></code><a class="headerlink" href="#components" title="Link to this heading">#</a></h3>
+<p>This section assigns electrical and package-related properties to component
+instances.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">components[]</span></code> entry supports these keys:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id4">
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">components[]</span></code> fields</span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 28.0%" />
+<col style="width: 18.0%" />
+<col style="width: 54.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">reference_designator</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Component instance name such as <code class="docutils literal notranslate"><span class="pre">U1</span></code> or <code class="docutils literal notranslate"><span class="pre">R15</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">part_type</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Component type such as <code class="docutils literal notranslate"><span class="pre">resistor</span></code>, <code class="docutils literal notranslate"><span class="pre">capacitor</span></code>, or <code class="docutils literal notranslate"><span class="pre">ic</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code></p></td>
+<td><p>Boolean</p></td>
+<td><p>Enables or disables application of the entry.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">definition</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Component definition / part name.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">placement_layer</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Placement layer used when constructing components in <code class="docutils literal notranslate"><span class="pre">modeler</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pin_pair_model</span></code></p></td>
+<td><p>array</p></td>
+<td><p>Pin-pair RLC model definitions.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">s_parameter_model</span></code></p></td>
+<td><p>object</p></td>
+<td><p>S-parameter model assignment for the component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">spice_model</span></code></p></td>
+<td><p>object</p></td>
+<td><p>SPICE model assignment for the component.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">netlist_model</span></code></p></td>
+<td><p>object</p></td>
+<td><p>Raw netlist payload.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ic_die_properties</span></code></p></td>
+<td><p>object</p></td>
+<td><p>Die configuration for IC components.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">solder_ball_properties</span></code></p></td>
+<td><p>object</p></td>
+<td><p>Solder-ball geometry and material.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">port_properties</span></code></p></td>
+<td><p>object</p></td>
+<td><p>Port reference geometry.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Nested component objects support these keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pin_pair_model[]</span></code>: <code class="docutils literal notranslate"><span class="pre">first_pin</span></code>, <code class="docutils literal notranslate"><span class="pre">second_pin</span></code>, <code class="docutils literal notranslate"><span class="pre">resistance</span></code>,
+<code class="docutils literal notranslate"><span class="pre">inductance</span></code>, <code class="docutils literal notranslate"><span class="pre">capacitance</span></code>, <code class="docutils literal notranslate"><span class="pre">is_parallel</span></code>,
+<code class="docutils literal notranslate"><span class="pre">resistance_enabled</span></code>, <code class="docutils literal notranslate"><span class="pre">inductance_enabled</span></code>, <code class="docutils literal notranslate"><span class="pre">capacitance_enabled</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">s_parameter_model</span></code>: <code class="docutils literal notranslate"><span class="pre">model_name</span></code>, <code class="docutils literal notranslate"><span class="pre">model_path</span></code>, <code class="docutils literal notranslate"><span class="pre">reference_net</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spice_model</span></code>: <code class="docutils literal notranslate"><span class="pre">model_name</span></code>, <code class="docutils literal notranslate"><span class="pre">model_path</span></code>, <code class="docutils literal notranslate"><span class="pre">sub_circuit</span></code>,
+<code class="docutils literal notranslate"><span class="pre">terminal_pairs</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">netlist_model</span></code>: <code class="docutils literal notranslate"><span class="pre">netlist</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ic_die_properties</span></code>: <code class="docutils literal notranslate"><span class="pre">type</span></code> (<code class="docutils literal notranslate"><span class="pre">flip_chip</span></code>, <code class="docutils literal notranslate"><span class="pre">wire_bond</span></code>, <code class="docutils literal notranslate"><span class="pre">no_die</span></code>),
+<code class="docutils literal notranslate"><span class="pre">orientation</span></code> (<code class="docutils literal notranslate"><span class="pre">chip_up</span></code> or <code class="docutils literal notranslate"><span class="pre">chip_down</span></code>), <code class="docutils literal notranslate"><span class="pre">height</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solder_ball_properties</span></code>: <code class="docutils literal notranslate"><span class="pre">shape</span></code> (<code class="docutils literal notranslate"><span class="pre">cylinder</span></code>, <code class="docutils literal notranslate"><span class="pre">spheroid</span></code>,
+<code class="docutils literal notranslate"><span class="pre">no_solder_ball</span></code>), <code class="docutils literal notranslate"><span class="pre">diameter</span></code>, <code class="docutils literal notranslate"><span class="pre">height</span></code>, <code class="docutils literal notranslate"><span class="pre">material</span></code>,
+<code class="docutils literal notranslate"><span class="pre">mid_diameter</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">port_properties</span></code>: <code class="docutils literal notranslate"><span class="pre">reference_height</span></code>, <code class="docutils literal notranslate"><span class="pre">reference_size_auto</span></code>,
+<code class="docutils literal notranslate"><span class="pre">reference_size_x</span></code>, <code class="docutils literal notranslate"><span class="pre">reference_size_y</span></code>.</p></li>
+</ul>
+</section>
+<section id="padstacks">
+<h3><code class="docutils literal notranslate"><span class="pre">padstacks</span></code><a class="headerlink" href="#padstacks" title="Link to this heading">#</a></h3>
+<p>Use this section to define padstack definitions and update placed padstack
+instances.</p>
+<p><code class="docutils literal notranslate"><span class="pre">padstacks.definitions[]</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hole_plating_thickness</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">material</span></code> (serialized as the hole material)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hole_range</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pad_parameters</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hole_parameters</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solder_ball_parameters</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">padstacks.instances[]</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">backdrill_parameters</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_pin</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">net_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_range</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">definition</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">position</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rotation</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hole_override_enabled</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hole_override_diameter</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solder_ball_layer</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">backdrill_parameters</span></code> can define <code class="docutils literal notranslate"><span class="pre">from_top</span></code> and/or <code class="docutils literal notranslate"><span class="pre">from_bottom</span></code>. Each
+branch can use either:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">drill_to_layer</span></code> + <code class="docutils literal notranslate"><span class="pre">diameter</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">drill_to_layer</span></code> + <code class="docutils literal notranslate"><span class="pre">diameter</span></code> + <code class="docutils literal notranslate"><span class="pre">stub_length</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">drill_depth</span></code> + <code class="docutils literal notranslate"><span class="pre">diameter</span></code></p></li>
+</ul>
+</section>
+<section id="pin-groups">
+<h3><code class="docutils literal notranslate"><span class="pre">pin_groups</span></code><a class="headerlink" href="#pin-groups" title="Link to this heading">#</a></h3>
+<p>Use pin groups to name a set of pins once and then reuse that name in ports,
+sources, probes, or explicit terminals.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">pin_groups[]</span></code> entry supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_designator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pins</span></code> (explicit pin list)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">net</span></code> (single net name or list of net names)</p></li>
+</ul>
+<p>Define either <code class="docutils literal notranslate"><span class="pre">pins</span></code> or <code class="docutils literal notranslate"><span class="pre">net</span></code>.</p>
+</section>
+<section id="terminals">
+<h3><code class="docutils literal notranslate"><span class="pre">terminals</span></code><a class="headerlink" href="#terminals" title="Link to this heading">#</a></h3>
+<p>This is the low-level terminal section. Most users do not need it because
+<code class="docutils literal notranslate"><span class="pre">ports</span></code>, <code class="docutils literal notranslate"><span class="pre">sources</span></code>, and <code class="docutils literal notranslate"><span class="pre">probes</span></code> create terminals implicitly. It becomes
+useful when you want explicit terminal objects or bundle terminals.</p>
+<p>Supported terminal entry types are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">padstack_instance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pin_group</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">point</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edge</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bundle</span></code></p></li>
+</ul>
+<p>Common terminal keys are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">impedance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_circuit_port</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_terminal</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">amplitude</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">phase</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">terminal_to_ground</span></code></p>
+<p>Accepted values: <code class="docutils literal notranslate"><span class="pre">&quot;no_ground&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;kNoGround&quot;</span></code> (default),
+<code class="docutils literal notranslate"><span class="pre">&quot;negative&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;kNegative&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;positive&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;kPositive&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;kNegativeNode&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;kPositiveNode&quot;</span></code>.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">boundary_type</span></code></p>
+<p>Accepted values (human-friendly aliases recommended):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;port&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;PortBoundary&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;pec&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;PecBoundary&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;rlc&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;RlcBoundary&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;current_source&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;kCurrentSource&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;voltage_source&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;kVoltageSource&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;voltage_probe&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;kVoltageProbe&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;dc_terminal&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;kDcTerminal&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;kNexximGround&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;kNexximPort&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;InvalidBoundary&quot;</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hfss_type</span></code></p>
+<p>Accepted values: <code class="docutils literal notranslate"><span class="pre">&quot;Wave&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Gap&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p>
+</li>
+</ul>
+<p>Type-specific keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">padstack_instance</span></code>: <code class="docutils literal notranslate"><span class="pre">padstack_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">padstack_instance_id</span></code>,
+<code class="docutils literal notranslate"><span class="pre">layer</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pin_group</span></code>: <code class="docutils literal notranslate"><span class="pre">pin_group</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">point</span></code>: <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">layer</span></code>, <code class="docutils literal notranslate"><span class="pre">net</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edge</span></code>: <code class="docutils literal notranslate"><span class="pre">primitive</span></code>, <code class="docutils literal notranslate"><span class="pre">point_on_edge_x</span></code>, <code class="docutils literal notranslate"><span class="pre">point_on_edge_y</span></code>,
+<code class="docutils literal notranslate"><span class="pre">horizontal_extent_factor</span></code>, <code class="docutils literal notranslate"><span class="pre">vertical_extent_factor</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pec_launch_width</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bundle</span></code>: <code class="docutils literal notranslate"><span class="pre">terminals</span></code></p></li>
+</ul>
+</section>
+<section id="ports-sources-and-probes">
+<h3><code class="docutils literal notranslate"><span class="pre">ports</span></code>, <code class="docutils literal notranslate"><span class="pre">sources</span></code>, and <code class="docutils literal notranslate"><span class="pre">probes</span></code><a class="headerlink" href="#ports-sources-and-probes" title="Link to this heading">#</a></h3>
+<p>These sections use terminal <em>specifiers</em> rather than low-level terminal objects.</p>
+<p>Supported terminal-specifier forms are:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id5">
+<caption><span class="caption-text">Terminal specifiers</span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 24.0%" />
+<col style="width: 34.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Specifier</p></th>
+<th class="head"><p>Shape</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pin</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;pin&quot;:</span> <span class="pre">&quot;A1&quot;}</span></code></p></td>
+<td><p>Address a specific component pin.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Net</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;net&quot;:</span> <span class="pre">&quot;VDD&quot;}</span></code></p></td>
+<td><p>Address pins on a named net.</p></td>
+</tr>
+<tr class="row-even"><td><p>Pin group</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;pin_group&quot;:</span> <span class="pre">&quot;pg_VDD&quot;}</span></code></p></td>
+<td><p>Reuse a previously defined pin group.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Padstack instance</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;padstack&quot;:</span> <span class="pre">&quot;via_1&quot;}</span></code></p></td>
+<td><p>Address a named padstack instance.</p></td>
+</tr>
+<tr class="row-even"><td><p>Coordinates</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;coordinates&quot;:</span> <span class="pre">{&quot;layer&quot;:</span> <span class="pre">&quot;top&quot;,</span> <span class="pre">&quot;point&quot;:</span> <span class="pre">[x,</span> <span class="pre">y],</span> <span class="pre">&quot;net&quot;:</span> <span class="pre">&quot;SIG&quot;}}</span></code></p></td>
+<td><p>Create a point-based terminal at a coordinate.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Nearest pin</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;nearest_pin&quot;:</span> <span class="pre">{&quot;reference_net&quot;:</span> <span class="pre">&quot;GND&quot;,</span> <span class="pre">&quot;search_radius&quot;:</span> <span class="pre">&quot;5mm&quot;}}</span></code></p></td>
+<td><p>Choose a reference pin automatically for negative terminals.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Optional terminal-specifier helper fields supported by the runtime terminal
+resolver are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_designator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contact_type</span></code> (for example <code class="docutils literal notranslate"><span class="pre">default</span></code>, <code class="docutils literal notranslate"><span class="pre">full</span></code>, <code class="docutils literal notranslate"><span class="pre">center</span></code>, <code class="docutils literal notranslate"><span class="pre">quad</span></code>,
+<code class="docutils literal notranslate"><span class="pre">inline</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contact_radius</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_of_contact</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contact_expansion</span></code></p></li>
+</ul>
+<p>Each <code class="docutils literal notranslate"><span class="pre">ports[]</span></code> entry uses one of these shapes:</p>
+<ul class="simple">
+<li><p>Circuit or coax port:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code> = <code class="docutils literal notranslate"><span class="pre">circuit</span></code> or <code class="docutils literal notranslate"><span class="pre">coax</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">positive_terminal</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">negative_terminal</span></code> (circuit only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_designator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">impedance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">distributed</span></code></p></li>
+</ul>
+</li>
+<li><p>Wave or gap port:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code> = <code class="docutils literal notranslate"><span class="pre">wave_port</span></code> or <code class="docutils literal notranslate"><span class="pre">gap_port</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">primitive_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">point_on_edge</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">horizontal_extent_factor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vertical_extent_factor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pec_launch_width</span></code></p></li>
+</ul>
+</li>
+<li><p>Differential wave port:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code> = <code class="docutils literal notranslate"><span class="pre">diff_wave_port</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">positive_terminal</span></code> with <code class="docutils literal notranslate"><span class="pre">primitive_name</span></code> and <code class="docutils literal notranslate"><span class="pre">point_on_edge</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">negative_terminal</span></code> with <code class="docutils literal notranslate"><span class="pre">primitive_name</span></code> and <code class="docutils literal notranslate"><span class="pre">point_on_edge</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">horizontal_extent_factor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vertical_extent_factor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pec_launch_width</span></code></p></li>
+</ul>
+</li>
+</ul>
+<p>Each <code class="docutils literal notranslate"><span class="pre">sources[]</span></code> entry supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code> = <code class="docutils literal notranslate"><span class="pre">current</span></code> or <code class="docutils literal notranslate"><span class="pre">voltage</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">positive_terminal</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">negative_terminal</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">magnitude</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">impedance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_designator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">distributed</span></code></p></li>
+</ul>
+<p>Each <code class="docutils literal notranslate"><span class="pre">probes[]</span></code> entry supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code> = <code class="docutils literal notranslate"><span class="pre">probe</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">positive_terminal</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">negative_terminal</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_designator</span></code></p></li>
+</ul>
+</section>
+<section id="setups">
+<h3><code class="docutils literal notranslate"><span class="pre">setups</span></code><a class="headerlink" href="#setups" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">setups</span></code> array contains HFSS, SIwave AC, and SIwave DC simulation setup
+objects.</p>
+<p>Every setup has at least:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">hfss</span></code> setups support:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">adapt_type</span></code> = <code class="docutils literal notranslate"><span class="pre">single</span></code>, <code class="docutils literal notranslate"><span class="pre">broadband</span></code>, or <code class="docutils literal notranslate"><span class="pre">multi_frequencies</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">single_frequency_adaptive_solution</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">broadband_adaptive_solution</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">multi_frequency_adaptive_solution</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auto_mesh_operation</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mesh_operations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freq_sweep</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">single_frequency_adaptive_solution</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">adaptive_frequency</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_passes</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_delta</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">broadband_adaptive_solution</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">low_frequency</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">high_frequency</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_passes</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_delta</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">multi_frequency_adaptive_solution</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">adapt_frequencies[]</span></code> with <code class="docutils literal notranslate"><span class="pre">adaptive_frequency</span></code>, <code class="docutils literal notranslate"><span class="pre">max_passes</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">max_delta</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">auto_mesh_operation</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trace_ratio_seeding</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">signal_via_side_number</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">mesh_operations[]</span></code> currently supports length mesh operations with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code> or <code class="docutils literal notranslate"><span class="pre">mesh_operation_type</span></code> = <code class="docutils literal notranslate"><span class="pre">length</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_elements</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_length</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restrict_length</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">refine_inside</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nets_layers_list</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">siwave_ac</span></code> setups support:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">use_si_settings</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">si_slider_position</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pi_slider_position</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freq_sweep</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">siwave_dc</span></code> setups support:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dc_slider_position</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dc_ir_settings</span></code> with <code class="docutils literal notranslate"><span class="pre">export_dc_thermal_data</span></code></p></li>
+</ul>
+<p>All AC sweep objects inside <code class="docutils literal notranslate"><span class="pre">freq_sweep</span></code> support:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code> = <code class="docutils literal notranslate"><span class="pre">discrete</span></code>, <code class="docutils literal notranslate"><span class="pre">interpolation</span></code>, or <code class="docutils literal notranslate"><span class="pre">interpolating</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">frequencies</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_q3d_for_dc</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compute_dc_point</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enforce_causality</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enforce_passivity</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">adv_dc_extrapolation</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_hfss_solver_regions</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hfss_solver_region_setup_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hfss_solver_region_sweep_name</span></code></p></li>
+</ul>
+<p>Each <code class="docutils literal notranslate"><span class="pre">frequencies[]</span></code> entry supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">increment</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">distribution</span></code> = <code class="docutils literal notranslate"><span class="pre">linear_scale</span></code>, <code class="docutils literal notranslate"><span class="pre">log_scale</span></code>, <code class="docutils literal notranslate"><span class="pre">single</span></code>,
+<code class="docutils literal notranslate"><span class="pre">linear_count</span></code>, <code class="docutils literal notranslate"><span class="pre">log_count</span></code></p></li>
+</ul>
+</section>
+<section id="boundaries">
+<h3><code class="docutils literal notranslate"><span class="pre">boundaries</span></code><a class="headerlink" href="#boundaries" title="Link to this heading">#</a></h3>
+<p>Use this section to control HFSS open-region and dielectric extent settings.</p>
+<p>Supported keys are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">use_open_region</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">open_region_type</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_pml_visible</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operating_freq</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">radiation_level</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dielectric_extent_type</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dielectric_base_polygon</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dielectric_extent_size</span></code> with <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">is_multiple</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">honor_user_dielectric</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extent_type</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base_polygon</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">truncate_air_box_at_ground</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">air_box_horizontal_extent</span></code> with <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">is_multiple</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">air_box_positive_vertical_extent</span></code> with <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">is_multiple</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">air_box_negative_vertical_extent</span></code> with <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">is_multiple</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sync_air_box_vertical_extent</span></code></p></li>
+</ul>
+</section>
+<section id="operations">
+<h3><code class="docutils literal notranslate"><span class="pre">operations</span></code><a class="headerlink" href="#operations" title="Link to this heading">#</a></h3>
+<p>Use this section for cutout creation and automatic HFSS region generation.</p>
+<p>Supported keys are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cutout</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">generate_auto_hfss_regions</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">cutout</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">auto_identify_nets</span></code> with <code class="docutils literal notranslate"><span class="pre">enabled</span></code>, <code class="docutils literal notranslate"><span class="pre">resistor_below</span></code>,
+<code class="docutils literal notranslate"><span class="pre">inductor_below</span></code>, <code class="docutils literal notranslate"><span class="pre">capacitor_above</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">signal_list</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_list</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extent_type</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expansion_size</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">number_of_threads</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">custom_extent</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">custom_extent_units</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expansion_factor</span></code></p></li>
+</ul>
+</section>
+<section id="s-parameters">
+<h3><code class="docutils literal notranslate"><span class="pre">s_parameters</span></code><a class="headerlink" href="#s-parameters" title="Link to this heading">#</a></h3>
+<p>Each <code class="docutils literal notranslate"><span class="pre">s_parameters[]</span></code> entry supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">component_definition</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">file_path</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_to_all</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">components</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_net</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reference_net_per_component</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pin_order</span></code></p></li>
+</ul>
+<p>Relative <code class="docutils literal notranslate"><span class="pre">file_path</span></code> values are resolved from <code class="docutils literal notranslate"><span class="pre">general.s_parameter_library</span></code>.</p>
+</section>
+<section id="spice-models">
+<h3><code class="docutils literal notranslate"><span class="pre">spice_models</span></code><a class="headerlink" href="#spice-models" title="Link to this heading">#</a></h3>
+<p>Each <code class="docutils literal notranslate"><span class="pre">spice_models[]</span></code> entry supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">component_definition</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">file_path</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sub_circuit_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_to_all</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">components</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">terminal_pairs</span></code></p></li>
+</ul>
+<p>Relative <code class="docutils literal notranslate"><span class="pre">file_path</span></code> values are resolved from <code class="docutils literal notranslate"><span class="pre">general.spice_model_library</span></code>.</p>
+</section>
+<section id="package-definitions">
+<h3><code class="docutils literal notranslate"><span class="pre">package_definitions</span></code><a class="headerlink" href="#package-definitions" title="Link to this heading">#</a></h3>
+<p>Use this section for thermal package and heat-sink definitions.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">package_definitions[]</span></code> entry supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">component_definition</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">maximum_power</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thermal_conductivity</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_jb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_jc</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">height</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_to_all</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">components</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extent_bounding_box</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">heatsink</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">heatsink</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fin_base_height</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fin_height</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fin_orientation</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fin_spacing</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fin_thickness</span></code></p></li>
+</ul>
+</section>
+<section id="variables">
+<h3><code class="docutils literal notranslate"><span class="pre">variables</span></code><a class="headerlink" href="#variables" title="Link to this heading">#</a></h3>
+<p>Each <code class="docutils literal notranslate"><span class="pre">variables[]</span></code> entry supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></li>
+</ul>
+<p>Names starting with <code class="docutils literal notranslate"><span class="pre">$</span></code> are created as project variables. Other names are
+created as design variables.</p>
+</section>
+<section id="modeler">
+<h3><code class="docutils literal notranslate"><span class="pre">modeler</span></code><a class="headerlink" href="#modeler" title="Link to this heading">#</a></h3>
+<p>Use this section to create traces, planes, padstack content, components, and
+primitive deletions.</p>
+<p>Supported keys are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">traces</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">planes</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padstack_definitions</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">padstack_instances</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">components</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">primitives_to_delete</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">traces[]</span></code> support:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layer</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">width</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">net_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_cap_style</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end_cap_style</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">corner_style</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">incremental_path</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">planes[]</span></code> support:</p>
+<ul class="simple">
+<li><p>Common: <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">layer</span></code>, <code class="docutils literal notranslate"><span class="pre">net_name</span></code>, <code class="docutils literal notranslate"><span class="pre">type</span></code>, <code class="docutils literal notranslate"><span class="pre">voids</span></code></p></li>
+<li><p>Rectangle: <code class="docutils literal notranslate"><span class="pre">lower_left_point</span></code>, <code class="docutils literal notranslate"><span class="pre">upper_right_point</span></code>, <code class="docutils literal notranslate"><span class="pre">corner_radius</span></code>,
+<code class="docutils literal notranslate"><span class="pre">rotation</span></code></p></li>
+<li><p>Polygon: <code class="docutils literal notranslate"><span class="pre">points</span></code></p></li>
+<li><p>Circle: <code class="docutils literal notranslate"><span class="pre">radius</span></code>, <code class="docutils literal notranslate"><span class="pre">position</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">modeler.padstack_definitions[]</span></code> and <code class="docutils literal notranslate"><span class="pre">modeler.padstack_instances[]</span></code> use the
+same payload shapes as the top-level <code class="docutils literal notranslate"><span class="pre">padstacks</span></code> section.</p>
+<p><code class="docutils literal notranslate"><span class="pre">modeler.components[]</span></code> use the same payload shape as the top-level
+<code class="docutils literal notranslate"><span class="pre">components</span></code> section, and can additionally be combined with the created
+padstack instances referenced through <code class="docutils literal notranslate"><span class="pre">pins</span></code> in the lower-level runtime
+configuration path.</p>
+<p><code class="docutils literal notranslate"><span class="pre">primitives_to_delete</span></code> supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">net_name</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="best-practices">
+<h2>Best practices<a class="headerlink" href="#best-practices" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Start with only the sections you need.</p></li>
+<li><p>Prefer <code class="docutils literal notranslate"><span class="pre">pin_groups</span></code> and terminal specifiers for readability.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">ports</span></code> / <code class="docutils literal notranslate"><span class="pre">sources</span></code> / <code class="docutils literal notranslate"><span class="pre">probes</span></code> unless you explicitly need
+low-level <code class="docutils literal notranslate"><span class="pre">terminals</span></code>.</p></li>
+<li><p>Keep relative model paths under <code class="docutils literal notranslate"><span class="pre">general.spice_model_library</span></code> and
+<code class="docutils literal notranslate"><span class="pre">general.s_parameter_library</span></code>.</p></li>
+<li><p>When a section is empty, omit it entirely instead of writing empty values.</p></li>
+<li><p>For programmatic authoring, prefer <a class="reference internal" href="configuration_api_guide.html"><span class="doc">Configuration API guide and complete example</span></a>.</p></li>
+</ul>
+</section>
+<section id="next-step">
+<h2>Next step<a class="headerlink" href="#next-step" title="Link to this heading">#</a></h2>
+<p>If you want to generate these payloads in Python instead of hand-authoring JSON,
+continue with <a class="reference internal" href="configuration_api_guide.html"><span class="doc">Configuration API guide and complete example</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#two-ways-to-configure-a-design">Two ways to configure a design</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-a-configuration-file-is-consumed">How a configuration file is consumed</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#top-level-architecture">Top-level architecture</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-file-shape">Minimal file shape</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-sections-and-fields">Supported sections and fields</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#general"><code class="docutils literal notranslate"><span class="pre">general</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stackup"><code class="docutils literal notranslate"><span class="pre">stackup</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nets"><code class="docutils literal notranslate"><span class="pre">nets</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components"><code class="docutils literal notranslate"><span class="pre">components</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#padstacks"><code class="docutils literal notranslate"><span class="pre">padstacks</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pin-groups"><code class="docutils literal notranslate"><span class="pre">pin_groups</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#terminals"><code class="docutils literal notranslate"><span class="pre">terminals</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ports-sources-and-probes"><code class="docutils literal notranslate"><span class="pre">ports</span></code>, <code class="docutils literal notranslate"><span class="pre">sources</span></code>, and <code class="docutils literal notranslate"><span class="pre">probes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setups"><code class="docutils literal notranslate"><span class="pre">setups</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#boundaries"><code class="docutils literal notranslate"><span class="pre">boundaries</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#operations"><code class="docutils literal notranslate"><span class="pre">operations</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#s-parameters"><code class="docutils literal notranslate"><span class="pre">s_parameters</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spice-models"><code class="docutils literal notranslate"><span class="pre">spice_models</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#package-definitions"><code class="docutils literal notranslate"><span class="pre">package_definitions</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variables"><code class="docutils literal notranslate"><span class="pre">variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modeler"><code class="docutils literal notranslate"><span class="pre">modeler</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#best-practices">Best practices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-step">Next step</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+
+  
+  <nav class="tocsection editthispage" aria-label="Edit this page">
+    <a href="https://github.com/ansys/pyedb/edit/main/doc/source/configuration/file_architecture.rst" rel="noopener noreferrer">
+      <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </nav>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../_sources/configuration/file_architecture.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.8.1.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

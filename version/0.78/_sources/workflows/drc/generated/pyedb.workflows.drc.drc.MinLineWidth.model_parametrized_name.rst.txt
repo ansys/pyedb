@@ -1,0 +1,6 @@
+model\_parametrized\_name
+=========================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinLineWidth.model_parametrized_name

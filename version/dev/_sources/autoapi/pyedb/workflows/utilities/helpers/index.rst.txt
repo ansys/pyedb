@@ -1,0 +1,261 @@
+
+
+
+
+
+
+The ``helpers.py`` module
+=========================
+
+.. py:module:: pyedb.workflows.utilities.helpers
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: helpers
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~format_time`
+            - Format time in seconds into a human-readable string.
+
+
+          * - :py:obj:`~print_progress`
+            - Print progress information to terminal with rate and ETA.
+
+
+          * - :py:obj:`~finish_progress`
+            - End a progress line cleanly by adding a newline.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Helper utilities for progress reporting and time formatting in workflows.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: format_time(seconds: float) -> str
+
+   
+   Format time in seconds into a human-readable string.
+
+   Convert a time duration in seconds to a formatted string showing hours,
+   minutes, and seconds in a compact format (e.g., "2h15m30s").
+
+   :Parameters:
+
+       **seconds** : :class:`python:float`
+           Time duration in seconds to format.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Formatted time string. Returns format "Xh Ym Zs" for durations with hours,
+           "Ym Zs" for durations with minutes, or "Zs" for durations under one minute.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> format_time(45)
+   '45s'
+   >>> format_time(125)
+   '2m05s'
+   >>> format_time(3665)
+   '1h01m05s'
+   >>> format_time(7384.5)
+   '2h03m05s'
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: print_progress(current: int, total: int, start_time: float, prefix_desc: str = 'Progress') -> None
+
+   
+   Print progress information to terminal with rate and ETA.
+
+   Display a dynamic progress line in the terminal showing current progress,
+   percentage completion, processing rate, elapsed time, and estimated time
+   remaining. The display updates in-place using carriage return.
+
+   :Parameters:
+
+       **current** : :class:`python:int`
+           Current progress count (number of items processed).
+
+       **total** : :class:`python:int`
+           Total count for completion. Can be 0 or negative if unknown,
+           in which case percentage will show 100%.
+
+       **start_time** : :class:`python:float`
+           Start time in seconds from ``time.time()`` used to compute
+           elapsed time and processing rate.
+
+       **prefix_desc** : :class:`python:str`, :obj:`optional`
+           Description prefix to show before progress information.
+           The default is ``"Progress"``.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   - Uses carriage return (``\r``) to update the same line
+   - Call ``finish_progress()`` after the loop to add a newline
+   - Silently ignores exceptions if stdout is unavailable
+   - Caller controls update frequency (e.g., every N iterations or M seconds)
+
+
+   .. rubric:: Examples
+
+   Basic usage for processing items:
+
+   >>> from time import time
+   >>> start = time()
+   >>> for i in range(100):
+   ...     # do some work
+   ...     print_progress(i + 1, 100, start, "Processing items")
+   Processing items: 100/100 (100.0%) rate=50.0/s elapsed=2.0s eta=0s
+
+   Processing with unknown total:
+
+   >>> start = time()
+   >>> for i in range(50):
+   ...     # do some work
+   ...     print_progress(i + 1, 0, start, "Reading files")
+   Reading files: 50/0 (100.0%) rate=25.0/s elapsed=2.0s eta=0s
+
+   Processing database records:
+
+   >>> from time import time, sleep
+   >>> start = time()
+   >>> total_records = 1000
+   >>> for i in range(total_records):
+   ...     # Process each record
+   ...     if i % 10 == 0:  # Update every 10 items
+   ...         print_progress(i, total_records, start, "Processing records")
+   ... finish_progress()
+   Processing records: 1000/1000 (100.0%) rate=500.0/s elapsed=2.0s eta=0s
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: finish_progress() -> None
+
+   
+   End a progress line cleanly by adding a newline.
+
+   This function should be called after completing a progress reporting loop
+   to move the cursor to a new line and prevent subsequent output from
+   overwriting the final progress message.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   - Always call this after using ``print_progress()`` in a loop
+   - Silently handles exceptions if stdout is unavailable
+   - Adds a newline character to move to the next line
+
+
+   .. rubric:: Examples
+
+   Complete progress reporting workflow:
+
+   >>> from time import time
+   >>> start = time()
+   >>> total = 100
+   >>> for i in range(total):
+   ...     # Process items
+   ...     print_progress(i + 1, total, start, "Processing")
+   ... finish_progress()
+   ... print("Processing complete!")
+   Processing: 100/100 (100.0%) rate=50.0/s elapsed=2.0s eta=0s
+   Processing complete!
+
+   Using in a workflow:
+
+   >>> from time import time, sleep
+   >>> def process_files(file_list):
+   ...     start = time()
+   ...     for i, file in enumerate(file_list):
+   ...         # Process file
+   ...         print_progress(i + 1, len(file_list), start, "Processing files")
+   ...     finish_progress()
+   ...     print(f"Processed {len(file_list)} files")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
