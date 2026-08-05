@@ -498,6 +498,7 @@ class TestCfgStackup:
         s.generate_example_stackup()
         assert s.stackup_layers
 
+
 class TestCfgStackupAddMaterial:
     def test_returns_material_config_instance(self):
         s = CfgStackup()

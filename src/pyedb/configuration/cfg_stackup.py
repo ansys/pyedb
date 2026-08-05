@@ -250,7 +250,7 @@ class CfgStackup(BaseModel):
     """Collect stackup materials and layers for serialization."""
 
     @property
-    def stackup_layers(self)->list[CfgLayer]:
+    def stackup_layers(self) -> list[CfgLayer]:
         return [l for l in self.layers if l.layer_type in ["signal", "dielectric"]]
 
     materials: list[CfgMaterial] = Field(default_factory=list)
@@ -684,11 +684,11 @@ class CfgStackup(BaseModel):
             layer.thickness = f"{layer.thickness}{unit}"
 
     def generate_example_stackup(
-            self,
-            layer_count=8,
-            conductor_thickness="0.017mm",
-            dielectric_thickness="0.2mm",
-            solder_mask_thickness="0.02mm",
+        self,
+        layer_count=8,
+        conductor_thickness="0.017mm",
+        dielectric_thickness="0.2mm",
+        solder_mask_thickness="0.02mm",
     ):
         """Generate a standard PCB layer stackup with example materials.
 
@@ -740,28 +740,36 @@ class CfgStackup(BaseModel):
         layer_number = 0
         for i in range(layer_count * 2 + 1):
             if i == 0:
-                self.add_layer_at_bottom(name="SMB",
-                                                type="dielectric",
-                                                material=self.get_material("example_solder_mask").name,
-                                                fill_material="",
-                                                thickness=solder_mask_thickness)
+                self.add_layer_at_bottom(
+                    name="SMB",
+                    type="dielectric",
+                    material=self.get_material("example_solder_mask").name,
+                    fill_material="",
+                    thickness=solder_mask_thickness,
+                )
             elif i == layer_count * 2:
-                self.add_layer_at_bottom(name="SMT",
-                                                type="dielectric",
-                                                material=self.get_material("example_solder_mask").name,
-                                                fill_material="",
-                                                thickness=solder_mask_thickness)
+                self.add_layer_at_bottom(
+                    name="SMT",
+                    type="dielectric",
+                    material=self.get_material("example_solder_mask").name,
+                    fill_material="",
+                    thickness=solder_mask_thickness,
+                )
             elif i % 2 == 1:
                 layer_number += 1
-                self.add_layer_at_bottom(name=f"L{layer_number}",
-                                                type="signal",
-                                                material=self.get_material("example_copper").name,
-                                                fill_material=self.get_material("example_prepreg").name,
-                                                thickness=conductor_thickness)
+                self.add_layer_at_bottom(
+                    name=f"L{layer_number}",
+                    type="signal",
+                    material=self.get_material("example_copper").name,
+                    fill_material=self.get_material("example_prepreg").name,
+                    thickness=conductor_thickness,
+                )
             else:
                 material_name = "example_prepreg" if i % 4 == 2 else "example_core"
-                self.add_layer_at_bottom(name=f"DE{layer_number}",
-                                                type="dielectric",
-                                                material=self.get_material(material_name).name,
-                                                fill_material="",
-                                                thickness=dielectric_thickness)
+                self.add_layer_at_bottom(
+                    name=f"DE{layer_number}",
+                    type="dielectric",
+                    material=self.get_material(material_name).name,
+                    fill_material="",
+                    thickness=dielectric_thickness,
+                )
