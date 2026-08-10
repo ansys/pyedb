@@ -48,15 +48,15 @@ PyEDB is built on top of lower-level APIs and provides a simplified, high-level 
 **Component Stack:**
 
 1. **Ansys EDB (.NET Libraries):** The core Ansys Electronics Database engine written in .NET, installed with AEDT.
-   This contains all the fundamental EDB functionality for layout manipulation, simulation setup, etc.
+   This contains all the fundamental EDB features for layout manipulation, simulation setup, etc.
 
 2. **PyEDB-Core:** A lower-level Python API (not to be confused with ansys-edb-core) that provides direct .NET bindings
    to the EDB libraries. Using PyEDB-Core requires deep knowledge of EDB architecture and class hierarchies.
 
 3. **ansys-edb-core:** A Python package that provides gRPC client capabilities for future client-server architecture.
-   Currently installed as a dependency but the gRPC server functionality is not yet active.
+   Currently installed as a dependency but the gRPC server features are not yet active.
 
-4. **PyEDB (This Library):** The high-level, user-friendly Python interface that wraps PyEDB-Core with application-oriented
+4. **PyEDB (This Library):** The high-level, user-friendly Python interface that wraps PyEDB-Core with app-oriented
    classes and methods. PyEDB significantly simplifies EDB workflows and reduces the learning curve.
 
 Current architecture with .NET interoperability
@@ -77,7 +77,7 @@ access to the local EDB .NET assemblies.
 
 Performance and Integration
 ---------------------------
-*   **Performance:** Direct .NET interoperability (current) provides efficient access to EDB functionality.
+*   **Performance:** Direct .NET interoperability (current) provides efficient access to EDB features.
     The upcoming gRPC architecture enables pure native python API for better compatibility and stability especially on Linux.
 
 *   **Python Ecosystem:** Being a pure Python library, PyEDB integrates seamlessly with the vast Python data science and
@@ -117,7 +117,7 @@ License
 PyEDB is licensed under the MIT license.
 
 PyEDB makes no commercial claim over Ansys whatsoever. This library extends the
-functionality of AEDT by adding a Python interface to AEDT without changing the
+features of AEDT by adding a Python interface to AEDT without changing the
 core behavior or license of the original software. The use of PyAEDT requires a
 legally licensed local copy of AEDT.
 
