@@ -26,7 +26,7 @@ What the helper does
 ~~~~~~~~~~~~~~~~~~~~
 1. Opens the source EDB (board layout)
 2. Identifies **signal** and **power/ground** nets automatically
-3. Picks the **best reference net** (GND, VSS, AGND …) using a curated regex table
+3. Picks the **best reference net** (GND, VSS, AGND …) using a curated regular expression table
 4. Optionally **groups nets into batches** (differential pairs are never split)
 5. Creates a **cut-out** for every batch (bounding box or convex-hull)
 6. Places **coaxial or circuit ports** on every component that touches the signal nets
@@ -62,7 +62,7 @@ Minimal quick-start
    cfg.auto_populate_batch_groups()  # discover nets and group them
    cfg.create_projects()  # write one EDB + HFSS setup per batch
 
-The snippet above produces a folder ``../hfss/serdes.aedb`` that contains:
+The preceding snippet produces a folder ``../hfss/serdes.aedb`` that contains:
 
 * a cut-out with ≤ 50 nets
 * coaxial ports on every component pin
@@ -137,7 +137,7 @@ Coaxial ports
 ~~~~~~~~~~~~~
 A coaxial cylinder is constructed **normal to the component pin**.
 The outer radius is derived from the pad-stack anti-pad; the inner radius from the finished hole size.
-When ``solder_balls`` are supplied the 3-D model is extended by the ball height and diameter.
+When ``solder_balls`` are supplied the 3D model is extended by the ball height and diameter.
 
 Circuit ports
 ~~~~~~~~~~~~~
