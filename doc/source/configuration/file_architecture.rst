@@ -44,7 +44,7 @@ Two ways to configure a design
 
 .. tip::
 
-   ``edb.configuration.run()`` accepts a file path, a plain dictionary, **or**
+   ``edb.configuration.run()`` accepts a path, a plain dictionary, **or**
    a ``CfgData`` instance, so you can mix and match approaches in the
    same script.
 
@@ -352,7 +352,7 @@ Each ``components[]`` entry supports these keys:
      - Component type such as ``resistor``, ``capacitor``, or ``ic``.
    * - ``enabled``
      - Boolean
-     - Enables or disables application of the entry.
+     - Enables or disables whether the entry is applied.
    * - ``definition``
      - string
      - Component definition / part name.

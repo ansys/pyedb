@@ -493,6 +493,11 @@ class TestCfgStackup:
         # numeric thickness gets f"{val}m" appended
         assert s.layers[0].thickness == f"{35e-6}m"
 
+    def test_generate_example_stackup(self):
+        s = CfgStackup()
+        s.generate_example_stackup()
+        assert s.stackup_layers
+
 
 class TestCfgStackupAddMaterial:
     def test_returns_material_config_instance(self):
