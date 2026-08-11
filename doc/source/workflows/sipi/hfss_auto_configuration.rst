@@ -137,7 +137,7 @@ Coaxial ports
 ~~~~~~~~~~~~~
 A coaxial cylinder is constructed **normal to the component pin**.
 The outer radius is derived from the pad-stack anti-pad; the inner radius from the finished hole size.
-When ``solder_balls`` are supplied the 3-D model is extended by the ball height and diameter.
+When ``solder_balls`` are supplied the 3D model is extended by the ball height and diameter.
 
 Circuit ports
 ~~~~~~~~~~~~~

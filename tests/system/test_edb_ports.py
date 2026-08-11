@@ -687,13 +687,128 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
     def test_create_point_terminal(self):
-        """create_point_terminal creates a valid PointTerminal."""
+        """create_point_terminal without reference creates a standalone terminal (not a circuit port)."""
         edbapp = self.edb_examples.get_si_verse()
         term = edbapp.excitation_manager.create_point_terminal(
             x="100mm", y="24mm", layer="1_Top", net="GND", name="pt_term2"
         )
         assert term
         assert not term.is_null
+        # No reference → must NOT be wired as a circuit port
+        assert term.core.reference_terminal is None or term.core.reference_terminal.is_null
+        assert term.is_circuit_port is False
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    def test_create_point_terminal_with_reference(self):
+        """create_point_terminal with reference_net + reference_layer creates a linked reference terminal."""
+        edbapp = self.edb_examples.get_si_verse()
+        # Vertical port: same x/y, reference on a different layer
+        term = edbapp.excitation_manager.create_point_terminal(
+            x="100mm",
+            y="24mm",
+            layer="1_Top",
+            net="1V0",
+            name="pt_term_sig",
+            reference_net="GND",
+            reference_layer="16_Bottom",
+        )
+        assert term
+        assert not term.is_null
+        assert term.core.reference_terminal is not None
+        assert not term.core.reference_terminal.is_null
+        assert term.core.reference_terminal.net.name == "GND"
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    def test_create_point_terminal_degenerate_reference_raises(self):
+        """create_point_terminal raises ValueError when signal and reference positions are identical."""
+        edbapp = self.edb_examples.get_si_verse()
+        with pytest.raises(ValueError, match="degenerate zero-length port"):
+            edbapp.excitation_manager.create_point_terminal(
+                x="100mm",
+                y="24mm",
+                layer="1_Top",
+                net="1V0",
+                name="pt_term_degen",
+                reference_net="GND",
+                # no reference_layer, no reference_x/y → identical position → ValueError
+            )
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    def test_create_point_terminal_with_existing_reference_terminal(self):
+        """reference_terminal param links an existing terminal object without creating a new one."""
+        edbapp = self.edb_examples.get_si_verse()
+        # Create a standalone GND reference terminal first
+        gnd_ref = edbapp.excitation_manager.create_point_terminal(
+            x="100mm", y="24mm", layer="16_Bottom", net="GND", name="shared_gnd_ref"
+        )
+        assert gnd_ref and not gnd_ref.is_null
+
+        # Create a signal terminal and wire it to the existing reference
+        sig_term = edbapp.excitation_manager.create_point_terminal(
+            x="100mm",
+            y="24mm",
+            layer="1_Top",
+            net="1V0",
+            name="pt_sig_shared_ref",
+            reference_terminal=gnd_ref,
+        )
+        assert sig_term and not sig_term.is_null
+        # Signal terminal must point to the pre-existing reference
+        assert sig_term.core.reference_terminal is not None
+        assert not sig_term.core.reference_terminal.is_null
+        assert sig_term.core.reference_terminal.name == gnd_ref.name
+        # Both terminals must be circuit ports
+        assert sig_term.is_circuit_port is True
+        assert gnd_ref.is_circuit_port is True
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    def test_create_point_terminal_shared_reference_across_multiple_pins(self):
+        """One reference terminal can be shared across multiple signal terminals."""
+        edbapp = self.edb_examples.get_si_verse()
+        gnd_ref = edbapp.excitation_manager.create_point_terminal(
+            x="100mm", y="24mm", layer="16_Bottom", net="GND", name="multi_shared_ref"
+        )
+        signal_nets = ["1V0", "AVCC_1V0"]
+        created = []
+        for i, net in enumerate(signal_nets):
+            t = edbapp.excitation_manager.create_point_terminal(
+                x="100mm",
+                y="24mm",
+                layer="1_Top",
+                net=net,
+                name=f"pt_multi_{i}",
+                reference_terminal=gnd_ref,
+            )
+            assert t and not t.is_null
+            assert t.core.reference_terminal.name == gnd_ref.name
+            created.append(t)
+        assert len(created) == len(signal_nets)
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    def test_create_point_terminal_reference_terminal_overrides_reference_net(self):
+        """When both reference_terminal and reference_net are supplied, reference_terminal wins."""
+        edbapp = self.edb_examples.get_si_verse()
+        explicit_ref = edbapp.excitation_manager.create_point_terminal(
+            x="100mm", y="24mm", layer="16_Bottom", net="GND", name="explicit_ref"
+        )
+        sig_term = edbapp.excitation_manager.create_point_terminal(
+            x="100mm",
+            y="24mm",
+            layer="1_Top",
+            net="1V0",
+            name="pt_override_test",
+            reference_terminal=explicit_ref,
+            reference_net="GND",  # should be ignored
+            reference_layer="16_Bottom",  # should be ignored
+        )
+        assert sig_term and not sig_term.is_null
+        # Must point to the explicitly supplied terminal, not a freshly created one
+        assert sig_term.core.reference_terminal.name == explicit_ref.name
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")

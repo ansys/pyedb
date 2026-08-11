@@ -27,7 +27,7 @@ Development Environment Setup
 
 Running Tests
 -------------
-To ensure your changes don't break existing functionality, run the test suite:
+To ensure your changes don't break existing features, run the test suite:
 
 .. code-block:: bash
 

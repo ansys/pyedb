@@ -10,7 +10,7 @@ These examples show how PyEDB and PyAEDT work together to create solve and post-
 They are maintained in the main PyAEDT example gallery and include:
 
 * Import and modification of EDB layout
-* HFSS 3-D and HFSS 3-D Layout set-ups
+* HFSS 3D and HFSS 3D Layout set-ups
 * Frequency sweeps, field plots, S-parameter export
 * Parametric studies and optimization loops
 

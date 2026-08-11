@@ -19,7 +19,7 @@ The key insight is that the builder **separates intent from execution**:
   version control, review, or reuse in another project.
 
 This separates three concerns that are often tangled together in scripted
-workflows: *definition*, *validation*, and *application*.
+workflows: *definition*, *validation*, and *use*.
 
 Creating a builder
 ------------------
@@ -769,7 +769,7 @@ script. The ``vendor_library_model`` key is fully round-tripped:
 Exporting the builder as JSON for review and reuse
 ---------------------------------------------------
 
-Any of the builder objects from the examples above can be serialized to a
+Any of the builder objects from the preceding examples can be serialized to a
 self-contained JSON file. This is useful for code review, archiving a known-
 good configuration, or sharing a setup with another team member who can apply
 it without running the Python script themselves.
