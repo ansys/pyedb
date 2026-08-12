@@ -237,7 +237,9 @@ class Modeler:
         else:
             corner_style = self._edb.Cell.Primitive.PathCornerStyle.MiterCorner  # pragma: no cover
 
-        pointlists = [self._pedb.point_data(i[0], i[1]) for i in path_list.points]
+        pointlists = [
+            self._pedb.point_data(i[0]) if len(i) == 1 else self._pedb.point_data(i[0], i[1]) for i in path_list.points
+        ]
         polygonData = self._edb.Geometry.PolygonData(convert_py_list_to_net_list(pointlists), False)
         polygon = self._edb.Cell.Primitive.Path.Create(
             self._active_layout,
