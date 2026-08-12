@@ -2881,7 +2881,7 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 ### Added
 - Initial release of the gRPC-based PyEDB client.
 - Comprehensive documentation including user guides, migration guide, and examples.
-- Core functionality for EDB creation, modification, and simulation setup.
+- Core features for EDB creation, modification, and simulation setup.
 
 ### Removed
 - Legacy `pyedb.dotnet` module (moved to archived branch).

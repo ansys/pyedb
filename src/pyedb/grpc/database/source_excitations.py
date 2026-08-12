@@ -454,8 +454,8 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
-                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.WavePort`,
                    :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
                    :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
                    :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
@@ -469,8 +469,8 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
-                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.WavePort`,
                    :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
                    :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
                    :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
@@ -1405,7 +1405,7 @@ class SourceExcitation(SourceExcitationInternal):
         """
         if not source_name:
             source_name = (
-                f"VSource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
+                f"VSource_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
             )
             if source_name in self._pedb.terminals:
                 source_name = self._get_unique_terminal_name(source_name)
@@ -1456,7 +1456,7 @@ class SourceExcitation(SourceExcitationInternal):
         """
         if not source_name:
             source_name = (
-                f"VSource_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
+                f"VSource_{pos_pin.component.name}_{pos_pin.net.name}_{neg_pin.component.name}_{neg_pin.net.name}"
             )
         return self._create_terminal_on_pins(
             positive_pin=pos_pin,
@@ -3496,7 +3496,109 @@ class SourceExcitation(SourceExcitationInternal):
             )
         return terminal
 
-    def create_point_terminal(self, x, y, layer, net, name=""):
+    def create_point_terminal(
+        self,
+        x: float | int | str,
+        y: float | int | str,
+        layer: str,
+        net: str,
+        name="",
+        reference_terminal=None,
+        reference_net=None,
+        reference_layer=None,
+        reference_x=None,
+        reference_y=None,
+    ):
+        """Create a point terminal.
+
+        Parameters
+        ----------
+        x : float or str
+            X coordinate of the terminal location.
+        y : float or str
+            Y coordinate of the terminal location.
+        layer : str
+            Layer name on which the terminal is placed.
+        net : str
+            Net name for the signal (positive) terminal.
+        name : str, optional
+            Terminal name. If empty, a name is auto-generated from the layer and coordinates.
+        reference_terminal : :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`,\
+ optional
+            An **existing** terminal object to use as the reference (return path). Use this
+            when a shared reference terminal has already been created and you want multiple
+            signal terminals to point to the same reference — for example, one GND terminal
+            shared across all pins of a die component.  When supplied, ``reference_net``,
+            ``reference_layer``, ``reference_x``, and ``reference_y`` are ignored.
+            Assigning a reference terminal turns the signal terminal into a circuit port in
+            AEDT (``boundary_type=PORT``, ``is_circuit_port=True``).
+        reference_net : str, optional
+            Net name for the reference (negative/return) terminal. When provided **and**
+            ``reference_terminal`` is ``None``, a new reference point terminal is created
+            and linked to the signal terminal. This is required for HFSS 3D Layout to
+            collect the port geometry for meshing — without a proper reference terminal the
+            solver may fail with *"failed to collect the port geometry needed for meshing"*.
+
+            Two geometrically valid configurations are supported:
+
+            * **Vertical port** (most common for die/package pins): same ``(x, y)`` as the
+              signal terminal but a different ``reference_layer`` (e.g. the ground plane
+              directly below the signal pad).  Supply ``reference_layer`` only.
+            * **Coplanar port**: different ``(x, y)`` position on the same or a different
+              layer.  Supply ``reference_x`` and/or ``reference_y``.
+
+            A ``ValueError`` is raised when the resolved reference position (x, y, layer)
+            is identical to the signal position, because such a degenerate port has zero
+            spatial extent and HFSS cannot collect its geometry for meshing.
+        reference_layer : str, optional
+            Layer name for the reference terminal.  Must differ from ``layer`` when the
+            reference position equals the signal position (i.e. when neither ``reference_x``
+            nor ``reference_y`` is supplied).
+        reference_x : float or str, optional
+            X coordinate of the reference terminal.  Defaults to ``x`` (signal X) when not
+            provided.
+        reference_y : float or str, optional
+            Y coordinate of the reference terminal.  Defaults to ``y`` (signal Y) when not
+            provided.
+
+        Returns
+        -------
+        :class:`PointTerminal <pyedb.grpc.database.terminal.point_terminal.PointTerminal>`
+            The created signal point terminal. The linked reference terminal is accessible
+            via ``terminal.reference_terminal``.
+
+        Raises
+        ------
+        ValueError
+            When ``reference_net`` is provided but the resolved reference position
+            ``(reference_x, reference_y, reference_layer)`` is identical to the signal
+            position ``(x, y, layer)``, which would produce a degenerate zero-length port.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> # Signal terminal only — no circuit port (e.g. Q3D conductor)
+        >>> term = edb.excitation_manager.create_point_terminal(
+        ...     x=0.001, y=0.002, layer="1_Top", net="SIG", name="T_SIG"
+        ... )
+        >>> # Vertical circuit port — new reference terminal on a different layer
+        >>> term = edb.excitation_manager.create_point_terminal(
+        ...     x=0.001, y=0.002, layer="1_Top", net="SIG", name="T_SIG",
+        ...     reference_net="GND", reference_layer="ground_plane",
+        ... )
+        >>> # Shared reference — one GND terminal reused for every signal pin
+        >>> gnd_ref = edb.excitation_manager.create_point_terminal(
+        ...     x=0.0, y=0.0, layer="ground_plane", net="GND", name="shared_ref"
+        ... )
+        >>> for pin in die_component.pinlist:
+        ...     edb.excitation_manager.create_point_terminal(
+        ...         x=pin.position[0], y=pin.position[1],
+        ...         layer=pin.start_layer, net=pin.net_name,
+        ...         name=f"T_{pin.aedt_name}",
+        ...         reference_terminal=gnd_ref,
+        ...     )
+        """
         from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 
         _name = name if name else f"point_{layer}_{x}_{y}"
@@ -3506,6 +3608,45 @@ class SourceExcitation(SourceExcitationInternal):
             raise RuntimeError(
                 f"Failed to create terminal. Input arguments: x={x}, y={y}, layer={layer}, net={net}, name={name}."
             )
+
+        if reference_terminal is not None:
+            # Use the caller-supplied terminal object directly.
+            ref_terminal = reference_terminal
+        elif reference_net is not None:
+            _ref_x = reference_x if reference_x is not None else x
+            _ref_y = reference_y if reference_y is not None else y
+            _ref_layer = reference_layer if reference_layer is not None else layer
+
+            # Guard against a degenerate port where signal == reference (zero spatial extent).
+            if _ref_x == x and _ref_y == y and _ref_layer == layer:
+                raise ValueError(
+                    "The reference terminal position (reference_x, reference_y, reference_layer) is identical to "
+                    "the signal terminal position, which produces a degenerate zero-length port that HFSS cannot "
+                    "mesh. Supply a different 'reference_layer' (vertical port) or different 'reference_x'/"
+                    "'reference_y' coordinates (coplanar port)."
+                )
+
+            _ref_name = f"{_name}_ref"
+            ref_location = [_ref_x, _ref_y]
+            ref_terminal = PointTerminal.create(self._pedb.layout, reference_net, _ref_layer, _ref_name, ref_location)
+            if ref_terminal.is_null:
+                raise RuntimeError(
+                    f"Failed to create reference terminal. Input arguments: x={_ref_x}, y={_ref_y}, "
+                    f"layer={_ref_layer}, net={reference_net}, name={_ref_name}."
+                )
+        else:
+            ref_terminal = None
+
+        if ref_terminal is not None:
+            # Linking the reference terminal turns this pair into a circuit port in AEDT.
+            # Both terminals must carry the PORT boundary type and is_circuit_port=True so
+            # that HFSS 3D Layout recognises and meshes them correctly.
+            terminal.boundary_type = CoreBoundaryType.PORT
+            terminal.is_circuit_port = True
+            ref_terminal.boundary_type = CoreBoundaryType.PORT
+            ref_terminal.is_circuit_port = True
+            terminal.core.reference_terminal = ref_terminal.core
+
         return terminal
 
     def create_edge_terminal(self, primitive_name, x, y, name=""):
