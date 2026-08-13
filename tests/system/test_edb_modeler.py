@@ -322,6 +322,19 @@ class TestClass(BaseTestClass):
         # assert trace.get_center_line()[-1] == [0.001, 0.002]
         edbapp.close(terminate_rpc_session=False)
 
+    def test_modeler_create_trace_width_arc(self):
+        """Create a trace based on a list of points."""
+        edbapp = self.edb_examples.get_si_verse()
+        points = [
+            [-0.025, -0.02],
+            [0.01],
+            [0.025, -0.02],
+            [0.025, 0.02],
+        ]
+        trace = edbapp.modeler.create_trace(points, "1_Top")
+        assert trace.center_line[1][0] == 0.01
+        edbapp.close(terminate_rpc_session=False)
+
     def test_modeler_add_void(self):
         """Add a void into a shape."""
         # Done
