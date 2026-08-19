@@ -2689,8 +2689,6 @@ dependencies = [
     { name = "psutil" },
     { name = "pydantic" },
     { name = "toml" },
-    { name = "typer" },
-    { name = "xmltodict" },
 ]
 
 [package.optional-dependencies]
@@ -2703,6 +2701,8 @@ all = [
     { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "shapely" },
+    { name = "typer" },
+    { name = "xmltodict" },
 ]
 analysis = [
     { name = "pandas" },
@@ -2810,8 +2810,8 @@ requires-dist = [
     { name = "shapely", marker = "extra == 'all'" },
     { name = "shapely", marker = "extra == 'geometry'" },
     { name = "toml", specifier = ">=0.10.2" },
-    { name = "typer", specifier = ">=0.20.0" },
-    { name = "xmltodict" },
+    { name = "typer", marker = "extra == 'all'", specifier = ">=0.20.0" },
+    { name = "xmltodict", marker = "extra == 'all'" },
 ]
 provides-extras = ["all", "analysis", "dotnet", "geometry", "graphics"]
 
