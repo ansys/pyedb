@@ -153,4 +153,4 @@ ore
 .NET
 [Gg]roiss
 [Hh]uray
-Synopsys
+synopsys
