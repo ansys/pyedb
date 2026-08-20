@@ -28,7 +28,7 @@ jobs:
       contents: write # Needed to create PR for changelog
       pull-requests: write # Needed to create PR for changelog
     steps:
-      - uses: ansys/actions/doc-deploy-changelog@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
+      - uses: ansys/actions/doc-deploy-changelog@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -67,7 +67,7 @@ jobs:
       contents: read
     steps:
       - name: Check documentation style
-        uses: ansys/actions/doc-style@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
+        uses: ansys/actions/doc-style@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -718,7 +718,7 @@ jobs:
       contents: write # Needed to update files on the gh-pages branch
     steps:
       - name: Deploy the stable documentation
-        uses: ansys/actions/doc-deploy-stable@84b6533ae76f5dde69a1df26c18682160a8121cf # v10.3.5
+        uses: ansys/actions/doc-deploy-stable@9dc4e3161033d2c2485fbf9687d40cfb7a661fb2 # v10.3.6
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
