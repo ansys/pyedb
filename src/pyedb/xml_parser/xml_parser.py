@@ -27,7 +27,14 @@ import re
 from typing import Optional
 
 from pydantic import BaseModel, Field
-import xmltodict
+
+try:
+    import xmltodict
+except ImportError as e:  # pragma: no cover
+    raise ImportError(
+        "xmltodict is required for PyEDB XML parsing. Please install with 'pip install pyedb[all]' or "
+        "'pip install xmltodict'."
+    ) from e
 
 from pyedb.xml_parser.xml_stackup import XmlStackup
 
