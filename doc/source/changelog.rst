@@ -9,6 +9,181 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.82.0 <https://github.com/ansys/pyedb/releases/tag/v0.82.0>`_ - August 20, 2026
+=================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - CFG generate example stackup
+          - `#2470 <https://github.com/ansys/pyedb/pull/2470>`_
+
+        * - Trace with arc
+          - `#2476 <https://github.com/ansys/pyedb/pull/2476>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Cutout fixed
+          - `#2447 <https://github.com/ansys/pyedb/pull/2447>`_
+
+        * - Cutout issue fixed
+          - `#2455 <https://github.com/ansys/pyedb/pull/2455>`_
+
+        * - Point terminal creation fixed
+          - `#2456 <https://github.com/ansys/pyedb/pull/2456>`_
+
+        * - Port radial extent setter fixed
+          - `#2466 <https://github.com/ansys/pyedb/pull/2466>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ansys/actions/doc-deploy-stable from 10.3.4 to 10.3.5
+          - `#2438 <https://github.com/ansys/pyedb/pull/2438>`_
+
+        * - Bump ansys/actions/check-vulnerabilities from 10.3.4 to 10.3.5
+          - `#2439 <https://github.com/ansys/pyedb/pull/2439>`_
+
+        * - Bump ansys/actions/release-github from 10.3.4 to 10.3.5
+          - `#2440 <https://github.com/ansys/pyedb/pull/2440>`_
+
+        * - Bump ansys/actions/doc-deploy-changelog from 10.3.4 to 10.3.5
+          - `#2441 <https://github.com/ansys/pyedb/pull/2441>`_
+
+        * - Bump ansys/actions/check-actions-security from 10.3.4 to 10.3.5
+          - `#2442 <https://github.com/ansys/pyedb/pull/2442>`_
+
+        * - Bump imageio from 2.37.3 to 2.37.4
+          - `#2443 <https://github.com/ansys/pyedb/pull/2443>`_
+
+        * - Bump actions/checkout from 7.0.0 to 7.0.1
+          - `#2449 <https://github.com/ansys/pyedb/pull/2449>`_
+
+        * - Bump ansys/actions/doc-style from 10.3.4 to 10.3.5
+          - `#2450 <https://github.com/ansys/pyedb/pull/2450>`_
+
+        * - Bump ansys/actions/build-wheelhouse from 10.3.4 to 10.3.5
+          - `#2451 <https://github.com/ansys/pyedb/pull/2451>`_
+
+        * - Bump ansys/actions/check-pr-title from 10.3.4 to 10.3.5
+          - `#2452 <https://github.com/ansys/pyedb/pull/2452>`_
+
+        * - Bump ansys/actions/doc-deploy-dev from 10.3.4 to 10.3.5
+          - `#2453 <https://github.com/ansys/pyedb/pull/2453>`_
+
+        * - Bump jupyterlab from 4.6.1 to 4.6.2
+          - `#2454 <https://github.com/ansys/pyedb/pull/2454>`_
+
+        * - Bump actions/setup-python from 6.3.0 to 7.0.0
+          - `#2457 <https://github.com/ansys/pyedb/pull/2457>`_
+
+        * - Bump ansys/actions/build-library from 10.3.4 to 10.3.5
+          - `#2458 <https://github.com/ansys/pyedb/pull/2458>`_
+
+        * - Bump ansys/actions/doc-changelog from 10.3.4 to 10.3.5
+          - `#2459 <https://github.com/ansys/pyedb/pull/2459>`_
+
+        * - Bump pypa/gh-action-pypi-publish from 1.14.0 to 1.14.1
+          - `#2460 <https://github.com/ansys/pyedb/pull/2460>`_
+
+        * - Bump actions/labeler from 6.2.0 to 7.0.0
+          - `#2461 <https://github.com/ansys/pyedb/pull/2461>`_
+
+        * - Bump jupytext from 1.19.4 to 1.19.5
+          - `#2462 <https://github.com/ansys/pyedb/pull/2462>`_
+
+        * - Bump ansys/actions/doc-build from 10.3.4 to 10.3.5
+          - `#2464 <https://github.com/ansys/pyedb/pull/2464>`_
+
+        * - Bump astral-sh/setup-uv from 8.3.2 to 9.0.0
+          - `#2467 <https://github.com/ansys/pyedb/pull/2467>`_
+
+        * - Bump ruff from 0.15.22 to 0.16.1
+          - `#2473 <https://github.com/ansys/pyedb/pull/2473>`_
+
+        * - Bump https://github.com/astral-sh/ruff-pre-commit from v0.16.0 to 0.16.1
+          - `#2474 <https://github.com/ansys/pyedb/pull/2474>`_
+
+        * - Bump pypa/gh-action-pypi-publish from 1.14.1 to 1.14.2
+          - `#2475 <https://github.com/ansys/pyedb/pull/2475>`_
+
+        * - Bump typer from 0.27.0 to 0.27.1
+          - `#2479 <https://github.com/ansys/pyedb/pull/2479>`_
+
+        * - Bump cffi from 2.1.0 to 2.1.1
+          - `#2480 <https://github.com/ansys/pyedb/pull/2480>`_
+
+        * - Update flit-core requirement from <4,>=3.2 to >=3.2,<5
+          - `#2481 <https://github.com/ansys/pyedb/pull/2481>`_
+
+        * - Bump ansys/actions/doc-build from 10.3.5 to 10.3.6
+          - `#2482 <https://github.com/ansys/pyedb/pull/2482>`_
+
+        * - Bump ansys/actions/build-library from 10.3.5 to 10.3.6
+          - `#2483 <https://github.com/ansys/pyedb/pull/2483>`_
+
+        * - Bump ansys/actions/doc-style from 10.3.5 to 10.3.6
+          - `#2484 <https://github.com/ansys/pyedb/pull/2484>`_
+
+        * - Bump ansys/actions/doc-deploy-dev from 10.3.5 to 10.3.6
+          - `#2485 <https://github.com/ansys/pyedb/pull/2485>`_
+
+        * - Bump ansys/actions/doc-deploy-changelog from 10.3.5 to 10.3.6
+          - `#2486 <https://github.com/ansys/pyedb/pull/2486>`_
+
+        * - Bump ruff from 0.16.1 to 0.16.2
+          - `#2487 <https://github.com/ansys/pyedb/pull/2487>`_
+
+        * - Bump jupyterlab from 4.6.2 to 4.6.3
+          - `#2489 <https://github.com/ansys/pyedb/pull/2489>`_
+
+        * - Moved typer and xmltodict
+          - `#2490 <https://github.com/ansys/pyedb/pull/2490>`_
+
+        * - Bump ansys/actions/doc-deploy-stable from 10.3.5 to 10.3.6
+          - `#2491 <https://github.com/ansys/pyedb/pull/2491>`_
+
+        * - Bump ansys/actions/release-github from 10.3.5 to 10.3.6
+          - `#2492 <https://github.com/ansys/pyedb/pull/2492>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.81.0
+          - `#2433 <https://github.com/ansys/pyedb/pull/2433>`_
+
+        * - Bump release 0.82.dev0
+          - `#2435 <https://github.com/ansys/pyedb/pull/2435>`_
+
+        * - Vulnerability-security cleanup
+          - `#2437 <https://github.com/ansys/pyedb/pull/2437>`_
+
+        * - Pre-commit automatic update
+          - `#2444 <https://github.com/ansys/pyedb/pull/2444>`_, `#2469 <https://github.com/ansys/pyedb/pull/2469>`_, `#2478 <https://github.com/ansys/pyedb/pull/2478>`_, `#2488 <https://github.com/ansys/pyedb/pull/2488>`_
+
+        * - Update missing or outdated files
+          - `#2472 <https://github.com/ansys/pyedb/pull/2472>`_
+
+
 `0.81.0 <https://github.com/ansys/pyedb/releases/tag/v0.81.0>`_ - July 25, 2026
 ===============================================================================
 
