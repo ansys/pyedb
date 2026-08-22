@@ -1,0 +1,107 @@
+
+
+
+
+
+
+:class:`CopperBalance`
+======================
+
+
+.. py:class:: pyedb.workflows.drc.drc.CopperBalance(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Copper density balance constraint.
+
+   This rule validates that copper distribution across layers stays within
+   acceptable balance limits to prevent warping during fabrication.
+
+
+   :Attributes:
+
+       **name** : :class:`python:str`
+           Rule identifier for reporting violations.
+
+       **max_percent** : :class:`python:int`
+           Maximum allowed imbalance percentage (e.g., ``15`` for 15%).
+
+       **layers** : :class:`python:list` :obj:`of` :class:`python:str`
+           Layer names to check for balance.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> rule = CopperBalance(name="top_balance", max_percent=10, layers=["TOP"])
+   >>> rule.max_percent
+   10
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CopperBalance
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~max_percent`
+            - 
+          * - :py:attr:`~layers`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.drc.drc import CopperBalance
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: max_percent
+   :type:  int
+
+.. py:attribute:: layers
+   :type:  list[str]
+
+
+
+
+

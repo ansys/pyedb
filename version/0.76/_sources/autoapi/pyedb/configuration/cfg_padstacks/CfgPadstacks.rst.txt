@@ -1,0 +1,615 @@
+
+
+
+
+
+
+:class:`CfgPadstacks`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_padstacks.CfgPadstacks(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Collect padstack definitions and instances for serialization.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CfgPadstacks
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a :class:`CfgPadstacks` from keyword arguments.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~clean`
+            - Reset all padstack definitions and instances to empty lists.
+          * - :py:attr:`~get_definition`
+            - Return a :class:`CfgPadstackDefinition` for an existing padstack definition.
+          * - :py:attr:`~get_instance`
+            - Return a :class:`CfgPadstackInstance` for an existing padstack instance.
+          * - :py:attr:`~add_padstack_definition`
+            - Add a padstack definition from raw keyword arguments.
+          * - :py:attr:`~add_definition`
+            - Add a padstack definition with named parameters.
+          * - :py:attr:`~add_padstack_instance`
+            - Add a padstack instance from raw keyword arguments.
+          * - :py:attr:`~add_instance`
+            - Add a padstack instance.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~definitions`
+            - 
+          * - :py:attr:`~instances`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_padstacks import CfgPadstacks
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: definitions
+   :type:  list[CfgPadstackDefinition]
+   :value: None
+
+
+.. py:attribute:: instances
+   :type:  list[CfgPadstackInstance]
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(pedb=None, **kwargs) -> CfgPadstacks
+   :classmethod:
+
+
+   
+   Create a :class:`CfgPadstacks` from keyword arguments.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: clean()
+
+   
+   Reset all padstack definitions and instances to empty lists.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_definition(name: str) -> CfgPadstackDefinition
+
+   
+   Return a :class:`CfgPadstackDefinition` for an existing padstack definition.
+
+   If the definition has already been registered via :meth:`add_definition`
+   the cached entry is returned.  Otherwise the definition is looked up in
+   the live EDB session and a new entry is created from its current properties.
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Padstack definition name, e.g. ``"via_0.2"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgPadstackDefinition`
+           Definition builder pre-populated with current properties.
+
+
+
+
+   :Raises:
+
+       :obj:`KeyError`
+           If no EDB session is attached or the definition does not exist.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = edb.configuration.create_config_builder()
+   >>> via_def = cfg.padstacks.get_definition("via_0.2")
+   >>> via_def.hole_plating_thickness = "30um"
+   >>> edb.configuration.run(cfg)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_instance(name: str) -> CfgPadstackInstance
+
+   
+   Return a :class:`CfgPadstackInstance` for an existing padstack instance.
+
+   If the instance has already been registered via :meth:`add_instance`
+   the cached entry is returned.  Otherwise the instance is looked up in
+   the live EDB session and a new entry is created from its current
+   properties.
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Padstack instance AEDT name, e.g. ``"via_A1"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgPadstackInstance`
+           Instance builder pre-populated with current properties.
+
+
+
+
+   :Raises:
+
+       :obj:`KeyError`
+           If no EDB session is attached or the instance does not exist.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = edb.configuration.create_config_builder()
+   >>> via = cfg.padstacks.get_instance("via_A1")
+   >>> via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+   >>> edb.configuration.run(cfg)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_padstack_definition(**kwargs)
+
+   
+   Add a padstack definition from raw keyword arguments.
+
+   .. deprecated::
+       Use :meth:`add_definition` instead.
+
+   :Parameters:
+
+       **\*\*kwargs**
+           Arguments forwarded to :meth:`add_definition`.
+
+
+
+   :Returns:
+
+       :obj:`CfgPadstackDefinition`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_definition(name: str, hole_plating_thickness=None, material=None, hole_range=None, hole_diameter=None, hole_shape='circle', hole_offset_x='0', hole_offset_y='0', pad_shape='circle', pad_diameter=None, pad_offset_x='0', pad_offset_y='0', pad_rotation='0', pad_x_size=None, pad_y_size=None, anti_pad_shape='circle', anti_pad_diameter=None, anti_pad_x_size=None, anti_pad_y_size=None, pad_layers=None, pad_parameters=None, hole_parameters=None, solder_ball_parameters=None)
+
+   
+   Add a padstack definition with named parameters.
+
+   Pad geometry can be specified either via the **convenience arguments**
+   (which build the ``pad_parameters`` and ``hole_parameters`` dicts
+   automatically) or by passing raw ``pad_parameters`` / ``hole_parameters``
+   dicts directly for full control.
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Padstack definition name, e.g. ``"via_0.2"``.
+
+       **hole_plating_thickness** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Plating thickness, e.g. ``"25um"``.
+
+       **material** : :class:`python:str`, :obj:`optional`
+           Hole conductor material name, e.g. ``"copper"``.
+
+       **hole_range** : :class:`python:str`, :obj:`optional`
+           Layer range the hole spans.  Accepted values:
+           
+           * ``"through"`` — hole goes fully through all layers.
+           * ``"begin_on_upper_pad"`` — hole starts at the upper pad surface.
+           * ``"end_on_lower_pad"`` — hole ends at the lower pad surface.
+           * ``"upper_pad_to_lower_pad"`` *(default)* — upper pad to lower pad.
+
+       **hole_diameter** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Drill hole diameter, e.g. ``"0.2mm"``.  Used together with
+           *hole_shape* when *hole_parameters* is not given.
+
+       **hole_shape** : :class:`python:str`, :obj:`optional`
+           Hole geometry type.  Default is ``"circle"``.
+
+       **hole_offset_x** : :class:`python:str`, :obj:`optional`
+           Hole X offset.  Default is ``"0"``.
+
+       **hole_offset_y** : :class:`python:str`, :obj:`optional`
+           Hole Y offset.  Default is ``"0"``.
+
+       **pad_shape** : :class:`python:str`, :obj:`optional`
+           Regular-pad geometry type.  Accepted values:
+           ``"circle"``, ``"square"``, ``"rectangle"``, ``"oval"``,
+           ``"bullet"``, ``"round45"``, ``"round90"``, ``"square45"``,
+           ``"square90"``.  Default is ``"circle"``.
+
+       **pad_diameter** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Pad diameter (for ``"circle"`` shape), e.g. ``"0.5mm"``.
+
+       **pad_offset_x** : :class:`python:str`, :obj:`optional`
+           Pad X offset.  Default is ``"0"``.
+
+       **pad_offset_y** : :class:`python:str`, :obj:`optional`
+           Pad Y offset.  Default is ``"0"``.
+
+       **pad_rotation** : :class:`python:str`, :obj:`optional`
+           Pad rotation angle.  Default is ``"0"``.
+
+       **pad_x_size** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Pad X size for non-circular shapes (``"rectangle"``, ``"oval"``,
+           ``"bullet"``), e.g. ``"0.5mm"``.
+
+       **pad_y_size** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Pad Y size for non-circular shapes.
+
+       **anti_pad_shape** : :class:`python:str`, :obj:`optional`
+           Anti-pad geometry type.  Default is ``"circle"``.
+
+       **anti_pad_diameter** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Anti-pad diameter (for ``"circle"`` shape).
+
+       **anti_pad_x_size** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Anti-pad X size for non-circular shapes.
+
+       **anti_pad_y_size** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Anti-pad Y size for non-circular shapes.
+
+       **pad_layers** : :class:`python:list` :obj:`of` :class:`python:str`, :obj:`optional`
+           Layer names on which the pad geometry is applied.  When ``None``
+           and a live EDB session is attached, all signal layers are used
+           automatically.  Only used when *pad_parameters* is not given.
+
+       **pad_parameters** : :class:`python:dict`, :obj:`optional`
+           Full raw pad-parameter dictionary.  Overrides all convenience pad
+           arguments above.  Structure::
+           
+               {
+                   "regular_pad": [
+                       {
+                           "layer_name": "1_Top",
+                           "shape": "circle",
+                           "diameter": "0.5mm",
+                           "offset_x": "0",
+                           "offset_y": "0",
+                           "rotation": "0",
+                       },
+                       ...,
+                   ],
+                   "anti_pad": [...],
+                   "thermal_pad": [...],
+                   "hole": [...],
+               }
+
+       **hole_parameters** : :class:`python:dict`, :obj:`optional`
+           Full raw hole-parameter dictionary.  Overrides *hole_diameter* /
+           *hole_shape* convenience args.  Structure::
+           
+               {"shape": "circle", "diameter": "0.2mm", "offset_x": "0", "offset_y": "0", "rotation": "0"}
+
+       **solder_ball_parameters** : :class:`python:dict`, :obj:`optional`
+           Raw solder-ball parameter dictionary.
+
+
+
+   :Returns:
+
+       :obj:`CfgPadstackDefinition`
+           The newly created definition object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Simple circular via on all signal layers (requires live session):
+
+   >>> cfg.padstacks.add_definition(
+   ...     "via_0.2",
+   ...     material="copper",
+   ...     hole_plating_thickness="25um",
+   ...     hole_diameter="0.2mm",
+   ...     pad_diameter="0.5mm",
+   ...     anti_pad_diameter="0.8mm",
+   ... )
+
+   Blind via with explicit layers:
+
+   >>> cfg.padstacks.add_definition(
+   ...     "via_blind",
+   ...     hole_range="begin_on_upper_pad",
+   ...     hole_diameter="0.15mm",
+   ...     pad_diameter="0.35mm",
+   ...     anti_pad_diameter="0.6mm",
+   ...     pad_layers=["1_Top", "DE1"],
+   ... )
+
+   Raw dict form for full control:
+
+   >>> cfg.padstacks.add_definition(
+   ...     "via_custom",
+   ...     pad_parameters={
+   ...         "regular_pad": [
+   ...             {
+   ...                 "layer_name": "1_Top",
+   ...                 "shape": "rectangle",
+   ...                 "x_size": "0.5mm",
+   ...                 "y_size": "0.3mm",
+   ...                 "offset_x": "0",
+   ...                 "offset_y": "0",
+   ...                 "rotation": "0",
+   ...             },
+   ...         ],
+   ...         "anti_pad": [
+   ...             {
+   ...                 "layer_name": "1_Top",
+   ...                 "shape": "circle",
+   ...                 "diameter": "0.8mm",
+   ...                 "offset_x": "0",
+   ...                 "offset_y": "0",
+   ...                 "rotation": "0",
+   ...             },
+   ...         ],
+   ...     },
+   ...     hole_parameters={
+   ...         "shape": "circle",
+   ...         "diameter": "0.2mm",
+   ...         "offset_x": "0",
+   ...         "offset_y": "0",
+   ...         "rotation": "0",
+   ...     },
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_padstack_instance(**kwargs)
+
+   
+   Add a padstack instance from raw keyword arguments.
+
+   .. deprecated::
+       Use :meth:`add_instance` instead.
+
+   :Parameters:
+
+       **\*\*kwargs**
+           Arguments forwarded to :meth:`add_instance`.
+
+
+
+   :Returns:
+
+       :obj:`CfgPadstackInstance`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_instance(name: str = None, net_name: str = None, definition: str = None, layer_range: list = None, position: list = None, rotation: str | float = None, is_pin: bool = False, hole_override_enabled: bool = None, hole_override_diameter: str | float = None, solder_ball_layer: str = None, eid: int = None, backdrill_parameters: CfgBackdrillParameters = None) -> CfgPadstackInstance
+
+   
+   Add a padstack instance.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           AEDT name of the padstack instance, e.g. ``"via_A1"``.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Net the instance belongs to, e.g. ``"GND"``.
+
+       **definition** : :class:`python:str`, :obj:`optional`
+           Padstack definition name, e.g. ``"via_0.2"``.
+
+       **layer_range** : :class:`python:list` :obj:`of` :class:`python:str`, :obj:`optional`
+           ``[start_layer, stop_layer]``, e.g. ``["1_Top", "16_Bottom"]``.
+
+       **position** : :class:`python:list`, :obj:`optional`
+           ``[x, y]`` position in metres or as unit strings.
+
+       **rotation** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Rotation angle in degrees.
+
+       **is_pin** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether this instance is a component pin.  Default is ``False``.
+
+       **hole_override_enabled** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable hole-size override.
+
+       **hole_override_diameter** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Override diameter value, e.g. ``"0.3mm"``.
+
+       **solder_ball_layer** : :class:`python:str`, :obj:`optional`
+           Layer on which the solder ball is placed.
+
+       **eid** : :class:`python:int`, :obj:`optional`
+           EDB element ID.
+
+       **backdrill_parameters** : :obj:`CfgBackdrillParameters`, :obj:`optional`
+           Pre-built backdrill descriptor.  Call
+           :meth:`CfgPadstackInstance.set_backdrill` on the returned object
+           to add backdrill geometry after creation.
+
+
+
+   :Returns:
+
+       :obj:`CfgPadstackInstance`
+           The newly created instance object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> via = cfg.padstacks.add_instance(name="v1", net_name="GND", layer_range=["1_Top", "16_Bottom"])
+   >>> via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+schema\_json
+============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinClearance.schema_json

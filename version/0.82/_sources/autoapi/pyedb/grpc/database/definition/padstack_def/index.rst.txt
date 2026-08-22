@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``padstack_def.py`` module
+==============================
+
+.. py:module:: pyedb.grpc.database.definition.padstack_def
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: padstack_def
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.padstack_def.PadProperties`
+            - Manages EDB functionalities for pad properties.
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.padstack_def.PadstackDef`
+            - Manages EDB functionalities for a padstack.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> PadProperties</autoapi/pyedb/grpc/database/definition/padstack_def/PadProperties>
+    <span class="nf nf-cod-symbol_class"></span> PadstackDef</autoapi/pyedb/grpc/database/definition/padstack_def/PadstackDef>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

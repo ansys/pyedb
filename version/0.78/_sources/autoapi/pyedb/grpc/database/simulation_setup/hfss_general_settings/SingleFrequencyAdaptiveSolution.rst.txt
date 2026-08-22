@@ -1,0 +1,224 @@
+
+
+
+
+
+
+:class:`SingleFrequencyAdaptiveSolution`
+========================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_general_settings.SingleFrequencyAdaptiveSolution(pedb, core)
+
+
+.. py:currentmodule:: SingleFrequencyAdaptiveSolution
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~adaptive_frequency`
+            - Adaptive frequency for single frequency adaptive solution.
+          * - :py:attr:`~max_delta`
+            - Maximum delta for single frequency adaptive solution.
+          * - :py:attr:`~max_passes`
+            - Maximum number of passes for single frequency adaptive solution.
+          * - :py:attr:`~mx_conv_data`
+            - Matrix convergence data for single frequency adaptive solution.
+          * - :py:attr:`~use_mx_conv_data`
+            - Indicates whether to use matrix convergence data.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_general_settings import SingleFrequencyAdaptiveSolution
+
+Property detail
+---------------
+
+.. py:property:: adaptive_frequency
+   :type: float
+
+
+   
+   Adaptive frequency for single frequency adaptive solution.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Adaptive frequency in Hz.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_delta
+   :type: float
+
+
+   
+   Maximum delta for single frequency adaptive solution.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Maximum delta value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_passes
+   :type: int
+
+
+   
+   Maximum number of passes for single frequency adaptive solution.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum number of passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mx_conv_data
+   :type: MatrixConvergenceData
+
+
+   
+   Matrix convergence data for single frequency adaptive solution.
+
+
+
+
+
+   :Returns:
+
+       :class:`MatrixConvergenceData
+           ..
+
+       <pyedb.grpc.database.simulation_setup.hfss_general_settings.MatrixConvergenceData>`
+           Matrix convergence data object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_mx_conv_data
+   :type: bool
+
+
+   
+   Indicates whether to use matrix convergence data.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if matrix convergence data is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

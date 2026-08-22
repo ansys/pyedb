@@ -1,0 +1,46 @@
+
+
+
+
+
+
+:class:`Series`
+===============
+
+
+.. py:class:: pyedb.component_libraries.ansys_components.Series
+
+   
+   Handle component series.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.component_libraries.ansys_components import Series
+
+
+
+
+

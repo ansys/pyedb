@@ -1,0 +1,925 @@
+
+
+
+
+
+
+:class:`Configuration`
+======================
+
+
+.. py:class:: pyedb.configuration.configuration.Configuration(pedb: pyedb.Edb)
+
+   
+   Enables export and import of a JSON configuration file that can be applied to a new or existing design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Configuration
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_config_builder`
+            - Create and return a :class:`~pyedb.configuration.cfg_data.CfgData` bound to this EDB session.
+          * - :py:attr:`~load`
+            - Import configuration settings from a configure file.
+          * - :py:attr:`~run`
+            - Apply configuration settings to the current design.
+          * - :py:attr:`~apply_setups`
+            - Apply simulation setups (HFSS, SIwave AC/DC) to the current design.
+          * - :py:attr:`~get_setups`
+            - Populate :attr:`cfg_data.setups` from the currently open EDB design.
+          * - :py:attr:`~apply_boundaries`
+            - Write HFSS open-region and airbox settings into the current design.
+          * - :py:attr:`~get_boundaries`
+            - Populate :attr:`cfg_data.boundaries` from the open EDB design.
+          * - :py:attr:`~apply_modeler`
+            - Create modeler primitives (traces, planes, padstacks, components) in the design.
+          * - :py:attr:`~apply_variables`
+            - Set variables into database.
+          * - :py:attr:`~get_variables`
+            - Retrieve variables from database.
+          * - :py:attr:`~apply_materials`
+            - Apply material settings to the current design
+          * - :py:attr:`~get_materials`
+            - Retrieve materials from the current design.
+          * - :py:attr:`~apply_stackup`
+            - Apply stackup layer definitions to the current design.
+          * - :py:attr:`~get_stackup`
+            - Populate :attr:`cfg_data.stackup` layers from the open EDB design.
+          * - :py:attr:`~get_padstacks`
+            - Populate :attr:`cfg_data.padstacks` from the open EDB design.
+          * - :py:attr:`~apply_padstacks`
+            - Apply padstack definitions and instance overrides to the current design.
+          * - :py:attr:`~apply_operations`
+            - Apply operations to the current design.
+          * - :py:attr:`~get_operations`
+            - Populate :attr:`cfg_data.operations` from the open EDB design.
+          * - :py:attr:`~apply_terminals`
+            - Create terminal excitations (padstack, pin-group, point, edge, bundle) in the design.
+          * - :py:attr:`~get_terminals`
+            - Populate :attr:`cfg_data.terminals` from the open EDB design.
+          * - :py:attr:`~get_data_from_db`
+            - Get configuration data from layout.
+          * - :py:attr:`~export`
+            - Export the configuration data from layout to a file.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~data`
+            - 
+          * - :py:attr:`~cfg_data`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.configuration import Configuration
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: data
+
+.. py:attribute:: cfg_data
+
+
+
+Method detail
+-------------
+
+.. py:method:: create_config_builder() -> pyedb.configuration.cfg_data.CfgData
+
+   
+   Create and return a :class:`~pyedb.configuration.cfg_data.CfgData` bound to this EDB session.
+
+   Because the builder is initialised with a reference to the live EDB
+   session, you can retrieve *existing* objects directly via ``get``
+   methods instead of registering them manually:
+
+   * ``cfg.components.get(refdes)`` — existing component (pre-loads all properties).
+   * ``cfg.stackup.get_layer(name)`` — existing layer (pre-loads properties).
+   * ``cfg.stackup.get_material(name)`` — existing material (pre-loads properties).
+   * ``cfg.nets.get(net_name)`` — net classification from EDB.
+   * ``cfg.padstacks.get_definition(name)`` — existing padstack definition.
+   * ``cfg.padstacks.get_instance(name)`` — existing padstack instance.
+   * ``cfg.pin_groups.get(name)`` — existing pin group (pre-loads pins).
+   * ``cfg.setups.get(name)`` — a previously registered setup by name.
+
+
+
+
+   :Returns:
+
+       :obj:`CfgData`
+           A new, session-aware configuration builder instance.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Retrieve an existing component and modify its solder-ball geometry:
+
+   >>> cfg = edb.configuration.create_config_builder()
+   >>> u1 = cfg.components.get("U1")  # looks up U1 from EDB
+   >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
+   >>> edb.configuration.run(cfg)
+
+   Traditional workflow (creating new component entries) still works:
+
+   >>> cfg = edb.configuration.create_config_builder()
+   >>> cfg.general.anti_pads_always_on = False
+   >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
+   >>> cfg.nets.add_power_ground_nets(["VDD", "GND"])
+   >>> edb.configuration.run(cfg)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: load(config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True)
+
+   
+   Import configuration settings from a configure file.
+
+
+   :Parameters:
+
+       **config_file** : :class:`python:str`, :class:`python:dict`, :obj:`or` :obj:`CfgData`
+           Full path to configure file in JSON or TOML format, a plain Python
+           dictionary, or a :class:`~pyedb.configuration.cfg_data.CfgData`
+           instance.  When a ``CfgData`` is supplied its
+           :meth:`~pyedb.configuration.cfg_data.CfgData.to_dict` method is
+           called automatically so the builder can be passed without any extra
+           serialization step.
+
+       **append** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether if the new file will append to existing properties or the properties will be cleared before import.
+           Default is ``True`` to keep stored properties
+
+       **apply_file** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to apply the file after the load or not. Default is ``False``.
+
+       **output_file** : :class:`python:str`, :obj:`optional`
+           Full path to the new aedb folder where the configured project will be saved.
+
+       **open_at_the_end** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to keep the new generated file opened at the end. Default is ``True``.
+
+
+
+   :Returns:
+
+       :obj:`CfgData`
+           Populated configuration data object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Pass a :class:`~pyedb.configuration.cfg_data.CfgData` directly:
+
+   >>> from pyedb.configuration.cfg_data import CfgData
+   >>> cfg = CfgData()
+   >>> cfg.general.anti_pads_always_on = False
+   >>> edb.configuration.load(cfg, apply_file=True)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: run(config=None, **kwargs)
+
+   
+   Apply configuration settings to the current design.
+
+
+   :Parameters:
+
+       **config** : :obj:`CfgData`, :class:`python:dict`, :obj:`or` :class:`python:str`, :obj:`optional`
+           When supplied the configuration is loaded before applying.
+           Accepts the same types as :meth:`load`: a
+           :class:`~pyedb.configuration.cfg_data.CfgData` instance,
+           a plain Python dictionary, or a path to a JSON / TOML file.
+           When *None* (default) the previously loaded :attr:`cfg_data` is used.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Pass a builder directly — no ``load`` call needed:
+
+   >>> from pyedb.configuration.cfg_data import CfgData
+   >>> cfg = CfgData()
+   >>> cfg.general.anti_pads_always_on = False
+   >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
+   >>> edb.configuration.run(cfg)
+
+   Use the existing workflow unchanged:
+
+   >>> edb.configuration.load("my_config.json")
+   >>> edb.configuration.run()
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_setups()
+
+   
+   Apply simulation setups (HFSS, SIwave AC/DC) to the current design.
+
+   Iterates over every setup defined in :attr:`cfg_data.setups` and creates
+   the corresponding EDB setup object, including frequency sweeps and mesh
+   operations.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_setups()
+
+   
+   Populate :attr:`cfg_data.setups` from the currently open EDB design.
+
+   Reads every simulation setup in the database and converts it to the
+   corresponding ``CfgSetup`` model so it can later be serialized or
+   re-applied to another design.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_boundaries()
+
+   
+   Write HFSS open-region and airbox settings into the current design.
+
+   Reads the ``boundaries`` section of :attr:`cfg_data` and pushes every
+   non-``None`` attribute to :class:`pyedb.edb_core.hfss.HfssExtentInfo`.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_boundaries()
+
+   
+   Populate :attr:`cfg_data.boundaries` from the open EDB design.
+
+   Reads the HFSS extent information (open-region type, PML settings,
+   airbox padding, dielectric extents) from the database and stores the
+   values in the active :class:`~pyedb.configuration.cfg_boundaries.CfgBoundaries`
+   model.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_modeler()
+
+   
+   Create modeler primitives (traces, planes, padstacks, components) in the design.
+
+   Processes every item in ``cfg_data.modeler`` and invokes the matching
+   ``pyedb.modeler`` or ``pyedb.components`` factory method.  After creation,
+   primitives marked for deletion are removed from the layout.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_variables()
+
+   
+   Set variables into database.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_variables()
+
+   
+   Retrieve variables from database.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_materials()
+
+   
+   Apply material settings to the current design
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_materials()
+
+   
+   Retrieve materials from the current design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_stackup()
+
+   
+   Apply stackup layer definitions to the current design.
+
+   If the database already has signal layers, the existing stackup is
+   updated in-place; otherwise a new stackup is created from scratch.
+   Materials referenced by layers that are not yet in the database are
+   created automatically with default properties.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+   :Raises:
+
+       :obj:`Exception`
+           If the number of signal layers in the configuration does not match
+           the database.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_stackup()
+
+   
+   Populate :attr:`cfg_data.stackup` layers from the open EDB design.
+
+   Clears the existing layer list and re-populates it by reading every
+   layer in :attr:`pyedb.Edb.stackup.all_layers`.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_padstacks()
+
+   
+   Populate :attr:`cfg_data.padstacks` from the open EDB design.
+
+   Reads every padstack definition and every padstack instance from the
+   database and stores them in the active
+   :class:`~pyedb.configuration.cfg_padstacks.CfgPadstacks` model.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_padstacks()
+
+   
+   Apply padstack definitions and instance overrides to the current design.
+
+   Iterates over :attr:`cfg_data.padstacks` and updates the matching EDB
+   padstack-definition and padstack-instance objects in the database.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_operations()
+
+   
+   Apply operations to the current design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_operations()
+
+   
+   Populate :attr:`cfg_data.operations` from the open EDB design.
+
+   Detects whether a ``pyedb_cutout`` layer is present and, when found,
+   reconstructs the cutout operation (signal nets + custom extent polygon)
+   so it can be serialised or re-applied.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply_terminals()
+
+   
+   Create terminal excitations (padstack, pin-group, point, edge, bundle) in the design.
+
+   Iterates over every terminal in :attr:`cfg_data.terminals`, creates the
+   corresponding EDB excitation object, assigns impedance / boundary-type /
+   source-amplitude settings, and resolves reference-terminal links.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_terminals()
+
+   
+   Populate :attr:`cfg_data.terminals` from the open EDB design.
+
+   Reads every terminal excitation from the database and stores it as the
+   appropriate ``Cfg*Terminal`` model so it can later be serialised or
+   re-applied.
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db(**kwargs)
+
+   
+   Get configuration data from layout.
+
+
+   :Parameters:
+
+       **stackup** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve stackup data.
+
+       **package_definitions** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve package definitions.
+
+       **setups** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve setups.
+
+       **sources** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve sources.
+
+       **ports** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve ports.
+
+       **nets** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve nets.
+
+       **pin_groups** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve pin groups.
+
+       **operations** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve operations.
+
+       **components** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve components.
+
+       **boundaries** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve boundaries.
+
+       **s_parameters** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve s-parameters.
+
+       **padstacks** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve padstacks.
+
+       **general** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve general information.
+
+       **variables** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve variables.
+
+       **terminals** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to retrieve terminals.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary with requested configuration data.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export(file_path, stackup=True, package_definitions=False, setups=True, sources=True, ports=True, nets=True, pin_groups=True, operations=True, components=True, boundaries=True, s_parameters=True, padstacks=True, general=True, variables=True, terminals=False)
+
+   
+   Export the configuration data from layout to a file.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`, :obj:`Path`
+           File path to export the configuration data.
+
+       **stackup** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export stackup or not.
+
+       **package_definitions** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export package definitions or not.
+
+       **setups** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export setups or not.
+
+       **sources** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export sources or not. Alternative to terminals.
+
+       **ports** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export ports or not. Alternative to terminals.
+
+       **nets** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export nets.
+
+       **pin_groups** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export pin groups.
+
+       **operations** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export operations.
+
+       **components** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export component.
+
+       **boundaries** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export boundaries.
+
+       **s_parameters** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export s_parameters.
+
+       **padstacks** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export padstacks.
+
+       **general** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export general information.
+
+       **variables** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export variable.
+
+       **terminals** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to export terminals. Alternative to ports and sources.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **bool**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,25 @@
+
+
+
+
+
+
+:class:`Msg`
+============
+
+
+.. py:class:: pyedb.edb_logger.Msg
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.edb_logger import Msg
+
+
+
+
+

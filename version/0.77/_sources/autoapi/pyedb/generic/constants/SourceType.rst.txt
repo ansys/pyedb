@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`SourceType`
+===================
+
+
+.. py:class:: pyedb.generic.constants.SourceType
+
+   Bases: :py:obj:`object`
+
+
+   
+   Type of excitation enumerator.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SourceType
+
+
+
+
+

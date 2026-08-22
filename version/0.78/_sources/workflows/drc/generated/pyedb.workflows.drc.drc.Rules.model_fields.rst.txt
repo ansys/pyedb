@@ -1,0 +1,6 @@
+model\_fields
+=============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: Rules.model_fields

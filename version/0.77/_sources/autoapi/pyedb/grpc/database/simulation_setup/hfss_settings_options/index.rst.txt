@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``hfss_settings_options.py`` module
+=======================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_settings_options
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_settings_options.HFSSSettingsOptions`
+            - PyEDB-core HFSS settings options class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HFSSSettingsOptions</autoapi/pyedb/grpc/database/simulation_setup/hfss_settings_options/HFSSSettingsOptions>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

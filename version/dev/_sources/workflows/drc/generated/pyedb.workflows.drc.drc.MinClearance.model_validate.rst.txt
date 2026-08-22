@@ -1,0 +1,6 @@
+model\_validate
+===============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinClearance.model_validate
