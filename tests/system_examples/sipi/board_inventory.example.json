@@ -1,0 +1,9 @@
+{
+  "si_endpoints": ["<tx_component>", "<rx_component>"],
+  "differential_pair": ["<positive_net>", "<negative_net>"],
+  "power_net": "<power_rail>",
+  "reference_net": "<ground_net>",
+  "vrm_component": "<vrm_component>",
+  "load_component": "<load_component>",
+  "si_pattern": "<interface_prefix>"
+}

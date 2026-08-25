@@ -49,3 +49,26 @@ The following sections contain examples that illustrate various workflows using 
     :link-type: ref
 
     Explore PyEDB workflows for SIPI, utilities, and DRC features.
+
+.. grid-item-card:: Signal-integrity workflows
+   :fa:`wave-square`
+   :link: ../workflows/sipi/hfss_signal_integrity
+   :link-type: doc
+
+   Prepare HFSS 3D Layout projects with explicit channel configuration or
+   automatic channel discovery and batching.
+
+.. grid-item-card:: Signal and power integrity examples
+   :fa:`wave-square`
+   :link: sipi/index
+   :link-type: doc
+
+   Learn PyEDB through focused SI and PI preparation workflows using the
+   generic system-example board.
+
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+
+   sipi/index

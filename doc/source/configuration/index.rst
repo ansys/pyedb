@@ -100,6 +100,13 @@ Use the sections below to choose the view that best matches how you work:
 * :doc:`configuration_api_examples` provides hands-on worked examples covering
   ports, setups, padstacks, stackup, modeler geometry, and more.
 
+HFSS signal-integrity workflow
+------------------------------
+
+Preparing an HFSS signal-integrity project? See
+:doc:`../workflows/sipi/hfss_signal_integrity` to choose between explicit
+Configuration Builder control and automatic channel discovery and batching.
+
 .. grid:: 3
 
     .. grid-item-card:: Configuration file architecture :fa:`file-code`
