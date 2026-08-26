@@ -98,8 +98,14 @@ class TestClass(BaseTestClass):
             assert padstack_instance.delete()  # grpc does not return boolean
         via = edbapp.padstacks.place([0, 0], "myVia")
         via.set_backdrill_top("Inner4(Sig2)", 0.5e-3)  # grpc is not returning boolean
-        via.set_back_drill_by_layer("Inner4(Sig2)", 0.5e-3)
-        assert via.get_backdrill_type() == "layer_drill"
+        if float(config["desktopVersion"]) < 2027.1:
+            via.set_back_drill_by_layer("Inner4(Sig2)", 0.5e-3)
+        else:
+            via.set_back_drill_by_layer("Inner4(Sig2)", 0.5e-3, fill_material="FR4_Epoxy")
+            parameters = via.get_back_drill_by_layer(True, include_fill_material=True)
+            assert parameters[-1] == "FR4_Epoxy"
+        if edbapp.grpc:
+            assert via.get_backdrill_type() == "layer_drill"
         via.set_backdrill_bottom("16_Bottom", 0.5e-3)
         assert via.backdrill_bottom
 

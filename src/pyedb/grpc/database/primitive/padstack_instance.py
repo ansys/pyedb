@@ -1309,19 +1309,19 @@ class PadstackInstance(conn_obj.ConnObj):
             )
         if float(self._pedb.version) < 2027.1:
             if self.backdrill_type == "no_drill":
-                return "", Value(0), Value(0)
+                return "", Value(0).value, Value(0).value
             else:
                 drill_to_layer, offset, diameter = self.core.get_back_drill_by_layer(from_bottom)
-                return drill_to_layer.name, Value(offset), Value(diameter)
+                return drill_to_layer.name, Value(offset).value, Value(diameter).value
         else:
             if not self.get_backdrill_type() == "no_drill":
                 params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
                 if include_fill_material:
                     drill_to_layer, offset, diameter, fill_material = params
-                    return drill_to_layer.name, Value(offset), Value(diameter), fill_material
+                    return drill_to_layer.name, Value(offset).value, Value(diameter).value, fill_material.strip('"')
                 else:
                     drill_to_layer, offset, diameter = params
-                    return drill_to_layer.name, Value(offset), Value(diameter)
+                    return drill_to_layer.name, Value(offset).value, Value(diameter).value
         return None
 
     def set_back_drill_by_layer(self, drill_to_layer, diameter, offset=0.0, from_bottom=True, fill_material=""):
