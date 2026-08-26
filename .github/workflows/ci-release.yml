@@ -41,7 +41,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/check-vulnerabilities@e2075e950bdec40b816670160e98c4c184c7b281 # v11.0.0
+      - uses: ansys/actions/check-vulnerabilities@0b23d99e6800f16337ff173fcfbfcc1251130e99 # v11.0.2
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           python-package-name: ${{ env.PACKAGE_NAME }}
