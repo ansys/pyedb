@@ -98,7 +98,8 @@ class TestClass(BaseTestClass):
             assert padstack_instance.delete()  # grpc does not return boolean
         via = edbapp.padstacks.place([0, 0], "myVia")
         via.set_backdrill_top("Inner4(Sig2)", 0.5e-3)  # grpc is not returning boolean
-        assert via.backdrill_top
+        via.set_back_drill_by_layer("Inner4(Sig2)", 0.5e-3)
+        assert via.get_backdrill_type() == "layer_drill"
         via.set_backdrill_bottom("16_Bottom", 0.5e-3)
         assert via.backdrill_bottom
 
