@@ -9,6 +9,99 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.83.0 <https://github.com/ansys/pyedb/releases/tag/v0.83.0>`_ - August 26, 2026
+=================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Release 271 support
+          - `#2517 <https://github.com/ansys/pyedb/pull/2517>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ansys/actions/doc-style from 10.3.6 to 11.0.0
+          - `#2494 <https://github.com/ansys/pyedb/pull/2494>`_
+
+        * - Bump ansys/actions/doc-changelog from 10.3.5 to 11.0.0
+          - `#2495 <https://github.com/ansys/pyedb/pull/2495>`_
+
+        * - Bump ansys/actions/release-github from 10.3.6 to 11.0.0
+          - `#2496 <https://github.com/ansys/pyedb/pull/2496>`_
+
+        * - Bump ansys/actions/check-vulnerabilities from 10.3.5 to 11.0.0
+          - `#2497 <https://github.com/ansys/pyedb/pull/2497>`_
+
+        * - Bump ansys/actions/doc-deploy-dev from 10.3.6 to 11.0.0
+          - `#2498 <https://github.com/ansys/pyedb/pull/2498>`_
+
+        * - Bump pytest-rerunfailures from 16.4 to 16.5
+          - `#2499 <https://github.com/ansys/pyedb/pull/2499>`_
+
+        * - Bump ansys/actions/doc-style from 11.0.0 to 11.0.1
+          - `#2501 <https://github.com/ansys/pyedb/pull/2501>`_
+
+        * - Bump ansys/actions/doc-changelog from 11.0.0 to 11.0.1
+          - `#2502 <https://github.com/ansys/pyedb/pull/2502>`_
+
+        * - Bump ansys/actions/doc-build from 10.3.6 to 11.0.1
+          - `#2503 <https://github.com/ansys/pyedb/pull/2503>`_
+
+        * - Bump ansys/actions/doc-deploy-dev from 11.0.0 to 11.0.1
+          - `#2504 <https://github.com/ansys/pyedb/pull/2504>`_
+
+        * - Bump ansys/actions/build-library from 10.3.6 to 11.0.1
+          - `#2505 <https://github.com/ansys/pyedb/pull/2505>`_
+
+        * - Bump scikit-rf from 2.0.1 to 2.1.0
+          - `#2506 <https://github.com/ansys/pyedb/pull/2506>`_
+
+        * - Bump ruff from 0.16.2 to 0.16.3
+          - `#2507 <https://github.com/ansys/pyedb/pull/2507>`_
+
+        * - Bump ansys/actions/doc-deploy-dev from 11.0.1 to 11.0.2
+          - `#2509 <https://github.com/ansys/pyedb/pull/2509>`_
+
+        * - Bump ansys/actions/doc-changelog from 11.0.1 to 11.0.2
+          - `#2510 <https://github.com/ansys/pyedb/pull/2510>`_
+
+        * - Bump ansys/actions/build-library from 11.0.1 to 11.0.2
+          - `#2511 <https://github.com/ansys/pyedb/pull/2511>`_
+
+        * - Bump ansys/actions/check-actions-security from 10.3.5 to 11.0.2
+          - `#2512 <https://github.com/ansys/pyedb/pull/2512>`_
+
+        * - Bump pytest-rerunfailures from 16.5 to 16.6
+          - `#2514 <https://github.com/ansys/pyedb/pull/2514>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.82.0
+          - `#2493 <https://github.com/ansys/pyedb/pull/2493>`_
+
+        * - Bump dev version
+          - `#2500 <https://github.com/ansys/pyedb/pull/2500>`_
+
+        * - Pre-commit automatic update
+          - `#2515 <https://github.com/ansys/pyedb/pull/2515>`_
+
+
 `0.82.0 <https://github.com/ansys/pyedb/releases/tag/v0.82.0>`_ - August 20, 2026
 =================================================================================
 
