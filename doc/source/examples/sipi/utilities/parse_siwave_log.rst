@@ -24,7 +24,7 @@ Store small, sanitized text fixtures with the tests:
 
 .. code-block:: text
 
-   tests/systemexamples/data/siwave/
+   tests/system_examples/data/siwave/
    |-- normal_completion.log
    `-- aborted_run.log
 

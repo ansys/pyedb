@@ -45,7 +45,7 @@ Start with design inspection
 Signal-integrity examples
 -------------------------
 
-.. grid:: 3
+.. grid:: 1
 
    .. grid-item-card:: Build a transmission line
       :link: si/build_transmission_line
@@ -90,7 +90,7 @@ Power-integrity examples
 Utilities
 ---------
 
-.. grid:: 1
+.. grid:: 3
 
    .. grid-item-card:: Parse a SIwave batch log
       :link: utilities/parse_siwave_log
@@ -98,6 +98,20 @@ Utilities
 
       Check completion, inspect warnings and profile entries, and export a
       structured JSON summary without launching AEDT.
+
+Advanced SI/PI examples
+-----------------------
+
+.. grid:: 1
+   :gutter: 2
+
+   .. grid-item-card:: Advanced direct-API SI/PI examples
+      :link: advanced/index
+      :link-type: doc
+
+      Apply direct PyEDB APIs to backdrilling, return-path audits, channel
+      classification, stackup fidelity, cutout studies, PDN extraction,
+      decoupling review, and DCIR preparation.
 
 .. toctree::
    :hidden:
@@ -111,3 +125,4 @@ Utilities
    pi/configure_dcir
    utilities/parse_siwave_log
    utilities/parse_hfss_log
+   advanced/index

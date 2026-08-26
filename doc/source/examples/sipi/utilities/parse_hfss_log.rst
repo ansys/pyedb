@@ -26,7 +26,7 @@ Store small, sanitized text fixtures with the tests:
 
 .. code-block:: text
 
-   tests/systemexamples/data/hfss/
+   tests/system_examples/data/hfss/
    |-- converged_run.log
    |-- unconverged_run.log
    `-- failed_run.log
