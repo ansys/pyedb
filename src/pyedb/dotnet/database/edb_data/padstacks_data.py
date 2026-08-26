@@ -1905,7 +1905,9 @@ class EDBPadstackInstance(Connectable):
                 False,
             )
 
-    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset, from_bottom=True, fill_material=""):
+    def set_back_drill_by_layer(
+        self, drill_to_layer, diameter, offset: float | int = 0.0, from_bottom=True, fill_material=""
+    ):
         """Method added to bring compatibility with grpc."""
         if fill_material:
             warnings.warn(

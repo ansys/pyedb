@@ -198,22 +198,22 @@ class PadstackInstance(conn_obj.ConnObj):
     @property
     def backdrill_parameters(self):
         data = {}
-        drill_to_layer, offset, diameter = self.get_back_drill_by_layer(True)
-
-        if drill_to_layer:
-            data["from_bottom"] = {
-                "drill_to_layer": drill_to_layer,
-                "diameter": str(diameter),
-                "stub_length": str(offset),
-            }
-        drill_to_layer, offset, diameter = self.get_back_drill_by_layer(False)
-
-        if drill_to_layer:
-            data["from_top"] = {
-                "drill_to_layer": drill_to_layer,
-                "diameter": str(diameter),
-                "stub_length": str(offset),
-            }
+        drill_by_layer = self.get_back_drill_by_layer(True)
+        if isinstance(drill_by_layer, tuple):
+            drill_to_layer, offset, diameter = self.get_back_drill_by_layer(True)
+            if drill_to_layer:
+                data["from_bottom"] = {
+                    "drill_to_layer": drill_to_layer,
+                    "diameter": str(diameter),
+                    "stub_length": str(offset),
+                }
+            drill_to_layer, offset, diameter = self.get_back_drill_by_layer(False)
+            if drill_to_layer:
+                data["from_top"] = {
+                    "drill_to_layer": drill_to_layer,
+                    "diameter": str(diameter),
+                    "stub_length": str(offset),
+                }
         return data
 
     @backdrill_parameters.setter
@@ -1237,6 +1237,8 @@ class PadstackInstance(conn_obj.ConnObj):
         from_bottom : bool, optional
             Default value is `True`.
         fill_material : str, optional
+            Dielectric material. Material name must be defined in the database and is supported from AEDT 2027.1 and
+            above. The default is ``""`` (no fill material).
         """
         if float(self._pedb.version) < 2027.1 and fill_material:
             warnings.warn(
@@ -1271,7 +1273,9 @@ class PadstackInstance(conn_obj.ConnObj):
 
     def get_back_drill_by_layer(
         self, from_bottom: bool, include_fill_material: bool = False
-    ) -> tuple[str, float | Value, float | Value] | tuple[str, float | Value, float | Value, str]:
+    ) -> (
+        tuple[str, float | int | Value, float | int | Value] | tuple[str, float | int | Value, float | int | Value, str]
+    ):
         """Get the back drill type by the layer.
 
         Parameters
@@ -1305,22 +1309,22 @@ class PadstackInstance(conn_obj.ConnObj):
             )
         if float(self._pedb.version) < 2027.1:
             if self.backdrill_type == "no_drill":
-                return "", Value(0), Value(0)
+                return "", Value(0).value, Value(0).value
             else:
                 drill_to_layer, offset, diameter = self.core.get_back_drill_by_layer(from_bottom)
-                return drill_to_layer.name, Value(offset), Value(diameter)
+                return drill_to_layer.name, Value(offset).value, Value(diameter).value
         else:
-            # Todo include_fill_material is not merged in core yet.
-            # params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
-            params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
-            if include_fill_material:
-                drill_to_layer, offset, diameter, fill_material = params
-                return drill_to_layer.name, Value(offset), Value(diameter), fill_material
-            else:
-                drill_to_layer, offset, diameter = params
-                return drill_to_layer.name, Value(offset), Value(diameter)
+            if not self.get_backdrill_type() == "no_drill":
+                params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
+                if include_fill_material:
+                    drill_to_layer, offset, diameter, fill_material = params
+                    return drill_to_layer.name, Value(offset).value, Value(diameter).value, fill_material.strip('"')
+                else:
+                    drill_to_layer, offset, diameter = params
+                    return drill_to_layer.name, Value(offset).value, Value(diameter).value
+        return None
 
-    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset, from_bottom=True, fill_material=""):
+    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset=0.0, from_bottom=True, fill_material=""):
         """Set back drill layer.
 
         Parameters
