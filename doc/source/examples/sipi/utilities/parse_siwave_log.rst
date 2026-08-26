@@ -34,7 +34,7 @@ paths, or proprietary layout data.
 Run the example
 ---------------
 
-.. literalinclude:: ../../../../tests/system_examples/sipi/utilities/parse_siwave_log.py
+.. literalinclude:: ../../../../../tests/system_examples/utilities/parse_siwave_log.py
    :language: python
    :linenos:
    :caption: parse_siwave_log.py

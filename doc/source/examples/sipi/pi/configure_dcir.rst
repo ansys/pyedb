@@ -38,7 +38,7 @@ Workflow
 Run the example
 ---------------
 
-.. literalinclude:: ../../../../tests/system_examples/sipi/pi/configure_dcir.py
+.. literalinclude:: ../../../../../tests/system_examples/pi/configure_dcir.py
    :language: python
    :linenos:
    :caption: configure_dcir.py

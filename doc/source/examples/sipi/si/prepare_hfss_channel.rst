@@ -45,7 +45,7 @@ Workflow
 Run the example
 ---------------
 
-.. literalinclude:: ../../../../tests/system_examples/sipi/si/prepare_hfss_channel.py
+.. literalinclude:: ../../../../../tests/system_examples/si/prepare_hfss_channel.py
    :language: python
    :linenos:
    :caption: prepare_hfss_channel.py

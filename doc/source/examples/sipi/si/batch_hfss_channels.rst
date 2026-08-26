@@ -38,7 +38,7 @@ Workflow
 Run the example
 ---------------
 
-.. literalinclude:: ../../../../tests/system_examples/sipi/si/batch_hfss_channels.py
+.. literalinclude:: ../../../../../tests/system_examples/si/batch_hfss_channels.py
    :language: python
    :linenos:
    :caption: batch_hfss_channels.py

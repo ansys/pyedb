@@ -29,7 +29,7 @@ Workflow
 Run the example
 ---------------
 
-.. literalinclude:: ../../../../tests/system_examples/sipi/si/build_transmission_line.py
+.. literalinclude:: ../../../../../tests/system_examples/si/build_transmission_line.py
    :language: python
    :linenos:
    :caption: build_transmission_line.py

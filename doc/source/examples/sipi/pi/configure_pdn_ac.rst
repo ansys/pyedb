@@ -41,7 +41,7 @@ Workflow
 Run the example
 ---------------
 
-.. literalinclude:: ../../../../tests/system_examples/sipi/pi/configure_pdn_ac.py
+.. literalinclude:: ../../../../../tests/system_examples/pi/configure_pdn_ac.py
    :language: python
    :linenos:
    :caption: configure_pdn_ac.py
