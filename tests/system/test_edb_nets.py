@@ -158,21 +158,31 @@ class TestClass(BaseTestClass):
 
     def test_nets_merge_polygon(self):
         """Convert paths from net into polygons."""
-        # Done
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/test_merge_polygon.aedb")[0]
         edbapp = self.edb_examples.load_edb(edb_path=source_path)
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="skipping dotnet test")
     def test_differential_pairs_queries(self):
         """Evaluate differential pairs queries"""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         edbapp.differential_pairs.auto_identify()
         diff_pair = edbapp.differential_pairs.create("new_pair1", "PCIe_Gen4_RX1_P", "PCIe_Gen4_RX1_N")
+        _diff = diff_pair.differential_pair
+        assert isinstance(_diff, tuple)
+        assert _diff[0].name == "PCIe_Gen4_RX1_P"
+        assert _diff[1].name == "PCIe_Gen4_RX1_N"
         assert diff_pair.positive_net.name == "PCIe_Gen4_RX1_P"
         assert diff_pair.negative_net.name == "PCIe_Gen4_RX1_N"
+        diff_pair.differential_pair = ("PCIe_Gen4_RX0_P", "PCIe_Gen4_RX0_N")
+        assert diff_pair.positive_net.name == "PCIe_Gen4_RX0_P"
+        assert diff_pair.negative_net.name == "PCIe_Gen4_RX0_N"
         assert edbapp.differential_pairs.items["new_pair1"]
+        diff_pair.description = "This is a new differential pair"
+        assert diff_pair.description == "This is a new differential pair"
+        diff_pair.delete()
+        assert "new_pair1" not in edbapp.differential_pairs.items
         edbapp.close(terminate_rpc_session=False)
 
     def test_extended_nets_queries(self):
@@ -247,7 +257,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_3(self):
-        # TODO check grpc test is slow.
         edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
@@ -256,7 +265,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_4(self):
-        # TODO check grpc test is slow.
         edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
@@ -274,7 +282,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_6(self):
-        # Done
         edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
@@ -283,7 +290,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_7(self):
-        # Done
         edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False,

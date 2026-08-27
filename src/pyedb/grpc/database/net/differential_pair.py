@@ -25,6 +25,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from pyedb.grpc.database.layout.layout import Layout
     from pyedb.grpc.database.net.net import Net
 import re
 
@@ -34,6 +35,10 @@ from ansys.edb.core.net.differential_pair import (
 
 
 class DifferentialPairs:
+    """DifferentialPairs class manages EDB functionalities for differential pairs.
+    It inherits EDB object properties.
+    """
+
     def __init__(self, pedb):
         self._pedb = pedb
 
@@ -46,13 +51,9 @@ class DifferentialPairs:
         dict[str, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`]
             Dictionary of extended nets.
         """
-        diff_pairs = {}
-        for diff_pair in self._pedb.layout.differential_pairs:
-            diff_pairs[diff_pair.name] = DifferentialPair(self._pedb, diff_pair)
-        return diff_pairs
+        return {diff_pair.name: diff_pair for diff_pair in self._pedb.layout.differential_pairs}
 
-    def create(self, name, net_p, net_n):
-        # type: (str, str, str) -> DifferentialPair
+    def create(self, name: str, net_p: str, net_n: str) -> DifferentialPair | bool:
         """
 
         Parameters
@@ -121,26 +122,118 @@ class DifferentialPairs:
                     temp.append(diff_name)
         return temp
 
+    def find_by_name(self, name: str):
+        """Find a differential pair by name.
 
-class DifferentialPair(CoreDifferentialPair):
+        Parameters
+        ----------
+        name : str
+            Name of the differential pair.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`
+            Differential pair object.
+        """
+        diff_pair = CoreDifferentialPair.find_by_name(self._pedb.layout.core, name)
+        if diff_pair is not None:
+            return DifferentialPair(self._pedb, diff_pair)
+        self._pedb.logger.error(f"{name} does not exist.")
+        return None
+
+
+class DifferentialPair:
     """Manages EDB functionalities for a primitive.
     It inherits EDB object properties.
     """
 
     def __init__(self, pedb, edb_object):
-        super().__init__(edb_object.msg)
+        self.core = edb_object
         self._pedb = pedb
+
+    @property
+    def description(self) -> str:
+        """Description of the differential pair."""
+        return self.core.description
+
+    @description.setter
+    def description(self, value: str):
+        """Set the description of the differential pair."""
+        self.core.description = value
+
+    @property
+    def differential_pair(self) -> tuple[Net, Net]:
+        """Differential pair Net objects. This property is also used to add or replace nets using the setter method."""
+        from pyedb.grpc.database.net.net import Net
+
+        nets = self.core.differential_pair
+        return Net(self._pedb, nets[0]), Net(self._pedb, nets[1])
+
+    @differential_pair.setter
+    def differential_pair(self, value: tuple[Net, Net]):
+        """Set the differential pair Net objects."""
+        if not isinstance(value, tuple) or len(value) != 2:
+            raise ValueError("Differential pair must be a tuple of two Net objects.")
+
+        resolved_nets = []
+        for net in value:
+            if isinstance(net, str):
+                net_name = net
+                net = self._pedb.nets.nets.get(net_name)
+                if net is None:
+                    raise ValueError(f"Net {net_name!r} does not exist.")
+            resolved_nets.append(net)
+        self.core.differential_pair = tuple(net.core for net in resolved_nets)
+
+    @property
+    def id(self) -> int:
+        """ID of the differential pair."""
+        return self.core.id
+
+    @property
+    def is_null(self) -> bool:
+        """Check if the differential pair is null."""
+        return self.core.is_null
+
+    @property
+    def is_power_ground(self) -> bool:
+        """Check if the differential pair is a power or ground pair."""
+        return self.core.is_power_ground
+
+    @property
+    def layout(self) -> Layout:
+        """Layout object."""
+        return self._pedb.layout
+
+    @property
+    def name(self) -> str:
+        """Name of the differential pair."""
+        return self.core.name
+
+    @name.setter
+    def name(self, value: str):
+        """Set the name of the differential pair."""
+        self.core.name = value
 
     @property
     def positive_net(self) -> Net:
         """Positive Net."""
         from pyedb.grpc.database.net.net import Net
 
-        return Net(self._pedb, super().positive_net)
+        return Net(self._pedb, self.core.positive_net)
 
     @property
     def negative_net(self) -> Net:
         """Negative Net."""
         from pyedb.grpc.database.net.net import Net
 
-        return Net(self._pedb, super().negative_net)
+        return Net(self._pedb, self.core.negative_net)
+
+    def delete(self) -> None:
+        """Delete the differential pair.
+
+        Returns
+        -------
+        None
+        """
+        return self.core.delete()
