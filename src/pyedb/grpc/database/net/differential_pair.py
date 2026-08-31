@@ -35,9 +35,7 @@ from ansys.edb.core.net.differential_pair import (
 
 
 class DifferentialPairs:
-    """DifferentialPairs class manages EDB functionalities for differential pairs.
-    It inherits EDB object properties.
-    """
+    """DifferentialPairs class manages EDB functionalities for differential pairs."""
 
     def __init__(self, pedb):
         self._pedb = pedb
@@ -132,20 +130,17 @@ class DifferentialPairs:
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`
+        :class:`pyedb.grpc.database.net.differential_pair.DifferentialPair` or `None`
             Differential pair object.
         """
         diff_pair = CoreDifferentialPair.find_by_name(self._pedb.layout.core, name)
         if diff_pair is not None:
             return DifferentialPair(self._pedb, diff_pair)
-        self._pedb.logger.error(f"{name} does not exist.")
-        return None
+        raise ValueError(f"Differential pair {name!r} does not exist.")
 
 
 class DifferentialPair:
-    """Manages EDB functionalities for a primitive.
-    It inherits EDB object properties.
-    """
+    """Manages EDB functionalities for differential pair."""
 
     def __init__(self, pedb, edb_object):
         self.core = edb_object
