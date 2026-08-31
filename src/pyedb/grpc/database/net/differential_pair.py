@@ -196,11 +196,6 @@ class DifferentialPair:
         return self.core.is_power_ground
 
     @property
-    def layout(self) -> Layout:
-        """Layout object."""
-        return self._pedb.layout
-
-    @property
     def name(self) -> str:
         """Name of the differential pair."""
         return self.core.name
