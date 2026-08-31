@@ -142,7 +142,7 @@ class DifferentialPairs:
 class DifferentialPair:
     """Manages EDB functionalities for differential pair."""
 
-    def __init__(self, pedb, edb_object):
+    def __init__(self, pedb, core):
         self.core = edb_object
         self._pedb = pedb
 
