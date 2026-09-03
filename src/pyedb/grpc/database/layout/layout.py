@@ -623,7 +623,7 @@ class Layout(PrimitivesQuery):
         self._pedb = pedb
         self.__primitives = []
         self.__use_cache = False
-        self.__padstack_instances = {}
+        self.__padstack_instances = []
 
     @property
     def layout_instance(self) -> Any:
@@ -805,12 +805,12 @@ class Layout(PrimitivesQuery):
     @property
     def padstack_instances(self) -> list[PadstackInstance]:
         """Get all padstack instances in a list."""
-        if self.__use_cache:
-            return self.__padstack_instances
-        else:
+        if not self.__use_cache:
             from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-            return [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
+            self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
+
+        return self.__padstack_instances
 
     @property
     def voltage_regulators(self) -> list[VoltageRegulator]:
