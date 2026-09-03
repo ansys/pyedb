@@ -65,7 +65,7 @@ class DifferentialPairs:
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`
+        :class:`pyedb.grpc.database.net.differential_pair.DifferentialPair`
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
