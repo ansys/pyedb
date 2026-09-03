@@ -120,7 +120,7 @@ class DifferentialPairs:
                     temp.append(diff_name)
         return temp
 
-    def find_by_name(self, name: str) -> DifferentialPair | None:
+    def find_by_name(self, name: str) -> DifferentialPair:
         """Find a differential pair by name.
 
         Parameters
