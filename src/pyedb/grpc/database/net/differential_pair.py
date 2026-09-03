@@ -130,7 +130,7 @@ class DifferentialPairs:
 
         Returns
         -------
-        :class:`pyedb.grpc.database.net.differential_pair.DifferentialPair` or `None`
+        :class:`pyedb.grpc.database.net.differential_pair.DifferentialPair`
             Differential pair object.
         """
         diff_pair = CoreDifferentialPair.find_by_name(self._pedb.layout.core, name)
