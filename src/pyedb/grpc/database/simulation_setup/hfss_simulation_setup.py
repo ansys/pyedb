@@ -515,8 +515,9 @@ class HfssSimulationSetup(SimulationSetup):
             for layer in layers:
                 layer_info.append((net, layer, False))
             if signal_via_side_number is not None:
-                for inst in self._pedb.padstacks.instances_by_net[net]:
-                    inst.side_number = signal_via_side_number
+                for inst in self._pedb.layout.padstack_instances:
+                    if inst.net_name == net:
+                        inst.side_number = signal_via_side_number
         meshop.max_length = f"{round(float((smallest_width * trace_ratio_seeding)), 9) * 1e6}um"
         meshop.net_layer_info = layer_info
         self.mesh_operations = [meshop]
