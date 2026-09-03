@@ -805,9 +805,13 @@ class Layout(PrimitivesQuery):
     @property
     def padstack_instances(self) -> list[PadstackInstance]:
         """Get all padstack instances in a list."""
-        if not self.__use_cache:
-            from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
+        if not self.__use_cache:
+            self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
+            return self.__padstack_instances
+
+        if not self.__padstack_instances:
             self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
         return self.__padstack_instances
