@@ -3649,9 +3649,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         return terminal
 
-    def create_edge_terminal(self, primitive_name, x, y, name=""):
+    def create_edge_terminal(self, primitive_name, x, y, name="") -> EdgeTerminal:
         primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
-        point_on_edge = CorePointData([x, y])
+        point_on_edge = CorePointData([self._pedb.value(x), self._pedb.value(y)])
         pos_edge = [CorePrimitiveEdge.create(primitive.core, point_on_edge)]
         terminal = EdgeTerminal.create(layout=primitive.layout, name=name, edges=pos_edge, net=primitive.net)
 
