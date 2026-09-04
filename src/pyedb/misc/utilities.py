@@ -23,6 +23,7 @@
 """Module gathering utility functions for PyEDB modules."""
 
 import math
+import time
 
 
 def compute_arc_points(
@@ -112,3 +113,17 @@ def compute_arc_points(
         yr.reverse()
 
     return xr, yr
+
+
+class Timer:
+    def __init__(self, func_name: str = ""):
+        self.func_name = func_name
+        self.start = None
+        self.elapsed = None
+
+    def __enter__(self):
+        self.start = time.perf_counter()
+        return self
+
+    def __exit__(self, *args):
+        self.elapsed = time.perf_counter() - self.start
