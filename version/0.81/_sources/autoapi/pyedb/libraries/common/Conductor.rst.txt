@@ -1,0 +1,120 @@
+
+
+
+
+
+
+:class:`Conductor`
+==================
+
+
+.. py:class:: pyedb.libraries.common.Conductor(pedb, name: str, conductivity: float = 58000000.0)
+
+   Bases: :py:obj:`Material`
+
+
+   
+   Metallic conductor material with electrical conductivity.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`ansys.edb.core.database.Database`
+           Active EDB session.
+
+       **name** : :class:`python:str`
+           Material name.
+
+       **conductivity** : :class:`python:float`, :obj:`optional`
+           Electrical conductivity in S/m.  Default is 5.8e7 (Copper).
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cu = Conductor(edb, "Copper", conductivity=5.8e7)
+   >>> cu.conductivity
+   58000000.0
+   >>> cu.conductivity = 3.5e7  # update on-the-fly
+   >>> edb.materials["Copper"].conductivity
+   35000000.0
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Conductor
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~conductivity`
+            - Electrical conductivity (S/m).
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.common import Conductor
+
+Property detail
+---------------
+
+.. py:property:: conductivity
+   :type: float
+
+
+   
+   Electrical conductivity (S/m).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

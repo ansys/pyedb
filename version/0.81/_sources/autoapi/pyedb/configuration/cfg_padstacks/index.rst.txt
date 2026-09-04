@@ -1,0 +1,101 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_padstacks`` library
+=================================================
+
+.. py:module:: pyedb.configuration.cfg_padstacks
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_padstacks
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgBackdrillParameters`
+            - Store optional backdrill definitions for a padstack instance.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgPadstackInstance`
+            - Represent one padstack instance entry.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgPadstackDefinition`
+            - Represent one padstack definition entry.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgPadstacks`
+            - Collect padstack definitions and instances for serialization.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgBackdrillParameters</autoapi/pyedb/configuration/cfg_padstacks/CfgBackdrillParameters>
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstackInstance</autoapi/pyedb/configuration/cfg_padstacks/CfgPadstackInstance>
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstackDefinition</autoapi/pyedb/configuration/cfg_padstacks/CfgPadstackDefinition>
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstacks</autoapi/pyedb/configuration/cfg_padstacks/CfgPadstacks>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Build padstack definition and instance entries for configuration payloads.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

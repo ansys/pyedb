@@ -1,0 +1,292 @@
+
+
+
+
+
+
+:class:`CfgPackage`
+===================
+
+
+.. py:class:: pyedb.configuration.cfg_package_definition.CfgPackage(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Configuration package class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPackage
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_attributes`
+            - Return dict of non-null/non-protected attributes (CfgBase compatibility).
+          * - :py:attr:`~set_attributes`
+            - Set non-protected attributes onto *pedb_object* (CfgBase compatibility).
+          * - :py:attr:`~set_heatsink`
+            - Attach heat sink fin geometry to this package definition.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~component_definition`
+            - 
+          * - :py:attr:`~apply_to_all`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~maximum_power`
+            - 
+          * - :py:attr:`~thermal_conductivity`
+            - 
+          * - :py:attr:`~theta_jb`
+            - 
+          * - :py:attr:`~theta_jc`
+            - 
+          * - :py:attr:`~height`
+            - 
+          * - :py:attr:`~extent_bounding_box`
+            - 
+          * - :py:attr:`~heatsink`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_package_definition import CfgPackage
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: name
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: component_definition
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: apply_to_all
+   :type:  Optional[bool]
+   :value: None
+
+
+.. py:attribute:: components
+   :type:  List[str]
+   :value: None
+
+
+.. py:attribute:: maximum_power
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: thermal_conductivity
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: theta_jb
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: theta_jc
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: height
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: extent_bounding_box
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: heatsink
+   :type:  Optional[CfgHeatSink]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_attributes(exclude=None)
+
+   
+   Return dict of non-null/non-protected attributes (CfgBase compatibility).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_attributes(pedb_object)
+
+   
+   Set non-protected attributes onto *pedb_object* (CfgBase compatibility).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_heatsink(fin_base_height=None, fin_height=None, fin_orientation=None, fin_spacing=None, fin_thickness=None)
+
+   
+   Attach heat sink fin geometry to this package definition.
+
+
+   :Parameters:
+
+       **fin_base_height** : :class:`python:str`, :obj:`optional`
+           Base height of the fin array, e.g. ``"0.5mm"``.
+
+       **fin_height** : :class:`python:str`, :obj:`optional`
+           Fin height, e.g. ``"3mm"``.
+
+       **fin_orientation** : :class:`python:str`, :obj:`optional`
+           Fin orientation: ``"x_oriented"`` or ``"y_oriented"``.
+
+       **fin_spacing** : :class:`python:str`, :obj:`optional`
+           Center-to-center fin spacing, e.g. ``"1mm"``.
+
+       **fin_thickness** : :class:`python:str`, :obj:`optional`
+           Fin thickness, e.g. ``"0.2mm"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgHeatSink`
+           The newly created heat sink object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   pkg.set_heatsink(
+       fin_base_height="0.5mm",
+       fin_height="3mm",
+       fin_orientation="x_oriented",
+       fin_spacing="1mm",
+       fin_thickness="0.2mm"
+   )
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

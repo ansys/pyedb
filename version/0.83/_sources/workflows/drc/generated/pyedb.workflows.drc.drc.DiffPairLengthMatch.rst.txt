@@ -1,0 +1,102 @@
+﻿DiffPairLengthMatch
+===================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoclass:: DiffPairLengthMatch
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      DiffPairLengthMatch.construct
+      
+      
+      DiffPairLengthMatch.copy
+      
+      
+      DiffPairLengthMatch.dict
+      
+      
+      DiffPairLengthMatch.from_orm
+      
+      
+      DiffPairLengthMatch.json
+      
+      
+      DiffPairLengthMatch.model_construct
+      
+      
+      DiffPairLengthMatch.model_copy
+      
+      
+      DiffPairLengthMatch.model_dump
+      
+      
+      DiffPairLengthMatch.model_dump_json
+      
+      
+      DiffPairLengthMatch.model_json_schema
+      
+      
+      DiffPairLengthMatch.model_parametrized_name
+      
+      
+      DiffPairLengthMatch.model_post_init
+      
+      
+      DiffPairLengthMatch.model_rebuild
+      
+      
+      DiffPairLengthMatch.model_validate
+      
+      
+      DiffPairLengthMatch.model_validate_json
+      
+      
+      DiffPairLengthMatch.model_validate_strings
+      
+      
+      DiffPairLengthMatch.parse_file
+      
+      
+      DiffPairLengthMatch.parse_obj
+      
+      
+      DiffPairLengthMatch.parse_raw
+      
+      
+      DiffPairLengthMatch.schema
+      
+      
+      DiffPairLengthMatch.schema_json
+      
+      
+      DiffPairLengthMatch.update_forward_refs
+      
+      
+      DiffPairLengthMatch.validate
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      DiffPairLengthMatch.model_computed_fields
+      DiffPairLengthMatch.model_config
+      DiffPairLengthMatch.model_fields
+      DiffPairLengthMatch.name
+      DiffPairLengthMatch.tolerance
+      DiffPairLengthMatch.pairs
+   
+   

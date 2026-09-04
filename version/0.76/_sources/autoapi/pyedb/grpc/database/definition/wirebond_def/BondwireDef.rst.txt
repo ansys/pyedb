@@ -1,0 +1,191 @@
+
+
+
+
+
+
+:class:`BondwireDef`
+====================
+
+
+.. py:class:: pyedb.grpc.database.definition.wirebond_def.BondwireDef(pedb, core=None)
+
+
+.. py:currentmodule:: BondwireDef
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete`
+            - 
+          * - :py:attr:`~get_parameters`
+            - Get the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
+          * - :py:attr:`~set_parameters`
+            - Set the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Get the name of the bondwire definition.
+          * - :py:attr:`~height`
+            - Get the bondwire top-to-die distance of the bondwire definition.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.wirebond_def import BondwireDef
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Get the name of the bondwire definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: height
+
+   
+   Get the bondwire top-to-die distance of the bondwire definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: delete()
+
+.. py:method:: get_parameters()
+
+   
+   Get the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Bondwire top-to-die distance.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_parameters(parameters)
+
+   
+   Set the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
+
+
+   :Parameters:
+
+       **parameters** : :class:`python:float`
+           Bondwire top-to-die distance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

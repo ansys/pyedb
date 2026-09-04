@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`SiwaveProperty`
+=======================
+
+
+.. py:class:: pyedb.grpc.database.inner.layout_obj.SiwaveProperty
+
+   
+   Represents the SIwave solver properties.
+
+   This class encapsulates configuration settings for SIwave simulations, including
+   reference net specification.
+
+
+   :Attributes:
+
+       **reference_net** : :class:`python:str`
+           The reference net name. Default is an empty string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SiwaveProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_property_string`
+            - Convert SiwaveProperty instance into a SIwave configuration string.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~reference_net`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.inner.layout_obj import SiwaveProperty
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: reference_net
+   :type:  str
+   :value: ''
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: to_property_string() -> str
+
+   
+   Convert SiwaveProperty instance into a SIwave configuration string.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           A formatted SIwave configuration string with all properties encoded.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,27 @@
+﻿Drc
+===
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoclass:: Drc
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Drc.check
+      
+      
+      Drc.to_ipc356a
+      
+   
+   
+
+   
+   
+   

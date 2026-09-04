@@ -1,0 +1,101 @@
+﻿MinAnnularRing
+==============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoclass:: MinAnnularRing
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      MinAnnularRing.construct
+      
+      
+      MinAnnularRing.copy
+      
+      
+      MinAnnularRing.dict
+      
+      
+      MinAnnularRing.from_orm
+      
+      
+      MinAnnularRing.json
+      
+      
+      MinAnnularRing.model_construct
+      
+      
+      MinAnnularRing.model_copy
+      
+      
+      MinAnnularRing.model_dump
+      
+      
+      MinAnnularRing.model_dump_json
+      
+      
+      MinAnnularRing.model_json_schema
+      
+      
+      MinAnnularRing.model_parametrized_name
+      
+      
+      MinAnnularRing.model_post_init
+      
+      
+      MinAnnularRing.model_rebuild
+      
+      
+      MinAnnularRing.model_validate
+      
+      
+      MinAnnularRing.model_validate_json
+      
+      
+      MinAnnularRing.model_validate_strings
+      
+      
+      MinAnnularRing.parse_file
+      
+      
+      MinAnnularRing.parse_obj
+      
+      
+      MinAnnularRing.parse_raw
+      
+      
+      MinAnnularRing.schema
+      
+      
+      MinAnnularRing.schema_json
+      
+      
+      MinAnnularRing.update_forward_refs
+      
+      
+      MinAnnularRing.validate
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MinAnnularRing.model_computed_fields
+      MinAnnularRing.model_config
+      MinAnnularRing.model_fields
+      MinAnnularRing.name
+      MinAnnularRing.value
+   
+   

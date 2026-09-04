@@ -1,0 +1,211 @@
+
+
+
+
+
+
+:class:`SIWaveSParameterSettings`
+=================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings.SIWaveSParameterSettings(pedb, core: ansys.edb.core.simulation_setup.siwave_simulation_settings.SIWaveSParameterSettings)
+
+   
+   SIWave S-Parameter simulation settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SIWaveSParameterSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dc_behavior`
+            - Get or set the DC behavior for S-Parameter simulation.
+          * - :py:attr:`~extrapolation`
+            - Get or set the S-Parameter extrapolation method.
+          * - :py:attr:`~interpolation`
+            - Get or set the S-Parameter interpolation method.
+          * - :py:attr:`~use_state_space`
+            - Get or set whether to use state space representation.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_s_parameter_settings import SIWaveSParameterSettings
+
+Property detail
+---------------
+
+.. py:property:: dc_behavior
+   :type: str
+
+
+   
+   Get or set the DC behavior for S-Parameter simulation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The DC behavior as a string.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: extrapolation
+   :type: str
+
+
+   
+   Get or set the S-Parameter extrapolation method.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The S-Parameter extrapolation method as a string.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: interpolation
+   :type: str
+
+
+   
+   Get or set the S-Parameter interpolation method.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The S-Parameter interpolation method as a string.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_state_space
+   :type: bool
+
+
+   
+   Get or set whether to use state space representation.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if state space representation is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

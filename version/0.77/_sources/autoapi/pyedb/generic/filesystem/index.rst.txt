@@ -1,0 +1,184 @@
+
+
+
+
+
+
+The ``pyedb.generic.filesystem`` library
+========================================
+
+.. py:module:: pyedb.generic.filesystem
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: filesystem
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.generic.filesystem.Scratch`
+            - Class for managing a scratch directory.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~search_files`
+            - Search for files inside a directory given a specific pattern.
+
+
+          * - :py:obj:`~my_location`
+            - Get the normalized path of the current file's directory.
+
+
+          * - :py:obj:`~get_json_files`
+            - Get the absolute path to all JSON files in start_folder.
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Scratch</autoapi/pyedb/generic/filesystem/Scratch>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: search_files(dirname: str, pattern: str = '*') -> list[str]
+
+   
+   Search for files inside a directory given a specific pattern.
+
+
+   :Parameters:
+
+       **dirname** : :class:`python:str`
+           Directory where the search will be performed.
+
+       **pattern** : :class:`python:str`, :obj:`optional`
+           Pattern to match files against. The default is ``"*"``, which matches all files.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: my_location()
+
+   
+   Get the normalized path of the current file's directory.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: get_json_files(start_folder)
+
+   
+   Get the absolute path to all JSON files in start_folder.
+
+
+   :Parameters:
+
+       **start_folder** : :class:`python:str`
+           Path to the folder where the JSON files are located.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of paths to JSON files in start_folder.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

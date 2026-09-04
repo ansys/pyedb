@@ -1,0 +1,96 @@
+
+
+
+
+
+
+:class:`CfgAutoMeshOperation`
+=============================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgAutoMeshOperation(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgAutoMeshOperation
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~enabled`
+            - 
+          * - :py:attr:`~trace_ratio_seeding`
+            - 
+          * - :py:attr:`~signal_via_side_number`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup.CfgHFSSSetup import CfgAutoMeshOperation
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: enabled
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: trace_ratio_seeding
+   :type:  float
+   :value: 3
+
+
+.. py:attribute:: signal_via_side_number
+   :type:  int
+   :value: 12
+
+
+
+
+
+

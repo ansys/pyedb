@@ -1,0 +1,239 @@
+
+
+
+
+
+
+:class:`CfgGeneral`
+===================
+
+
+.. py:class:: pyedb.configuration.cfg_general.CfgGeneral(pedb=None, data=None, **kwargs)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Fluent builder for the ``general`` section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgGeneral
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_parameters_to_edb`
+            - Write general design-option settings into the open EDB design.
+          * - :py:attr:`~get_parameters_from_edb`
+            - Read general design-option settings from EDB.
+          * - :py:attr:`~apply`
+            - Write general configuration into the open EDB design.
+          * - :py:attr:`~get_data_from_db`
+            - Read general settings from EDB.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+          * - :py:attr:`~spice_model_library`
+            - 
+          * - :py:attr:`~s_parameter_library`
+            - 
+          * - :py:attr:`~anti_pads_always_on`
+            - 
+          * - :py:attr:`~suppress_pads`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_general import CfgGeneral
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: spice_model_library
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: s_parameter_library
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: anti_pads_always_on
+   :type:  Optional[bool]
+   :value: None
+
+
+.. py:attribute:: suppress_pads
+   :type:  Optional[bool]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_parameters_to_edb()
+
+   
+   Write general design-option settings into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_parameters_from_edb()
+
+   
+   Read general design-option settings from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Write general configuration into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db()
+
+   
+   Read general settings from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``planar_antennas.py`` module
+=================================
+
+.. py:module:: pyedb.libraries.rf_libraries.planar_antennas
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: planar_antennas
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.planar_antennas.RectangularPatch`
+            - Rectangular microstrip patch antenna (optionally inset-fed).
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.planar_antennas.CircularPatch`
+            - Circular microstrip patch antenna (optionally probe-fed).
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.planar_antennas.TriangularPatch`
+            - Equilateral-triangle microstrip patch antenna (optionally probe-fed).
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> RectangularPatch</autoapi/pyedb/libraries/rf_libraries/planar_antennas/RectangularPatch>
+    <span class="nf nf-cod-symbol_class"></span> CircularPatch</autoapi/pyedb/libraries/rf_libraries/planar_antennas/CircularPatch>
+    <span class="nf nf-cod-symbol_class"></span> TriangularPatch</autoapi/pyedb/libraries/rf_libraries/planar_antennas/TriangularPatch>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

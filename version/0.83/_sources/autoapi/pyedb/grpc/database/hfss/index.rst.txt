@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``hfss.py`` module
+======================
+
+.. py:module:: pyedb.grpc.database.hfss
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.hfss.Hfss`
+            - Manages EDB methods for HFSS setup configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Hfss</autoapi/pyedb/grpc/database/hfss/Hfss>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains the ``EdbHfss`` class.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

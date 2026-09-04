@@ -1,0 +1,193 @@
+
+
+
+
+
+
+:class:`CfgSIwaveACSetup`
+=========================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSIwaveACSetup(/, **data: Any)
+
+   Bases: :py:obj:`CfgSetupAC`
+
+
+   
+   Represent one SIwave AC setup entry.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgSIwaveACSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_frequency_sweep`
+            - Add a frequency sweep to this SIwave AC setup.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~use_si_settings`
+            - 
+          * - :py:attr:`~si_slider_position`
+            - 
+          * - :py:attr:`~pi_slider_position`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgSIwaveACSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: type
+   :type:  str
+   :value: 'siwave_ac'
+
+
+.. py:attribute:: use_si_settings
+   :type:  bool
+   :value: None
+
+
+.. py:attribute:: si_slider_position
+   :type:  int
+   :value: None
+
+
+.. py:attribute:: pi_slider_position
+   :type:  int
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_frequency_sweep(name: CfgSetupAC | str, sweep_type: str = 'interpolation', start=None, stop=None, step_or_count=None, distribution: str = 'linear_count', **kwargs)
+
+   
+   Add a frequency sweep to this SIwave AC setup.
+
+
+   :Parameters:
+
+       **name** : :obj:`CfgFrequencySweep` or :class:`python:str`
+           Either a pre-built :class:`CfgFrequencySweep` object (round-trip
+           use) or a name string for a new sweep.
+
+       **sweep_type** : :class:`python:str`, :obj:`optional`
+           Sweep interpolation type.  Accepted values: ``"interpolation"``
+           (default) or ``"discrete"``.
+
+       **start** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Inline range start frequency, e.g. ``"1kHz"``.  When provided,
+           *stop* and *step_or_count* are also required.
+
+       **stop** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Inline range stop frequency, e.g. ``"1GHz"``.
+
+       **step_or_count** : :class:`python:str`, :class:`python:float`, :obj:`or` :class:`python:int`, :obj:`optional`
+           Point count (for ``"linear_count"`` / ``"log_count"``) or step
+           size (for ``"linear_scale"`` / ``"log_scale"``).
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Frequency distribution.  Default is ``"linear_count"``.
+           Accepted values and aliases:
+           
+           * ``"linear_count"`` / ``"linearcount"`` / ``"linear count"``
+           * ``"log_count"`` / ``"logcount"`` / ``"log count"``
+           * ``"linear_scale"`` / ``"linearscale"`` / ``"linear scale"``
+           * ``"log_scale"`` / ``"logscale"`` / ``"log scale"``
+           * ``"single"``
+
+       **\*\*kwargs**
+           Additional keyword arguments forwarded to
+           :class:`CfgFrequencySweep` when *name* is a string.
+
+
+
+   :Returns:
+
+       :obj:`CfgFrequencySweep`
+           The newly created (or passed-through) sweep object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Inline (single call):
+
+   >>> siwave_ac.add_frequency_sweep(
+   ...     "sw1",
+   ...     start="1kHz",
+   ...     stop="1GHz",
+   ...     step_or_count=100,
+   ...     distribution="log_count",
+   ... )
+
+   Chained ranges:
+
+   >>> sw = siwave_ac.add_frequency_sweep("sw2", sweep_type="interpolation")
+   >>> sw.add_linear_count_frequencies("1MHz", "500MHz", 50)
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

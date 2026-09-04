@@ -1,0 +1,6 @@
+create
+======
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. automethod:: MIMCapacitor.create

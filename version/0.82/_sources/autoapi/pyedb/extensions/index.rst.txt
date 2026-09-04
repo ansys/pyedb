@@ -1,0 +1,79 @@
+
+
+
+
+
+
+The ``extensions`` package
+==============================
+
+.. py:module:: pyedb.extensions
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: extensions
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.extensions.create_cell_array`
+            - This module contains the array building feature from unit cell.
+
+
+          * - :py:obj:`~pyedb.extensions.dxf_swap_backend`
+            - 
+
+
+          * - :py:obj:`~pyedb.extensions.via_design_backend`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> create_cell_array</autoapi/pyedb/extensions/create_cell_array/index>
+    <span class="nf nf-fa-file"></span> dxf_swap_backend</autoapi/pyedb/extensions/dxf_swap_backend/index>
+    <span class="nf nf-fa-file"></span> via_design_backend</autoapi/pyedb/extensions/via_design_backend/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

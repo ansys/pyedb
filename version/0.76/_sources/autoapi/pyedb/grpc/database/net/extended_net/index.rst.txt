@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``extended_net.py`` module
+==============================
+
+.. py:module:: pyedb.grpc.database.net.extended_net
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: extended_net
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.net.extended_net.ExtendedNets`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.net.extended_net.ExtendedNet`
+            - Manages EDB functionalities for a primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ExtendedNets</autoapi/pyedb/grpc/database/net/extended_net/ExtendedNets>
+    <span class="nf nf-cod-symbol_class"></span> ExtendedNet</autoapi/pyedb/grpc/database/net/extended_net/ExtendedNet>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

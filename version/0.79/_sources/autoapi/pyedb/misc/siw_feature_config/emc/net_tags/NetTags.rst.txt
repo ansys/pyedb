@@ -1,0 +1,95 @@
+
+
+
+
+
+
+:class:`NetTags`
+================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.net_tags.NetTags(element)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages collection of net tags.
+
+   This class handles the complete collection of net configurations, providing
+   a container for multiple Net objects within the EMC configuration.
+
+   :Parameters:
+
+       **element** : :obj:`xml.etree.ElementTree.Element` or :data:`python:None`
+           XML element to initialize from.
+
+   :Attributes:
+
+       **CLS_MAPPING** : :class:`python:dict`
+           Mapping of element types to their corresponding classes.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.siw_feature_config.emc.net_tags import NetTags
+   >>> net_tags = NetTags(None)
+   >>> # NetTags ready to store multiple Net objects
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: NetTags
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~CLS_MAPPING`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.net_tags import NetTags
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: CLS_MAPPING
+   :type:  dict
+
+
+
+
+
