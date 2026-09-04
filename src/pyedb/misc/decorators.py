@@ -26,8 +26,8 @@ import functools
 from typing import Any, TypeVar
 import warnings
 
-from pyedb.misc.utilities import Timer
 from pyedb.generic.settings import settings
+from pyedb.misc.utilities import Timer
 
 _T = TypeVar("_T")
 
