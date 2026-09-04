@@ -25,6 +25,7 @@ import warnings
 
 import pytest
 
+from pyedb.misc.utilities import Timer
 from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
@@ -133,6 +134,19 @@ class TestClass(BaseTestClass):
         by_net = edbapp.layout.primitives_by_net
         for net_name in edbapp.nets.nets:
             assert net_name in by_net
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_layout_cache(self):
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.layout.use_cache = True
+        with Timer() as timer:
+            assert edbapp.layout.padstack_instances
+        elapsed_1 = timer.elapsed
+        with Timer() as timer:
+            assert edbapp.layout.padstack_instances
+        assert timer.elapsed < elapsed_1
+
+        edbapp.layout.use_cache = False
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")

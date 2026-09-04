@@ -514,8 +514,9 @@ class HfssSimulationSetup(SimulationSetup):
                 net_layer_dict[net].append(layer)
 
             if signal_via_side_number is not None:
-                for inst in [inst for inst in self._pedb.padstacks.instances.values() if inst.net_name == net]:
-                    inst.side_number = signal_via_side_number
+                for inst in self._pedb.layout.padstack_instances:
+                    if inst.net_name == net:
+                        inst.side_number = signal_via_side_number
         self.add_length_mesh_operation(
             net_layer_list=net_layer_dict,
             name=f"{self.name}_AutoMeshOp",

@@ -3,7 +3,10 @@ updates:
   - package-ecosystem: "uv" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "saturday"
+      time: "06:00"
+      timezone: "Europe/Paris"
     cooldown:
       default-days: 7
       include:
@@ -22,11 +25,22 @@ updates:
       prefix: "BUILD(uv)"
 
   - package-ecosystem: "github-actions"
-    cooldown:
-      default-days: 10 # Fallback cooldown if no specific rule applies
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "saturday"
+      time: "06:00"
+      timezone: "Europe/Paris"
+    groups:
+      ansys-actions:
+        patterns:
+          - "ansys/actions/*"
+    cooldown:
+      default-days: 10 # Fallback cooldown if no specific rule applies
+      include:
+        - "*"  # Include all dependencies in cooldown
+      exclude:
+        - "ansys/actions"
     assignees:
       - "svandenb-dev"
       - "hui-zhou-a"
@@ -37,18 +51,18 @@ updates:
       prefix: "BUILD(actions)"
 
   - package-ecosystem: "pre-commit"
-    cooldown:
-      default-days: 7 # Fallback cooldown if no specific rule applies
-      include:
-        - "*"  # Include all dependencies in cooldown
-      exclude:
-        - "ansys/pre-commit-hooks"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "saturday"
       time: "06:00"
       timezone: "Europe/Paris"
+    cooldown:
+      default-days: 7 # Fallback cooldown if no specific rule applies
+      include:
+        - "*"  # Include all dependencies in cooldown
+      exclude:
+        - "ansys/pre-commit-hooks"
     assignees:
       - "svandenb-dev"
       - "hui-zhou-a"
