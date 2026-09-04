@@ -25,7 +25,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pyedb.grpc.database.layout.layout import Layout
     from pyedb.grpc.database.net.net import Net
 import re
 
