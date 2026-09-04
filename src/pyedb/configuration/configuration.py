@@ -297,7 +297,9 @@ class Configuration:
         self.__apply_with_logging("Placing probes", self.cfg_data.probes.apply)
         # Applying setups first ensures they are present in the in-memory design
         # when the cutout triggers its internal save.
+        self._pedb.layout.use_cache = True
         self.apply_setups()
+        self._pedb.layout.use_cache = False
         self.apply_operations()
 
         return True

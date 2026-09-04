@@ -23,11 +23,11 @@
 from __future__ import annotations
 
 import functools
-import time
 from typing import Any, TypeVar
 import warnings
 
 from pyedb.generic.settings import settings
+from pyedb.misc.utilities import Timer
 
 _T = TypeVar("_T")
 
@@ -152,11 +152,9 @@ def execution_timer(custom_text):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            start_time = time.time()
-            result = func(*args, **kwargs)
-            end_time = time.time()
-            elapsed_time = end_time - start_time
-            settings.logger.info(f"{custom_text} completed in {elapsed_time:.4f} seconds.")
+            with Timer() as timer:
+                result = func(*args, **kwargs)
+            settings.logger.info(f"{custom_text} completed in {timer.elapsed:.4f} seconds.")
             return result
 
         return wrapper

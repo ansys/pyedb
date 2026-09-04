@@ -745,10 +745,14 @@ class Layout(ObjBase, PrimitivesQuery):
     @property
     def padstack_instances(self) -> list[EDBPadstackInstance]:
         """Get all padstack instances in a list."""
-        if self.__use_cache:
+        if not self.__use_cache:
+            self.__padstack_instances = [EDBPadstackInstance(i, self._pedb) for i in self.core.PadstackInstances]
             return self.__padstack_instances
-        else:
-            return [EDBPadstackInstance(i, self._pedb) for i in self.core.PadstackInstances]
+
+        if not self.__padstack_instances:
+            self.__padstack_instances = [EDBPadstackInstance(i, self._pedb) for i in self.core.PadstackInstances]
+
+        return self.__padstack_instances
 
     @property
     def voltage_regulators(self) -> list[VoltageRegulator]:
