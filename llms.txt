@@ -1,0 +1,94 @@
+# PyEDB
+
+> PyEDB is a high-level Python API for the Ansys Electronics Database (EDB/AEDB) format, used to
+> create, inspect, and modify PCB/IC-package layout designs (stackup, materials, components, nets,
+> padstacks, ports, cutouts, simulation setups) prior to solving in Ansys Electronics Desktop (AEDT).
+> It has a dual-backend architecture: a gRPC backend (`ansys-edb-core`, long-term supported, default
+> for Ansys release 2026.1 and later) and a deprecated DotNet backend (default for Ansys release
+> 2025.2 and earlier, requires the `pyedb[dotnet]` extra). Both backends expose the same public
+> `pyedb.Edb` API. Python 3.10-3.14 is supported. Using PyEDB requires a licensed local AEDT
+> installation.
+
+Canonical facts (do not restate from memory; always confirm against these sources):
+- Backend defaults, minimum AEDT versions, and installation extras:
+  https://edb.docs.pyansys.com/version/stable/getting_started/backend_compatibility_migration.html
+  (source of truth in code: `_use_grpc_by_default()` in `src/pyedb/generic/design_types.py`)
+- Supported Python versions and packaging metadata: `pyproject.toml` (`requires-python`, `[project.optional-dependencies]`)
+- Constructor parameter names: `version` is canonical; `edbversion` is a deprecated alias only
+
+## Getting started
+
+- [Installation](https://edb.docs.pyansys.com/version/stable/getting_started/installation.html): pip install commands and prerequisites.
+- [Quick start](https://edb.docs.pyansys.com/version/stable/getting_started/quick_start.html): install, open an EDB, inspect it, modify it, save to a new location, close it, in about 10 minutes.
+- [Object model](https://edb.docs.pyansys.com/version/stable/getting_started/object_model.html): how the `Edb` entry point exposes `stackup`, `materials`, `components`, `nets`, `padstacks`, `excitation_manager`, `simulation_setups`, `configuration`, `layout_validation`, and the save/close lifecycle.
+- [Backend, compatibility, and migration](https://edb.docs.pyansys.com/version/stable/getting_started/backend_compatibility_migration.html): the canonical backend-selection rule, version support matrix, and DotNet-to-gRPC migration guidance.
+- [CLI reference](https://edb.docs.pyansys.com/version/stable/getting_started/cli.html): the `pyedb` command-line interface (import/export, configuration apply).
+- [Troubleshooting](https://edb.docs.pyansys.com/version/stable/getting_started/troubleshooting.html)
+- [Glossary](https://edb.docs.pyansys.com/version/stable/getting_started/glossary.html)
+
+## User guide (task-oriented, by domain)
+
+- [I want to... task index](https://edb.docs.pyansys.com/version/stable/user_guide/index.html): maps user goals to the correct guide/API page.
+- [Stackup and materials](https://edb.docs.pyansys.com/version/stable/user_guide/stackup_and_materials.html)
+- [Components and nets](https://edb.docs.pyansys.com/version/stable/user_guide/components_and_nets.html)
+- [Padstacks and vias](https://edb.docs.pyansys.com/version/stable/user_guide/padstacks_and_vias.html)
+- [Ports and sources](https://edb.docs.pyansys.com/version/stable/user_guide/ports_and_sources.html)
+- [Cutouts](https://edb.docs.pyansys.com/version/stable/user_guide/cutouts.html)
+- [Simulation setups](https://edb.docs.pyansys.com/version/stable/user_guide/simulation_setups.html)
+- [Validation and DRC](https://edb.docs.pyansys.com/version/stable/user_guide/validation_and_drc.html)
+- [Architecture and navigation](https://edb.docs.pyansys.com/version/stable/user_guide/design_navigation.html)
+- [Common tasks](https://edb.docs.pyansys.com/version/stable/user_guide/common_tasks.html)
+- [Communication protocol (gRPC)](https://edb.docs.pyansys.com/version/stable/user_guide/communication_protocols.html)
+- [Security considerations](https://edb.docs.pyansys.com/version/stable/user_guide/security_considerations.html)
+
+## Configuration (declarative JSON/TOML + builder API)
+
+- [Configuration guides overview](https://edb.docs.pyansys.com/version/stable/configuration/index.html): when to use the configuration system versus the direct Python API.
+- [Configuration file architecture](https://edb.docs.pyansys.com/version/stable/configuration/file_architecture.html): JSON/TOML schema and supported sections.
+- [Configuration API guide](https://edb.docs.pyansys.com/version/stable/configuration/configuration_api_guide.html): `CfgData`, `edb.configuration.create_config_builder()`, `edb.configuration.run()`.
+- [Configuration API examples](https://edb.docs.pyansys.com/version/stable/configuration/configuration_api_examples.html): 14 worked examples (ports, setups, padstacks, stackup, modeler geometry).
+
+## Workflows (higher-level automation classes)
+
+- [Workflows overview](https://edb.docs.pyansys.com/version/stable/workflows/index.html)
+- [EDB cutout](https://edb.docs.pyansys.com/version/stable/workflows/utilities/cutout.html): `pyedb.workflows.utilities.cutout.Cutout`.
+- [HFSS automatic configuration](https://edb.docs.pyansys.com/version/stable/workflows/sipi/hfss_auto_configuration.html): `pyedb.workflows.sipi.hfss_auto_configuration.HFSSAutoConfiguration`.
+- [Design rule checking (DRC)](https://edb.docs.pyansys.com/version/stable/workflows/drc/drc.html): `pyedb.workflows.drc.drc.Drc` and `Rules`.
+- [HFSS log parser](https://edb.docs.pyansys.com/version/stable/workflows/utilities/hfss_log_parser.html)
+- [SIwave log parser](https://edb.docs.pyansys.com/version/stable/workflows/utilities/siwave_log_parser.html)
+
+## API reference
+
+- [API reference landing page](https://edb.docs.pyansys.com/version/stable/grpc_api/index.html): entry point is `pyedb.Edb` (via `from pyedb import Edb`); see the object model page above for the full navigation map before browsing generated API pages.
+- Public API roots: `pyedb.grpc.edb.Edb` (primary, gRPC backend), `pyedb.dotnet.edb.Edb` (deprecated, DotNet backend), `pyedb.configuration` (declarative configuration), `pyedb.workflows.*` (higher-level automation), `pyedb.cli` (command-line interface).
+
+## Examples
+
+- [Example inventory](https://edb.docs.pyansys.com/version/stable/examples/example_inventory.html): catalog of every maintained PyEDB-only example (configuration API and workflow examples) with objective, difficulty, backend, and public entry points.
+- [PyAEDT + PyEDB combined examples](https://examples.aedt.docs.pyansys.com/version/dev/examples/high_frequency/layout/index.html): external gallery for examples that combine PyEDB layout editing with a full PyAEDT solve.
+
+## Migration and compatibility
+
+- Backend selection is automatic unless overridden: gRPC for Ansys release 2026.1+, DotNet for
+  Ansys release 2025.2 and earlier. Pass `grpc=True`/`grpc=False` explicitly to override.
+- DotNet backend requires the `pyedb[dotnet]` extra; it does not install by default.
+- [DotNet to gRPC migration guide](https://edb.docs.pyansys.com/version/stable/grpc_migration/migration_guide.html)
+- [Legacy DotNet API status](https://edb.docs.pyansys.com/version/stable/grpc_migration/archive.html): the DotNet backend is deprecated but not yet removed; it remains present and functional in the current release.
+
+## Repository and contribution
+
+- Source repository: https://github.com/ansys/pyedb
+- [Contribution guide](https://edb.docs.pyansys.com/version/stable/getting_started/contribution_guide.html)
+- Repository instructions for AI coding agents: `AGENTS.md` at the repository root (architecture, public
+  API boundaries, documentation/test commands, docstring requirements, backend/version accuracy rules).
+
+## Rules for AI coding agents using this project
+
+- Never assume the default backend; always resolve it from `_use_grpc_by_default()` in
+  `src/pyedb/generic/design_types.py` or the compatibility page above, since it is version-conditional.
+- Use `version=`, not `edbversion=` (deprecated alias), when constructing `Edb`.
+- Never overwrite an input `.aedb` in example code; use `edb.save_as(new_path)` to a distinct output path.
+- Always close sessions with `edb.close()` or a `with Edb(...) as edb:` context manager.
+- Do not invent method signatures, return types, or deprecation timelines; verify against
+  `src/pyedb/grpc/` source before generating example code, since generated example code has
+  previously contained fabricated or incorrect API calls that were only caught by manual source review.
