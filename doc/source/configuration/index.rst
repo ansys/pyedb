@@ -100,6 +100,11 @@ Use the sections below to choose the view that best matches how you work:
 * :doc:`configuration_api_examples` provides hands-on worked examples covering
   ports, setups, padstacks, stackup, modeler geometry, and more.
 
+For the direct, imperative Python API for the same domains (without a configuration file), see
+:doc:`../user_guide/stackup_and_materials`, :doc:`../user_guide/components_and_nets`,
+:doc:`../user_guide/padstacks_and_vias`, :doc:`../user_guide/ports_and_sources`, and
+:doc:`../user_guide/simulation_setups`.
+
 .. grid:: 3
 
     .. grid-item-card:: Configuration file architecture :fa:`file-code`

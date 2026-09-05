@@ -39,10 +39,12 @@ Examples
 --------
 Basic DRC workflow:
 
+>>> import json
 >>> import pyedb
 >>> from pyedb.workflows.drc.drc import Drc, Rules
 >>> edb = pyedb.Edb(edbpath="my_board.aedb")
->>> rules = Rules.parse_file("rules.json")
+>>> with open("rules.json") as f:
+...     rules = Rules.from_dict(json.load(f))
 >>> drc = Drc(edb)
 >>> violations = drc.check(rules)
 >>> print(f"Found {len(violations)} violations")
@@ -305,7 +307,9 @@ class Rules(BaseModel):
 
     Load from JSON file:
 
-    >>> rules = Rules.parse_file("my_rules.json")
+    >>> import json
+    >>> with open("my_rules.json") as f:
+    ...     rules = Rules.from_dict(json.load(f))
 
     Export to JSON:
 
@@ -575,10 +579,12 @@ class Drc:
     --------
     Basic DRC workflow:
 
+    >>> import json
     >>> import pyedb
     >>> from pyedb.workflows.drc.drc import Drc, Rules
     >>> edb = pyedb.Edb("my_board.aedb")
-    >>> rules = Rules.parse_file("rules.json")
+    >>> with open("rules.json") as f:
+    ...     rules = Rules.from_dict(json.load(f))
     >>> drc = Drc(edb)
     >>> violations = drc.check(rules)
     >>> print(f"Found {len(violations)} violations")

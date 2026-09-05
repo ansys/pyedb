@@ -129,19 +129,24 @@ class Components(object):
     >>> edb.components
     """
 
-    def __getitem__(self, name: str) -> Optional[Union[Component, ComponentDef]]:
-        """Get a component or component definition by name.
+    def __getitem__(self, name: str) -> Component:
+        """Get a component instance by name.
 
         Parameters
         ----------
         name : str
-            Name of the component or definition.
+            Reference designator of the component.
 
         Returns
         -------
-        :class:`pyedb.grpc.database.hierarchy.component.Component` or
-        :class:`pyedb.grpc.database.definition.component_def.ComponentDef` or None
-            Component instance if found, component definition if found by name, otherwise None.
+        :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
+            Component instance.
+
+        Raises
+        ------
+        KeyError
+            If no component with this name exists. Check ``name in edb.components.instances``
+            first, or catch the exception, if the component might not exist.
 
         Examples
         --------

@@ -178,8 +178,9 @@ class Edb(EdbInit):
         Specific cell to open. Default opens first cell.
     isreadonly : bool, optional
         Open in read-only mode. Default False.
-    edbversion : str, int, float, optional
-        EDB version (e.g., "2023.2", 232, 23.2). Default uses latest.
+    version : str, int, float, optional
+        EDB version (e.g., "2023.2", 232, 23.2). Default uses latest. ``edbversion`` is
+        accepted as a deprecated alias for this parameter.
     isaedtowned : bool, optional
         Launch from HFSS 3D Layout. Default False.
     oproject : object, optional
@@ -558,6 +559,10 @@ class Edb(EdbInit):
         -------
         :class:`LayoutValidation <pyedb.grpc.database.layout_validation.LayoutValidation>`
             Tools for design rule checking and layout validation.
+
+        Notes
+        -----
+        For a task-oriented guide, see the "Validation and DRC" page of the user guide.
         """
         return LayoutValidation(self)
 
@@ -1210,6 +1215,10 @@ class Edb(EdbInit):
         -------
         :class:`Components <pyedb.grpc.database.components.Components>`
             Component manipulation tools.
+
+        Notes
+        -----
+        For a task-oriented guide, see the "Components and nets" page of the user guide.
         """
         if not self._components and self.active_db:
             self._components = Components(self)
@@ -1227,6 +1236,10 @@ class Edb(EdbInit):
         -------
         :class:`Stackup <pyedb.grpc.database.stackup.Stackup>`
             Layer stack configuration tools.
+
+        Notes
+        -----
+        For a task-oriented guide, see the "Stackup and materials" page of the user guide.
         """
         if self.active_db and self._stackup is None:
             self._stackup = Stackup(self, self.active_cell.layout.layer_collection)
@@ -1258,6 +1271,10 @@ class Edb(EdbInit):
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
             Source and port creation tools.
+
+        Notes
+        -----
+        For a task-oriented guide, see the "Ports and sources" page of the user guide.
         """
         if self.active_db:
             return self._source_excitation
@@ -1271,6 +1288,10 @@ class Edb(EdbInit):
         -------
         :class:`Materials <pyedb.grpc.database.definition.materials.Materials>`
             Material definition and management.
+
+        Notes
+        -----
+        For a task-oriented guide, see the "Stackup and materials" page of the user guide.
         """
         if self.active_db:
             self._materials = Materials(self)
@@ -1282,8 +1303,12 @@ class Edb(EdbInit):
 
         Returns
         -------
-        :class:`Padstacks <pyedb.grpc.database.padstack.Padstacks>`
+        :class:`Padstacks <pyedb.grpc.database.padstacks.Padstacks>`
             Padstack definition and editing.
+
+        Notes
+        -----
+        For a task-oriented guide, see the "Padstacks and vias" page of the user guide.
         """
         if not self._padstack and self.active_db:
             self._padstack = Padstacks(self)
@@ -1323,6 +1348,10 @@ class Edb(EdbInit):
         -------
         :class:`Nets <pyedb.grpc.database.nets.Nets>`
             Net manipulation tools.
+
+        Notes
+        -----
+        For a task-oriented guide, see the "Components and nets" page of the user guide.
         """
         from pyedb.grpc.database.nets import Nets
 
@@ -1864,9 +1893,15 @@ class Edb(EdbInit):
 
         Returns
         -------
-        List
-            List of coordinate points defining the extent used for clipping the design. If it failed return an empty
-            list.
+        list or bool
+            List of coordinate points defining the extent used for clipping the design, on success.
+            On failure, either an empty list or ``False`` is returned depending on which internal
+            stage failed — check truthiness (``if not result:``) rather than assuming a specific
+            empty-collection type.
+
+        Notes
+        -----
+        For a task-oriented guide, see the "Cutouts" page of the user guide.
 
         Examples
         --------
@@ -2444,7 +2479,17 @@ class Edb(EdbInit):
 
     @property
     def simulation_setups(self) -> SimulationSetups:
-        """Get all simulation setups object."""
+        """Simulation setup management interface.
+
+        Returns
+        -------
+        :class:`SimulationSetups <pyedb.grpc.database.simulation_setups.SimulationSetups>`
+            HFSS and SIwave simulation setup creation and management tools.
+
+        Notes
+        -----
+        For a task-oriented guide, see the "Simulation setups" page of the user guide.
+        """
         if not hasattr(self, "_simulation_setups") or self._simulation_setups is None:
             self._simulation_setups = SimulationSetups(self)
         return self._simulation_setups

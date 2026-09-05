@@ -27,20 +27,20 @@ high-level, application-oriented workflows for common layout tasks such as:
 - building cutouts,
 - and preparing designs for solver workflows.
 
-For most users, the key point is simple:
-
-> PyEDB exposes high-level APIs intended to stay consistent across supported backends.
-
-This means that most users can focus on the public PyEDB API and do not need to think about
-backend implementation details while getting started.
+PyEDB has a **dual-backend** architecture: a gRPC backend (long-term supported, the default for
+Ansys release 2026.1 and later) and a deprecated DotNet backend (the default for Ansys release
+2025.2 and earlier, requires the `pyedb[dotnet]` extra). Both backends expose the same public
+API, so most users can focus on the public PyEDB API and do not need to think about backend
+implementation details while getting started.
 
 ## New user path
 
 If you are new to PyEDB, follow this path:
 
 1. **Install PyEDB**
-2. **Open or create a design with `Edb`**
-3. **Use the Getting started guide and examples**
+2. **Run the quick start below**
+3. **Read the [object model](https://edb.docs.pyansys.com/version/stable/getting_started/object_model.html)
+   to learn how `Edb` exposes stackup, materials, components, nets, and other objects**
 4. **Move to the User guide and API reference as needed**
 
 ### Install
@@ -49,25 +49,49 @@ If you are new to PyEDB, follow this path:
 pip install pyedb
 ```
 
-### Open an EDB project
+This installs the base package, which can use the gRPC backend out of the box. The deprecated
+DotNet backend requires an additional extra: `pip install pyedb[dotnet]`.
+
+### Quick start
+
+The following script creates a new, empty EDB database, inspects it, makes one safe
+modification, saves the result to a **new** location (the original is never overwritten), and
+closes the session. See the
+[Quick start guide](https://edb.docs.pyansys.com/version/stable/getting_started/quick_start.html)
+for the full walkthrough with expected output.
 
 ```python
+import tempfile
+from pathlib import Path
+
 from pyedb import Edb
 
-edb = Edb(edbpath="myedb.aedb", version="2026.1")
+input_path = str(Path(tempfile.gettempdir()) / "quick_start_input.aedb")
+edb = Edb(edbpath=input_path, version="2026.1")
 
-# Your workflow here
-# stackup, materials, components, nets, ports, padstacks, cutouts, ...
+# Inspect basic database information
+print("Cell names:", edb.cell_names)
+print("Existing layers:", list(edb.stackup.layers.keys()))
 
+# Perform one safe modification
+edb.stackup.add_layer(
+    layer_name="TOP",
+    layer_type="signal",
+    material="copper",
+    thickness="35um",
+)
+
+# Save to a new output location and close
+output_path = str(Path(tempfile.gettempdir()) / "quick_start_output.aedb")
+edb.save_as(output_path)
 edb.close()
 ```
 
 ### Advanced: explicitly choose a backend
 
-Most users can work directly with the high-level PyEDB API and do not need to care about
-backend details.
-
-If needed, backend selection is available through the `grpc` flag:
+When the `grpc` argument is omitted, PyEDB selects the backend automatically from the resolved
+AEDT version: gRPC for Ansys release 2026.1 and later, DotNet for Ansys release 2025.2 and
+earlier. Pass `grpc=True` or `grpc=False` explicitly to override this:
 
 ```python
 from pyedb import Edb
@@ -75,8 +99,10 @@ from pyedb import Edb
 edb = Edb(edbpath="myedb.aedb", version="2026.1", grpc=False)
 ```
 
-For backend-specific guidance, compatibility notes, and migration recommendations, see the
-dedicated backend / compatibility / migration documentation page.
+For the full compatibility matrix, backend feature notes, and migration guidance, see the
+[Backend, compatibility, and migration](https://edb.docs.pyansys.com/version/stable/getting_started/backend_compatibility_migration.html)
+page.
+
 
 ## About PyEDB
 
@@ -122,17 +148,22 @@ Documentation for the latest stable release of PyEDB is hosted at
 
 - [Installation](https://edb.docs.pyansys.com/version/stable/getting_started/installation.html):
   Install PyEDB and verify your environment.
+- [Quick start](https://edb.docs.pyansys.com/version/stable/getting_started/quick_start.html):
+  Install, open an EDB, inspect it, make a change, and save it in about 10 minutes.
+- [Object model](https://edb.docs.pyansys.com/version/stable/getting_started/object_model.html):
+  Learn how the `Edb` entry point exposes stackup, materials, components, nets, and other objects.
 - [User guide](https://edb.docs.pyansys.com/version/stable/user_guide/index.html):
   The user guide explains workflows and common tasks.
-- [API reference](https://edb.docs.pyansys.com/version/stable/api/index.html):
+- [API reference](https://edb.docs.pyansys.com/version/stable/grpc_api/index.html):
   API descriptions and usage details.
 - [Examples](https://examples.aedt.docs.pyansys.com/version/dev/examples/high_frequency/layout/index.html):
   Explore end-to-end workflow examples for PyEDB.
-- [Contribute](https://edb.docs.pyansys.com/version/stable/contributing.html):
+- [Contribute](https://edb.docs.pyansys.com/version/stable/getting_started/contribution_guide.html):
   Learn how to contribute to the codebase or documentation.
 
 If you need backend-specific guidance, platform recommendations, or migration planning, see the
-backend / compatibility / migration page in the documentation.
+[Backend, compatibility, and migration](https://edb.docs.pyansys.com/version/stable/getting_started/backend_compatibility_migration.html)
+page.
 
 In the upper right corner of the documentation title bar, there is an option
 for switching from viewing the documentation for the latest stable release
@@ -147,20 +178,6 @@ On the [PyEDB Discussions](https://github.com/ansys/pyedb/discussions) or the
 questions, share ideas, and get community feedback.
 
 To reach the project support team, email [pyansys.core@ansys.com](mailto:pyansys.core@ansys.com).
-
-## Backend guidance
-
-PyEDB exposes **high-level APIs intended to be backend agnostic**.
-
-For most users, backend selection should remain a secondary concern. Beginner workflows and
-examples should focus on the public PyEDB API rather than backend implementation details.
-
-Use the dedicated backend / compatibility / migration documentation page if you need guidance on:
-
-- backend selection,
-- platform considerations,
-- compatibility validation,
-- or migration planning.
 
 ## License
 

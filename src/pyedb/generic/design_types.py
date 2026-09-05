@@ -212,14 +212,14 @@ def Edb(
 
     # Simple cutout with signal and reference nets
     >>> edb.cutout(
-    >>>    signal_list=["PCIe", "USB"],
-    >>>    reference_list=["GND"]
+    >>>    signal_nets=["PCIe", "USB"],
+    >>>    reference_nets=["GND"]
     >>> )
 
     # Advanced cutout with custom parameters
     >>> edb.cutout(
-    >>>    signal_list=["DDR"],
-    >>>    reference_list=["GND"],
+    >>>    signal_nets=["DDR"],
+    >>>    reference_nets=["GND"],
     >>>    extent_type="ConvexHull",
     >>>    expansion_size=0.002,
     >>>    use_round_corner=True,
@@ -244,14 +244,14 @@ def Edb(
     4. Simulation Setup
 
     # Create SIwave SYZ setup
-    >>> syz_setup = edb.create_siwave_syz_setup(
+    >>> syz_setup = edb.simulation_setups.create_siwave_setup(
     >>>     name="GHz_Setup",
     >>>     start_freq="1GHz",
     >>>     stop_freq="10GHz"
     >>> )
 
     # Create SIwave DC setup
-    >>> dc_setup = edb.create_siwave_dc_setup(name="DC_Analysis", use_dc_point=True)
+    >>> dc_setup = edb.simulation_setups.create_siwave_dcir_setup(name="DC_Analysis")
 
     # Solve with SIwave
     >>> edb.solve_siwave()
@@ -281,18 +281,12 @@ def Edb(
 
     7. Port Creation
 
-    # Create wave port between two pins
-    >>> wave_port = edb.excitation_manager.create_port(
-    >>>     positive_terminal=pin1,
-    >>>     negative_terminal=pin2,
-    >>>     port_type="Wave"
-    >>> )
+    # Create a port between two terminals (wave port if both terminals support it,
+    # otherwise a gap port)
+    >>> port = edb.excitation_manager.create_port(pin1_terminal, ref_terminal=pin2_terminal)
 
-    # Create lumped port
-    >>> lumped_port = edb.excitation_manager.create_port(
-    >>>     positive_terminal=via_terminal,
-    >>>     port_type="Lumped"
-    >>> )
+    # Create a circuit port on a single terminal
+    >>> circuit_port = edb.excitation_manager.create_port(via_terminal, is_circuit_port=True)
 
     8. Component Management
 
@@ -317,28 +311,25 @@ def Edb(
 
     # Get layout statistics with area calculation
     >>> stats = edb.get_statistics(compute_area=True)
-    >>> print(f"Total nets: {stats.net_count}")
-    >>> print(f"Total components: {stats.component_count}")
+    >>> print("Total nets:", stats.num_nets)
+    >>> print("Total discrete components:", stats.num_discrete_components)
 
     11. Layout Validation
 
-    # Run DRC check
-    >>> drc_errors = edb.layout_validation.run_drc()
-    >>> print(f"Found {len(drc_errors)} DRC violations")
+    # Find DC shorts on the layout
+    >>> shorts = edb.layout_validation.dc_shorts()
+    >>> print(f"Found {len(shorts)} DC shorts")
 
     12. Differential Pairs
 
     # Create differential pair
-    >>> edb.differential_pairs.create(positive_net="USB_P", negative_net="USB_N", name="USB_DP")
+    >>> edb.differential_pairs.create(name="USB_DP", net_p="USB_P", net_n="USB_N")
 
     13. Workflow Automation
 
-    # Define and run workflow
+    # Export a bill of materials from the current design
     >>> workflow = edb.workflow
-    >>> workflow.add_task("Import", file_path="input.brd")
-    >>> workflow.add_task("Cutout", signal_nets=["PCIe"])
-    >>> workflow.add_task("Export", format="IPC2581")
-    >>> workflow.run()
+    >>> workflow.export_bill_of_materials("bom.csv")
     """
     settings.is_student_version = student_version
     if version is None:

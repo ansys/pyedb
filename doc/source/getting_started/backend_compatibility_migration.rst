@@ -50,7 +50,28 @@ This means that:
 Backend overview
 ----------------
 
-PyEDB supports backend selection through the ``Edb`` constructor.
+PyEDB supports backend selection through the ``Edb`` constructor ``grpc`` argument.
+
+.. list-table:: Backend selection at a glance
+   :header-rows: 1
+   :widths: 18 20 20 42
+
+   * - Flag
+     - Backend
+     - Status
+     - Notes
+   * - ``grpc=True``
+     - gRPC
+     - Long-term supported backend
+     - Requires Ansys release 2026.1 or later and the base ``pyedb`` package (no extra needed)
+   * - ``grpc=False``
+     - DotNet
+     - Deprecated, still supported
+     - Requires the ``pyedb[dotnet]`` optional dependency
+   * - Omitted (default, ``grpc=None``)
+     - Automatic
+     - Selected from the resolved AEDT version
+     - gRPC for Ansys 2026.1 and later; DotNet for Ansys 2025.2 and earlier
 
 Example:
 
@@ -58,9 +79,11 @@ Example:
 
    from pyedb import Edb
 
+   # Explicit backend selection
    edb = Edb(edbpath="myedb.aedb", version="2026.1", grpc=False)
 
-The ``grpc`` flag allows advanced users to explicitly choose the backend when needed.
+The ``grpc`` flag allows advanced users to explicitly choose the backend when needed. When it is
+omitted, the automatic rule above applies.
 
 Current direction
 -----------------
@@ -73,7 +96,8 @@ Why:
 - it is better aligned with long-term maintainability,
 - and it avoids the ongoing friction associated with .NET-based deployment, especially on Linux.
 
-The current backend default may remain unchanged for compatibility during a transition period, but the long-term recommendation is to move toward gRPC.
+The DotNet backend remains available and supported for existing workflows, but new automation should
+prefer gRPC. For a step-by-step porting guide, see :doc:`../grpc_migration/migration_guide`.
 
 Platform guidance
 -----------------
@@ -134,7 +158,7 @@ The compatibility goal is:
 - **Long-term recommendation:** prefer gRPC for future-facing workflows
 
 Frequently asked questions
----
+--------------------------
 
 Do you need to care about the backend to start using PyEDB?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,3 +186,12 @@ Related pages
 - :doc:`index`
 - :doc:`installation`
 - :doc:`../user_guide/index`
+- :doc:`../grpc_migration/migration_guide`
+- :doc:`../grpc_migration/archive`
+
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+
+   ../grpc_migration/migration_guide
+   ../grpc_migration/archive

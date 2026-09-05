@@ -7,21 +7,25 @@ This tutorial walks you through creating a simple EDB from scratch using the pur
 Prerequisites
 -------------
 *   PyEDB library is installed (`pip install pyedb`).
-*   The ``ansys-edb-core`` service is installed and available (see :doc:`../installation`).
+*   The ``ansys-edb-core`` service is installed and available (see :doc:`../getting_started/installation`).
 
 Import and initialize
 ---------------------
 
 .. code-block:: python
 
+   import tempfile
+   from pathlib import Path
+
    from pyedb import Edb
    from pyedb.libraries.rf_libraries.base_functions import CPW
 
-   # Specify a path for the new EDB project
-   edb_path = "/tmp/my_first_project.aedb"  # Note: Using a Linux path!
+   # Specify a path for the new EDB project in a temporary, OS-independent location
+   edb_path = str(Path(tempfile.gettempdir()) / "my_first_project.aedb")
 
    # Create a new EDB project using a context manager
-   edb = Edb(version="2026.1")
+   edb = Edb(edbpath=edb_path, version="2026.1")
+
 
    # Define materials and stackup
    edb.materials.add_conductor_material(name="gold", conductivity=4.1e7)
@@ -69,8 +73,9 @@ Import and initialize
    cpw.substrate.h = 100e-6  # 100um
    cpw.create()
 
-   # Save the EDB project to the specified path
-   edb.save()
+   # Save the new EDB project to its own output location and close the session
+   output_path = str(Path(tempfile.gettempdir()) / "my_first_project_output.aedb")
+   edb.save_as(output_path)
    edb.close()
 
-   print("EDB project created successfully on the server!")
+   print(f"EDB project created successfully at {output_path}.")

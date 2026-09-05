@@ -750,8 +750,11 @@ class Stackup:
 
         Returns
         -------
-        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer` or bool
-            Layer object created, or ``True`` / ``False`` for non-stackup layer types.
+        bool
+            ``True`` when the layer was created successfully, ``False`` otherwise. Use
+            ``self.layers["layer_name"]`` (or ``self["layer_name"]``) afterward to retrieve the
+            created :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
+            object.
         """
         if layer_type == "via":
             if lower_layer is None or upper_layer is None:
@@ -835,8 +838,10 @@ class Stackup:
 
         Returns
         -------
-        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
-            Layer object created.
+        ansys.edb.core.layout.layer.Layer or None
+            Raw ``ansys.edb.core`` layer object created (not wrapped in a ``pyedb``
+            :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`).
+            Retrieve the wrapped object afterward with ``self.layers["NewTopLayer"]`` if needed.
 
         Examples
         --------
@@ -881,8 +886,10 @@ class Stackup:
 
         Returns
         -------
-        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
-            Layer object created.
+        ansys.edb.core.layout.layer.Layer or None
+            Raw ``ansys.edb.core`` layer object created (not wrapped in a ``pyedb``
+            :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`).
+            Retrieve the wrapped object afterward with ``self.layers["NewBottomLayer"]`` if needed.
 
         Examples
         --------
@@ -936,8 +943,10 @@ class Stackup:
 
         Returns
         -------
-        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
-            Layer object created.
+        ansys.edb.core.layout.layer.Layer or None
+            Raw ``ansys.edb.core`` layer object created (not wrapped in a ``pyedb``
+            :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`).
+            Retrieve the wrapped object afterward with ``self.layers["NewLayer"]`` if needed.
 
         Examples
         --------
@@ -987,8 +996,10 @@ class Stackup:
 
         Returns
         -------
-        :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
-            Layer object created.
+        ansys.edb.core.layout.layer.Layer or None
+            Raw ``ansys.edb.core`` layer object created (not wrapped in a ``pyedb``
+            :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`).
+            Retrieve the wrapped object afterward with ``self.layers["NewLayer"]`` if needed.
 
         Examples
         --------

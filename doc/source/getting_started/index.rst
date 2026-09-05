@@ -1,5 +1,3 @@
-.. _migration_guide:
-
 Getting started
 ===============
 
@@ -11,6 +9,20 @@ Getting started
             :margin: 2 2 0 0
 
             Learn how to install PyEDB.
+
+   .. grid-item-card:: Quick start
+            :link: quick_start
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            Install, open an EDB, inspect it, make a change, and save it in about 10 minutes.
+
+   .. grid-item-card:: Object model
+            :link: object_model
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            How the ``Edb`` entry point exposes stackup, materials, components, nets, and more.
 
    .. grid-item-card:: Troubleshooting
             :link: troubleshooting
@@ -40,49 +52,45 @@ Why PyEDB?
 PyEDB represents a modern approach to PCB design automation using Python, offering significant advantages over traditional methods.
 
 
+
 PyEDB Architecture and components
 ---------------------------------
 
-PyEDB is built on top of lower-level APIs and provides a simplified, high-level interface for EDB automation:
+PyEDB is built on top of lower-level APIs and provides a simplified, high-level interface for EDB automation.
+It has a **dual-backend** architecture; PyEDB selects one automatically based on the resolved AEDT version
+(see :doc:`backend_compatibility_migration` for the exact rule), or you can select it explicitly with the
+``grpc`` constructor argument.
 
-**Component Stack:**
+**gRPC backend (long-term supported, default for Ansys release 2026.1 and later):**
 
-1. **Ansys EDB (.NET Libraries):** The core Ansys Electronics Database engine written in .NET, installed with AEDT.
-   This contains all the fundamental EDB features for layout manipulation, simulation setup, etc.
+1. **Ansys EDB (gRPC service):** The ``ansys-edb-core`` service exposes the EDB engine over gRPC. It can run
+   locally or on a remote/headless machine (Linux, Docker, CI) without a GUI.
+2. **ansys-edb-core (Python client):** The Python gRPC client package, installed automatically as a base
+   dependency of ``pyedb``.
+3. **PyEDB (this library):** The high-level, user-friendly Python interface that wraps the gRPC client with
+   app-oriented classes and methods (``Edb``, ``Stackup``, ``Components``, ``Nets``, and so on).
 
-2. **PyEDB-Core:** A lower-level Python API (not to be confused with ansys-edb-core) that provides direct .NET bindings
-   to the EDB libraries. Using PyEDB-Core requires deep knowledge of EDB architecture and class hierarchies.
+**DotNet backend (deprecated, requires the** ``pyedb[dotnet]`` **extra):**
 
-3. **ansys-edb-core:** A Python package that provides gRPC client capabilities for future client-server architecture.
-   Currently installed as a dependency but the gRPC server features are not yet active.
+1. **Ansys EDB (.NET libraries):** The original EDB engine, written in .NET and installed with AEDT.
+2. **PythonNET bridge:** Uses the ``pythonnet`` package to load the .NET CLR (Common Language Runtime)
+   directly into the Python process.
+3. **PyEDB (this library):** The same high-level API surface as the gRPC backend, so user scripts written
+   against public PyEDB APIs generally do not need to change when switching backends.
 
-4. **PyEDB (This Library):** The high-level, user-friendly Python interface that wraps PyEDB-Core with app-oriented
-   classes and methods. PyEDB significantly simplifies EDB workflows and reduces the learning curve.
+The DotNet backend requires AEDT to be installed on the same machine where PyEDB runs, because it loads the
+local EDB .NET assemblies directly. The gRPC backend does not have this constraint and can connect to a
+service running on a different machine.
 
-Current architecture with .NET interoperability
------------------------------------------------
+Performance and integration
+----------------------------
+*   **Performance:** The gRPC backend is the long-term supported implementation and is recommended for new
+    automation, especially on Linux or headless environments. See :doc:`backend_compatibility_migration` for
+    the fast-mode performance notes.
 
-**How PyEDB works:**
-
-*   **PyEDB:** A pure Python library providing high-level API classes (``Edb``, ``Stackup``, ``Components``, etc.)
-*   **PythonNET Bridge:** Uses the ``pythonnet`` package to load .NET CLR (Common Language Runtime)
-*   **Ansys EDB .NET Libraries:** The actual EDB engine that executes within the .NET runtime
-
-The .NET libraries are loaded directly into the Python process via PythonNET, allowing seamless interoperability
-between Python code and .NET EDB objects.
-
-**Important:** The current architecture requires AEDT installation on the same machine where PyEDB runs, as it needs
-access to the local EDB .NET assemblies.
-
-
-Performance and Integration
----------------------------
-*   **Performance:** Direct .NET interoperability (current) provides efficient access to EDB features.
-    The upcoming gRPC architecture enables pure native python API for better compatibility and stability especially on Linux.
-
-*   **Python Ecosystem:** Being a pure Python library, PyEDB integrates seamlessly with the vast Python data science and
-machine learning stack (NumPy, Pandas, Matplotlib, Scikit-learn, PyTorch, etc.). You can easily post-process simulation
-results or use AI/ML to guide design decisions.
+*   **Python ecosystem:** Being a pure Python library, PyEDB integrates seamlessly with the vast Python data
+    science and machine learning stack (NumPy, Pandas, Matplotlib, Scikit-learn, PyTorch, etc.). You can easily
+    post-process simulation results or use AI/ML to guide design decisions.
 
 Use Cases
 ---------
@@ -131,6 +139,8 @@ page on the Ansys website.
    :maxdepth: 2
 
    installation
+   quick_start
+   object_model
    cli
    backend_compatibility_migration
    troubleshooting

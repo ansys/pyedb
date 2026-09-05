@@ -37,6 +37,9 @@ Feel free to open an issue or pull request if you would like to add new PyEDB-fo
 This examples are focused on using PyEDB to create, modify, and analyze PCB/IC packages and RF boards. The basic
 section covers fundamental tasks, while the advanced section demonstrates more complex workflows for Si-PI.
 
+For a full catalog of PyEDB-only examples (configuration API and workflow examples) with metadata
+(objective, difficulty, backend, and public entry points), see :doc:`example_inventory`.
+
 
 PyEDB workflows
 ===============
@@ -49,3 +52,9 @@ The following sections contain examples that illustrate various workflows using 
     :link-type: ref
 
     Explore PyEDB workflows for SIPI, utilities, and DRC features.
+
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+
+   example_inventory

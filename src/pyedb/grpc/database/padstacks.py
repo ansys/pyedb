@@ -79,10 +79,14 @@ PAD_TYPE_MAP = {
 class Padstacks(object):
     """Manages EDB methods for padstacks accessible from `Edb.padstacks` property.
 
+    Notes
+    -----
+    For a task-oriented guide, see the "Padstacks and vias" page of the user guide.
+
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edbapp = Edb("myaedbfolder", edbversion="2024.2")
+    >>> edbapp = Edb("myaedbfolder", version="2026.1")
     >>> edb_padstacks = edbapp.padstacks
     """
 
@@ -96,9 +100,9 @@ class Padstacks(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.definition.padstack_def.PadstackDef` or
-        :class:`pyedb.dotnet.database.primitive.padstack_instance.PadstackInstance`
-        Requested padstack definition or instance. Returns ``None`` if not found.
+        :class:`PadstackDef <pyedb.grpc.database.definition.padstack_def.PadstackDef>` or
+        :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
+            Requested padstack definition or instance. Returns ``None`` if not found.
         """
         if isinstance(name, int) and name in self.instances:
             return self.instances.get(name, None)
@@ -290,21 +294,21 @@ class Padstacks(object):
         return next(i for i in self._pedb.layout.padstack_instances if i.id == value)
 
     @property
-    def pins(self) -> Dict[int, PadstackInstance]:
+    def pins(self) -> Dict[str, PadstackInstance]:
         """All pin instances belonging to components.
 
         Returns
         -------
-        dict[int, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
-            Dictionary of pin instances with database IDs as keys.
+        dict[str, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+            Dictionary of pin instances keyed by instance name (not by database ID).
 
         Examples
         --------
         >>> from pyedb import Edb
         >>> edb = Edb("my_design.edb")
         >>> all_pins = edb.padstacks.pins
-        >>> for pin_id, pin in all_pins.items():
-        ...     print(f"Pin {pin_id} belongs to {pin.component.refdes}")
+        >>> for pin_name, pin in all_pins.items():
+        ...     print(f"Pin {pin_name} belongs to {pin.component.refdes}")
         """
         pins = {}
         for instance in self.instances.values():

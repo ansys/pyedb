@@ -1348,7 +1348,7 @@ class Materials(object):
 
         return res
 
-    def read_syslib_material(self, material_name) -> dict[str, Material]:
+    def read_syslib_material(self, material_name) -> dict:
         """Read a specific material from syslib AMAT file.
 
         Parameters
@@ -1359,7 +1359,9 @@ class Materials(object):
         Returns
         -------
         dict
-            {material name: dict of material properties}.
+            Dictionary of material property name to value for the matched material (for example
+            ``{"conductivity": 4.1e7}``), or an empty dictionary if the material is not found in the
+            AEDT system library AMAT file.
         """
         res = {}
         amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")

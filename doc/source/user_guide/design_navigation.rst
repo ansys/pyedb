@@ -35,13 +35,15 @@ At instantiation time, the ``grpc`` flag selects the backend:
 
 * ``grpc=False`` uses the DotNet backend.
 * ``grpc=True`` uses the gRPC backend.
+* ``grpc=None`` (the default, i.e. omitting the argument) selects the backend automatically based on the
+  resolved AEDT version: gRPC for Ansys release 2026.1 and later, DotNet for Ansys release 2025.2 and earlier.
 
 .. important::
 
-   The current default is ``grpc=False``.
-
-   DotNet is the current official backend. For clarity, it is still a good
-   practice to pass ``grpc=True`` or ``grpc=False`` explicitly in user scripts.
+   When ``grpc`` is omitted, the resolved AEDT version decides the backend (see above). gRPC is the
+   long-term supported backend and is recommended for new automation. For clarity, it is still good
+   practice to pass ``grpc=True`` or ``grpc=False`` explicitly in user scripts so that behavior does not
+   change silently when the AEDT version changes.
 
 Typical usage patterns are:
 
@@ -49,14 +51,14 @@ Typical usage patterns are:
 
    from pyedb import Edb
 
-   # Current official backend
+   # DotNet backend (requires the ``dotnet`` optional dependency)
    edb = Edb(edbpath=r"C:\projects\board.aedb", version="2026.1", grpc=False)
 
 .. code-block:: python
 
    from pyedb import Edb
 
-   # New gRPC backend
+   # gRPC backend (long-term supported, requires Ansys 2026.1 or later)
    edb = Edb(edbpath=r"C:\projects\board.aedb", version="2026.1", grpc=True)
 
 .. note::
@@ -82,20 +84,25 @@ PyEDB currently supports two backend implementations behind the same public API.
      - Notes
    * - ``grpc=False``
      - DotNet
-     - Current official backend
-     - Uses the .NET-based EDB access layer and remains the default behavior
+     - Deprecated, still supported
+     - Uses the .NET-based EDB access layer; requires the ``pyedb[dotnet]`` optional dependency
    * - ``grpc=True``
      - gRPC
-     - New backend
+     - Long-term supported backend
      - Uses ``ansys-edb-core`` and requires Ansys 2026.1 or later
+   * - Omitted (``grpc=None``)
+     - Automatic
+     - Selected from AEDT version
+     - gRPC for Ansys 2026.1+, DotNet for Ansys 2025.2 and earlier
 
 The gRPC backend requires a supported AEDT version:
 
 * ``grpc=True`` requires Ansys 2026.1 or later.
-* Requesting ``grpc=True`` with an older version raises an error.
+* Requesting ``grpc=True`` with an older version raises a ``RuntimeError``.
 
 If you are writing introductory material or reusable automation scripts, always
 show the ``grpc`` flag explicitly.
+
 
 PyEDB architecture at a glance
 ------------------------------

@@ -474,9 +474,47 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           sphinxopts: '-j 1 --color -w build_errors.txt'
           use-python-cache: false
-          check-links: false
+          check-links: true
           needs-quarto: true
           group-dependencies-name: 'doc'
+
+  doc-quality-gate:
+    name: Documentation quality gate
+    needs: [doc-style]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: false
+
+      - name: Install Python library and documentation dependencies
+        run: uv sync --frozen --extra doc
+
+      - name: Run documentation quality gate
+        run: |
+          source .venv/bin/activate
+          python doc/check_doc_quality.py
+
+      - name: Upload documentation warnings log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: doc/_build/quality_gate_errors.txt
+          name: doc-quality-gate-warnings-${{ github.run_attempt }}
+          retention-days: 7
 
   package:
     name: Package library
@@ -484,7 +522,8 @@ jobs:
             system-tests-windows-grpc,
             system-tests-linux-dotnet,
             system-tests-linux-grpc,
-            docs-build]
+            docs-build,
+            doc-quality-gate]
     runs-on: ubuntu-latest
     permissions:
       attestations: write # Required to create and publish package attestations (SLSA provenance)

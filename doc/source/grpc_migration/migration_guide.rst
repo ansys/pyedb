@@ -1,3 +1,5 @@
+.. _migration_guide:
+
 Migration Guide: DotNet to gRPC
 ===============================
 
@@ -14,41 +16,42 @@ Side-by-Side Code Comparison
 **Initialization and Setup**
 
    .. code-block:: python
-      :caption: Legacy DotNet (Archived)
+      :caption: Legacy DotNet (Deprecated)
 
-      # This required AEDT to be installed on Windows and Linux
+      # Requires AEDT to be installed on Windows and Linux, and the ``pyedb[dotnet]`` extra
       from pyedb import Edb
 
-      # This would start an AEDT process
+      # This starts an AEDT-owned EDB process
       edb = Edb(edbpath=edb_path, version="2025.2", grpc=False)
       # ... your code ...
       edb.save()
       edb.close()  # Mandatory to close AEDT
 
-
-
    .. code-block:: python
       :caption: Modern gRPC
 
-       # This connects to the standalone ansys-edb-core service
-       from pyedb import Edb
+      # This connects to the standalone ansys-edb-core service
+      from pyedb import Edb
 
-       edb = Edb(edbpath=edb_path, version="2026.1", grpc=True)
-       edb.save()
-       edb.close()
-       # Connection closed automatically when edb is closed.
+      edb = Edb(edbpath=edb_path, version="2026.1", grpc=True)
+      edb.save()
+      edb.close()
+      # Connection closed automatically when edb is closed.
 
- ..Note:: The RPC server can only run on single Python thread but can open multiple EDB instances.
-          However if you close one edb instance, the default behavior is to close the server. Therefore the other EDB
-          instances are disconnected. To close an EDB instance without closing the server you can use the following code:
+.. note::
 
-.. code-block:: python
-   edb.close(terminate_rpc_session=False)
+   The RPC server runs on a single Python thread but can host multiple open EDB instances.
+   Closing one EDB instance closes the server by default, disconnecting any other open instances.
+   To close an EDB instance without closing the server, use:
+
+   .. code-block:: python
+
+      edb.close(terminate_rpc_session=False)
 
 
 **Common Method Calls**
 The core API (methods on `edb.modeler`, `edb.nets`, `edb.components`) is intentionally very similar to ease migration.
-Most method names and signatures are unchanged. Check the :doc:`api` documentation for details.
+Most method names and signatures are unchanged. Check the :doc:`../grpc_api/index` documentation for details.
 
 .. code-block:: python
    :caption: Method calls are largely identical
@@ -67,7 +70,7 @@ If you encounter a method or property that existed in the `dotnet` API but is no
 you have two options:
 
 1.  **Check for Alternatives:** The new API might have a differently named method or a new, more efficient way to
-accomplish the same task. Check the :doc:`api` documentation.
+accomplish the same task. Check the :doc:`../grpc_api/index` documentation.
 2.  **Report the Gap:** Open an issue on the `PyEDB GitHub repository <https://github.com/ansys/pyedb/issues>`_. This
 helps the development team prioritize which legacy features to port next.
 

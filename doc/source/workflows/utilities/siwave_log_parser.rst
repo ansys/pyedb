@@ -272,5 +272,5 @@ See also
 --------
 
 - :ref:`hfss_log_parser_api` - HFSS log parser with similar features
-- :ref:`workflows_api` - Workflow utilities overview
+- :ref:`pyedb_workflows` - Workflow utilities overview
 

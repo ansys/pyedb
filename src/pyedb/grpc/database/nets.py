@@ -150,8 +150,9 @@ class Nets(CommonNets):
 
         Returns
         -------
-        pyedb.grpc.database.net.net.Net
-            Net object if found, otherwise None.
+        :class:`Net <pyedb.grpc.database.net.net.Net>`
+            Net wrapper object. Always returned, even if a net with this name does not exist — check
+            the returned object's ``is_null`` property to distinguish a real net from a missing one.
 
         Examples
         --------

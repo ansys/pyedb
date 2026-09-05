@@ -443,7 +443,14 @@ latex_elements = {"preamble": latex.generate_preamble(html_title)}
 
 linkcheck_ignore = [
     r"https://download.ansys.com/",
+    # Rate-limits automated requests aggressively; not a genuinely broken link.
+    r"https://es\.wikipedia\.org/.*",
 ]
+
+# Retry transient failures (rate limiting, momentary DNS/TLS issues) before marking a link broken.
+linkcheck_retries = 2
+linkcheck_timeout = 30
+
 
 # If we are on a release, we have to ignore the "release" URLs, since it is not
 # available until the release is published.
