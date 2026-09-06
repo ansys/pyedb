@@ -66,15 +66,26 @@ Complete example
    print("Created setup:", setup.name)
    print("All setups:", list(edb.setups.keys()))
 
+   # Validate the in-memory result before saving.
+   assert "GHz_Setup" in edb.setups, "New simulation setup not found in memory"
+
    output_path = str(Path(tempfile.gettempdir()) / "setup_output.aedb")
    edb.save_as(output_path)
    edb.close()
+
+   # Reopen the saved database and verify the setup persisted to disk.
+   edb_reopened = Edb(edbpath=output_path, version="2026.1")
+   assert (
+       "GHz_Setup" in edb_reopened.setups
+   ), "Simulation setup did not persist after reopen"
+   edb_reopened.close()
 
 Expected result
 ----------------
 
 ``edb.simulation_setups.create_siwave_setup(...)`` returns a setup object whose ``.name`` matches the
-requested name, and that name appears as a key in ``edb.setups``.
+requested name, and that name appears as a key in ``edb.setups`` both immediately after creation and
+after the database is saved, closed, and reopened.
 
 Backend and version notes
 ---------------------------

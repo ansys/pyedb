@@ -128,10 +128,21 @@ Each object below answers the same eight questions.
 - **How do I obtain it?** ``edb.padstacks``.
 - **What does it own?** Padstack definitions (via/pin geometry templates) and the padstack instances
   placed in the layout.
-- **What does it return?** ``edb.padstacks.pins`` returns ``dict[int, PadstackInstance]``.
+- **What does it return?** ``edb.padstacks.pins`` returns ``Dict[str, PadstackInstance]``, keyed by
+  instance **name** (not by a numeric database ID, despite the property name suggesting otherwise).
+  Padstack instances that are not part of a component (free-standing vias) are returned by
+  ``edb.padstacks.vias`` instead, which is keyed by numeric database ID
+  (``Dict[int, PadstackInstance]``) — the two properties intentionally use different key types.
 - **Does it mutate the database?** Yes, for creation/editing operations.
 - **Does it require saving?** Yes.
 - **Available on both backends?** Yes.
+- **Smallest example:**
+
+  .. code-block:: python
+
+     pin_names = list(edb.padstacks.pins.keys())  # keys are instance names (str)
+     first_pin = edb.padstacks.pins[pin_names[0]]
+     print(first_pin.name, first_pin.net_name, first_pin.component.name)
 
 ``edb.excitation_manager``
 -----------------------------
@@ -146,25 +157,50 @@ Each object below answers the same eight questions.
 - **Does it require saving?** Yes.
 - **Available on both backends?** Yes, though the concrete port/terminal object types differ between
   backends because they wrap different underlying terminal implementations.
+- **Important:** ``create_port`` and ``create_voltage_source`` expect **terminal** objects (for example
+  a :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminal.padstack_instance_terminal.
+  PadstackInstanceTerminal>`), not raw :class:`PadstackInstance
+  <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` pin/via objects. The simplest way
+  to go from a pin to a terminal is the pin's own ``.create_port(...)`` convenience method shown below;
+  see :doc:`../user_guide/ports_and_sources` for the full pattern, including how to build a
+  ``PadstackInstanceTerminal`` directly when you need to control the layer explicitly.
 - **Smallest example:**
 
   .. code-block:: python
 
-     pin = edb.padstacks.pins[1]
-     ref_pin = edb.padstacks.pins[2]
-     port = edb.excitation_manager.create_port(pin, ref_terminal=ref_pin)
+     # Simplest path: PadstackInstance.create_port() builds the terminal(s) for you.
+     pin = edb.padstacks.pins["Via1"]  # keys are instance names (str), not integers
+     ref_pin = edb.padstacks.pins["Via2"]
+     port = pin.create_port(reference=ref_pin)
 
 ``edb.modeler`` / ``edb.layout``
 -----------------------------------
 
-- **How do I obtain it?** ``edb.modeler`` (geometry creation helpers) or ``edb.layout`` (lower-level
-  primitive access).
+- **How do I obtain it?** ``edb.modeler`` (geometry creation helpers, for example
+  ``create_trace``/``create_rectangle``) or ``edb.layout`` (primitive query/inspection: ``primitives``,
+  ``primitives_by_layer``, ``primitives_by_net``, ``filter_primitives``, ``polygons``, ``paths``,
+  ``rectangles``, ``circles``, ``find_object_by_id``).
 - **What does it own?** Traces, polygons, and other layout primitives.
 - **What does it return?** ``edb.modeler.create_rectangle(...)``, ``edb.modeler.create_trace(...)``, and
-  similar creation methods return primitive objects.
-- **Does it mutate the database?** Yes.
-- **Does it require saving?** Yes.
+  similar creation methods return primitive objects. ``edb.layout.primitives`` returns
+  ``list[Primitive]``; ``edb.layout.primitives_by_layer`` returns ``dict[str, list[Primitive]]``;
+  ``edb.layout.filter_primitives(layer_name=..., net_name=..., prim_type=...)`` returns a filtered
+  ``list[Primitive]`` matching any combination of those criteria.
+- **Does it mutate the database?** Creation methods on ``edb.modeler`` do; query methods on
+  ``edb.layout`` do not.
+- **Does it require saving?** Yes, for any creation/modification call.
 - **Available on both backends?** Yes.
+- **Deprecation note:** ``edb.modeler.primitives``, ``primitives_by_layer``, and ``primitives_by_net``
+  are deprecated aliases that forward to ``edb.layout.primitives``, ``edb.layout.primitives_by_layer``,
+  and ``edb.layout.primitives_by_net``. Use the ``edb.layout`` properties directly in new code.
+- **Smallest example:**
+
+  .. code-block:: python
+
+     signal_traces = edb.layout.filter_primitives(net_name="DDR4_DQS0_P", prim_type="path")
+     print(f"{len(signal_traces)} trace primitives on net DDR4_DQS0_P")
+
+
 
 ``edb.simulation_setups``
 ----------------------------
@@ -228,4 +264,7 @@ See also
 - :doc:`quick_start` for a runnable end-to-end example using several of these objects together.
 - :doc:`../user_guide/design_navigation` for the full architecture and backend-selection discussion.
 - :doc:`../user_guide/common_tasks` for task-oriented recipes.
+- :doc:`../user_guide/geometry_and_connectivity` for worked examples of ``edb.layout.filter_primitives``
+  and related queries.
+- :doc:`../user_guide/ports_and_sources` for the full pin-to-terminal-to-port pattern.
 - :doc:`backend_compatibility_migration` for backend defaults and version support.

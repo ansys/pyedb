@@ -43,8 +43,11 @@ This should print the installed PyEDB version (for example ``0.83.0``) with no e
 ---------------------------------
 
 The following script creates a new, empty EDB database in a temporary folder, inspects basic
-information about it, makes one safe modification, saves the result to a **new** location so the
-original is never overwritten, and closes the session cleanly.
+information about it, makes one safe modification, validates the modification in memory, saves the
+result to a **new** location so the original is never overwritten, closes the session cleanly, then
+**reopens the saved output and asserts the modification actually persisted**. Verifying persistence
+this way — not just trusting that the save call did not raise an exception — is the pattern used
+throughout the rest of the PyEDB documentation.
 
 .. code-block:: python
    :caption: quick_start.py
@@ -68,6 +71,9 @@ original is never overwritten, and closes the session cleanly.
    edb.stackup.add_layer(
        layer_name="TOP", layer_type="signal", material="copper", thickness="35um"
    )
+
+   # Validate the in-memory result before saving anything to disk.
+   assert "TOP" in edb.stackup.layers, "Layer 'TOP' was not added in memory"
    print("Layers after modification:", list(edb.stackup.layers.keys()))
 
    # Save to a new output location. The input database above is never overwritten.
@@ -77,7 +83,14 @@ original is never overwritten, and closes the session cleanly.
    # Always close the session to release the RPC server and file locks.
    edb.close()
 
-   print(f"Done. Modified database saved to {output_path}")
+   # Reopen the saved output and verify the modification actually persisted to disk.
+   edb_reopened = Edb(edbpath=output_path, version="2026.1")
+   assert (
+       "TOP" in edb_reopened.stackup.layers
+   ), "Layer 'TOP' did not persist after save_as + reopen"
+   edb_reopened.close()
+
+   print(f"Done. Modified database saved to {output_path} and verified after reopening.")
 
 Expected output
 ---------------
@@ -91,12 +104,15 @@ Running the script prints something similar to:
    Existing layers: []
    Existing nets: []
    Layers after modification: ['TOP']
-   Done. Modified database saved to /tmp/quick_start_output.aedb
+   Done. Modified database saved to /tmp/quick_start_output.aedb and verified after reopening.
 
 Exact object representations, the auto-generated cell name (PyEDB generates a unique ``Cell_<hash>``
 name when none is provided), and the temporary path differ depending on your platform, installed AEDT
 version, and run. You should see two file paths (input and output), a layer list that grows from empty
-to ``['TOP']``, and no traceback.
+to ``['TOP']``, no ``AssertionError``, and no traceback. If either ``assert`` fails, the first
+(in-memory) assertion failing points to a problem with ``add_layer`` itself; the second (post-reopen)
+assertion failing, with the first passing, points to a problem with ``save_as`` or the reopen instead —
+this separation is what makes the failure diagnosable.
 
 Using a context manager
 ------------------------
@@ -138,6 +154,8 @@ Common problems
 Next steps
 ----------
 
+- Walk through a complete, narrated first workflow on a real (not freshly-created) design in
+  :doc:`../user_guide/first_pyedb_workflow`.
 - Learn how the ``Edb`` entry point exposes stackup, materials, components, nets, and other objects in
   :doc:`object_model`.
 - Browse task-oriented recipes in :doc:`../user_guide/common_tasks`.

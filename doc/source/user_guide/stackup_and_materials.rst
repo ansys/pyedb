@@ -82,16 +82,38 @@ Complete example
        thickness="35um",
    )
 
+   # Validate the in-memory result before saving.
+   assert "TOP" in edb.stackup.layers, "Layer 'TOP' was not added in memory"
+   assert (
+       edb.stackup["TOP"].material == "gold"
+   ), "Layer 'TOP' does not reference material 'gold'"
+   assert (
+       abs(edb.stackup["TOP"].thickness - 35e-6) < 1e-9
+   ), "Layer 'TOP' thickness is not 35 um"
+
    output_path = str(Path(tempfile.gettempdir()) / "stackup_output.aedb")
    edb.save_as(output_path)
    edb.close()
+
+   # Reopen the saved database and verify the stackup change persisted to disk.
+   edb_reopened = Edb(edbpath=output_path, version="2026.1")
+   assert (
+       "TOP" in edb_reopened.stackup.layers
+   ), "Layer 'TOP' did not persist after save_as + reopen"
+   assert (
+       edb_reopened.stackup["TOP"].material == "gold"
+   ), "Persisted layer lost its material assignment"
+   edb_reopened.close()
 
 Expected result
 ----------------
 
 ``edb.stackup.layers`` includes ``"TOP"`` with ``material == "gold"`` and a ``thickness`` value
 corresponding to 35 micrometers (``StackupLayer.thickness`` returns a numeric value expressed in
-meters). The modified database is written to ``output_path``; the input database is untouched.
+meters, so 35 um is ``35e-6``). The modified database is written to ``output_path``; the input
+database is untouched. All four ``assert`` statements above pass with no traceback: the first two
+check the in-memory result immediately after the mutation, the last two check that the change survived
+a ``save_as``/close/reopen cycle.
 
 Backend and version notes
 ---------------------------

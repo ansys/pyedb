@@ -75,6 +75,14 @@ Complete example
 
    edb.close()
 
+   # Verify the cutout produced a real, reopenable AEDB at the requested output path. This is a
+   # deterministic check that does not depend on interpreting the "extent" return value alone.
+   assert Path(output_path).exists(), "Cutout did not write an AEDB at output_aedb_path"
+   edb_cutout = Edb(edbpath=output_path, version="2026.1")
+   assert edb_cutout.active_cell is not None, "Cutout output database has no active cell"
+   print("Verified: cutout output opens and has an active cell.")
+   edb_cutout.close()
+
 Expected result
 ----------------
 
@@ -83,7 +91,9 @@ polygon, and a new AEDB is written to ``output_aedb_path``; the original ``input
 not modified (the original ``edb`` object continues pointing at ``input_path`` when
 ``open_cutout_at_end=False``). On failure the method can return either an empty list or ``False``
 depending on which internal stage failed — always check truthiness (``if extent:``) rather than
-assuming a specific empty-collection type.
+assuming a specific empty-collection type. The final two assertions above are the deterministic
+persistence check: they confirm the output path exists on disk and is itself a valid, reopenable EDB,
+independent of what the returned ``extent`` value looks like.
 
 Backend and version notes
 ---------------------------
@@ -123,3 +133,5 @@ See also
 - :doc:`../workflows/utilities/cutout` — implementation-level reference for the ``Cutout`` class,
   including the ``smart_cutout`` option not exposed by ``Edb.cutout``.
 - :doc:`components_and_nets` — finding the signal and reference net names to pass in.
+- :doc:`advanced_cutout_strategies` — comparing extent strategies and building a custom-shaped
+  cutout polygon.

@@ -70,16 +70,29 @@ Complete example
    print("Created padstack definition:", pad_name)
    print("All definitions:", list(edb.padstacks.definitions.keys()))
 
+   # Validate the in-memory result before saving.
+   assert (
+       pad_name in edb.padstacks.definitions
+   ), "New padstack definition not found in memory"
+
    output_path = str(Path(tempfile.gettempdir()) / "padstacks_output.aedb")
    edb.save_as(output_path)
    edb.close()
+
+   # Reopen the saved database and verify the padstack definition persisted to disk.
+   edb_reopened = Edb(edbpath=output_path, version="2026.1")
+   assert (
+       pad_name in edb_reopened.padstacks.definitions
+   ), "Padstack definition did not persist after reopen"
+   edb_reopened.close()
 
 Expected result
 ----------------
 
 ``edb.padstacks.create(...)`` returns the padstack name as a string (``"my_via"``), and that name
 appears as a key in ``edb.padstacks.definitions``. The modified database is written to
-``output_path``.
+``output_path``, and the same name is still present in ``edb.padstacks.definitions`` after the
+database is closed and reopened.
 
 Backend and version notes
 ---------------------------
@@ -117,5 +130,7 @@ See also
 --------
 
 - :doc:`ports_and_sources` — creating ports on padstack instances.
+- :doc:`geometry_and_connectivity` — finding padstack instances connected to a specific net.
+- :doc:`find_isolated_vias` — detecting padstack instances with zero electrical connections.
 - :doc:`../getting_started/object_model` — the ``edb.padstacks`` section.
 - :doc:`common_tasks` — additional recipes.

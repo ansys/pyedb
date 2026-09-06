@@ -68,16 +68,41 @@ Complete example
    print("Components:", list(edb.components.instances.keys()))
    print("Nets:", edb.nets.netlist)
 
+   # If nets are present (open an existing design to exercise this branch), rename one and
+   # verify the rename both in memory and after a save/reopen cycle.
+   renamed_net = None
+   if edb.nets.netlist:
+       old_name = edb.nets.netlist[0]
+       renamed_net = f"{old_name}_RENAMED"
+       edb.nets[old_name].name = renamed_net
+
+       # Validate the in-memory result before saving.
+       assert renamed_net in edb.nets.netlist, "Net rename did not take effect in memory"
+       assert (
+           old_name not in edb.nets.netlist
+       ), "Old net name is still present after rename"
+
    output_path = str(Path(tempfile.gettempdir()) / "components_nets_output.aedb")
    edb.save_as(output_path)
    edb.close()
+
+   # Reopen the saved database and verify a rename (if one was performed) persisted to disk.
+   edb_reopened = Edb(edbpath=output_path, version="2026.1")
+   if renamed_net is not None:
+       assert (
+           renamed_net in edb_reopened.nets.netlist
+       ), "Renamed net did not persist after reopen"
+   edb_reopened.close()
 
 Expected result
 ----------------
 
 ``edb.components.instances`` returns a ``dict[str, Component]`` keyed by reference designator (for
 example ``"R1"``, ``"U1"``). ``edb.nets.netlist`` returns a ``list[str]`` of net names. On a newly
-created, empty database both are empty; open an existing design to see populated results.
+created, empty database both are empty, so the rename branch above is skipped; open an existing
+design (see :doc:`padstacks_and_vias` and :doc:`../getting_started/quick_start` for how to open a
+design instead of creating an empty one) to exercise the rename-and-verify branch and see populated
+results.
 
 Backend and version notes
 ---------------------------
@@ -116,3 +141,6 @@ See also
 - :doc:`../getting_started/object_model` — the ``edb.components`` and ``edb.nets`` sections.
 - :doc:`common_tasks` — additional net- and component-editing recipes.
 - :doc:`cutouts` — building a cutout around a set of signal and reference nets.
+- :doc:`si_example_wave_ports` — a complete workflow that finds and ports a differential pair.
+- :doc:`pi_example_power_aware_dcir` — a complete workflow that classifies power/ground nets and
+  prepares a DCIR analysis.
