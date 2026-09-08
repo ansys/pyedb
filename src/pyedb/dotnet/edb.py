@@ -2031,7 +2031,7 @@ class Edb:
         """
         cutout = Cutout(self)
         cutout.expansion_size = expansion_size
-        cutout.signals = signal_nets if signal_nets  is not None else []
+        cutout.signals = signal_nets if signal_nets is not None else []
         cutout.references = reference_nets if reference_nets is not None else list(self.nets.nets.keys())
         cutout.extent_type = extent_type
         cutout.expansion_size = expansion_size
