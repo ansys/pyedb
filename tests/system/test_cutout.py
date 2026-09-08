@@ -262,7 +262,6 @@ class TestClass(BaseTestClass):
         points = poly.polygon_data.points
 
         edbapp.cutout(
-            signal_nets=[],
             custom_extent=points,
             custom_extent_units="meter",
         )
