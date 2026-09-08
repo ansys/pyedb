@@ -254,10 +254,7 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         poly = edbapp.modeler.create_polygon(
             layer_name="Postprocessing",
-            points=[("86mm", "48mm"),
-                    ("86mm", "72mm"),
-                    ("106mm", "72mm"),
-                    ("106mm", "48mm")],
+            points=[("86mm", "48mm"), ("86mm", "72mm"), ("106mm", "72mm"), ("106mm", "48mm")],
         )
         points = poly.polygon_data.points
 
