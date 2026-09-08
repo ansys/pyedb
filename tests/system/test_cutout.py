@@ -261,10 +261,11 @@ class TestClass(BaseTestClass):
         )
         points = poly.polygon_data.points
 
-        extent = edbapp.cutout(
+        edbapp.cutout(
             signal_nets=[],
             custom_extent=points,
-            custom_extent_units="meters",
+            custom_extent_units="meter",
         )
-        assert edbapp.layout.primitives
+        assert len(edbapp.layout.primitives) == 176
+
         edbapp.close(terminate_rpc_session=False)
