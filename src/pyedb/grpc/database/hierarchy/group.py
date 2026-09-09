@@ -104,7 +104,7 @@ class Group:
 
         """
         location = self.core.location
-        return location[0].value, location[1].value
+        return self._pedb.value(location[0]), self._pedb.value(location[1])
 
     @location.setter
     def location(self, value: tuple | list):
