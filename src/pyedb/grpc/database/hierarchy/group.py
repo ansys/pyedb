@@ -99,12 +99,12 @@ class Group:
 
         Returns
         -------
-        List
-            [x, y].
+        tuple[float, float]
+            (x, y) coordinates.
 
         """
         location = self.core.location
-        return self._pedb.value(location[0]), location[1].value
+        return self._pedb.value(location[0]), self._pedb.value(location[1])
 
     @location.setter
     def location(self, value: tuple | list):
