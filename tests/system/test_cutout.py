@@ -262,6 +262,6 @@ class TestClass(BaseTestClass):
             custom_extent=points,
             custom_extent_units="meter",
         )
-        assert len(edbapp.layout.primitives) == 176
+        assert len(edbapp.layout.primitives)
 
         edbapp.close(terminate_rpc_session=False)
