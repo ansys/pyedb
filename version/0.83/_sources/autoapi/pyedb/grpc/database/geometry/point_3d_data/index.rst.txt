@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``point_3d_data.py`` module
+===============================
+
+.. py:module:: pyedb.grpc.database.geometry.point_3d_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: point_3d_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.geometry.point_3d_data.Point3DData`
+            - Point 3D Data.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Point3DData</autoapi/pyedb/grpc/database/geometry/point_3d_data/Point3DData>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

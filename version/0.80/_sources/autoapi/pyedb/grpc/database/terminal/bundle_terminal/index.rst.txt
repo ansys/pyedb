@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``bundle_terminal.py`` module
+=================================
+
+.. py:module:: pyedb.grpc.database.terminal.bundle_terminal
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: bundle_terminal
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.terminal.bundle_terminal.BundleTerminal`
+            - Manages bundle terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> BundleTerminal</autoapi/pyedb/grpc/database/terminal/bundle_terminal/BundleTerminal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

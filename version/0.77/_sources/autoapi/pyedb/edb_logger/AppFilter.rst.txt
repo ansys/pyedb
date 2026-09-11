@@ -1,0 +1,113 @@
+
+
+
+
+
+
+:class:`AppFilter`
+==================
+
+
+.. py:class:: pyedb.edb_logger.AppFilter(destination='Global', extra='')
+
+   Bases: :py:obj:`logging.Filter`
+
+
+   
+   Specifies the destination of the logger.
+
+   AEDT exposes three different loggers, which are the global, project, and design loggers.
+
+   :Parameters:
+
+       **destination** : :class:`python:str`, :obj:`optional`
+           Logger to write to. Options are ``"Global"`, ``"Project"``, and ``"Design"``.
+           The default is ``"Global"``.
+
+       **extra** : :class:`python:str`, :obj:`optional`
+           Name of the design or project. The default is ``""``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AppFilter
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~filter`
+            - Modify the record sent to the logger.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.edb_logger import AppFilter
+
+
+
+Method detail
+-------------
+
+.. py:method:: filter(record)
+
+   
+   Modify the record sent to the logger.
+
+
+   :Parameters:
+
+       **record** : class:`logging.LogRecord`
+           Contains information related to the event being logged.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

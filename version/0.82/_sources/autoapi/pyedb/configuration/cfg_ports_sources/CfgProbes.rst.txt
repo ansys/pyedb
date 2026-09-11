@@ -1,0 +1,186 @@
+
+
+
+
+
+
+:class:`CfgProbes`
+==================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgProbes(pedb=None, data=None)
+
+   
+   Collect configured probe entries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgProbes
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add`
+            - Add a voltage probe to this configuration.
+          * - :py:attr:`~apply`
+            - Write all configured probes into the open EDB design.
+          * - :py:attr:`~to_list`
+            - Serialize all probes.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~probes`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgProbes
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: probes
+
+
+
+Method detail
+-------------
+
+.. py:method:: add(name: str, positive_terminal: dict, negative_terminal: dict, reference_designator=None)
+
+   
+   Add a voltage probe to this configuration.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique probe name.
+
+       **positive_terminal** : :class:`python:dict`
+           Terminal-selector dictionary for the positive measurement node.
+
+       **negative_terminal** : :class:`python:dict`
+           Terminal-selector dictionary for the reference (ground) node.
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Component reference designator.
+
+
+
+   :Returns:
+
+       :obj:`CfgProbe`
+           The newly created probe object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg.probes.add(
+       "probe1",
+       positive_terminal=TerminalInfo.net("DDR4_DQ0"),
+       negative_terminal=TerminalInfo.net("GND")
+   )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Write all configured probes into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_list()
+
+   
+   Serialize all probes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

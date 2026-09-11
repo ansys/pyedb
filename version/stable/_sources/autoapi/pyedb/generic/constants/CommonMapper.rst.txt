@@ -1,0 +1,97 @@
+
+
+
+
+
+
+:class:`CommonMapper`
+=====================
+
+
+.. py:class:: pyedb.generic.constants.CommonMapper
+
+
+
+
+
+.. py:currentmodule:: CommonMapper
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get`
+            - Bidirectional converter:
+          * - :py:attr:`~get_grpc`
+            - 
+          * - :py:attr:`~get_dotnet`
+            - 
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import CommonMapper
+
+
+
+Method detail
+-------------
+
+.. py:method:: get(value, *, as_grpc: bool = True)
+   :classmethod:
+
+
+   
+   Bidirectional converter:
+     - If 'value' is GRPC (enum or string), return the corresponding DOTNET enum (or .value if as_value=True).
+     - If 'value' is DOTNET (enum or string), return the corresponding GRPC enum (or .value if as_value=True).
+
+   Auto-detects the side by trying enum construction and membership.
+   Raises ValueError on unknown inputs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_grpc(value)
+   :classmethod:
+
+
+.. py:method:: get_dotnet(value)
+   :classmethod:
+
+
+
+
+

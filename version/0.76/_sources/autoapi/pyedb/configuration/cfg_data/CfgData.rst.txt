@@ -1,0 +1,509 @@
+
+
+
+
+
+
+:class:`CfgData`
+================
+
+
+.. py:class:: pyedb.configuration.cfg_data.CfgData(pedb=None, **kwargs)
+
+   
+   Runtime container and programmatic builder for pyedb configuration.
+
+   Can be instantiated **with or without** a live EDB session.  When
+   ``pedb`` is ``None`` the object works as a standalone builder for
+   constructing configuration payloads in Python.
+
+   :Parameters:
+
+       **pedb** : :obj:`Edb`, :obj:`optional`
+           Live EDB session.  When supplied, section objects can resolve
+           existing database objects via ``get`` helpers.
+
+       **\*\*kwargs**
+           Configuration section data.  Recognised keys: ``general``,
+           ``boundaries``, ``nets``, ``components``, ``padstacks``,
+           ``pin_groups``, ``terminals``, ``ports``, ``sources``, ``setups``,
+           ``stackup``, ``s_parameters``, ``spice_models``,
+           ``package_definitions``, ``operations``, ``modeler``, ``variables``,
+           ``probes``.  Unknown keys trigger a ``UserWarning``.
+
+   :Attributes:
+
+       **general** : :obj:`CfgGeneral`
+           Global library paths and design flags.
+
+       **stackup** : :obj:`CfgStackup`
+           Materials and layer definitions.
+
+       **nets** : :obj:`CfgNets`
+           Signal and power/ground net classification.
+
+       **components** : :obj:`CfgComponents`
+           Component model and package configuration.
+
+       **padstacks** : :obj:`CfgPadstacks`
+           Padstack definitions and instances.
+
+       **pin_groups** : :obj:`CfgPinGroups`
+           Named pin-group creation.
+
+       **terminals** : :obj:`CfgTerminals`
+           Explicit low-level terminal objects.
+
+       **ports** : :obj:`CfgPorts`
+           Port excitations.
+
+       **sources** : :obj:`CfgSources`
+           Current and voltage source excitations.
+
+       **probes** : :obj:`CfgProbes`
+           Voltage probes.
+
+       **setups** : :obj:`CfgSetups`
+           HFSS and SIwave simulation setup entries.
+
+       **boundaries** : :obj:`CfgBoundaries`
+           Open-region and extent configuration.
+
+       **operations** : :obj:`CfgOperations`
+           Cutout and auto HFSS-region operations.
+
+       **s_parameters** : :obj:`CfgSParameters`
+           S-parameter model assignments by component definition.
+
+       **spice_models** : :obj:`CfgSpiceModels`
+           SPICE model assignments.
+
+       **package_definitions** : :obj:`CfgPackageDefinitions`
+           Thermal package definitions.
+
+       **variables** : :obj:`CfgVariables`
+           Design and project variables.
+
+       **modeler** : :obj:`CfgModeler`
+           Geometry creation and cleanup.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Standalone construction (no EDB session):
+
+   >>> from pyedb.configuration.cfg_data import CfgData
+   >>> cfg = CfgData()
+   >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
+   >>> cfg.to_json("my_config.json")
+
+   From an open EDB session (recommended):
+
+   >>> cfg = edb.configuration.create_config_builder()
+   >>> cfg.general.anti_pads_always_on = False
+   >>> edb.configuration.run(cfg)
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+.. py:currentmodule:: CfgData
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~from_dict`
+            - Create a :class:`CfgData` from an existing config dictionary.
+          * - :py:attr:`~from_json`
+            - Load a :class:`CfgData` from a JSON file.
+          * - :py:attr:`~from_toml`
+            - Load a :class:`CfgData` from a TOML file.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_dict`
+            - Serialize the full configuration to a plain Python dictionary.
+          * - :py:attr:`~to_json`
+            - Write the configuration to a JSON file.
+          * - :py:attr:`~to_toml`
+            - Write the configuration to a TOML file.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~general`
+            - 
+          * - :py:attr:`~boundaries`
+            - 
+          * - :py:attr:`~nets`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~padstacks`
+            - 
+          * - :py:attr:`~pin_groups`
+            - 
+          * - :py:attr:`~terminals`
+            - 
+          * - :py:attr:`~ports`
+            - 
+          * - :py:attr:`~sources`
+            - 
+          * - :py:attr:`~setups`
+            - 
+          * - :py:attr:`~stackup`
+            - 
+          * - :py:attr:`~s_parameters`
+            - 
+          * - :py:attr:`~spice_models`
+            - 
+          * - :py:attr:`~package_definitions`
+            - 
+          * - :py:attr:`~operations`
+            - 
+          * - :py:attr:`~modeler`
+            - 
+          * - :py:attr:`~variables`
+            - 
+          * - :py:attr:`~probes`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__repr__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_data import CfgData
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: general
+
+.. py:attribute:: boundaries
+
+.. py:attribute:: nets
+
+.. py:attribute:: components
+
+.. py:attribute:: padstacks
+
+.. py:attribute:: pin_groups
+
+.. py:attribute:: terminals
+
+.. py:attribute:: ports
+
+.. py:attribute:: sources
+
+.. py:attribute:: setups
+
+.. py:attribute:: stackup
+
+.. py:attribute:: s_parameters
+
+.. py:attribute:: spice_models
+
+.. py:attribute:: package_definitions
+
+.. py:attribute:: operations
+
+.. py:attribute:: modeler
+
+.. py:attribute:: variables
+
+.. py:attribute:: probes
+
+
+
+Method detail
+-------------
+
+.. py:method:: __repr__() -> str
+
+.. py:method:: to_dict() -> dict
+
+   
+   Serialize the full configuration to a plain Python dictionary.
+
+   Only sections that contain at least one value are included;
+   empty sections (``{}``, ``[]``, ``None``) are silently omitted.
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Configuration payload keyed by section name.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = CfgData()
+   >>> cfg.nets.add_signal_nets(["SIG"])
+   >>> cfg.to_dict()
+   {'nets': {'signal_nets': ['SIG']}}
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_json(file_path: Union[str, pathlib.Path], indent: int = 4) -> pathlib.Path
+
+   
+   Write the configuration to a JSON file.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str` or :obj:`Path`
+           Destination file path.
+
+       **indent** : :class:`python:int`, :obj:`optional`
+           JSON indentation level.  Default is ``4``.
+
+
+
+   :Returns:
+
+       :obj:`Path`
+           Resolved path of the written file.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.to_json("my_project_config.json")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_toml(file_path: Union[str, pathlib.Path]) -> pathlib.Path
+
+   
+   Write the configuration to a TOML file.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str` or :obj:`Path`
+           Destination file path.
+
+
+
+   :Returns:
+
+       :obj:`Path`
+           Resolved path of the written file.
+
+
+
+
+   :Raises:
+
+       :obj:`ImportError`
+           If the ``toml`` package is not installed.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.to_toml("my_project_config.toml")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: from_dict(data: dict, pedb=None) -> CfgData
+   :classmethod:
+
+
+   
+   Create a :class:`CfgData` from an existing config dictionary.
+
+
+   :Parameters:
+
+       **data** : :class:`python:dict`
+           Raw configuration dictionary.
+
+       **pedb** : :obj:`Edb`, :obj:`optional`
+           Live EDB session.
+
+
+
+   :Returns:
+
+       :obj:`CfgData`
+           Populated instance.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = CfgData.from_dict({"nets": {"signal_nets": ["CLK"]}})
+   >>> cfg.nets.signal_nets
+   ['CLK']
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: from_json(file_path: Union[str, pathlib.Path], pedb=None) -> CfgData
+   :classmethod:
+
+
+   
+   Load a :class:`CfgData` from a JSON file.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str` or :obj:`Path`
+           Path to a valid JSON configuration file.
+
+       **pedb** : :obj:`Edb`, :obj:`optional`
+           Live EDB session.
+
+
+
+   :Returns:
+
+       :obj:`CfgData`
+           Populated instance.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = CfgData.from_json("base_config.json")
+   >>> cfg.general.suppress_pads = True
+   >>> cfg.to_json("modified_config.json")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: from_toml(file_path: Union[str, pathlib.Path], pedb=None) -> CfgData
+   :classmethod:
+
+
+   
+   Load a :class:`CfgData` from a TOML file.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str` or :obj:`Path`
+           Path to a valid TOML configuration file.
+
+       **pedb** : :obj:`Edb`, :obj:`optional`
+           Live EDB session.
+
+
+
+   :Returns:
+
+       :obj:`CfgData`
+           Populated instance.
+
+
+
+
+   :Raises:
+
+       :obj:`ImportError`
+           If the ``toml`` package is not installed.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = CfgData.from_toml("base_config.toml")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

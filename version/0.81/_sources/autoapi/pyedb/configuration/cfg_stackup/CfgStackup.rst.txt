@@ -1,0 +1,571 @@
+
+
+
+
+
+
+:class:`CfgStackup`
+===================
+
+
+.. py:class:: pyedb.configuration.cfg_stackup.CfgStackup(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Collect stackup materials and layers for serialization.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgStackup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_layer`
+            - Return the :class:`CfgLayer` for *name*, loading it from EDB if needed.
+          * - :py:attr:`~get_layers`
+            - Return all stackup layers as :class:`CfgLayer` objects.
+          * - :py:attr:`~get_signal_layers`
+            - Return only the signal (metal) stackup layers as :class:`CfgLayer` objects.
+          * - :py:attr:`~get_material`
+            - Return the :class:`CfgMaterial` for *name*, loading it from EDB if needed.
+          * - :py:attr:`~add_material`
+            - Add a material definition to the stackup.
+          * - :py:attr:`~add_layer`
+            - Append a layer definition.
+          * - :py:attr:`~add_layer_at_bottom`
+            - Append a layer to the bottom of the stackup.
+          * - :py:attr:`~add_signal_layer`
+            - Add a signal layer with conductor defaults.
+          * - :py:attr:`~add_dielectric_layer`
+            - Add a dielectric layer with common defaults.
+          * - :py:attr:`~normalize_thickness`
+            - Normalise all layer thicknesses to a common unit in-place.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~materials`
+            - 
+          * - :py:attr:`~layers`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_stackup import CfgStackup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: materials
+   :type:  list[CfgMaterial]
+   :value: None
+
+
+.. py:attribute:: layers
+   :type:  list[CfgLayer]
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_layer(name: str) -> CfgLayer
+
+   
+   Return the :class:`CfgLayer` for *name*, loading it from EDB if needed.
+
+   If the layer has already been registered (via :meth:`add_signal_layer`,
+   :meth:`add_dielectric_layer`, or :meth:`add_layer`) the cached entry is
+   returned, otherwise the layer is looked up in the live EDB session and
+   a new :class:`CfgLayer` is created from its current properties.
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Layer name, e.g. ``"top"`` or ``"diel1"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgLayer`
+           Layer builder pre-populated with current properties.
+
+
+
+
+   :Raises:
+
+       :obj:`KeyError`
+           If the layer is not found in the builder registry or the EDB layout.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg = edb.configuration.create_config_builder()
+   top = cfg.stackup.get_layer("top")
+   top.set_huray_roughness("0.1um", "2.9")
+   edb.configuration.run(cfg)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_layers() -> list
+
+   
+   Return all stackup layers as :class:`CfgLayer` objects.
+
+   Each layer in the live EDB session is loaded (if not already cached)
+   and returned as a list of :class:`CfgLayer` instances.
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :obj:`CfgLayer`
+           All stackup layers in stack order.
+
+
+
+
+   :Raises:
+
+       :obj:`KeyError`
+           If no EDB session is attached.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg = edb.configuration.create_config_builder()
+   for layer in cfg.stackup.get_layers():
+       print(layer.name, layer.type)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_signal_layers() -> list
+
+   
+   Return only the signal (metal) stackup layers as :class:`CfgLayer` objects.
+
+   Queries the live EDB session for signal layers only, loads each into the
+   cache via :meth:`get_layer`, and returns the filtered list.
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :obj:`CfgLayer`
+           Signal layers in stack order.
+
+
+
+
+   :Raises:
+
+       :obj:`KeyError`
+           If no EDB session is attached.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg = edb.configuration.create_config_builder()
+   for layer in cfg.stackup.get_signal_layers():
+       print(layer.name, layer.thickness)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_material(name: str) -> CfgMaterial
+
+   
+   Return the :class:`CfgMaterial` for *name*, loading it from EDB if needed.
+
+   If the material has already been registered via :meth:`add_material`
+   the cached entry is returned, otherwise the material is looked up in
+   the live EDB session and a new :class:`CfgMaterial` is created from its
+   current properties.
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Material name, e.g. ``"copper"`` or ``"FR4_epoxy"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgMaterial`
+           Material builder pre-populated with current properties.
+
+
+
+
+   :Raises:
+
+       :obj:`KeyError`
+           If the material is not found in the builder registry or the EDB database.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg = edb.configuration.create_config_builder()
+   cu = cfg.stackup.get_material("copper")
+   cu.conductivity = 5.6e7
+   edb.configuration.run(cfg)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_material(name: str | None = None, config: CfgMaterial | dict | None = None, conductivity: Optional[str | float | int] = None, permittivity: Optional[str | float | int] = None, dielectric_loss_tangent: Optional[str | float | int] = None, magnetic_loss_tangent: Optional[str | float | int] = None, mass_density: Optional[str | float | int] = None, permeability: Optional[str | float | int] = None, poisson_ratio: Optional[str | float | int] = None, specific_heat: Optional[str | float | int] = None, thermal_conductivity: Optional[str | float | int] = None, youngs_modulus: Optional[str | float | int] = None, thermal_expansion_coefficient: Optional[str | float | int] = None, dc_conductivity: Optional[str | float | int] = None, dc_permittivity: Optional[str | float | int] = None, dielectric_model_frequency: Optional[str | float | int] = None, loss_tangent_at_frequency: Optional[str | float | int] = None, permittivity_at_frequency: Optional[str | float | int] = None, thermal_modifiers=None) -> CfgMaterial
+
+   
+   Add a material definition to the stackup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Material name, e.g. ``"copper"`` or ``"FR4_epoxy"``.
+
+       **config** : :obj:`CfgMaterial` or :class:`python:dict`, :obj:`optional`
+           Pre-built :class:`CfgMaterial` instance or a plain dictionary with
+           material properties.  Individual keyword arguments take precedence
+           over values in *config*.
+
+       **conductivity** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Electrical conductivity in S/m.
+
+       **permittivity** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Relative permittivity (dielectric constant).
+
+       **dielectric_loss_tangent** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Dielectric loss tangent.
+
+       **magnetic_loss_tangent** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Magnetic loss tangent.
+
+       **mass_density** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Mass density in kg/m³.
+
+       **permeability** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Relative permeability.
+
+       **poisson_ratio** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Poisson's ratio.
+
+       **specific_heat** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Specific heat capacity in J/(kg·K).
+
+       **thermal_conductivity** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Thermal conductivity in W/(m·K).
+
+       **youngs_modulus** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Young's modulus in Pa.
+
+       **thermal_expansion_coefficient** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Coefficient of thermal expansion in 1/K.
+
+       **dc_conductivity** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           DC conductivity override.
+
+       **dc_permittivity** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           DC permittivity override.
+
+       **dielectric_model_frequency** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Frequency for the dielectric model in Hz.
+
+       **loss_tangent_at_frequency** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Loss tangent at the model frequency.
+
+       **permittivity_at_frequency** : :obj:`optional`, :class:`python:str`, :class:`python:float` or :class:`python:int`
+           Permittivity at the model frequency.
+
+       **thermal_modifiers** : :class:`python:list`, :obj:`optional`
+           List of thermal modifier definitions.
+
+
+
+   :Returns:
+
+       :obj:`CfgMaterial`
+           The newly created material object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg.stackup.add_material("copper", conductivity=5.8e7)
+   cfg.stackup.add_material("fr4", permittivity=4.4, dielectric_loss_tangent=0.02)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer(name: str, layer_type: Optional[str] = None, material: Optional[str] = None, fill_material: Optional[str] = None, thickness: Optional[str | float | int] = None)
+
+   
+   Append a layer definition.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Layer name.
+
+       **layer_type** : :class:`python:str`, :obj:`optional`
+           Layer type: ``"signal"`` or ``"dielectric"``.
+           Also accepted as ``type=`` for backwards compatibility.
+
+       **material** : :class:`python:str`, :obj:`optional`
+           Layer material name.
+
+       **fill_material** : :class:`python:str`, :obj:`optional`
+           Fill material for signal layers.
+
+       **thickness** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Layer thickness, e.g. ``"35um"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgLayer`
+           The newly created layer object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer_at_bottom(name=None, config: CfgLayer | dict[str, Any] | None = None, **kwargs)
+
+   
+   Append a layer to the bottom of the stackup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Layer name. If provided, it overrides the name from ``config``.
+
+       **config** : :obj:`CfgLayer` or :class:`python:dict`, :obj:`optional`
+           Pre-built :class:`CfgLayer` instance or a plain dictionary with
+           layer properties.  Individual keyword arguments in ``**kwargs``
+           are merged on top of *config* and take precedence.
+
+       **\*\*kwargs**
+           Optional layer properties forwarded to :class:`CfgLayer`
+           (``layer_type`` or ``type``, ``material``, ``fill_material``,
+           ``thickness``).
+
+
+
+   :Returns:
+
+       :obj:`CfgLayer`
+           The newly created layer object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_signal_layer(name: str, material: str = 'copper', fill_material: str = 'FR4_epoxy', thickness: str | float | int = '35um')
+
+   
+   Add a signal layer with conductor defaults.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_dielectric_layer(name: str, material: str = 'FR4_epoxy', thickness: str | float | int = '100um')
+
+   
+   Add a dielectric layer with common defaults.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: normalize_thickness(unit='m')
+
+   
+   Normalise all layer thicknesses to a common unit in-place.
+
+   Converts any string thickness (e.g. ``"35um"``, ``"1.5mil"``) to a
+   numeric value in *unit*, then re-appends the unit suffix so each
+   ``layer.thickness`` becomes a uniform string like ``"3.5e-05m"``.
+
+   :Parameters:
+
+       **unit** : :class:`python:str`, :obj:`optional`
+           Target unit.  Supported values: ``"m"`` (default), ``"mm"``,
+           ``"cm"``, ``"um"``, ``"mil"``, ``"in"``.
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If *unit* is not one of the supported unit strings.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg.stackup.normalize_thickness("um")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

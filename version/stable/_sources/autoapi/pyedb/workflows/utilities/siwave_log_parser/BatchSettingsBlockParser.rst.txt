@@ -1,0 +1,130 @@
+
+
+
+
+
+
+:class:`BatchSettingsBlockParser`
+=================================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.BatchSettingsBlockParser(lines: list[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract batch information and simulation settings from the log.
+
+   This parser processes batch run metadata including timestamps, user info,
+   directories, and simulation configuration settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = [
+   ...     "Batch Solve/Save: C:\project\design.siw",
+   ...     "Starting Batch Run: 11/10/2025 09:00:00 AM",
+   ...     "Running as user : engineer",
+   ...     "Design type: SIwave",
+   ...     "Allow off core: True",
+   ... ]
+   >>> parser = BatchSettingsBlockParser(lines)
+   >>> batch, settings = parser.parse()
+   >>> batch.run_by
+   'engineer'
+   >>> settings.design_type
+   'SIwave'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: BatchSettingsBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse batch information and simulation settings.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import BatchSettingsBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> tuple[BatchInfo, SimSettings]
+
+   
+   Parse batch information and simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[:obj:`BatchInfo`, :obj:`SimSettings`]
+           Tuple containing batch run metadata and simulation settings.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = ["Batch Solve/Save: test.siw", "Design type: SIwave"]
+   >>> parser = BatchSettingsBlockParser(lines)
+   >>> batch, settings = parser.parse()
+   >>> isinstance(batch, BatchInfo)
+   True
+   >>> isinstance(settings, SimSettings)
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

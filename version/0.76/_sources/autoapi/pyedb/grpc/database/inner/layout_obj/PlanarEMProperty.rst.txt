@@ -1,0 +1,145 @@
+
+
+
+
+
+
+:class:`PlanarEMProperty`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.inner.layout_obj.PlanarEMProperty
+
+   
+   Represents the PlanarEM solver properties.
+
+   This class encapsulates configuration settings for PlanarEM simulations, including
+   port type, solver options, and reference handling.
+
+
+   :Attributes:
+
+       **port_type** : :class:`python:str`
+           The type of port (e.g., "Pad Port Gap Source", "Gap Source"). Default is "Pad Port Gap Source".
+
+       **port_solver** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to use port solver. Default is True.
+
+       **ignore_reference** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to ignore reference. Default is False.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PlanarEMProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_property_string`
+            - Convert PlanarEMProperty instance into a PlanarEM configuration string.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~port_type`
+            - 
+          * - :py:attr:`~port_solver`
+            - 
+          * - :py:attr:`~ignore_reference`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.inner.layout_obj import PlanarEMProperty
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: port_type
+   :type:  str
+   :value: 'Pad Port Gap Source'
+
+
+.. py:attribute:: port_solver
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: ignore_reference
+   :type:  bool
+   :value: False
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: to_property_string() -> str
+
+   
+   Convert PlanarEMProperty instance into a PlanarEM configuration string.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           A formatted PlanarEM configuration string with all properties encoded.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

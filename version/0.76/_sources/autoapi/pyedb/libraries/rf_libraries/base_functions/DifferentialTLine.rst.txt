@@ -1,0 +1,227 @@
+
+
+
+
+
+
+:class:`DifferentialTLine`
+==========================
+
+
+.. py:class:: pyedb.libraries.rf_libraries.base_functions.DifferentialTLine(edb: pyedb.Edb, length: Union[float, str] = 0.01, width: Union[float, str] = 0.0002, spacing: Union[float, str] = 0.0002, x0: Union[float, str] = 0.0, y0: Union[float, str] = 0.0, angle: Union[float, str] = 0.0, layer: str = 'TOP', net_p: str = 'P', net_n: str = 'N')
+
+   
+   Edge-coupled differential pair with fully parametric geometry.
+
+
+   :Parameters:
+
+       **length** : :class:`python:float`, :obj:`default` 10 :obj:`mm`
+           Total length of the pair.
+
+       **width** : :class:`python:float`, :obj:`default` 0.2 :obj:`mm`
+           Width of each individual trace.
+
+       **spacing** : :class:`python:float`, :obj:`default` 0.2 :obj:`mm`
+           Edge-to-edge separation between the traces.
+
+       **x0** : :class:`python:float`, :obj:`default` 0
+           Start x-coordinate (metres).
+
+       **y0** : :class:`python:float`, :obj:`default` 0
+           Start y-coordinate (metres).
+
+       **angle** : :class:`python:float`, :obj:`default` 0 :obj:`rad`
+           Rotation angle of the pair (radians, CCW).
+
+       **layer** : :class:`python:str`, :obj:`default` "TOP"
+           Layer on which the traces are drawn.
+
+       **net_p** : :class:`python:str`, :obj:`default` "P"
+           Net name for the positive trace.
+
+       **net_n** : :class:`python:str`, :obj:`default` "N"
+           Net name for the negative trace.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> diff = DifferentialTLine(Edb("diff.aedb"), length=5e-3, width=0.15e-3, spacing=0.1e-3, angle=math.pi / 4)
+   >>> traces = diff.create()
+   >>> f"{diff.diff_impedance:.1f} Ω"
+   '95.6 Ω'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DifferentialTLine
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create the two traces using only parameter strings so the
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~diff_impedance`
+            - Rough odd-mode impedance estimate for the differential pair.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~length`
+            - 
+          * - :py:attr:`~width`
+            - 
+          * - :py:attr:`~spacing`
+            - 
+          * - :py:attr:`~x0`
+            - 
+          * - :py:attr:`~y0`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~net_p`
+            - 
+          * - :py:attr:`~net_n`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.base_functions import DifferentialTLine
+
+Property detail
+---------------
+
+.. py:property:: diff_impedance
+   :type: float
+
+
+   
+   Rough odd-mode impedance estimate for the differential pair.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Differential impedance in Ohms.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: length
+
+.. py:attribute:: width
+
+.. py:attribute:: spacing
+
+.. py:attribute:: x0
+
+.. py:attribute:: y0
+
+.. py:attribute:: layer
+   :value: 'TOP'
+
+
+.. py:attribute:: net_p
+   :value: 'P'
+
+
+.. py:attribute:: net_n
+   :value: 'N'
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create() -> List[float]
+
+   
+   Create the two traces using only parameter strings so the
+   geometry stays fully editable in AEDT.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:float`]
+           EDB object IDs of the positive and negative traces.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

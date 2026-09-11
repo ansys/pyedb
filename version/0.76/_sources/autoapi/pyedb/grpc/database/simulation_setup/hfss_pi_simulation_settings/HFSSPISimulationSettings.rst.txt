@@ -1,0 +1,209 @@
+
+
+
+
+
+
+:class:`HFSSPISimulationSettings`
+=================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_pi_simulation_settings.HFSSPISimulationSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_pi_simulation_settings.HFSSPISimulationSettings)
+
+   
+   PyEDB HFSS PI simulation setup class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSPISimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced`
+            - Get the HFSS PI advanced simulation settings.
+          * - :py:attr:`~enabled`
+            - Get or set the enabled status of the HFSS PI simulation setup.
+          * - :py:attr:`~general`
+            - Get the HFSS PI general simulation settings.
+          * - :py:attr:`~solver`
+            - Get the HFSS PI solver simulation settings.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_pi_simulation_settings import HFSSPISimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: advanced
+   :type: pyedb.grpc.database.simulation_setup.hfss_pi_advanced_settings.HFSSPIAdvancedSettings
+
+
+   
+   Get the HFSS PI advanced simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :obj:`HFSSPIAdvancedSettings`
+           The HFSS PI advanced simulation settings object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enabled
+   :type: bool
+
+
+   
+   Get or set the enabled status of the HFSS PI simulation setup.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the simulation setup is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: general
+   :type: pyedb.grpc.database.simulation_setup.hfss_pi_general_settings.HFSSPIGeneralSettings
+
+
+   
+   Get the HFSS PI general simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :obj:`HFSSPIGeneralSettings`
+           The HFSS PI general simulation settings object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solver
+
+   
+   Get the HFSS PI solver simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :obj:`HFSSPISolverSettings`
+           The HFSS PI solver simulation settings object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

@@ -1,0 +1,142 @@
+
+
+
+
+
+
+:class:`ConnObj`
+================
+
+
+.. py:class:: pyedb.grpc.database.inner.conn_obj.ConnObj(pedb, core)
+
+   Bases: :py:obj:`pyedb.grpc.database.inner.layout_obj.LayoutObj`
+
+
+   
+   Represents a layout object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ConnObj
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_em_properties`
+            - Get EM properties.
+          * - :py:attr:`~set_em_properties`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dcir_equipotential_region`
+            - Get DCIR equipotential region property of a primitive or a padstack instance.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.inner.conn_obj import ConnObj
+
+Property detail
+---------------
+
+.. py:property:: dcir_equipotential_region
+   :type: bool
+
+
+   
+   Get DCIR equipotential region property of a primitive or a padstack instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_em_properties() -> pyedb.generic.product_property.EMProperties
+
+   
+   Get EM properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_em_properties(em_properties: pyedb.generic.product_property.EMProperties)
+
+
+
+

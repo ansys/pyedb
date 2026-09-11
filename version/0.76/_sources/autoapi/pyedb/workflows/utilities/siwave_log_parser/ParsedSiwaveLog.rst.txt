@@ -1,0 +1,358 @@
+
+
+
+
+
+
+:class:`ParsedSiwaveLog`
+========================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.ParsedSiwaveLog
+
+   
+   Root container returned by SiwaveLogParser.parse().
+
+   This class holds all parsed information from a SIwave log file and provides
+   convenience methods for checking completion status, generating summaries,
+   and exporting data.
+
+
+   :Attributes:
+
+       **aedt** : :obj:`AEDTVersion`
+           AEDT version information extracted from log header.
+
+       **batch** : :obj:`BatchInfo`
+           Batch run metadata including timestamps and user info.
+
+       **settings** : :obj:`SimSettings`
+           Simulation settings and configuration.
+
+       **warnings** : :class:`python:list` :obj:`of` :obj:`WarningEntry`
+           Warning entries from the log. The default is an empty list.
+
+       **profile** : :class:`python:list` :obj:`of` :obj:`ProfileEntry`
+           Profile/timing entries showing task performance. The default is an empty list.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from datetime import datetime
+   >>> from pathlib import Path
+   >>> log = ParsedSiwaveLog(
+   ...     aedt=AEDTVersion(version="2026.1", build="123", location="C:\AEDT"),
+   ...     batch=BatchInfo(
+   ...         path="C:\project\test.siw",
+   ...         started=datetime(2025, 11, 10, 9, 0, 0),
+   ...         stopped=datetime(2025, 11, 10, 10, 0, 0),
+   ...         run_by="engineer",
+   ...         temp_dir="C:\temp",
+   ...         project_dir="C:\project",
+   ...         status="Normal Completion",
+   ...     ),
+   ...     settings=SimSettings(
+   ...         design_type="SIwave",
+   ...         allow_off_core=True,
+   ...         manual_settings=False,
+   ...         two_level=False,
+   ...         distribution_types=["Local"],
+   ...         machines=[],
+   ...     ),
+   ... )
+   >>> log.is_completed()
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ParsedSiwaveLog
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~summary`
+            - Print a summary of the parsed log to stdout.
+          * - :py:attr:`~is_completed`
+            - Check if the simulation completed normally.
+          * - :py:attr:`~is_aborted`
+            - Check if the simulation was aborted.
+          * - :py:attr:`~to_json`
+            - Serialize parsed log to JSON file.
+          * - :py:attr:`~to_dict`
+            - Deep-convert the entire object to JSON-serializable primitives.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~aedt`
+            - 
+          * - :py:attr:`~batch`
+            - 
+          * - :py:attr:`~settings`
+            - 
+          * - :py:attr:`~warnings`
+            - 
+          * - :py:attr:`~profile`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import ParsedSiwaveLog
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: aedt
+   :type:  AEDTVersion
+
+.. py:attribute:: batch
+   :type:  BatchInfo
+
+.. py:attribute:: settings
+   :type:  SimSettings
+
+.. py:attribute:: warnings
+   :type:  list[WarningEntry]
+   :value: []
+
+
+.. py:attribute:: profile
+   :type:  list[ProfileEntry]
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: summary() -> None
+
+   
+   Print a summary of the parsed log to stdout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> log = ParsedSiwaveLog(aedt=..., batch=..., settings=...)
+   >>> log.summary()
+   Project : test_design
+   Run by  : engineer
+   Started : Mon Nov 10 09:00:00 2025
+   Stopped : Mon Nov 10 10:00:00 2025
+   Status  : Normal Completion
+   Warnings: 0
+   Profile entries: 0
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_completed() -> bool
+
+   
+   Check if the simulation completed normally.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if status is ``'Normal Completion'``, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> log = ParsedSiwaveLog(
+   ...     aedt=AEDTVersion("2026.1", "123", "C:\AEDT"),
+   ...     batch=BatchInfo(
+   ...         path="test.siw",
+   ...         started=datetime(2025, 1, 1),
+   ...         stopped=datetime(2025, 1, 1),
+   ...         run_by="user",
+   ...         temp_dir="",
+   ...         project_dir="",
+   ...         status="Normal Completion",
+   ...     ),
+   ...     settings=SimSettings("", False, False, False, [], []),
+   ... )
+   >>> log.is_completed()
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_aborted() -> bool
+
+   
+   Check if the simulation was aborted.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if simulation did not complete normally, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> log = ParsedSiwaveLog(
+   ...     aedt=AEDTVersion("2026.1", "123", "C:\AEDT"),
+   ...     batch=BatchInfo(
+   ...         path="test.siw",
+   ...         started=datetime(2025, 1, 1),
+   ...         stopped=datetime(2025, 1, 1),
+   ...         run_by="user",
+   ...         temp_dir="",
+   ...         project_dir="",
+   ...         status="Aborted",
+   ...     ),
+   ...     settings=SimSettings("", False, False, False, [], []),
+   ... )
+   >>> log.is_aborted()
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_json(fp: str, **kw) -> None
+
+   
+   Serialize parsed log to JSON file.
+
+
+   :Parameters:
+
+       **fp** : :class:`python:str`
+           File path to write JSON to.
+
+       **\*\*kw**
+           Additional keyword arguments passed to ``json.dumps()``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> log = ParsedSiwaveLog(aedt=..., batch=..., settings=...)
+   >>> log.to_json("output.json", indent=2)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict() -> dict
+
+   
+   Deep-convert the entire object to JSON-serializable primitives.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Plain dict/list/scalar structure suitable for JSON serialization.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> log = ParsedSiwaveLog(aedt=..., batch=..., settings=...)
+   >>> data_dict = log.to_dict()
+   >>> isinstance(data_dict, dict)
+   True
+   >>> "aedt" in data_dict
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

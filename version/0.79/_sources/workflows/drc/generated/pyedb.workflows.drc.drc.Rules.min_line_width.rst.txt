@@ -1,0 +1,6 @@
+min\_line\_width
+================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: Rules.min_line_width

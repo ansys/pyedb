@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``pyedb.misc.siw_feature_config`` library
+=============================================
+
+.. py:module:: pyedb.misc.siw_feature_config
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siw_feature_config
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc`
+            - 
+
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc_rule_checker_settings`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> emc</autoapi/pyedb/misc/siw_feature_config/emc/index>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> emc_rule_checker_settings</autoapi/pyedb/misc/siw_feature_config/emc_rule_checker_settings/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

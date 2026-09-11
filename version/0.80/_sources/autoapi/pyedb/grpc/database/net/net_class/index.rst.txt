@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``net_class.py`` module
+===========================
+
+.. py:module:: pyedb.grpc.database.net.net_class
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: net_class
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.net.net_class.NetClass`
+            - Manages EDB functionalities for a primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> NetClass</autoapi/pyedb/grpc/database/net/net_class/NetClass>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

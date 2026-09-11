@@ -1,0 +1,483 @@
+
+
+
+
+
+
+:class:`CfgHFSSSetup`
+=====================
+
+.. toctree::
+   :hidden:
+
+    CfgSingleFrequencyAdaptiveSolution</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgSingleFrequencyAdaptiveSolution>
+    CfgBroadbandAdaptiveSolution</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgBroadbandAdaptiveSolution>
+    CfgAutoMeshOperation</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgAutoMeshOperation>
+    CfgMultiFrequencyAdaptiveSolution</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution>
+    CfgLengthMeshOperation</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgLengthMeshOperation>
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgHFSSSetup(/, **data: Any)
+
+   Bases: :py:obj:`CfgSetupAC`
+
+
+   
+   Represent one HFSS setup entry with adaptive and sweep settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgHFSSSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_single_frequency_adaptive`
+            - Configure single-frequency adaptive meshing.
+          * - :py:attr:`~set_broadband_adaptive`
+            - Configure broadband adaptive meshing.
+          * - :py:attr:`~add_multi_frequency_adaptive`
+            - Append one adaptive point to multi-frequency adaptive meshing.
+          * - :py:attr:`~set_auto_mesh_operation`
+            - Configure the automatic mesh-seeding operation.
+          * - :py:attr:`~add_length_mesh_operation`
+            - Append a length-based mesh operation to this HFSS setup.
+          * - :py:attr:`~add_frequency_sweep`
+            - Add a frequency sweep to this HFSS setup.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~adapt_type`
+            - 
+          * - :py:attr:`~single_frequency_adaptive_solution`
+            - 
+          * - :py:attr:`~broadband_adaptive_solution`
+            - 
+          * - :py:attr:`~multi_frequency_adaptive_solution`
+            - 
+          * - :py:attr:`~auto_mesh_operation`
+            - 
+          * - :py:attr:`~mesh_operations`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgHFSSSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: type
+   :type:  str
+   :value: 'hfss'
+
+
+.. py:attribute:: adapt_type
+   :type:  Literal['broadband', 'single', 'multi_frequencies']
+   :value: None
+
+
+.. py:attribute:: single_frequency_adaptive_solution
+   :type:  Optional[CfgHFSSSetup.CfgSingleFrequencyAdaptiveSolution]
+   :value: None
+
+
+.. py:attribute:: broadband_adaptive_solution
+   :type:  Optional[CfgHFSSSetup.CfgBroadbandAdaptiveSolution]
+   :value: None
+
+
+.. py:attribute:: multi_frequency_adaptive_solution
+   :type:  Optional[CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution]
+   :value: None
+
+
+.. py:attribute:: auto_mesh_operation
+   :type:  CfgHFSSSetup.CfgAutoMeshOperation | None
+   :value: None
+
+
+.. py:attribute:: mesh_operations
+   :type:  list[CfgHFSSSetup.CfgLengthMeshOperation] | None
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_single_frequency_adaptive(freq: float | str = '5GHz', max_passes: int = 20, max_delta: float | str = 0.02)
+
+   
+   Configure single-frequency adaptive meshing.
+
+   Sets :attr:`adapt_type` to ``"single"`` and replaces the current
+   single-frequency solution settings.
+
+   :Parameters:
+
+       **freq** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Adaptive frequency, e.g. ``"5GHz"``.  Default is ``"5GHz"``.
+
+       **max_passes** : :class:`python:int`, :obj:`optional`
+           Maximum number of adaptive passes.  Default is ``20``.
+
+       **max_delta** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Convergence criterion (maximum delta-S).  Default is ``0.02``.
+
+
+
+   :Returns:
+
+       :obj:`CfgHFSSSetup`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> hfss.set_single_frequency_adaptive("10GHz", max_passes=15, max_delta=0.01)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_broadband_adaptive(low_freq: float | str = '1GHz', high_freq: float | str = '10GHz', max_passes: int = 20, max_delta: float | str = 0.02)
+
+   
+   Configure broadband adaptive meshing.
+
+   Sets :attr:`adapt_type` to ``"broadband"`` and replaces the current
+   broadband solution settings.
+
+   :Parameters:
+
+       **low_freq** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Lower adaptive frequency, e.g. ``"1GHz"``.  Default is ``"1GHz"``.
+
+       **high_freq** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Upper adaptive frequency, e.g. ``"10GHz"``.  Default is
+           ``"10GHz"``.
+
+       **max_passes** : :class:`python:int`, :obj:`optional`
+           Maximum number of adaptive passes.  Default is ``20``.
+
+       **max_delta** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Convergence criterion (maximum delta-S).  Default is ``0.02``.
+
+
+
+   :Returns:
+
+       :obj:`CfgHFSSSetup`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> hfss.set_broadband_adaptive("1GHz", "20GHz", max_passes=25, max_delta=0.01)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_multi_frequency_adaptive(freq: float | str, max_passes: int = 20, max_delta: float | str = 0.02)
+
+   
+   Append one adaptive point to multi-frequency adaptive meshing.
+
+   Calling this method sets :attr:`adapt_type` to
+   ``"multi_frequencies"``.  Call it multiple times to add several
+   adaptive frequency points.
+
+   :Parameters:
+
+       **freq** : :class:`python:str` or :class:`python:float`
+           Adaptive frequency to add, e.g. ``"5GHz"``.
+
+       **max_passes** : :class:`python:int`, :obj:`optional`
+           Maximum passes for this frequency.  Default is ``20``.
+
+       **max_delta** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Convergence criterion.  Default is ``0.02``.
+
+
+
+   :Returns:
+
+       :obj:`CfgHFSSSetup`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> hfss.add_multi_frequency_adaptive("5GHz")
+   >>> hfss.add_multi_frequency_adaptive("10GHz", max_passes=30)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_auto_mesh_operation(enabled: bool = True, trace_ratio_seeding: float = 3.0, signal_via_side_number: int = 12)
+
+   
+   Configure the automatic mesh-seeding operation.
+
+
+   :Parameters:
+
+       **enabled** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable automatic mesh seeding.  Default is ``True``.
+
+       **trace_ratio_seeding** : :class:`python:float`, :obj:`optional`
+           Ratio of trace width used for seeding element size.  Default is
+           ``3.0``.
+
+       **signal_via_side_number** : :class:`python:int`, :obj:`optional`
+           Number of mesh segments per signal-via circumference.  Default is
+           ``12``.
+
+
+
+   :Returns:
+
+       :obj:`CfgHFSSSetup`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> hfss.set_auto_mesh_operation(enabled=True, trace_ratio_seeding=4.0)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_length_mesh_operation(mesh_op: CfgLengthMeshOperation | str = None, nets_layers_list: dict[str, list] = None, max_length: float | str | None = '1mm', max_elements: int | str | None = 1000, restrict_length: bool | None = True, refine_inside: bool | None = False, name: str = None)
+
+   
+   Append a length-based mesh operation to this HFSS setup.
+
+   Accepts a pre-built :class:`CfgLengthMeshOperation` payload or
+   individual keyword arguments to build one inline.
+
+   :Parameters:
+
+       **mesh_op** : :obj:`CfgLengthMeshOperation` or :class:`python:str`, :obj:`optional`
+           Pre-built mesh-operation object **or** a name string (legacy
+           positional use).  When *None*, a new operation is constructed
+           from the remaining parameters.
+
+       **nets_layers_list** : :class:`python:dict`\[:class:`python:str`, :class:`python:list`], :obj:`optional`
+           Mapping from net name to a list of layer names on which to apply
+           the operation, e.g. ``{"SIG": ["top", "bot"]}``.
+
+       **max_length** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Maximum element edge length.  Supports unit strings such as
+           ``"0.5mm"``.  Default is ``"1mm"``.
+
+       **max_elements** : :class:`python:int` or :class:`python:str`, :obj:`optional`
+           Maximum number of mesh elements in the seeded region.  Default is
+           ``1000``.
+
+       **restrict_length** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to enforce the *max_length* constraint.  Default is
+           ``True``.
+
+       **refine_inside** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to refine inside vias.  Default is ``False``.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Operation name.  Required when building inline.
+
+
+
+   :Returns:
+
+       :obj:`CfgHFSSSetup`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> hfss.add_length_mesh_operation(
+   ...     name="mesh_sig",
+   ...     nets_layers_list={"SIG": ["top"]},
+   ...     max_length="0.5mm",
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_frequency_sweep(name: CfgSetupAC | str, sweep_type: str = 'interpolation', start=None, stop=None, step_or_count=None, distribution: str = 'linear_count', **kwargs)
+
+   
+   Add a frequency sweep to this HFSS setup.
+
+
+   :Parameters:
+
+       **name** : :obj:`CfgFrequencySweep` or :class:`python:str`
+           Either a pre-built :class:`CfgFrequencySweep` object (round-trip
+           use) or a name string for a new sweep.
+
+       **sweep_type** : :class:`python:str`, :obj:`optional`
+           Sweep interpolation type.  ``"interpolation"`` (default) or
+           ``"discrete"``.
+
+       **start** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Inline range start frequency, e.g. ``"1GHz"``.  When supplied,
+           *stop* and *step_or_count* are also required.
+
+       **stop** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Inline range stop frequency.
+
+       **step_or_count** : :class:`python:str`, :class:`python:float`, :obj:`or` :class:`python:int`, :obj:`optional`
+           Point count (``"linear_count"``, ``"log_count"``) or step size
+           (``"linear_scale"``, ``"log_scale"``).
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Frequency distribution for the inline range.  Default is
+           ``"linear_count"``.
+
+       **\*\*kwargs**
+           Extra keyword arguments forwarded to :class:`CfgFrequencySweep`
+           (e.g. ``enforce_passivity``, ``adv_dc_extrapolation``, …).
+
+
+
+   :Returns:
+
+       :obj:`CfgFrequencySweep`
+           The newly created (or passed-through) sweep object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Inline — single call describes a complete sweep:
+
+   >>> hfss.add_frequency_sweep(
+   ...     "sweep1",
+   ...     start="1GHz",
+   ...     stop="20GHz",
+   ...     step_or_count=100,
+   ...     distribution="linear_count",
+   ...     enforce_passivity=True,
+   ... )
+
+   Chained — add multiple ranges to one sweep:
+
+   >>> sw = hfss.add_frequency_sweep("sweep2", sweep_type="interpolation")
+   >>> sw.add_linear_count_frequencies("1GHz", "10GHz", 100)
+   >>> sw.add_single_frequency("0Hz")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgSingleFrequencyAdaptiveSolution
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgBroadbandAdaptiveSolution
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgAutoMeshOperation
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgLengthMeshOperation
+
+
+
+

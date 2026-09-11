@@ -1,0 +1,90 @@
+
+
+
+
+
+
+:class:`ComponentLib`
+=====================
+
+
+.. py:class:: pyedb.component_libraries.ansys_components.ComponentLib
+
+   
+   Handle component libraries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ComponentLib
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~capacitors`
+            - 
+          * - :py:attr:`~inductors`
+            - 
+          * - :py:attr:`~path`
+            - 
+          * - :py:attr:`~series`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.component_libraries.ansys_components import ComponentLib
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: capacitors
+
+.. py:attribute:: inductors
+
+.. py:attribute:: path
+   :value: ''
+
+
+.. py:attribute:: series
+
+
+
+
+

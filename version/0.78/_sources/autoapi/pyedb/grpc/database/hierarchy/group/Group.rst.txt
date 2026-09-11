@@ -1,0 +1,234 @@
+
+
+
+
+
+
+:class:`Group`
+==============
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.group.Group(pedb, core)
+
+   
+   Represents a group.
+   Parameters
+   ----------
+   pedb
+       The parent EDB instance.
+   core
+       The core group object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Group
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a group.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Component part name.
+          * - :py:attr:`~placement_layer`
+            - Placement layer name.
+          * - :py:attr:`~location`
+            - Group center.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.group import Group
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Component part name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Component part name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: placement_layer
+   :type: str
+
+
+   
+   Placement layer name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Placement layer name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+   :type: tuple
+
+
+   
+   Group center.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`
+           [x, y].
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(pedb, name: str) -> Group
+   :classmethod:
+
+
+   
+   Create a group.
+
+
+   :Parameters:
+
+       **pedb**
+           Edb to create the group in.
+
+       **name** : :class:`python:str`
+           Name of the group.
+
+
+
+   :Returns:
+
+       :obj:`Group`
+           Group created.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

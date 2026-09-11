@@ -1,0 +1,157 @@
+
+
+
+
+
+
+:class:`CfgTerminal`
+====================
+
+
+.. py:class:: pyedb.configuration.cfg_terminals.CfgTerminal(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base class for explicit terminal definitions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~impedance`
+            - 
+          * - :py:attr:`~is_circuit_port`
+            - 
+          * - :py:attr:`~reference_terminal`
+            - 
+          * - :py:attr:`~amplitude`
+            - 
+          * - :py:attr:`~phase`
+            - 
+          * - :py:attr:`~terminal_to_ground`
+            - 
+          * - :py:attr:`~boundary_type`
+            - 
+          * - :py:attr:`~hfss_type`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_terminals import CfgTerminal
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: impedance
+   :type:  float | int | str
+
+.. py:attribute:: is_circuit_port
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: reference_terminal
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: amplitude
+   :type:  float | int | str | None
+   :value: 1
+
+
+.. py:attribute:: phase
+   :type:  float | int | str | None
+   :value: 0
+
+
+.. py:attribute:: terminal_to_ground
+   :type:  Literal['kNoGround', 'kNegative', 'kNegativeNode', 'kPositive', 'kPositiveNode', 'no_ground', 'negative', 'positive'] | None
+   :value: 'kNoGround'
+
+
+.. py:attribute:: boundary_type
+   :type:  Literal['PortBoundary', 'PecBoundary', 'RlcBoundary', 'kCurrentSource', 'kVoltageSource', 'kNexximGround', 'kNexximPort', 'kDcTerminal', 'kVoltageProbe', 'InvalidBoundary', 'port', 'dc_terminal', 'voltage_probe', 'voltage_source', 'current_source', 'rlc', 'pec']
+
+.. py:attribute:: hfss_type
+   :type:  Literal['Wave', 'Gap', None]
+   :value: None
+
+
+
+
+
+

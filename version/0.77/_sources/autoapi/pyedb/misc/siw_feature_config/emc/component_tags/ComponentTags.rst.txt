@@ -1,0 +1,96 @@
+
+
+
+
+
+
+:class:`ComponentTags`
+======================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.component_tags.ComponentTags(element)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages collection of component tags.
+
+   This class handles the complete collection of component configurations, providing
+   a container for multiple Comp objects within the EMC configuration. It serves as
+   the top-level container for all component-related tag information.
+
+   :Parameters:
+
+       **element** : :obj:`xml.etree.ElementTree.Element` or :data:`python:None`
+           XML element to initialize from.
+
+   :Attributes:
+
+       **CLS_MAPPING** : :class:`python:dict`
+           Mapping of element types to their corresponding classes.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.siw_feature_config.emc.component_tags import ComponentTags
+   >>> component_tags = ComponentTags(None)
+   >>> # ComponentTags ready to store multiple Comp objects
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ComponentTags
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~CLS_MAPPING`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.component_tags import ComponentTags
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: CLS_MAPPING
+   :type:  dict
+
+
+
+
+

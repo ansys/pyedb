@@ -1,0 +1,444 @@
+
+
+
+
+
+
+:class:`HFSSPIAdvancedSettings`
+===============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_pi_advanced_settings.HFSSPIAdvancedSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_pi_simulation_settings.HFSSPIAdvancedSettings)
+
+   
+   HFSS PI simulation advanced settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSPIAdvancedSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~arc_to_chord_error`
+            - Arc to chord error value.
+          * - :py:attr:`~auto_model_resolution`
+            - Flag indicating if model resolution is automatically calculated.
+          * - :py:attr:`~max_num_arc_points`
+            - Maximum number of points used to approximate arcs.
+          * - :py:attr:`~mesh_for_via_plating`
+            - Flag indicating if meshing for via plating is enabled.
+          * - :py:attr:`~model_resolution_length`
+            - Model resolution to use when manually setting the model resolution.
+          * - :py:attr:`~num_via_sides`
+            - Number of sides a via is considered to have.
+          * - :py:attr:`~remove_floating_geometry`
+            - Flag indicating if a geometry not connected to any other geometry is removed.
+          * - :py:attr:`~small_plane_area`
+            - Planes with an area smaller than this value are ignored during simulation.
+          * - :py:attr:`~small_void_area`
+            - Voids with an area smaller than this value are ignored during simulation.
+          * - :py:attr:`~use_arc_chord_error_approx`
+            - Flag indicating if arc chord error approximation is used.
+          * - :py:attr:`~via_material`
+            - Default via material.
+          * - :py:attr:`~zero_metal_layer_thickness`
+            - Pwr/Gnd layers with a thickness smaller than this value are simplified during simulation.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_pi_advanced_settings import HFSSPIAdvancedSettings
+
+Property detail
+---------------
+
+.. py:property:: arc_to_chord_error
+   :type: float
+
+
+   
+   Arc to chord error value.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Arc to chord error value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: auto_model_resolution
+   :type: bool
+
+
+   
+   Flag indicating if model resolution is automatically calculated.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Auto model resolution value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_num_arc_points
+   :type: int
+
+
+   
+   Maximum number of points used to approximate arcs.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum number of arc points.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_for_via_plating
+   :type: bool
+
+
+   
+   Flag indicating if meshing for via plating is enabled.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Mesh for via plating value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: model_resolution_length
+   :type: float
+
+
+   
+   Model resolution to use when manually setting the model resolution.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Model resolution length value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_via_sides
+   :type: int
+
+
+   
+   Number of sides a via is considered to have.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Number of via sides.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: remove_floating_geometry
+   :type: bool
+
+
+   
+   Flag indicating if a geometry not connected to any other geometry is removed.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Remove floating geometry value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: small_plane_area
+   :type: float
+
+
+   
+   Planes with an area smaller than this value are ignored during simulation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Small plane area value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: small_void_area
+   :type: float
+
+
+   
+   Voids with an area smaller than this value are ignored during simulation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Small void area value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_arc_chord_error_approx
+   :type: bool
+
+
+   
+   Flag indicating if arc chord error approximation is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Use arc to chord error approximation value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_material
+   :type: str
+
+
+   
+   Default via material.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Via material name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: zero_metal_layer_thickness
+   :type: float
+
+
+   
+   Pwr/Gnd layers with a thickness smaller than this value are simplified during simulation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Zero metal layer thickness value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

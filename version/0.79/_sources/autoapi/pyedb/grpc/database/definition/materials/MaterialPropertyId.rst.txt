@@ -1,0 +1,149 @@
+
+
+
+
+
+
+:class:`MaterialPropertyId`
+===========================
+
+
+.. py:class:: pyedb.grpc.database.definition.materials.MaterialPropertyId
+
+   Bases: :py:obj:`str`, :py:obj:`enum.Enum`
+
+
+   
+   str(object='') -> str
+   str(bytes_or_buffer[, encoding[, errors]]) -> str
+
+   Create a new string object from the given object. If encoding or
+   errors is specified, then the object must expose a data buffer
+   that will be decoded using the given encoding and error handler.
+   Otherwise, returns the result of object.__str__() (if defined)
+   or repr(object).
+   encoding defaults to 'utf-8'.
+   errors defaults to 'strict'.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MaterialPropertyId
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~permittivity`
+            - 
+          * - :py:attr:`~permeability`
+            - 
+          * - :py:attr:`~conductivity`
+            - 
+          * - :py:attr:`~dielectric_loss_tangent`
+            - 
+          * - :py:attr:`~magnetic_loss_tangent`
+            - 
+          * - :py:attr:`~thermal_conductivity`
+            - 
+          * - :py:attr:`~mass_density`
+            - 
+          * - :py:attr:`~specific_heat`
+            - 
+          * - :py:attr:`~youngs_modulus`
+            - 
+          * - :py:attr:`~poisson_ratio`
+            - 
+          * - :py:attr:`~thermal_expansion_coefficient`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.materials import MaterialPropertyId
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: permittivity
+   :value: 'PERMITTIVITY'
+
+
+.. py:attribute:: permeability
+   :value: 'PERMEABILITY'
+
+
+.. py:attribute:: conductivity
+   :value: 'CONDUCTIVITY'
+
+
+.. py:attribute:: dielectric_loss_tangent
+   :value: 'DIELECTRIC_LOSS_TANGENT'
+
+
+.. py:attribute:: magnetic_loss_tangent
+   :value: 'MAGNETIC_LOSS_TANGENT'
+
+
+.. py:attribute:: thermal_conductivity
+   :value: 'THERMAL_CONDUCTIVITY'
+
+
+.. py:attribute:: mass_density
+   :value: 'MASS_DENSITY'
+
+
+.. py:attribute:: specific_heat
+   :value: 'SPECIFIC_HEAT'
+
+
+.. py:attribute:: youngs_modulus
+   :value: 'YOUNGS_MODULUS'
+
+
+.. py:attribute:: poisson_ratio
+   :value: 'POISSONS_RATIO'
+
+
+.. py:attribute:: thermal_expansion_coefficient
+   :value: 'THERMAL_EXPANSION_COEFFICIENT'
+
+
+
+
+
+

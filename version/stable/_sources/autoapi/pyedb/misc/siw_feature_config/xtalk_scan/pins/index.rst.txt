@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``pins.py`` module
+======================
+
+.. py:module:: pyedb.misc.siw_feature_config.xtalk_scan.pins
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: pins
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.xtalk_scan.pins.DriverPin`
+            - Driver pin class handler.
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.xtalk_scan.pins.ReceiverPin`
+            - Receiver pin class handler.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> DriverPin</autoapi/pyedb/misc/siw_feature_config/xtalk_scan/pins/DriverPin>
+    <span class="nf nf-cod-symbol_class"></span> ReceiverPin</autoapi/pyedb/misc/siw_feature_config/xtalk_scan/pins/ReceiverPin>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

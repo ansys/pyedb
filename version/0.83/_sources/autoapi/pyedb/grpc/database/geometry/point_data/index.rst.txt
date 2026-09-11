@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``point_data.py`` module
+============================
+
+.. py:module:: pyedb.grpc.database.geometry.point_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: point_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.geometry.point_data.PointData`
+            - Class managing :class:`Point Data <ansys.edb.core.geometry.point_data.PointData>`
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> PointData</autoapi/pyedb/grpc/database/geometry/point_data/PointData>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

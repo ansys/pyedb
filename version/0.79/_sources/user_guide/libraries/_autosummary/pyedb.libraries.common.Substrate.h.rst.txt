@@ -1,0 +1,6 @@
+h
+=
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoattribute:: Substrate.h

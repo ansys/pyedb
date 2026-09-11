@@ -1,0 +1,121 @@
+
+
+
+
+
+
+:class:`XmlImportOptions`
+=========================
+
+
+.. py:class:: pyedb.xml_parser.xml_parser.XmlImportOptions(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Represents import options for the XML configuration.
+
+
+   :Parameters:
+
+       **enable_default_component_values** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to enable default component values during import. The default is ``None``.
+
+       **flatten** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to flatten the design hierarchy during import. The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: XmlImportOptions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~enable_default_component_values`
+            - 
+          * - :py:attr:`~flatten`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.xml_parser.xml_parser import XmlImportOptions
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: enable_default_component_values
+   :type:  Optional[bool]
+   :value: None
+
+
+.. py:attribute:: flatten
+   :type:  Optional[bool]
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+

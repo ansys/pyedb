@@ -1,0 +1,6 @@
+create
+======
+
+.. currentmodule:: pyedb.libraries.rf_libraries.planar_antennas
+
+.. automethod:: CircularPatch.create

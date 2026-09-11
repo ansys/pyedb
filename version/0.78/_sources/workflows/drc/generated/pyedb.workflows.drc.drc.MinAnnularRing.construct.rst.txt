@@ -1,0 +1,6 @@
+construct
+=========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinAnnularRing.construct

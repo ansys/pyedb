@@ -1,0 +1,95 @@
+
+
+
+
+
+
+:class:`Tag`
+============
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.tag_library.Tag(element)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages individual tags with their types and configurations.
+
+   This class represents a complete tag with its associated tag types and configurations.
+
+   :Parameters:
+
+       **element** : :obj:`xml.etree.ElementTree.Element` or :data:`python:None`
+           XML element to initialize from.
+
+   :Attributes:
+
+       **CLS_MAPPING** : :class:`python:dict`
+           Mapping of element types to their corresponding classes.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.siw_feature_config.emc.tag_library import Tag
+   >>> tag = Tag(None)
+   >>> tag.label = "Clock"
+   >>> tag.name = "CLK_TAG"
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Tag
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~CLS_MAPPING`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.tag_library import Tag
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: CLS_MAPPING
+   :type:  dict
+
+
+
+
+

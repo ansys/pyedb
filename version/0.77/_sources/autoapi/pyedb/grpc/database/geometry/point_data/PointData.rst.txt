@@ -1,0 +1,333 @@
+
+
+
+
+
+
+:class:`PointData`
+==================
+
+
+.. py:class:: pyedb.grpc.database.geometry.point_data.PointData(pedb: pyedb.grpc.edb.Edb, core: ansys.edb.core.geometry.point_data.PointData)
+
+   
+   Class managing :class:`Point Data <ansys.edb.core.geometry.point_data.PointData>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: PointData
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a new PointData object.
+          * - :py:attr:`~create_arc_point`
+            - Create a arc PointData object.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~rotate`
+            - Rotate a point at a given center by a given angle.
+          * - :py:attr:`~move`
+            - Move the point.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~x`
+            - X coordinate.
+          * - :py:attr:`~y`
+            - Y coordinate.
+          * - :py:attr:`~arc_height`
+            - Height of the arc. This property is read-only.
+          * - :py:attr:`~is_arc`
+            - Flag indicating if the point represents an arc.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.geometry.point_data import PointData
+
+Property detail
+---------------
+
+.. py:property:: x
+   :type: pyedb.grpc.database.utility.value.Value
+
+
+   
+   X coordinate.
+
+   This property is read-only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: y
+   :type: pyedb.grpc.database.utility.value.Value
+
+
+   
+   Y coordinate.
+
+   This property is read-only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arc_height
+   :type: pyedb.grpc.database.utility.value.Value
+
+
+   
+   Height of the arc. This property is read-only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_arc
+   :type: bool
+
+
+   
+   Flag indicating if the point represents an arc.
+
+   This property is read-only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(pedb: pyedb.grpc.edb.Edb, x: float | str, y: float | str) -> PointData
+   :classmethod:
+
+
+   
+   Create a new PointData object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_arc_point(pedb: pyedb.grpc.edb.Edb, arc_height)
+   :classmethod:
+
+
+   
+   Create a arc PointData object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: rotate(angle: str | float | int, center: tuple[str | float | int, str | float | int]) -> PointData
+
+   
+   Rotate a point at a given center by a given angle.
+
+
+   :Parameters:
+
+       **angle** : :class:`python:float`, :obj:`Value`
+           Angle in radians.
+
+       **center** : :class:`python:list` :obj:`of` :class:`python:float`, :class:`python:str`, :obj:`Value`
+           Center.
+
+
+
+   :Returns:
+
+       :obj:`.PointData` or :obj:`None`
+           PointData after rotating or :obj:`None` if either point is an arc.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: move(dx: str | float, dy: str | float) -> PointData
+
+   
+   Move the point.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+validate
+========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: CopperBalance.validate

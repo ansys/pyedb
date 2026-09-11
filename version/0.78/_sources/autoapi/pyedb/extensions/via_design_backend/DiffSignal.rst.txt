@@ -1,0 +1,102 @@
+
+
+
+
+
+
+:class:`DiffSignal`
+===================
+
+
+.. py:class:: pyedb.extensions.via_design_backend.DiffSignal(p_board, name, signals, fanout_trace, stacked_vias)
+
+
+.. py:currentmodule:: DiffSignal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~populate_config`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~p_board`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~fanout_trace`
+            - 
+          * - :py:attr:`~stacked_vias`
+            - 
+          * - :py:attr:`~variables`
+            - 
+          * - :py:attr:`~diff_ports`
+            - 
+          * - :py:attr:`~signal_p`
+            - 
+          * - :py:attr:`~signal_n`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.extensions.via_design_backend import DiffSignal
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: p_board
+
+.. py:attribute:: name
+
+.. py:attribute:: fanout_trace
+
+.. py:attribute:: stacked_vias
+
+.. py:attribute:: variables
+   :value: []
+
+
+.. py:attribute:: diff_ports
+   :value: []
+
+
+.. py:attribute:: signal_p
+
+.. py:attribute:: signal_n
+
+
+
+Method detail
+-------------
+
+.. py:method:: populate_config(cfg)
+
+
+
+

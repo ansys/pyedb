@@ -1,0 +1,303 @@
+
+
+
+
+
+
+:class:`LayerMap`
+=================
+
+
+.. py:class:: pyedb.grpc.database.utility.layer_map.LayerMap(core)
+
+
+
+.. py:currentmodule:: LayerMap
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a layer map.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~clear`
+            - Clear the layer map.
+          * - :py:attr:`~get_mapping_backward`
+            - Get the backward mapping for a given layer ID.
+          * - :py:attr:`~get_mapping_forward`
+            - Get the forward mapping for a given layer ID.
+          * - :py:attr:`~set_mapping`
+            - Set the mapping from one layer ID to another.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - Get the layer map ID.
+          * - :py:attr:`~is_null`
+            - Check if the layer map is null.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.layer_map import LayerMap
+
+Property detail
+---------------
+
+.. py:property:: id
+
+   
+   Get the layer map ID.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Layer map ID.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Check if the layer map is null.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the layer map is null, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(direction: str = 'two_way') -> LayerMap
+   :classmethod:
+
+
+   
+   Create a layer map.
+
+
+   :Parameters:
+
+       **direction** : :class:`python:str`, :obj:`optional`
+           Direction of the layer map. Options are "two_way", "forward", and "backward". Default is "two_way".
+
+
+
+   :Returns:
+
+       :obj:`LayerMap`
+           Layer map object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: clear()
+
+   
+   Clear the layer map.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_mapping_backward(layer_id: int) -> int
+
+   
+   Get the backward mapping for a given layer ID.
+
+
+   :Parameters:
+
+       **layer_id** : :class:`python:int`
+           Layer ID to get the backward mapping for.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Mapped layer ID.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_mapping_forward(layer_id: int) -> int
+
+   
+   Get the forward mapping for a given layer ID.
+
+
+   :Parameters:
+
+       **layer_id** : :class:`python:int`
+           Layer ID to get the forward mapping for.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Mapped layer ID.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_mapping(layer_id_from: int, layer_id_to: int)
+
+   
+   Set the mapping from one layer ID to another.
+
+
+   :Parameters:
+
+       **layer_id_from** : :class:`python:int`
+           Layer ID to map from.
+
+       **layer_id_to** : :class:`python:int`
+           Layer ID to map to.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

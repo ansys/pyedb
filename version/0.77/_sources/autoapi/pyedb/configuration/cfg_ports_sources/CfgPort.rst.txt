@@ -1,0 +1,140 @@
+
+
+
+
+
+
+:class:`CfgPort`
+================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgPort(pedb=None, *args, **kwargs)
+
+   Bases: :py:obj:`CfgCircuitElement`
+
+
+   
+   Lumped circuit port or coaxial (via) port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPort
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_parameters_to_edb`
+            - Create port.
+          * - :py:attr:`~export_properties`
+            - Serialize this port to a plain dictionary.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~CFG_PORT_TYPE`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgPort
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: CFG_PORT_TYPE
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_parameters_to_edb()
+
+   
+   Create port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_properties()
+
+   
+   Serialize this port to a plain dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

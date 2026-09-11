@@ -1,0 +1,47 @@
+
+
+
+
+
+
+:class:`SourceTermMapper`
+=========================
+
+.. toctree::
+   :hidden:
+
+    GRPC</autoapi/pyedb/generic/constants/SourceTermMapper.GRPC>
+    DOTNET</autoapi/pyedb/generic/constants/SourceTermMapper.DOTNET>
+
+
+.. py:class:: pyedb.generic.constants.SourceTermMapper
+
+   Bases: :py:obj:`CommonMapper`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SourceTermMapper
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.generic.constants.SourceTermMapper.GRPC
+    pyedb.generic.constants.SourceTermMapper.DOTNET
+
+
+
+

@@ -1,0 +1,157 @@
+
+
+
+
+
+
+:class:`CfgTrace`
+=================
+
+
+.. py:class:: pyedb.configuration.cfg_modeler.CfgTrace(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Represent one trace primitive scheduled for creation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgTrace
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~path`
+            - 
+          * - :py:attr:`~width`
+            - 
+          * - :py:attr:`~net_name`
+            - 
+          * - :py:attr:`~start_cap_style`
+            - 
+          * - :py:attr:`~end_cap_style`
+            - 
+          * - :py:attr:`~corner_style`
+            - 
+          * - :py:attr:`~incremental_path`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_modeler import CfgTrace
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: layer
+   :type:  str
+
+.. py:attribute:: path
+   :type:  list[list[float | int | str]]
+   :value: None
+
+
+.. py:attribute:: width
+   :type:  str
+
+.. py:attribute:: net_name
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: start_cap_style
+   :type:  str
+   :value: 'round'
+
+
+.. py:attribute:: end_cap_style
+   :type:  str
+   :value: 'round'
+
+
+.. py:attribute:: corner_style
+   :type:  str
+   :value: 'sharp'
+
+
+.. py:attribute:: incremental_path
+   :type:  list[list[float | int | str]]
+   :value: None
+
+
+
+
+
+

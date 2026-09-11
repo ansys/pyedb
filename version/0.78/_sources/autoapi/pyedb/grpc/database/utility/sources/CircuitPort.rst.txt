@@ -1,0 +1,133 @@
+
+
+
+
+
+
+:class:`CircuitPort`
+====================
+
+
+.. py:class:: pyedb.grpc.database.utility.sources.CircuitPort(pedb, impedance='50')
+
+   Bases: :py:obj:`Source`
+
+
+   
+   Manages a circuit port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CircuitPort
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~impedance`
+            - Impedance of the circuit port.
+          * - :py:attr:`~get_type`
+            - Source type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.sources import CircuitPort
+
+Property detail
+---------------
+
+.. py:property:: impedance
+
+   
+   Impedance of the circuit port.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str` or :class:`python:float`
+           Impedance value in ohms.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: get_type
+
+   
+   Source type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Source type value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
