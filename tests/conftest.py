@@ -172,6 +172,15 @@ class EdbExamples:
         else:
             return target_file
 
+    def get_edb_from_gds(self, edbapp=True, additional_files_folders="", version=None):
+        """ "Copy package board file into local folder. A new temporary folder will be created."""
+        target_file = self.copy_test_files_into_local_folder("TEDB/clip.aedb")[0]
+        if edbapp:
+            version = desktop_version if version is None else version
+            return Edb(target_file, version=version, grpc=self.grpc)
+        else:
+            return target_file
+
     def create_empty_edb(self):
         aedb = os.path.join(self.test_folder, f"new_layout_{generate_random_string(6)}.aedb")
         edbapp = Edb(aedb, version=desktop_version, grpc=self.grpc)
