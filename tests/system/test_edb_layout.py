@@ -309,3 +309,11 @@ class TestClass(BaseTestClass):
         bbox = [[round(i, 6) for i in j] for j in edbapp.get_bounding_box()]
         assert bbox == [[-0.014260, -0.004550], [0.150105, 0.080000]]
         edbapp.close(terminate_rpc_session=False)
+
+    def test_primitives_queries_from_gds(self):
+        """Verify primitives queries from edb generated from GDS layout."""
+        edbapp = self.edb_examples.get_edb_from_gds()
+        assert len(edbapp.layout.primitives) == 50
+        assert len(edbapp.layout.polygons) == 40
+        assert len(edbapp.layout.filter_primitives(layer_name="RDL")) == 50
+        edbapp.close(terminate_rpc_session=False)

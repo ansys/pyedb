@@ -319,14 +319,14 @@ class EdbPolygon(Primitive):
 
 class EdbText(Primitive, TextDotNet):
     def __init__(self, raw_primitive, core_app):
-        Primitive.__init__(self, raw_primitive, core_app)
-        TextDotNet.__init__(self, raw_primitive, self._app)
+        Primitive.__init__(self, core_app, raw_primitive)
+        TextDotNet.__init__(self, self._app, raw_primitive)
 
 
 class EdbBondwire(Primitive, BondwireDotNet):
     def __init__(self, raw_primitive, core_app):
-        Primitive.__init__(self, raw_primitive, core_app)
-        BondwireDotNet.__init__(self, raw_primitive, self._app)
+        Primitive.__init__(self, core_app, raw_primitive)
+        BondwireDotNet.__init__(self, self._app, raw_primitive)
 
 
 class EDBArcs(object):

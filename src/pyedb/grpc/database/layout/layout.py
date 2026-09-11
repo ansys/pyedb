@@ -154,6 +154,7 @@ class PrimitivesQuery:
     def __init__(self, pedb):
         self._pedb = pedb
         self._primitives = []
+        self.__collections_expanded = False
 
     @staticmethod
     def _as_filter_set(values) -> set | None:
@@ -363,8 +364,39 @@ class PrimitivesQuery:
         """Primitives."""
         return {i.aedt_name: i for i in self._iter_primitives_with_voids()}
 
+    def _expand_primitive_instance_collections(self) -> None:
+        """Decompose ``PrimitiveInstanceCollection`` objects into individual primitives.
+
+        GDS/GDSII imports commonly store repeated geometry (arrays of identical
+        shapes) as a single ``PrimitiveInstanceCollection`` object instead of
+        individual primitives, for efficiency. Left as-is, that single object is
+        counted as one primitive, drastically under-reporting the real primitive
+        count. Calling ``decompose()`` on it makes the EDB server expand it into
+        one real primitive per instantiated geometry.
+
+        This is only performed once per layout since decomposition mutates the
+        underlying EDB database.
+        """
+        if self.__collections_expanded:
+            return
+        self.__collections_expanded = True
+
+        collections = []
+        for primitive in self.core.primitives:
+            if _resolve_primitive_type_name(primitive) == "PrimitiveInstanceCollection":
+                collections.append(primitive)
+
+        for collection in collections:
+            try:
+                wrapped_collection = self._wrap_primitive(collection)
+                if wrapped_collection is not None:
+                    wrapped_collection.decompose()
+            except Exception as exc:  # pragma: no cover - defensive against gRPC server errors
+                self._pedb.logger.debug("Failed to decompose PrimitiveInstanceCollection: %s", exc)
+
     @property
     def primitives(self) -> list[Primitive]:
+        self._expand_primitive_instance_collections()
         self._primitives = []
         for primitive in self.core.primitives:
             wrapped_primitive = self._wrap_primitive(primitive)
@@ -658,6 +690,7 @@ class Layout(PrimitivesQuery):
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         self._pedb.logger.info("Caching layout...")
+        self._expand_primitive_instance_collections()
         self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
         self.__primitives = []
