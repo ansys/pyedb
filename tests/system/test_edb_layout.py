@@ -312,7 +312,8 @@ class TestClass(BaseTestClass):
 
     def test_primitives_queries_from_gds(self):
         """Verify primitives queries from edb generated from GDS layout."""
-        edbapp = self.edb_examples.get_edb_from_gds()
+        target_file = self.edb_examples.copy_test_files_into_local_folder("TEDB/clip.aedb")[0]
+        edbapp = self.edb_examples.load_edb(target_file)
         assert len(edbapp.layout.primitives) == 50
         assert len(edbapp.layout.polygons) == 40
         assert len(edbapp.layout.filter_primitives(layer_name="RDL")) == 50
