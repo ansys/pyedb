@@ -35,3 +35,7 @@ class PrimitiveInstanceCollection(Primitive):
         A primitive will be created for each geometry instantiation.
         """
         self.core.decompose()
+
+    def delete(self):
+        """Delete the primitive instance collection from the layout."""
+        self.core.delete()
