@@ -1,0 +1,206 @@
+
+
+
+
+
+
+The ``configuration`` package
+=================================
+
+.. py:module:: pyedb.configuration
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: configuration
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_boundaries`
+            - Build the ``boundaries`` configuration section.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_common`
+            - Shared helpers, base classes, and variable models for configuration builders.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_components`
+            - Build the ``components`` configuration section and its model helpers.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_data`
+            - Aggregate configuration section objects into one runtime data container.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_general`
+            - Build the ``general`` configuration section.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_modeler`
+            - Build geometry-creation and cleanup entries for the ``modeler`` section.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_nets`
+            - Build the ``nets`` configuration section.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_operations`
+            - Build the ``operations`` configuration section, including cutouts.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_package_definition`
+            - Build thermal package-definition configuration entries.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks`
+            - Build padstack definition and instance entries for configuration payloads.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_pin_groups`
+            - Build named pin-group configuration entries.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources`
+            - Build ports, sources, probes, and terminal-selector helpers.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_s_parameter_models`
+            - Build S-parameter model assignment entries for configuration payloads.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup`
+            - Build HFSS and SIwave setup entries for configuration payloads.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_spice_models`
+            - Build SPICE model assignment entries for configuration payloads.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup`
+            - Build the ``stackup`` configuration section.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals`
+            - Build explicit low-level terminal entries for configuration payloads.
+
+
+          * - :py:obj:`~pyedb.configuration.configuration`
+            - Load, merge, export, and apply PyEDB configuration payloads.
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.CfgData`
+            - Runtime container and programmatic builder for pyedb configuration.
+
+
+          * - :py:obj:`~pyedb.configuration.TerminalInfo`
+            - Describe a high-level terminal selector used by ports, sources, and probes.
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> cfg_boundaries</autoapi/pyedb/configuration/cfg_boundaries/index>
+    <span class="nf nf-fa-file"></span> cfg_common</autoapi/pyedb/configuration/cfg_common/index>
+    <span class="nf nf-fa-file"></span> cfg_components</autoapi/pyedb/configuration/cfg_components/index>
+    <span class="nf nf-fa-file"></span> cfg_data</autoapi/pyedb/configuration/cfg_data/index>
+    <span class="nf nf-fa-file"></span> cfg_general</autoapi/pyedb/configuration/cfg_general/index>
+    <span class="nf nf-fa-file"></span> cfg_modeler</autoapi/pyedb/configuration/cfg_modeler/index>
+    <span class="nf nf-fa-file"></span> cfg_nets</autoapi/pyedb/configuration/cfg_nets/index>
+    <span class="nf nf-fa-file"></span> cfg_operations</autoapi/pyedb/configuration/cfg_operations/index>
+    <span class="nf nf-fa-file"></span> cfg_package_definition</autoapi/pyedb/configuration/cfg_package_definition/index>
+    <span class="nf nf-fa-file"></span> cfg_padstacks</autoapi/pyedb/configuration/cfg_padstacks/index>
+    <span class="nf nf-fa-file"></span> cfg_pin_groups</autoapi/pyedb/configuration/cfg_pin_groups/index>
+    <span class="nf nf-fa-file"></span> cfg_ports_sources</autoapi/pyedb/configuration/cfg_ports_sources/index>
+    <span class="nf nf-fa-file"></span> cfg_s_parameter_models</autoapi/pyedb/configuration/cfg_s_parameter_models/index>
+    <span class="nf nf-fa-file"></span> cfg_setup</autoapi/pyedb/configuration/cfg_setup/index>
+    <span class="nf nf-fa-file"></span> cfg_spice_models</autoapi/pyedb/configuration/cfg_spice_models/index>
+    <span class="nf nf-fa-file"></span> cfg_stackup</autoapi/pyedb/configuration/cfg_stackup/index>
+    <span class="nf nf-fa-file"></span> cfg_terminals</autoapi/pyedb/configuration/cfg_terminals/index>
+    <span class="nf nf-fa-file"></span> configuration</autoapi/pyedb/configuration/configuration/index>
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgData</autoapi/pyedb/configuration/CfgData>
+    <span class="nf nf-cod-symbol_class"></span> TerminalInfo</autoapi/pyedb/configuration/TerminalInfo>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+
+Public API for the PyEDB configuration system.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

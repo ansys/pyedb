@@ -1,0 +1,219 @@
+
+
+
+
+
+
+The ``pyedb.misc.misc`` library
+===============================
+
+.. py:module:: pyedb.misc.misc
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: misc
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~list_installed_ansysem`
+            - Return a list of installed AEDT versions on ``ANSYSEM_ROOT``.
+
+
+          * - :py:obj:`~installed_versions`
+            - Get the installed AEDT versions.
+
+
+          * - :py:obj:`~current_version`
+            - Get the current AEDT version.
+
+
+          * - :py:obj:`~current_student_version`
+            - Get the current AEDT student version.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Miscellaneous Methods for PyEDB.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: list_installed_ansysem() -> list[str]
+
+   
+   Return a list of installed AEDT versions on ``ANSYSEM_ROOT``.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           List of environment variable names for installed AEDT versions.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.misc import list_installed_ansysem
+   >>> versions = list_installed_ansysem()
+   >>> versions
+   ['ANSYSEM_ROOT241', 'ANSYSEM_ROOT232']
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: installed_versions() -> dict[str, str]
+
+   
+   Get the installed AEDT versions.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`python:str`]
+           Dictionary with version as the key and installation path as the value.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.misc import installed_versions
+   >>> versions = installed_versions()
+   >>> versions
+   {'2024.1': 'C:/Program Files/AnsysEM/v241/Win64', '2023.2': 'C:/Program Files/AnsysEM/v232/Win64'}
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: current_version() -> str
+
+   
+   Get the current AEDT version.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Current AEDT version string, or empty string if no version is found.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.misc import current_version
+   >>> version = current_version()
+   >>> version
+   '2024.1'
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: current_student_version() -> str
+
+   
+   Get the current AEDT student version.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Current AEDT student version string with 'SV' suffix, or empty string if no student version is found.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.misc import current_student_version
+   >>> version = current_student_version()
+   >>> version
+   '2024.1SV'
+
+   ..
+       !! processed by numpydoc !!
+
+
+

@@ -1,0 +1,318 @@
+
+
+
+
+
+
+:class:`PinPair`
+================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.pin_pair_model.PinPair(model, edb_pin_pair)
+
+
+.. py:currentmodule:: PinPair
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~first_pin`
+            - First pin name.
+          * - :py:attr:`~second_pin`
+            - Second pin name.
+          * - :py:attr:`~rlc_enable`
+            - Enable model.
+          * - :py:attr:`~resistance`
+            - Resistance.
+          * - :py:attr:`~inductance`
+            - Inductance.
+          * - :py:attr:`~capacitance`
+            - Capacitance.
+          * - :py:attr:`~rlc_values`
+            - Rlc value.
+          * - :py:attr:`~is_parallel`
+            - Check if the pin pair model is parallel.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.pin_pair_model import PinPair
+
+Property detail
+---------------
+
+.. py:property:: first_pin
+   :type: str
+
+
+   
+   First pin name.
+
+   This attribute is read-only since pin pair model is defined between two pins,
+   and changing pin names will change the pin pair itself.
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           First pin name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: second_pin
+   :type: str
+
+
+   
+   Second pin name.
+
+   This attribute is read-only since pin pair model is defined between two pins,
+   and changing pin names will change the pin pair itself.
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Second pin name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rlc_enable
+   :type: tuple[bool, bool, bool]
+
+
+   
+   Enable model.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[:obj:`r_enabled`\(:ref:`bool <python:bltin-boolean-values>`), :obj:`l_enabled`\(:ref:`bool <python:bltin-boolean-values>`), :obj:`c_enabled`\(:ref:`bool <python:bltin-boolean-values>`)].
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: resistance
+   :type: float
+
+
+   
+   Resistance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Resistance value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: inductance
+   :type: float
+
+
+   
+   Inductance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Inductance value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: capacitance
+   :type: float
+
+
+   
+   Capacitance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Capacitance value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rlc_values
+   :type: list[float]
+
+
+   
+   Rlc value.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:float`, :class:`python:float`, :class:`python:float`]
+           [R value, L value, C value].
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_parallel
+   :type: bool
+
+
+   
+   Check if the pin pair model is parallel.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the pin pair model is parallel, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

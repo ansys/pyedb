@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``td_xtalk_config.py`` module
+=================================
+
+.. py:module:: pyedb.misc.siw_feature_config.xtalk_scan.td_xtalk_config
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: td_xtalk_config
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.xtalk_scan.td_xtalk_config.CrossTalkTime`
+            - Time domain crosstalk configuration class handler.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CrossTalkTime</autoapi/pyedb/misc/siw_feature_config/xtalk_scan/td_xtalk_config/CrossTalkTime>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

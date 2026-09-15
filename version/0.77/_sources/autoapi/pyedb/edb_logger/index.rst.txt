@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``edb_logger.py`` module
+============================
+
+.. py:module:: pyedb.edb_logger
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: edb_logger
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.edb_logger.Msg`
+            - 
+
+
+          * - :py:obj:`~pyedb.edb_logger.AppFilter`
+            - Specifies the destination of the logger.
+
+
+          * - :py:obj:`~pyedb.edb_logger.EdbLogger`
+            - Specifies the logger to use for EDB logger.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Msg</autoapi/pyedb/edb_logger/Msg>
+    <span class="nf nf-cod-symbol_class"></span> AppFilter</autoapi/pyedb/edb_logger/AppFilter>
+    <span class="nf nf-cod-symbol_class"></span> EdbLogger</autoapi/pyedb/edb_logger/EdbLogger>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

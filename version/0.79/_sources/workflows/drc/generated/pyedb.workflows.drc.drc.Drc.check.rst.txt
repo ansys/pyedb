@@ -1,0 +1,6 @@
+check
+=====
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: Drc.check

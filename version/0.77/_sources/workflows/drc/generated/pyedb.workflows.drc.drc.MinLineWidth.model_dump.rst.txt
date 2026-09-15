@@ -1,0 +1,6 @@
+model\_dump
+===========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinLineWidth.model_dump

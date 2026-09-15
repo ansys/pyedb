@@ -1,0 +1,6 @@
+model\_dump\_json
+=================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: BackDrillStubLength.model_dump_json
