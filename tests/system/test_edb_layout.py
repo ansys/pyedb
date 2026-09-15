@@ -310,10 +310,53 @@ class TestClass(BaseTestClass):
         assert bbox == [[-0.014260, -0.004550], [0.150105, 0.080000]]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
     def test_primitives_queries_from_gds(self):
-        """Verify primitives queries from edb generated from GDS layout."""
+        """Verify primitives queries from edb generated from GDS layout (gRPC backend).
+
+        GDS/GDSII imports commonly store repeated geometry as a single
+        ``PrimitiveInstanceCollection`` object instead of individual primitives. By default this
+        collection must be preserved as-is without mutating the layout. An explicit,
+        lazily-cached ``expand_instance_collections=True`` flag (or
+        ``layout.expand_primitive_instance_collections()``) must decompose it into individual,
+        persisted primitives.
+        """
+        from pyedb.grpc.database.primitive.primitive_instance_collection import PrimitiveInstanceCollection
+
+        # --- default behaviour: PrimitiveInstanceCollection objects are preserved as-is ---
         target_file = self.edb_examples.copy_test_files_into_local_folder("TEDB/clip.aedb")[0]
         edbapp = self.edb_examples.load_edb(target_file)
+
+        default_primitives = edbapp.layout.primitives
+        collections = [p for p in default_primitives if isinstance(p, PrimitiveInstanceCollection)]
+        assert len(collections) > 0
+        # Collections collapse several instantiated shapes into a single object, so the raw
+        # primitive count must be strictly lower than the fully decomposed count (50).
+        assert len(default_primitives) < 50
+        assert len(edbapp.layout.filter_primitives(layer_name="RDL")) == len(default_primitives)
+
+        # --- instantiated_geometry / geometry / positions are read-only and non-mutating ---
+        collection = collections[0]
+        instantiated_geometry = collection.instantiated_geometry
+        assert len(instantiated_geometry) > 0
+        assert len(collection.positions) == len(instantiated_geometry)
+        assert collection.geometry is not None
+        # Reading the geometry must not have mutated the layout.
+        assert len(edbapp.layout.primitives) == len(default_primitives)
+
+        # explicit opt-in decomposition via filter_primitives
+        assert len(edbapp.layout.filter_primitives(layer_name="RDL", expand_instance_collections=True)) == 50
+        # Expansion is lazily cached: once triggered, default collection-based queries reflect it.
+        assert len(edbapp.layout.primitives) == 50
+        assert len(edbapp.layout.polygons) == 40
+        assert not any(isinstance(p, PrimitiveInstanceCollection) for p in edbapp.layout.primitives)
+
+        edbapp.close(terminate_rpc_session=False)
+
+        # explicit opt-in decomposition via expand_primitive_instance_collections()
+        target_file = self.edb_examples.copy_test_files_into_local_folder("TEDB/clip.aedb")[0]
+        edbapp = self.edb_examples.load_edb(target_file)
+        edbapp.layout.expand_primitive_instance_collections()
         assert len(edbapp.layout.primitives) == 50
         assert len(edbapp.layout.polygons) == 40
         assert len(edbapp.layout.filter_primitives(layer_name="RDL")) == 50
