@@ -309,7 +309,7 @@ primitive_instance_collection.PrimitiveInstanceCollection>` instances (a single 
             Filtered primitives.
         """
         if expand_instance_collections:
-            self._expand_primitive_instance_collections()
+            self.expand_primitive_instance_collections()
 
         layer_name_set = self._as_filter_set(layer_name)
         name_set = self._as_filter_set(name)
@@ -379,8 +379,8 @@ primitive_instance_collection.PrimitiveInstanceCollection>` instances (a single 
         """Primitives."""
         return {i.aedt_name: i for i in self._iter_primitives_with_voids()}
 
-    def _expand_primitive_instance_collections(self) -> None:
-        """Decompose ``PrimitiveInstanceCollection`` objects into individual primitives.
+    def expand_primitive_instance_collections(self) -> None:
+        """Decompose every ``PrimitiveInstanceCollection`` into individual, persisted primitives.
 
         GDS/GDSII imports commonly store repeated geometry (arrays of identical shapes) as a
         single ``PrimitiveInstanceCollection`` object instead of individual primitives, for
@@ -391,10 +391,9 @@ primitive_instance_collection.PrimitiveInstanceCollection>`) and counted as a si
         primitive per instantiated geometry.
 
         This method is **not** called automatically: it must be explicitly requested (e.g. via
-        ``filter_primitives(..., expand_instance_collections=True)`` or
-        :meth:`expand_primitive_instance_collections`) since decomposition **mutates** the
-        underlying EDB database and can be expensive for large collections. It is only
-        performed once per layout (lazily cached).
+        ``filter_primitives(..., expand_instance_collections=True)`` or by calling this method
+        directly) since decomposition **mutates** the underlying EDB database and can be
+        expensive for large collections. It is only performed once per layout (lazily cached).
         """
         if self.__collections_expanded:
             return
@@ -412,18 +411,6 @@ primitive_instance_collection.PrimitiveInstanceCollection>`) and counted as a si
                     wrapped_collection.decompose()
             except Exception as exc:  # pragma: no cover - defensive against gRPC server errors
                 self._pedb.logger.debug("Failed to decompose PrimitiveInstanceCollection: %s", exc)
-
-    def expand_primitive_instance_collections(self) -> None:
-        """Decompose every ``PrimitiveInstanceCollection`` into individual, persisted primitives.
-
-        This is a **mutating** operation performed lazily: it only runs once, the first time it
-        is called. Call this explicitly (or use
-        ``filter_primitives(..., expand_instance_collections=True)``) when individual primitives
-        are required instead of collapsed
-        :class:`PrimitiveInstanceCollection <pyedb.grpc.database.primitive.\
-primitive_instance_collection.PrimitiveInstanceCollection>` objects.
-        """
-        self._expand_primitive_instance_collections()
 
     @property
     def primitives(self) -> list[Primitive]:
@@ -737,7 +724,7 @@ class Layout(PrimitivesQuery):
 
         self._pedb.logger.info("Caching layout...")
         if expand_instance_collections:
-            self._expand_primitive_instance_collections()
+            self.expand_primitive_instance_collections()
         self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
         self.__primitives = []
