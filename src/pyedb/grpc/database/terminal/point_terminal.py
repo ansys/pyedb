@@ -152,3 +152,19 @@ class PointTerminal(Terminal):
     @layer.setter
     def layer(self, value):
         self.core.layer = value
+
+    @property
+    def is_auto_port(self) -> bool:
+        """Whether the terminal is an auto port.
+
+        Returns
+        -------
+        bool
+            True if the terminal is an auto port, False otherwise.
+
+        """
+        return self.core.is_auto_port
+
+    @is_auto_port.setter
+    def is_auto_port(self, value):
+        self.core.is_auto_port = value
