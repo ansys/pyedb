@@ -78,6 +78,7 @@ from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
 from pyedb.grpc.database.net.differential_pair import DifferentialPair
 from pyedb.grpc.database.net.extended_net import ExtendedNet
 from pyedb.grpc.database.net.net_class import NetClass
+from pyedb.grpc.database.primitive.primitive_instance_collection import PrimitiveInstanceCollection
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
 from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
@@ -294,14 +295,14 @@ class PrimitivesQuery:
         expand_instance_collections : bool, optional
             GDS/GDSII imports commonly store repeated geometry (arrays of identical shapes) as
             a single ``PrimitiveInstanceCollection`` object instead of individual primitives,
-            for efficiency. By default (``False``), such objects are preserved as-is and
-            returned wrapped as
-            :class:`PrimitiveInstanceCollection <pyedb.grpc.database.primitive.\
-primitive_instance_collection.PrimitiveInstanceCollection>` instances (a single entry per
-            collection). Set this to ``True`` to decompose every ``PrimitiveInstanceCollection``
-            into individual, persisted primitives before filtering. This is a **mutating**
-            operation (it permanently materializes the primitives in the layout) performed
-            lazily: it only runs once, the first time it is requested.
+            for efficiency. By default (``False``), such collection objects are included as-is
+            in the results (a single entry per collection; see
+            :attr:`primitive_instance_collections` to access them separately) and the layout is
+            left untouched. Set this to ``True`` to decompose every
+            ``PrimitiveInstanceCollection`` into individual, persisted primitives before
+            filtering, so their instantiated geometries are returned instead of the collection
+            itself. This is a **mutating** operation (it permanently materializes the primitives
+            in the layout) performed lazily: it only runs once, the first time it is requested.
 
         Returns
         -------
@@ -452,6 +453,28 @@ primitive_instance_collection.PrimitiveInstanceCollection>`) and counted as a si
             List of bondwires.
         """
         return self._primitives_by_class("Bondwire")
+
+    @property
+    def primitive_instance_collections(self) -> list[PrimitiveInstanceCollection]:
+        """Primitive instance collections.
+
+        GDS/GDSII imports commonly store repeated geometry (arrays of identical shapes) as a
+        single ``PrimitiveInstanceCollection`` object instead of individual primitives, for
+        efficiency. They are included as-is (one entry per collection) in
+        :meth:`filter_primitives`/:meth:`find_primitive` and :attr:`primitives` results unless
+        decomposed. This property is a convenient shortcut to access only these collection
+        objects, e.g. to lazily inspect their instantiated geometry (see
+        :attr:`PrimitiveInstanceCollection.instantiated_geometry <pyedb.grpc.database.\
+primitive.primitive_instance_collection.PrimitiveInstanceCollection.instantiated_geometry>`)
+        or to decompose them into individual, persisted primitives (see
+        :meth:`expand_primitive_instance_collections`).
+
+        Returns
+        -------
+        list[:class:`PrimitiveInstanceCollection <pyedb.grpc.database.primitive.\
+primitive_instance_collection.PrimitiveInstanceCollection>`]
+        """
+        return self._primitives_by_class("PrimitiveInstanceCollection")
 
     def find_object_by_id(self, value: int) -> PadstackInstance | Primitive | None:
         """Find a layout object by Database ID.

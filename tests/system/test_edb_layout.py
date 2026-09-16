@@ -315,25 +315,30 @@ class TestClass(BaseTestClass):
         """Verify primitives queries from edb generated from GDS layout (gRPC backend).
 
         GDS/GDSII imports commonly store repeated geometry as a single
-        ``PrimitiveInstanceCollection`` object instead of individual primitives. By default this
-        collection must be preserved as-is without mutating the layout. An explicit,
-        lazily-cached ``expand_instance_collections=True`` flag (or
-        ``layout.expand_primitive_instance_collections()``) must decompose it into individual,
-        persisted primitives.
+        ``PrimitiveInstanceCollection`` object instead of individual primitives. By default such
+        collection objects are included as-is (one entry per collection) in
+        ``filter_primitives``/``find_primitive``/``primitives`` results, without mutating the
+        layout. An explicit, lazily-cached ``expand_instance_collections=True`` flag (or
+        ``layout.expand_primitive_instance_collections()``) decomposes them into individual,
+        persisted primitives, which are then returned instead of the collection.
         """
         from pyedb.grpc.database.primitive.primitive_instance_collection import PrimitiveInstanceCollection
 
-        # --- default behaviour: PrimitiveInstanceCollection objects are preserved as-is ---
+        # --- default behaviour: PrimitiveInstanceCollection objects are included as-is ---
         target_file = self.edb_examples.copy_test_files_into_local_folder("TEDB/clip.aedb")[0]
         edbapp = self.edb_examples.load_edb(target_file)
 
         default_primitives = edbapp.layout.primitives
-        collections = [p for p in default_primitives if isinstance(p, PrimitiveInstanceCollection)]
+        collections = edbapp.layout.primitive_instance_collections
         assert len(collections) > 0
+        assert all(isinstance(c, PrimitiveInstanceCollection) for c in collections)
         # Collections collapse several instantiated shapes into a single object, so the raw
         # primitive count must be strictly lower than the fully decomposed count (50).
         assert len(default_primitives) < 50
-        assert len(edbapp.layout.filter_primitives(layer_name="RDL")) == len(default_primitives)
+        # filter_primitives/find_primitive include PrimitiveInstanceCollection objects as-is.
+        rdl_primitives = edbapp.layout.filter_primitives(layer_name="RDL")
+        assert len(rdl_primitives) == len(default_primitives)
+        assert any(isinstance(p, PrimitiveInstanceCollection) for p in rdl_primitives)
 
         # --- instantiated_geometry / geometry / positions are read-only and non-mutating ---
         collection = collections[0]
@@ -343,6 +348,7 @@ class TestClass(BaseTestClass):
         assert collection.geometry is not None
         # Reading the geometry must not have mutated the layout.
         assert len(edbapp.layout.primitives) == len(default_primitives)
+        assert len(edbapp.layout.primitive_instance_collections) == len(collections)
 
         # explicit opt-in decomposition via filter_primitives
         assert len(edbapp.layout.filter_primitives(layer_name="RDL", expand_instance_collections=True)) == 50
@@ -350,6 +356,7 @@ class TestClass(BaseTestClass):
         assert len(edbapp.layout.primitives) == 50
         assert len(edbapp.layout.polygons) == 40
         assert not any(isinstance(p, PrimitiveInstanceCollection) for p in edbapp.layout.primitives)
+        assert len(edbapp.layout.primitive_instance_collections) == 0
 
         edbapp.close(terminate_rpc_session=False)
 
