@@ -3604,6 +3604,8 @@ class SourceExcitation(SourceExcitationInternal):
         _name = name if name else f"point_{layer}_{x}_{y}"
         location = [x, y]
         terminal = PointTerminal.create(self._pedb.layout, net, layer, _name, location)
+        # set default to True to let AEDT manage the port assignment automatically (e.g. for Q3D conductor ports)
+        terminal.is_auto_port = True
         if terminal.is_null:
             raise RuntimeError(
                 f"Failed to create terminal. Input arguments: x={x}, y={y}, layer={layer}, net={net}, name={name}."
