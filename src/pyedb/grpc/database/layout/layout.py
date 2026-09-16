@@ -78,6 +78,7 @@ from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
 from pyedb.grpc.database.net.differential_pair import DifferentialPair
 from pyedb.grpc.database.net.extended_net import ExtendedNet
 from pyedb.grpc.database.net.net_class import NetClass
+from pyedb.grpc.database.primitive.primitive_instance_collection import PrimitiveInstanceCollection
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
 from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
@@ -154,6 +155,7 @@ class PrimitivesQuery:
     def __init__(self, pedb):
         self._pedb = pedb
         self._primitives = []
+        self.__collections_expanded = False
 
     @staticmethod
     def _as_filter_set(values) -> set | None:
@@ -273,6 +275,7 @@ class PrimitivesQuery:
         net_name: str | list = None,
         prim_type: str | list = None,
         is_void: bool | None = None,
+        expand_instance_collections: bool = False,
     ) -> list[Primitive]:
         """Filter primitives by one or more attributes.
 
@@ -289,12 +292,26 @@ class PrimitivesQuery:
             EDB-style values like ``"Polygon"`` are accepted.
         is_void : bool, optional
             Void flag filter. When ``None``, void state is not used as a filter.
+        expand_instance_collections : bool, optional
+            GDS/GDSII imports commonly store repeated geometry (arrays of identical shapes) as
+            a single ``PrimitiveInstanceCollection`` object instead of individual primitives,
+            for efficiency. By default (``False``), such collection objects are included as-is
+            in the results (a single entry per collection; see
+            :attr:`primitive_instance_collections` to access them separately) and the layout is
+            left untouched. Set this to ``True`` to decompose every
+            ``PrimitiveInstanceCollection`` into individual, persisted primitives before
+            filtering, so their instantiated geometries are returned instead of the collection
+            itself. This is a **mutating** operation (it permanently materializes the primitives
+            in the layout) performed lazily: it only runs once, the first time it is requested.
 
         Returns
         -------
         list[Primitive]
             Filtered primitives.
         """
+        if expand_instance_collections:
+            self.expand_primitive_instance_collections()
+
         layer_name_set = self._as_filter_set(layer_name)
         name_set = self._as_filter_set(name)
         net_name_set = self._as_filter_set(net_name)
@@ -363,6 +380,39 @@ class PrimitivesQuery:
         """Primitives."""
         return {i.aedt_name: i for i in self._iter_primitives_with_voids()}
 
+    def expand_primitive_instance_collections(self) -> None:
+        """Decompose every ``PrimitiveInstanceCollection`` into individual, persisted primitives.
+
+        GDS/GDSII imports commonly store repeated geometry (arrays of identical shapes) as a
+        single ``PrimitiveInstanceCollection`` object instead of individual primitives, for
+        efficiency. By default, this collection object is preserved as-is (wrapped as a
+        :class:`PrimitiveInstanceCollection <pyedb.grpc.database.primitive.\
+primitive_instance_collection.PrimitiveInstanceCollection>`) and counted as a single primitive.
+        Calling ``decompose()`` on it makes the EDB server expand it into one real, persisted
+        primitive per instantiated geometry.
+
+        This method is **not** called automatically: it must be explicitly requested (e.g. via
+        ``filter_primitives(..., expand_instance_collections=True)`` or by calling this method
+        directly) since decomposition **mutates** the underlying EDB database and can be
+        expensive for large collections. It is only performed once per layout (lazily cached).
+        """
+        if self.__collections_expanded:
+            return
+        self.__collections_expanded = True
+
+        collections = []
+        for primitive in self.core.primitives:
+            if _resolve_primitive_type_name(primitive) == "PrimitiveInstanceCollection":
+                collections.append(primitive)
+
+        for collection in collections:
+            try:
+                wrapped_collection = self._wrap_primitive(collection)
+                if wrapped_collection is not None:
+                    wrapped_collection.decompose()
+            except Exception as exc:  # pragma: no cover - defensive against gRPC server errors
+                self._pedb.logger.debug("Failed to decompose PrimitiveInstanceCollection: %s", exc)
+
     @property
     def primitives(self) -> list[Primitive]:
         self._primitives = []
@@ -403,6 +453,28 @@ class PrimitivesQuery:
             List of bondwires.
         """
         return self._primitives_by_class("Bondwire")
+
+    @property
+    def primitive_instance_collections(self) -> list[PrimitiveInstanceCollection]:
+        """Primitive instance collections.
+
+        GDS/GDSII imports commonly store repeated geometry (arrays of identical shapes) as a
+        single ``PrimitiveInstanceCollection`` object instead of individual primitives, for
+        efficiency. They are included as-is (one entry per collection) in
+        :meth:`filter_primitives`/:meth:`find_primitive` and :attr:`primitives` results unless
+        decomposed. This property is a convenient shortcut to access only these collection
+        objects, e.g. to lazily inspect their instantiated geometry (see
+        :attr:`PrimitiveInstanceCollection.instantiated_geometry <pyedb.grpc.database.\
+primitive.primitive_instance_collection.PrimitiveInstanceCollection.instantiated_geometry>`)
+        or to decompose them into individual, persisted primitives (see
+        :meth:`expand_primitive_instance_collections`).
+
+        Returns
+        -------
+        list[:class:`PrimitiveInstanceCollection <pyedb.grpc.database.primitive.\
+primitive_instance_collection.PrimitiveInstanceCollection>`]
+        """
+        return self._primitives_by_class("PrimitiveInstanceCollection")
 
     def find_object_by_id(self, value: int) -> PadstackInstance | Primitive | None:
         """Find a layout object by Database ID.
@@ -467,6 +539,7 @@ class PrimitivesQuery:
         net_name: str | list = None,
         prim_type: str | list = None,
         is_void: bool | None = None,
+        expand_instance_collections: bool = False,
     ) -> list[Primitive]:
         """
         Find primitive objects by one or more attributes.
@@ -485,6 +558,8 @@ class PrimitivesQuery:
         is_void : bool, optional
             When ``True``, return only void primitives. When ``False``, return only non-void
             primitives. When ``None`` (default), void state is not used as a filter.
+        expand_instance_collections : bool, optional
+            See :meth:`filter_primitives`. Defaults to ``False`` (collections preserved as-is).
 
         Returns
         -------
@@ -492,7 +567,12 @@ class PrimitivesQuery:
             Filtered list of primitives.
         """
         return self.filter_primitives(
-            layer_name=layer_name, name=name, net_name=net_name, prim_type=prim_type, is_void=is_void
+            layer_name=layer_name,
+            name=name,
+            net_name=net_name,
+            prim_type=prim_type,
+            is_void=is_void,
+            expand_instance_collections=expand_instance_collections,
         )
 
     @property
@@ -650,14 +730,24 @@ class Layout(PrimitivesQuery):
         if self.__use_cache:
             self.refresh_cache()
 
-    def refresh_cache(self):
+    def refresh_cache(self, expand_instance_collections: bool = False):
         """Refresh the layout cache.
 
         Caches padstack instances and primitives from the core object.
+
+        Parameters
+        ----------
+        expand_instance_collections : bool, optional
+            When ``True``, decompose every ``PrimitiveInstanceCollection`` into individual,
+            persisted primitives before caching (see
+            :meth:`expand_primitive_instance_collections`). This is a **mutating** operation
+            and is disabled by default so collections are preserved as-is.
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         self._pedb.logger.info("Caching layout...")
+        if expand_instance_collections:
+            self.expand_primitive_instance_collections()
         self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
         self.__primitives = []

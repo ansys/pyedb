@@ -71,7 +71,7 @@ def primitive_cast(pedb, edb_object):
     elif edb_object.GetPrimitiveType().ToString() == "Bondwire":
         return Bondwire(pedb, edb_object)
     elif edb_object.GetPrimitiveType().ToString() == "Text":
-        return EdbText(pedb, edb_object)
+        return EdbText(edb_object, pedb)
     elif edb_object.GetPrimitiveType().ToString() == "PrimitivePlugin":
         return
     elif edb_object.GetPrimitiveType().ToString() == "Path3D":
