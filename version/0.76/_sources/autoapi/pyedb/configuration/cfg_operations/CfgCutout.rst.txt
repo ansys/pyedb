@@ -1,0 +1,199 @@
+
+
+
+
+
+
+:class:`CfgCutout`
+==================
+
+
+.. py:class:: pyedb.configuration.cfg_operations.CfgCutout(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Represent one cutout operation configuration payload.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgCutout
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_dump`
+            - Override to always exclude None values.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~auto_identify_nets`
+            - 
+          * - :py:attr:`~signal_nets`
+            - 
+          * - :py:attr:`~reference_nets`
+            - 
+          * - :py:attr:`~extent_type`
+            - 
+          * - :py:attr:`~expansion_size`
+            - 
+          * - :py:attr:`~number_of_threads`
+            - 
+          * - :py:attr:`~custom_extent`
+            - 
+          * - :py:attr:`~custom_extent_units`
+            - 
+          * - :py:attr:`~expansion_factor`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_operations import CfgCutout
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: auto_identify_nets
+   :type:  CfgAutoIdentifyNets | None
+   :value: None
+
+
+.. py:attribute:: signal_nets
+   :type:  Optional[list[str]]
+   :value: None
+
+
+.. py:attribute:: reference_nets
+   :type:  Optional[list[str]]
+   :value: None
+
+
+.. py:attribute:: extent_type
+   :type:  Optional[str]
+   :value: 'ConvexHull'
+
+
+.. py:attribute:: expansion_size
+   :type:  Optional[float | str]
+   :value: 0.002
+
+
+.. py:attribute:: number_of_threads
+   :type:  Optional[int]
+   :value: 1
+
+
+.. py:attribute:: custom_extent
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: custom_extent_units
+   :type:  str
+   :value: None
+
+
+.. py:attribute:: expansion_factor
+   :type:  Optional[float]
+   :value: 0
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: model_dump(**kwargs) -> dict
+
+   
+   Override to always exclude None values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,103 @@
+
+
+
+
+
+
+:class:`CfgBroadbandAdaptiveSolution`
+=====================================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgBroadbandAdaptiveSolution(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgBroadbandAdaptiveSolution
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~low_frequency`
+            - 
+          * - :py:attr:`~high_frequency`
+            - 
+          * - :py:attr:`~max_passes`
+            - 
+          * - :py:attr:`~max_delta`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup.CfgHFSSSetup import CfgBroadbandAdaptiveSolution
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: low_frequency
+   :type:  float | str
+   :value: None
+
+
+.. py:attribute:: high_frequency
+   :type:  float | str
+   :value: None
+
+
+.. py:attribute:: max_passes
+   :type:  int
+   :value: None
+
+
+.. py:attribute:: max_delta
+   :type:  float | str
+   :value: None
+
+
+
+
+
+

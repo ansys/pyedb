@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``pyedb.component_libraries.ansys_components`` library
+==========================================================
+
+.. py:module:: pyedb.component_libraries.ansys_components
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: ansys_components
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.component_libraries.ansys_components.ComponentLib`
+            - Handle component libraries.
+
+
+          * - :py:obj:`~pyedb.component_libraries.ansys_components.Series`
+            - Handle component series.
+
+
+          * - :py:obj:`~pyedb.component_libraries.ansys_components.ComponentPart`
+            - Handle component part definition.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ComponentLib</autoapi/pyedb/component_libraries/ansys_components/ComponentLib>
+    <span class="nf nf-cod-symbol_class"></span> Series</autoapi/pyedb/component_libraries/ansys_components/Series>
+    <span class="nf nf-cod-symbol_class"></span> ComponentPart</autoapi/pyedb/component_libraries/ansys_components/ComponentPart>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

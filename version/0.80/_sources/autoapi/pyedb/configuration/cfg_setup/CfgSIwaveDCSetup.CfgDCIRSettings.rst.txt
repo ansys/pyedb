@@ -1,0 +1,82 @@
+
+
+
+
+
+
+:class:`CfgDCIRSettings`
+========================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSIwaveDCSetup.CfgDCIRSettings(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgDCIRSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~export_dc_thermal_data`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup.CfgSIwaveDCSetup import CfgDCIRSettings
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: export_dc_thermal_data
+   :type:  bool
+   :value: None
+
+
+
+
+
+

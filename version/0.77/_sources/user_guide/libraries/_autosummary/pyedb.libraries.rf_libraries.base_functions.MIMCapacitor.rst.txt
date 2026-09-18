@@ -1,0 +1,24 @@
+﻿MIMCapacitor
+============
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoclass:: MIMCapacitor
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      MIMCapacitor.create
+      
+   
+   
+
+   
+   
+   

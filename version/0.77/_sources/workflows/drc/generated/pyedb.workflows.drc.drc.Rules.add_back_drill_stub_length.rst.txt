@@ -1,0 +1,6 @@
+add\_back\_drill\_stub\_length
+==============================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: Rules.add_back_drill_stub_length

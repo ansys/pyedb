@@ -1,0 +1,475 @@
+
+
+
+
+
+
+:class:`CfgModeler`
+===================
+
+
+.. py:class:: pyedb.configuration.cfg_modeler.CfgModeler(pedb=None, data: dict | None = None)
+
+   
+   Collect geometry and modeler operations for serialization.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgModeler
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_trace`
+            - Add a trace to the modeler configuration.
+          * - :py:attr:`~add_rectangular_plane`
+            - Add a rectangular copper plane.
+          * - :py:attr:`~add_circular_plane`
+            - Add a circular copper plane.
+          * - :py:attr:`~add_polygon_plane`
+            - Add a polygon copper plane.
+          * - :py:attr:`~delete_primitives_by_layer`
+            - Schedule all primitives on the given layers for deletion.
+          * - :py:attr:`~delete_primitives_by_name`
+            - Schedule primitives with the given names for deletion.
+          * - :py:attr:`~delete_primitives_by_net`
+            - Schedule all primitives on the given nets for deletion.
+          * - :py:attr:`~to_dict`
+            - Serialize modeler configuration to a plain dictionary.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~traces`
+            - 
+          * - :py:attr:`~planes`
+            - 
+          * - :py:attr:`~padstack_defs`
+            - 
+          * - :py:attr:`~padstack_instances`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~primitives_to_delete`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_modeler import CfgModeler
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: traces
+   :value: []
+
+
+.. py:attribute:: planes
+   :value: []
+
+
+.. py:attribute:: padstack_defs
+
+.. py:attribute:: padstack_instances
+
+.. py:attribute:: components
+
+.. py:attribute:: primitives_to_delete
+   :type:  dict[str, list[str]]
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_trace(name: str, layer: str, width: str, net_name: str = '', start_cap_style: str = 'round', end_cap_style: str = 'round', corner_style: str = 'sharp', path: Optional[list[list[float | int | str]]] = None, incremental_path: Optional[list[list[float | int | str]]] = None)
+
+   
+   Add a trace to the modeler configuration.
+
+   Exactly one of *path* or *incremental_path* should be supplied.
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           AEDT name assigned to the created trace primitive.
+
+       **layer** : :class:`python:str`
+           Layer name on which to create the trace, e.g. ``"1_Top"``.
+
+       **width** : :class:`python:str`
+           Trace width including units, e.g. ``"0.1mm"`` or ``"100um"``.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Net the trace belongs to, e.g. ``"SIG"``.  Default is ``""``.
+
+       **start_cap_style** : :class:`python:str`, :obj:`optional`
+           Start-cap termination style.  Accepted values: ``"round"``
+           (default), ``"extended"``, ``"flat"``.
+
+       **end_cap_style** : :class:`python:str`, :obj:`optional`
+           End-cap termination style.  Same options as *start_cap_style*.
+           Default is ``"round"``.
+
+       **corner_style** : :class:`python:str`, :obj:`optional`
+           Corner bend style.  Accepted values: ``"sharp"`` (default),
+           ``"round"``, ``"mitered"``.
+
+       **path** : :class:`python:list` :obj:`of` [:obj:`x`, :obj:`y`], :obj:`optional`
+           Ordered list of absolute ``[x, y]`` waypoints in metres that define
+           the trace route, e.g. ``[[0, 0], [0.01, 0], [0.01, 0.005]]``.
+           Use this when absolute coordinates are known.
+
+       **incremental_path** : :class:`python:list` :obj:`of` [:obj:`x`, :obj:`y`], :obj:`optional`
+           Ordered list of ``[x, y]`` waypoints where the first point is
+           absolute and subsequent points are added incrementally via
+           :meth:`pyedb.modeler.Path.add_point`.  Use this for step-by-step
+           construction.  Mutually exclusive with *path*.
+
+
+
+   :Returns:
+
+       :obj:`CfgTrace`
+           The newly created trace descriptor object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Absolute path:
+
+   >>> cfg.modeler.add_trace(
+   ...     name="trace_clk",
+   ...     layer="1_Top",
+   ...     width="0.1mm",
+   ...     net_name="CLK",
+   ...     path=[[0.0, 0.0], [0.005, 0.0], [0.005, 0.003]],
+   ... )
+
+   Incremental path:
+
+   >>> cfg.modeler.add_trace(
+   ...     name="trace_sig",
+   ...     layer="1_Top",
+   ...     width="0.1mm",
+   ...     net_name="SIG",
+   ...     incremental_path=[[0.0, 0.0], [0.005, 0.0]],
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_rectangular_plane(layer: str, name: str = '', net_name: str = '', lower_left_point: Optional[list[float | int]] = None, upper_right_point: Optional[list[float | int]] = None, corner_radius: float = 0, rotation: float | int = 0, voids: Optional[list] = None)
+
+   
+   Add a rectangular copper plane.
+
+
+   :Parameters:
+
+       **layer** : :class:`python:str`
+           Layer name on which to create the rectangle.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Primitive AEDT name.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Net name for the plane.
+
+       **lower_left_point** : :class:`python:list` :obj:`of` :class:`python:float`, :obj:`optional`
+           ``[x, y]`` lower-left corner in metres.
+
+       **upper_right_point** : :class:`python:list` :obj:`of` :class:`python:float`, :obj:`optional`
+           ``[x, y]`` upper-right corner in metres.
+
+       **corner_radius** : :class:`python:float`, :obj:`optional`
+           Corner rounding radius.  Default is ``0``.
+
+       **rotation** : :class:`python:float`, :obj:`optional`
+           Rotation in degrees.  Default is ``0``.
+
+       **voids** : :class:`python:list`, :obj:`optional`
+           Void cutout descriptors.
+
+
+
+   :Returns:
+
+       :obj:`CfgPlane`
+           The newly created plane object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.modeler.add_rectangular_plane(
+   ...     "bot",
+   ...     "gnd_plane",
+   ...     "GND",
+   ...     lower_left_point=[-0.05, -0.05],
+   ...     upper_right_point=[0.05, 0.05],
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_circular_plane(layer: str, name: str = '', net_name: str = '', corner_radius: float | int = 0, rotation: float | int = 0, voids: Optional[list] = None, radius: float | int | str = 0, position: Optional[list[float | int | str]] = None)
+
+   
+   Add a circular copper plane.
+
+
+   :Parameters:
+
+       **layer** : :class:`python:str`
+           Layer on which to place the circle.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Primitive AEDT name.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Net name.
+
+       **corner_radius** : :class:`python:float`, :obj:`optional`
+           Unused for circles; kept for API symmetry.  Default is ``0``.
+
+       **rotation** : :class:`python:float`, :obj:`optional`
+           Rotation in degrees.  Default is ``0``.
+
+       **voids** : :class:`python:list`, :obj:`optional`
+           Void cutout descriptors.
+
+       **radius** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Circle radius, e.g. ``"1mm"``.  Default is ``0``.
+
+       **position** : :class:`python:list` :obj:`of` :class:`python:float`, :obj:`optional`
+           ``[x, y]`` centre position in metres.  Default is ``[0, 0]``.
+
+
+
+   :Returns:
+
+       :obj:`CfgPlane`
+           The newly created plane object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_polygon_plane(layer: str, name: str = '', net_name: str = '', corner_radius: float | int = 0, rotation: float | int = 0, voids: Optional[list] = None, points: Optional[list[list[float | int]]] = None)
+
+   
+   Add a polygon copper plane.
+
+
+   :Parameters:
+
+       **layer** : :class:`python:str`
+           Layer on which to place the polygon.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Primitive AEDT name.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Net name.
+
+       **corner_radius** : :class:`python:float`, :obj:`optional`
+           Corner rounding radius.  Default is ``0``.
+
+       **rotation** : :class:`python:float`, :obj:`optional`
+           Rotation in degrees.  Default is ``0``.
+
+       **voids** : :class:`python:list`, :obj:`optional`
+           Void cutout descriptors.
+
+       **points** : :class:`python:list` :obj:`of` :class:`python:list` :obj:`of` :class:`python:float`, :obj:`optional`
+           Ordered ``[x, y]`` vertex coordinates in metres.
+
+
+
+   :Returns:
+
+       :obj:`CfgPlane`
+           The newly created plane object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.modeler.add_polygon_plane(
+   ...     "top",
+   ...     "sig_poly",
+   ...     "SIG",
+   ...     points=[[0, 0], [0.01, 0], [0.01, 0.005], [0, 0.005]],
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_primitives_by_layer(layer_names: list[str])
+
+   
+   Schedule all primitives on the given layers for deletion.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_primitives_by_name(primitive_names: list[str])
+
+   
+   Schedule primitives with the given names for deletion.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_primitives_by_net(net_names: list[str])
+
+   
+   Schedule all primitives on the given nets for deletion.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict() -> dict
+
+   
+   Serialize modeler configuration to a plain dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

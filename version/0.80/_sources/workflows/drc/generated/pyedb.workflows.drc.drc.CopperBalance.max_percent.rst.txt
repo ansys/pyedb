@@ -1,0 +1,6 @@
+max\_percent
+============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: CopperBalance.max_percent

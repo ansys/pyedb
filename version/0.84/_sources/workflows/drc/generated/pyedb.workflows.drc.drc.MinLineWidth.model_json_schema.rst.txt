@@ -1,0 +1,6 @@
+model\_json\_schema
+===================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinLineWidth.model_json_schema
