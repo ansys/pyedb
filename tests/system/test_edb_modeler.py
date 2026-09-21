@@ -175,6 +175,42 @@ class TestClass(BaseTestClass):
         assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="skipping dotnet")
+    def test_center_line_setter(self):
+        edbapp = self.edb_examples.get_si_verse()
+        layer_name = list(edbapp.stackup.signal_layers.keys())[0]
+        net = edbapp.nets.signal[list(edbapp.nets.signal.keys())[0]].name
+        trace = edbapp.modeler.create_trace([[0, 0], [1e-3, 0], [1e-3, 1e-3]], layer_name, width=1e-4, net_name=net)
+        trace.center_line = [[0, 0], [2e-3, 0], [2e-3, 2e-3]]
+        print("new center_line:", trace.center_line)
+        assert trace.center_line[-1] == [2e-3, 2e-3]
+        # underlying polygon data must stay open
+        assert trace.core.center_line.is_closed is False
+        edbapp.close()
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="skipping dotnet")
+    def test_end_cap_and_corner_setters_case_insensitive(self):
+        edbapp = self.edb_examples.get_si_verse()
+        layer_name = list(edbapp.stackup.signal_layers.keys())[0]
+        net = edbapp.nets.signal[list(edbapp.nets.signal.keys())[0]].name
+        trace = edbapp.modeler.create_trace([[0, 0], [1e-3, 0]], layer_name, width=1e-4, net_name=net)
+        trace.end_cap1 = "Extended"
+        trace.end_cap2 = "Flat"
+        trace.corner_style = "Round"
+        assert trace.end_cap1 == "extended"
+        assert trace.end_cap2 == "flat"
+        assert trace.corner_style == "round"
+        edbapp.close()
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="skipping dotnet")
+    def test_create_trace_center_line_is_open(self):
+        edbapp = self.edb_examples.get_si_verse()
+        layer_name = list(edbapp.stackup.signal_layers.keys())[0]
+        net = edbapp.nets.signal[list(edbapp.nets.signal.keys())[0]].name
+        trace = edbapp.modeler.create_trace([[0, 0], [1e-3, 0], [1e-3, 1e-3]], layer_name, width=1e-4, net_name=net)
+        assert trace.core.center_line.is_closed is False
+        edbapp.close()
+
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
         edbapp = self.edb_examples.get_si_verse()

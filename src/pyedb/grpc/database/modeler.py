@@ -482,7 +482,7 @@ class Modeler(object):
                     _pt.append(coord)
                 _points.append(CorePointData(_pt))
             width = self._pedb.value(width)
-            polygon_data = CorePolygonData(_points)
+            polygon_data = CorePolygonData(_points, closed=False)
         elif isinstance(points, CorePolygonData):
             polygon_data = points
         else:
