@@ -9,6 +9,100 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.84.0 <https://github.com/ansys/pyedb/releases/tag/v0.84.0>`_ - September 17, 2026
+====================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Diff pairs delete method added2
+          - `#2531 <https://github.com/ansys/pyedb/pull/2531>`_
+
+        * - Q3D port enabled
+          - `#2551 <https://github.com/ansys/pyedb/pull/2551>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Cache padstack_instances
+          - `#2532 <https://github.com/ansys/pyedb/pull/2532>`_
+
+        * - Create point data
+          - `#2534 <https://github.com/ansys/pyedb/pull/2534>`_
+
+        * - Cutout on points
+          - `#2541 <https://github.com/ansys/pyedb/pull/2541>`_
+
+        * - Group location fixed
+          - `#2543 <https://github.com/ansys/pyedb/pull/2543>`_
+
+        * - Primitive queries fix
+          - `#2545 <https://github.com/ansys/pyedb/pull/2545>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ansys/actions/build-wheelhouse from 10.3.5 to 11.0.2
+          - `#2513 <https://github.com/ansys/pyedb/pull/2513>`_
+
+        * - Bump astral-sh/setup-uv from 9.0.0 to 10.0.1
+          - `#2521 <https://github.com/ansys/pyedb/pull/2521>`_
+
+        * - Bump ruff from 0.16.3 to 0.16.4
+          - `#2526 <https://github.com/ansys/pyedb/pull/2526>`_
+
+        * - Bump the ansys-actions group with 12 updates
+          - `#2527 <https://github.com/ansys/pyedb/pull/2527>`_
+
+        * - Bump pyvista/setup-headless-display-action from 4.3 to 5.0
+          - `#2536 <https://github.com/ansys/pyedb/pull/2536>`_
+
+        * - Bump typer from 0.27.1 to 0.27.2
+          - `#2537 <https://github.com/ansys/pyedb/pull/2537>`_
+
+        * - Bump pydantic from 2.13.4 to 2.13.5
+          - `#2538 <https://github.com/ansys/pyedb/pull/2538>`_
+
+        * - Bump ruff from 0.16.4 to 0.16.5
+          - `#2539 <https://github.com/ansys/pyedb/pull/2539>`_
+
+        * - Bump ruff from 0.16.5 to 0.16.6
+          - `#2547 <https://github.com/ansys/pyedb/pull/2547>`_
+
+        * - Bump pytest-rerunfailures from 16.6 to 16.6.1
+          - `#2548 <https://github.com/ansys/pyedb/pull/2548>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.83.0
+          - `#2522 <https://github.com/ansys/pyedb/pull/2522>`_
+
+        * - Few updates to the \`dependabot.yml\` configuration file
+          - `#2525 <https://github.com/ansys/pyedb/pull/2525>`_
+
+        * - Pre-commit automatic update
+          - `#2529 <https://github.com/ansys/pyedb/pull/2529>`_, `#2540 <https://github.com/ansys/pyedb/pull/2540>`_, `#2549 <https://github.com/ansys/pyedb/pull/2549>`_
+
+
 `0.83.0 <https://github.com/ansys/pyedb/releases/tag/v0.83.0>`_ - August 26, 2026
 =================================================================================
 
