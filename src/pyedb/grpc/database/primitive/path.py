@@ -454,15 +454,9 @@ class Path(Primitive):
         # attached to the underlying primitive object, which is about to be deleted.
         saved_product_properties = []
         for prod_id in CoreProductIdType:
-            try:
-                attr_ids = self.core.get_product_property_ids(prod_id)
-            except Exception:  # pragma: no cover
-                continue
+            attr_ids = self.core.get_product_property_ids(prod_id)
             for attr_id in attr_ids:
-                try:
-                    value = self.core.get_product_property(prod_id, attr_id)
-                except Exception:  # pragma: no cover
-                    continue
+                value = self.core.get_product_property(prod_id, attr_id)
                 saved_product_properties.append((prod_id, attr_id, value))
 
         self.core.delete()
