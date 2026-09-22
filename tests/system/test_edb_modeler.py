@@ -662,10 +662,58 @@ class TestClass(BaseTestClass):
         )
         centerline = edb.modeler.paths[0].center_line
         assert centerline == [[-0.0005, 0.0], [-0.0005, 0.01]]
-        # TODO check enhancement request
-        # https://github.com/ansys/pyedb-core/issues/457
-        # edb.modeler.paths[0].set_center_line([[0.0, 0.0], [0.0, 5e-3]]) # Path does not have center_lin setter.
-        # assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]
+        # underlying polygon data must be open, not implicitly closed.
+        assert edb.modeler.paths[0].core.center_line.is_closed is False
+        edb.close(terminate_rpc_session=False)
+
+    def test_path_center_line_setter(self):
+        """``Path.center_line`` setter must actually update the geometry.
+
+        The underlying ``ansys.edb.core.primitive.path.Path.center_line`` setter builds
+        the gRPC request message but never sends it, making direct assignment a silent
+        no-op. pyedb works around this by deleting and re-creating the primitive while
+        preserving its properties (net, layer, width, end caps, corner style and
+        ``aedt_name``).
+        """
+        edb = self.edb_examples.create_empty_edb()
+        edb.stackup.add_layer("GND", "Gap")
+        edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
+        edb.stackup.add_layer("TOP", "Substrat")
+        trace = edb.modeler.create_trace(
+            path_list=[[0.0, 0.0], [1e-3, 0.0]],
+            layer_name="TOP",
+            width=200e-6,
+            net_name="signal1",
+            start_cap_style="Flat",
+            end_cap_style="Flat",
+        )
+        trace.aedt_name = "my_trace"
+        trace.center_line = [[0.0, 0.0], [2e-3, 0.0], [2e-3, 2e-3]]
+        assert trace.center_line[-1] == [2e-3, 2e-3]
+        # underlying polygon data must remain open after the workaround re-creation.
+        assert trace.core.center_line.is_closed is False
+        # custom properties (aedt_name) must survive the delete/re-create workaround.
+        assert trace.aedt_name == "my_trace"
+        assert [p for p in edb.layout.primitives if p.aedt_name == "my_trace"]
+        edb.close(terminate_rpc_session=False)
+
+    def test_path_end_cap_and_corner_style_setters_case_insensitive(self):
+        edb = self.edb_examples.create_empty_edb()
+        edb.stackup.add_layer("GND", "Gap")
+        edb.stackup.add_layer("Substrat", "GND", layer_type="dielectric", thickness="0.2mm", material="Duroid (tm)")
+        edb.stackup.add_layer("TOP", "Substrat")
+        trace = edb.modeler.create_trace(
+            path_list=[[0.0, 0.0], [1e-3, 0.0]],
+            layer_name="TOP",
+            width=200e-6,
+            net_name="signal1",
+        )
+        trace.end_cap1 = "Extended"
+        trace.end_cap2 = "Flat"
+        trace.corner_style = "Round"
+        assert trace.end_cap1 == "extended"
+        assert trace.end_cap2 == "flat"
+        assert trace.corner_style == "round"
         edb.close(terminate_rpc_session=False)
 
     def test_polygon_data_refactoring_bounding_box(self):

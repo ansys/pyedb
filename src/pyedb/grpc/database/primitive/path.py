@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from ansys.edb.core.primitive.path import (
@@ -429,7 +430,7 @@ class Path(Primitive):
         stub, making it a silent no-op. As a workaround, this setter deletes the current
         primitive and re-creates an equivalent one (same layer, net, width, end caps and
         corner style) using the new center line, keeping this wrapper's ``core`` reference
-        in sync.
+        in sync. Check issue #806 in pyedb-core `https://github.com/ansys/pyedb-core/issues/806`.
         """
         if isinstance(points, CorePolygonData):
             polygon_data = points
@@ -449,6 +450,21 @@ class Path(Primitive):
         end_cap1, end_cap2 = self.core.get_end_cap_style()
         corner_style = self.core.corner_style
 
+        # Preserve product properties (e.g. the DESIGNER "aedt_name") since they are
+        # attached to the underlying primitive object, which is about to be deleted.
+        saved_product_properties = []
+        for prod_id in CoreProductIdType:
+            try:
+                attr_ids = self.core.get_product_property_ids(prod_id)
+            except Exception:  # pragma: no cover
+                continue
+            for attr_id in attr_ids:
+                try:
+                    value = self.core.get_product_property(prod_id, attr_id)
+                except Exception:  # pragma: no cover
+                    continue
+                saved_product_properties.append((prod_id, attr_id, value))
+
         self.core.delete()
         self.core = CorePath.create(
             layout=layout,
@@ -460,6 +476,9 @@ class Path(Primitive):
             corner_style=corner_style,
             points=polygon_data,
         )
+
+        for prod_id, attr_id, value in saved_product_properties:
+            self.core.set_product_property(prod_id, attr_id, value)
 
     def get_center_line(self) -> list[list[float]]:
         """Retrieve center line points list.
