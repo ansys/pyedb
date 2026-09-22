@@ -644,6 +644,7 @@ class TestClass(BaseTestClass):
         assert len(primitives_all) >= len(primitives)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
     def test_path_center_line(self):
         edb = self.edb_examples.create_empty_edb()
         edb.stackup.add_layer("GND", "Gap")
@@ -666,6 +667,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].core.center_line.is_closed is False
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
     def test_path_center_line_setter(self):
         """``Path.center_line`` setter must actually update the geometry.
 
@@ -697,6 +699,7 @@ class TestClass(BaseTestClass):
         assert [p for p in edb.layout.primitives if p.aedt_name == "my_trace"]
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
     def test_path_end_cap_and_corner_style_setters_case_insensitive(self):
         edb = self.edb_examples.create_empty_edb()
         edb.stackup.add_layer("GND", "Gap")
