@@ -1585,37 +1585,6 @@ class SourceExcitation(SourceExcitationInternal):
             source_type="circuit_port",
         )
 
-    def create_pin_group_terminal_for_q3d(
-        self, pins: PadstackInstance | list[PadstackInstance], name: Optional[str] = None
-    ) -> str:
-        """Create a pin group terminal for Q3D. Pingroup terminal is defined as floating without reference terminal.
-        This is requires by Q3D solver.
-
-        Parameters
-        ----------
-        pins : PadstackInstance or list of PadstackInstance
-            Pins used to create the pin group terminal.
-        name : str, optional
-            Name of the pin group terminal. If not provided, a default name will be generated.
-
-        Returns
-        -------
-        str
-            Name of the created pin group terminal.
-        """
-        pin_group = self._pedb.components.create_pingroup_from_pins(pins)
-        if not name:
-            name = f"PinGroup_{pin_group.name}"
-        pin_group_terminal = PinGroupTerminal.create(
-            layout=self._pedb.active_layout,
-            name=name,
-            pin_group=pin_group,
-            net=pins[0].net,
-            is_ref=False,
-        )
-        pin_group_terminal.core.is_auto_port = True
-        return pin_group_terminal
-
     def _create_pin_group_terminal2(
         self,
         positive_pins: PadstackInstance | List[PadstackInstance],
