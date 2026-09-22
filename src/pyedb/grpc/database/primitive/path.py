@@ -452,12 +452,14 @@ class Path(Primitive):
 
         # Preserve product properties (e.g. the DESIGNER "aedt_name") since they are
         # attached to the underlying primitive object, which is about to be deleted.
+        # Only the DESIGNER product id is checked since it is the only one guaranteed
+        # to be queryable on every primitive (it backs the ``aedt_name`` property).
         saved_product_properties = []
-        for prod_id in CoreProductIdType:
-            attr_ids = self.core.get_product_property_ids(prod_id)
-            for attr_id in attr_ids:
-                value = self.core.get_product_property(prod_id, attr_id)
-                saved_product_properties.append((prod_id, attr_id, value))
+        prod_id = CoreProductIdType.DESIGNER
+        attr_ids = self.core.get_product_property_ids(prod_id)
+        for attr_id in attr_ids:
+            value = self.core.get_product_property(prod_id, attr_id)
+            saved_product_properties.append((prod_id, attr_id, value))
 
         self.core.delete()
         self.core = CorePath.create(
