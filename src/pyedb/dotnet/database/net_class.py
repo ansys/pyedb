@@ -178,6 +178,134 @@ class EdbExtendedNets(EdbCommon, object):
 
         return self.items[name]
 
+    def generate_extended_nets(
+        self,
+        resistor_below=10,
+        inductor_below=1,
+        capacitor_above=1,
+        exception_list=None,
+        include_signal=True,
+        include_power=True,
+    ):
+        # type: (int | float, int | float, int |float, list, bool, bool) -> list
+        """Get extended net and associated components.
+
+        Parameters
+        ----------
+        resistor_below : int, float, optional
+            Threshold of resistor value. Search extended net across resistors which has value lower than the threshold.
+        inductor_below : int, float, optional
+            Threshold of inductor value. Search extended net across inductances which has value lower than the
+            threshold.
+        capacitor_above : int, float, optional
+            Threshold of capacitor value. Search extended net across capacitors which has value higher than the
+            threshold.
+        exception_list : list, optional
+            List of components to bypass when performing threshold checks. Components
+            in the list are considered as serial components. The default is ``None``.
+        include_signal : str, optional
+            Whether to generate extended signal nets. The default is ``True``.
+        include_power : str, optional
+            Whether to generate extended power nets. The default is ``True``.
+
+        Returns
+        -------
+        list
+            List of all extended nets.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> app = Edb()
+        >>> app.extended_nets.generate_extended_nets()
+        """
+        if exception_list is None:
+            exception_list = []
+        _extended_nets = []
+        _nets = self._pedb.nets.nets
+        all_nets = list(_nets.keys())[:]
+        net_dicts = self._pedb.nets._comps_by_nets_dict if self._pedb.nets._comps_by_nets_dict else self._pedb.nets.components_by_nets
+        comp_dict = self._pedb.nets._nets_by_comp_dict if self._pedb.nets._nets_by_comp_dict else self._pedb.nets.nets_by_components
+
+        def get_net_list(net_name, _net_list):
+            comps = []
+            if net_name in net_dicts:
+                comps = net_dicts[net_name]
+
+            for vals in comps:
+                refdes = vals
+                cmp = self._pedb.components.instances[refdes]
+                is_enabled = cmp.enabled
+                if not is_enabled:
+                    continue
+                val_type = cmp.type
+                if val_type not in ["Inductor", "Resistor", "Capacitor"]:
+                    continue
+
+                val_value = cmp.rlc_values
+                if refdes in exception_list:
+                    pass
+                elif val_type == "Inductor":
+                    if val_value[1] is None:
+                        continue
+                    elif (
+                        not self._pedb.edb_value(val_value[1]).ToDouble()
+                        <= self._pedb.edb_value(inductor_below).ToDouble()
+                    ):
+                        continue
+                elif val_type == "Resistor":
+                    if val_value[0] is None:
+                        continue
+                    elif (
+                        not self._pedb.edb_value(val_value[0]).ToDouble()
+                        <= self._pedb.edb_value(resistor_below).ToDouble()
+                    ):
+                        continue
+                elif val_type == "Capacitor":
+                    if val_value[2] is None:
+                        continue
+                    elif (
+                        not self._pedb.edb_value(val_value[2]).ToDouble()
+                        >= self._pedb.edb_value(capacitor_above).ToDouble()
+                    ):
+                        continue
+                else:
+                    continue
+
+                for net in comp_dict[refdes]:
+                    if net not in _net_list and net !="":
+                        _net_list.append(net)
+                        get_net_list(net, _net_list)
+
+        while len(all_nets) > 0:
+            new_ext = [all_nets[0]]
+            get_net_list(new_ext[0], new_ext)
+            all_nets = [i for i in all_nets if i not in new_ext]
+            _extended_nets.append(new_ext)
+
+            if len(new_ext) > 1:
+                i = new_ext[0]
+                for i in new_ext:
+                    if not i.lower().startswith("unnamed"):
+                        break
+
+                is_power = False
+                for i in new_ext:
+                    is_power = is_power or _nets[i].is_power_ground
+
+                if is_power:
+                    if include_power:
+                        self._pedb.extended_nets.create(i, new_ext)
+                    else:  # pragma: no cover
+                        pass
+                else:
+                    if include_signal:
+                        self._pedb.extended_nets.create(i, new_ext)
+                    else:  # pragma: no cover
+                        pass
+
+        return _extended_nets
+
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
         """Get extended signal net and associated components.
