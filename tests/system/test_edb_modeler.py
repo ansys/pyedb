@@ -182,7 +182,6 @@ class TestClass(BaseTestClass):
         net = edbapp.nets.signal[list(edbapp.nets.signal.keys())[0]].name
         trace = edbapp.modeler.create_trace([[0, 0], [1e-3, 0], [1e-3, 1e-3]], layer_name, width=1e-4, net_name=net)
         trace.center_line = [[0, 0], [2e-3, 0], [2e-3, 2e-3]]
-        print("new center_line:", trace.center_line)
         assert trace.center_line[-1] == [2e-3, 2e-3]
         # underlying polygon data must stay open
         assert trace.core.center_line.is_closed is False
