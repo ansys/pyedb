@@ -305,7 +305,7 @@ class EdbNets(CommonNets):
                     continue
 
                 for net in comp_dict[refdes]:
-                    if net not in _net_list and net !="":
+                    if net not in _net_list and net != "":
                         _net_list.append(net)
                         get_net_list(net, _net_list)
 
