@@ -200,8 +200,9 @@ class EdbExtendedNets(EdbCommon, object):
             Threshold of capacitor value. Search extended net across capacitors which has value higher than the
             threshold.
         exception_list : list, optional
-            List of components to bypass when performing threshold checks. Components
-            in the list are considered as serial components. The default is ``None``.
+            List of components to exclude from threshold-based traversal. Components
+            in the list are never treated as connectors between nets, regardless of
+            their RLC value. The default is ``None``.
         include_signal : bool, optional
             Whether to generate extended signal nets. The default is ``True``.
         include_power : bool, optional
@@ -213,11 +214,26 @@ class EdbExtendedNets(EdbCommon, object):
             List of all generated extended net groups.
         """
 
-        def add_extended_net_if_valid(net_group):
-            if self._is_valid_extended_net_group(net_group, include_signal, include_power):
-                representative_net = self._get_representative_net(net_group)
-                self._pedb.extended_nets.create(representative_net, net_group)
-                extended_nets.append(net_group)
+        def emit_group(net_group):
+            if not net_group:
+                return
+
+            is_power = self._is_power_extended_net_group(net_group)
+
+            if is_power and not include_power:
+                return
+
+            if not is_power and not include_signal:
+                return
+
+            extended_nets.append(net_group)
+
+            # A single-net group cannot be represented as a real ExtendedNet object.
+            if len(net_group) <= 1:
+                return
+
+            representative_net = self._get_representative_net(net_group)
+            self._pedb.extended_nets.create(representative_net, net_group)
 
         extended_nets = []
         processed_nets = set()
@@ -238,16 +254,46 @@ class EdbExtendedNets(EdbCommon, object):
             if net_name in processed_nets:
                 continue
 
-            net_group = self._get_extended_net_group(
+            # Compute the base connectivity family, ignoring the exception list.
+            # This keeps the grouping of nets consistent regardless of the
+            # exceptions, and lets us later determine which members get
+            # isolated because of them.
+            family = self._get_extended_net_group(
                 net_name=net_name,
                 net_dicts=net_dicts,
                 comp_dict=comp_dict,
                 thresholds=thresholds,
                 exceptions=exceptions,
+                ignore_exceptions=True,
             )
 
-            processed_nets.update(net_group)
-            add_extended_net_if_valid(net_group)
+            processed_nets.update(family)
+
+            if len(family) <= 1:
+                continue
+
+            if not exceptions:
+                emit_group(family)
+                continue
+
+            representative_net = self._get_representative_net(family)
+            reachable = self._get_extended_net_group(
+                net_name=representative_net,
+                net_dicts=net_dicts,
+                comp_dict=comp_dict,
+                thresholds=thresholds,
+                exceptions=exceptions,
+                ignore_exceptions=False,
+            )
+            leftover = [net for net in family if net not in reachable]
+
+            if not leftover:
+                # Exceptions did not affect connectivity for this family.
+                emit_group(family)
+                continue
+
+            emit_group(reachable)
+            emit_group(leftover)
 
         return extended_nets
 
@@ -282,6 +328,7 @@ class EdbExtendedNets(EdbCommon, object):
         comp_dict,
         thresholds,
         exceptions,
+        ignore_exceptions=False,
     ):
         net_group = []
         visited_nets = set()
@@ -302,6 +349,7 @@ class EdbExtendedNets(EdbCommon, object):
                 comp_dict=comp_dict,
                 thresholds=thresholds,
                 exceptions=exceptions,
+                ignore_exceptions=ignore_exceptions,
             )
             nets_to_visit.extend(connected_nets)
 
@@ -314,13 +362,16 @@ class EdbExtendedNets(EdbCommon, object):
         comp_dict,
         thresholds,
         exceptions,
+        ignore_exceptions=False,
     ):
         connected_nets = []
 
         for refdes in net_dicts.get(current_net, []):
             component = self._pedb.components.instances[refdes]
 
-            if not self._is_serial_component_for_extended_net(refdes, component, thresholds, exceptions):
+            if not self._is_serial_component_for_extended_net(
+                refdes, component, thresholds, exceptions, ignore_exceptions=ignore_exceptions
+            ):
                 continue
 
             connected_nets.extend(comp_dict.get(refdes, []))
@@ -333,6 +384,7 @@ class EdbExtendedNets(EdbCommon, object):
         component,
         thresholds,
         exceptions,
+        ignore_exceptions=False,
     ):
         if not component.is_enabled:
             return False
@@ -340,8 +392,8 @@ class EdbExtendedNets(EdbCommon, object):
         if component.type not in thresholds:
             return False
 
-        if refdes in exceptions:
-            return True
+        if not ignore_exceptions and refdes in exceptions:
+            return False
 
         return self._passes_extended_net_threshold(component, thresholds)
 
@@ -354,22 +406,6 @@ class EdbExtendedNets(EdbCommon, object):
 
         value = self._pedb.edb_value(raw_value).ToDouble()
         return comparator(value, limit)
-
-    def _is_valid_extended_net_group(
-        self,
-        net_group,
-        include_signal: bool,
-        include_power: bool,
-    ):
-        if len(net_group) <= 1:
-            return False
-
-        is_power = self._is_power_extended_net_group(net_group)
-
-        if is_power:
-            return include_power
-
-        return include_signal
 
     def _is_power_extended_net_group(self, net_group):
         nets = self._pedb.nets.nets
@@ -398,8 +434,9 @@ class EdbExtendedNets(EdbCommon, object):
             Threshold for the capacitor value. Search the extended net across capacitors
             that have a value higher than the threshold.
         exception_list : list, optional
-            List of components to bypass when performing threshold checks. Components
-            in the list are considered as serial components. The default is ``None``.
+            List of components to exclude from threshold-based traversal. Components
+            in the list are never treated as connectors between nets, regardless of
+            their RLC value. The default is ``None``.
 
         Returns
         -------
@@ -432,8 +469,9 @@ class EdbExtendedNets(EdbCommon, object):
             Threshold for the capacitor value. Search the extended net across capacitors that
             have a value higher than the threshold.
         exception_list : list, optional
-            List of components to bypass when performing threshold checks. Components
-            in the list are considered as serial components. The default is ``None``.
+            List of components to exclude from threshold-based traversal. Components
+            in the list are never treated as connectors between nets, regardless of
+            their RLC value. The default is ``None``.
 
         Returns
         -------

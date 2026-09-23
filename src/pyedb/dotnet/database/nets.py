@@ -236,8 +236,9 @@ class EdbNets(CommonNets):
             Threshold of capacitor value. Search extended net across capacitors which has value higher than the
             threshold.
         exception_list : list, optional
-            List of components to bypass when performing threshold checks. Components
-            in the list are considered as serial components. The default is ``None``.
+            List of components to exclude from threshold-based traversal. Components
+            in the list are never treated as connectors between nets, regardless of
+            their RLC value. The default is ``None``.
         include_signal : bool, optional
             Whether to generate extended signal nets. The default is ``True``.
         include_power : bool, optional

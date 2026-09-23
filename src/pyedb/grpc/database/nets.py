@@ -412,7 +412,9 @@ class Nets(CommonNets):
         capacitor_above : int | float, optional
             Capacitor threshold value. Components above this value are considered.
         exception_list : list, optional
-            List of components to bypass during threshold checks.
+            List of components to exclude from threshold-based traversal. Components
+            in the list are never treated as connectors between nets, regardless of
+            their RLC value.
         include_signal : bool, optional
             Whether to include signal nets in extended net generation.
         include_power : bool, optional

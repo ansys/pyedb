@@ -96,8 +96,9 @@ class ExtendedNets:
             Threshold for the capacitor value. Search the extended net across capacitors
             that have a value higher than the threshold.
         exception_list : list, optional
-            List of components to bypass when performing threshold checks. Components
-            in the list are considered as serial components. The default is ``None``.
+            List of components to exclude from threshold-based traversal. Components
+            in the list are never treated as connectors between nets, regardless of
+            their RLC value. The default is ``None``.
 
         Returns
         -------
@@ -141,8 +142,9 @@ class ExtendedNets:
             Threshold for the capacitor value. Search the extended net across capacitors that
             have a value higher than the threshold.
         exception_list : list, optional
-            List of components to bypass when performing threshold checks. Components
-            in the list are considered as serial components. The default is ``None``.
+            List of components to exclude from threshold-based traversal. Components
+            in the list are never treated as connectors between nets, regardless of
+            their RLC value. The default is ``None``.
 
         Returns
         -------
@@ -188,8 +190,9 @@ class ExtendedNets:
             Threshold of capacitor value. Extended nets are searched across capacitors
             with values higher than this threshold. Default value is `1nF`
         exception_list : list, optional
-            List of components to bypass when performing threshold checks. Components
-            in the list are considered as serial components. The default is ``None``.
+            List of components to exclude from threshold-based traversal. Components
+            in the list are never treated as connectors between nets, regardless of
+            their RLC value. The default is ``None``.
         include_signal : bool, optional
             Whether to generate extended signal nets. The default is ``True``.
         include_power : bool, optional
@@ -247,8 +250,15 @@ class ExtendedNets:
             output_units="ohm",
         )
 
-        def component_passes_threshold(refdes):
-            """Return True when the component should be traversed."""
+        def component_passes_threshold(refdes, ignore_exceptions=False):
+            """Return True when the component should be traversed.
+
+            When ``ignore_exceptions`` is ``False`` (default), components listed in
+            ``exception_list`` are never treated as valid connectors, regardless of
+            their RLC value. When ``ignore_exceptions`` is ``True``, the exception
+            list is not taken into account (used to compute the base connectivity
+            group prior to applying exceptions).
+            """
             cmp = self._pedb.components.instances.get(refdes)
             if not cmp:
                 return False
@@ -259,8 +269,8 @@ class ExtendedNets:
             if not cmp.enabled:
                 return False
 
-            if refdes in exception_set:
-                return True
+            if not ignore_exceptions and refdes in exception_set:
+                return False
 
             r_value, l_value, c_value = cmp.rlc_values[0] if isinstance(cmp.rlc_values[0], list) else cmp.rlc_values
 
@@ -275,7 +285,7 @@ class ExtendedNets:
 
             return False
 
-        def collect_connected_nets(start_net):
+        def collect_connected_nets(start_net, ignore_exceptions=False):
             """Collect all nets connected through qualifying R/L/C components."""
             collected = []
             visited = set()
@@ -291,7 +301,7 @@ class ExtendedNets:
                 collected.append(net_name)
 
                 for refdes in net_dicts.get(net_name, []):
-                    if not component_passes_threshold(refdes):
+                    if not component_passes_threshold(refdes, ignore_exceptions=ignore_exceptions):
                         continue
 
                     for connected_net in comp_dict.get(refdes, []):
@@ -310,35 +320,63 @@ class ExtendedNets:
 
             return sorted_group[0]
 
-        while remaining_nets:
-            start_net = sorted(remaining_nets)[0]
-            net_group = collect_connected_nets(start_net)
-
-            remaining_nets.difference_update(net_group)
-
-            if len(net_group) <= 1:
-                continue
+        def emit_group(net_group):
+            """Validate, persist (if relevant) and record a net group."""
+            if not net_group:
+                return
 
             is_power = any(nets[net_name].is_power_ground for net_name in net_group)
 
             if is_power and not include_power:
-                continue
+                return
 
             if not is_power and not include_signal:
-                continue
+                return
+
+            extended_nets.append(net_group)
+
+            # A single-net group cannot be represented as a real ExtendedNet object.
+            if len(net_group) <= 1:
+                return
 
             representative_net = get_representative_net(net_group)
 
             if representative_net in self.items:
-                extended_nets.append(net_group)
-                continue
+                return
 
             ext_net = ExtendedNet.create(self._pedb.layout, representative_net)
 
             for net_name in net_group:
                 ext_net.core.add_net(nets[net_name].core)
 
-            extended_nets.append(net_group)
+        while remaining_nets:
+            start_net = sorted(remaining_nets)[0]
+            # Compute the base connectivity family, ignoring exception_list. This
+            # keeps the grouping of nets consistent regardless of the exceptions,
+            # and lets us later determine which members get isolated because of
+            # them.
+            family = collect_connected_nets(start_net, ignore_exceptions=True)
+
+            remaining_nets.difference_update(family)
+
+            if len(family) <= 1:
+                continue
+
+            if not exception_set:
+                emit_group(family)
+                continue
+
+            representative_net = get_representative_net(family)
+            reachable = collect_connected_nets(representative_net, ignore_exceptions=False)
+            leftover = [net_name for net_name in family if net_name not in reachable]
+
+            if not leftover:
+                # Exceptions did not affect connectivity for this family.
+                emit_group(family)
+                continue
+
+            emit_group(reachable)
+            emit_group(leftover)
 
         return extended_nets
 

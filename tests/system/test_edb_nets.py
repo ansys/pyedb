@@ -212,6 +212,22 @@ class TestClass(BaseTestClass):
         assert result == [["5V"], ["SFPA_VCCT", "SFPA_VCCR"]]
         edbapp.close(terminate_rpc_session=False)
 
+    def test_generate_extended_nets_partial_exception(self):
+        """Verify that only the net solely reachable through the excepted component gets isolated."""
+        edbapp = self.edb_examples.get_si_verse_sfp()
+        result = edbapp.extended_nets.generate_extended_nets(inductor_below=1, capacitor_above=1, exception_list=["L7"])
+        assert result == [["5V", "SFPA_VCCR"], ["SFPA_VCCT"]]
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_generate_extended_nets_exception_no_effect(self):
+        """Verify that exception_list entries unrelated to a family do not alter its grouping."""
+        edbapp = self.edb_examples.get_si_verse_sfp()
+        result = edbapp.extended_nets.generate_extended_nets(
+            inductor_below=1, capacitor_above=1, exception_list=["NET_DOES_NOT_EXIST"]
+        )
+        assert result == [["5V", "SFPA_VCCT", "SFPA_VCCR"]]
+        edbapp.close(terminate_rpc_session=False)
+
     def test_generate_extended_nets_exclude_power(self):
         """Verify extended nets generation excludes power nets when include_power=False"""
         edbapp = self.edb_examples.get_si_verse()
