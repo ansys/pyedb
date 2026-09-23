@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from contextlib import ExitStack
 from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
@@ -234,3 +235,110 @@ class TestGrpcPadstacksStatic:
             mock_defs.return_value = {}
             result = padstacks["nonexistent"]
         assert result is None
+
+
+@pytest.mark.unit
+@pytest.mark.no_licence
+@pytest.mark.grpc
+class TestGrpcPadstackInstanceConvertHoleToConicalShape:
+    """Regression tests for ``PadstackInstance.convert_hole_to_conical_shape``.
+
+    With the gRPC backend, ``Structure3D.set_material`` raises a ``RuntimeError`` when called with an
+    empty string (``"string value 'material name' cannot be empty."``). This can happen when the padstack
+    definition hole material is not set. The method must default to ``"copper"`` in that case, matching
+    the behaviour already implemented in :class:`PadstackDef`.
+    """
+
+    @pytest.fixture(autouse=True)
+    def import_padstack_instance(self):
+        """Import the gRPC PadstackInstance class; skip if ansys-edb-core is unavailable."""
+        pytest.importorskip("ansys.edb.core", reason="ansys-edb-core not installed")
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
+        self.PadstackInstance = PadstackInstance
+
+    def _build_instance(self, material):
+        """Build a bare PadstackInstance with the minimal mocked context required by the method."""
+        instance = self.PadstackInstance.__new__(self.PadstackInstance)
+        instance.core = MagicMock()
+
+        pedb = MagicMock()
+        pedb._value_setter = lambda value: value
+
+        top_layer = MagicMock(thickness=0.0)
+        diel_layer = MagicMock(thickness=0.0002)
+        bottom_layer = MagicMock(thickness=0.0)
+        pedb.stackup.layers = {"top": top_layer, "diel": diel_layer, "bottom": bottom_layer}
+        pedb.stackup.signal_layers = {"top": top_layer, "bottom": bottom_layer}
+        instance._pedb = pedb
+
+        definition = MagicMock()
+        definition.hole_diameter = 0.001
+        definition.material = material
+        definition.name = "PadstackDef1"
+        return instance, definition
+
+    def _run_with_mocks(self, instance, definition):
+        """Run convert_hole_to_conical_shape with all required attributes patched, returning the mocked s3d."""
+        with ExitStack() as stack:
+            stack.enter_context(
+                patch.object(type(instance), "definition", new_callable=PropertyMock, return_value=definition)
+            )
+            stack.enter_context(
+                patch.object(type(instance), "start_layer", new_callable=PropertyMock, return_value="top")
+            )
+            stack.enter_context(
+                patch.object(type(instance), "stop_layer", new_callable=PropertyMock, return_value="bottom")
+            )
+            stack.enter_context(
+                patch.object(type(instance), "position", new_callable=PropertyMock, return_value=[0.0, 0.0])
+            )
+            stack.enter_context(
+                patch.object(type(instance), "net", new_callable=PropertyMock, return_value=MagicMock())
+            )
+            stack.enter_context(
+                patch.object(type(instance), "aedt_name", new_callable=PropertyMock, return_value="via_1")
+            )
+            mock_circle_cls = stack.enter_context(patch("pyedb.grpc.database.primitive.padstack_instance.Circle"))
+            mock_s3d_cls = stack.enter_context(patch("pyedb.grpc.database.primitive.padstack_instance.CoreStructure3D"))
+
+            mock_circle_cls.return_value.create.return_value = MagicMock()
+            mock_s3d = MagicMock()
+            mock_s3d_cls.create.return_value = mock_s3d
+
+            instance.convert_hole_to_conical_shape(angle=75)
+
+        return mock_s3d
+
+    def test_convert_hole_to_conical_shape_defaults_material_when_empty(self):
+        """An empty hole material must be defaulted to copper before calling set_material (gRPC backend)."""
+        instance, definition = self._build_instance(material="")
+        instance._pedb.materials.__contains__ = MagicMock(return_value=False)
+        instance._pedb.materials.default_conductor_property_values = {"conductivity": 58000000}
+
+        mock_s3d = self._run_with_mocks(instance, definition)
+
+        assert definition.material == "copper"
+        instance._pedb.materials.add_conductor_material.assert_called_once_with("copper", 58000000)
+        mock_s3d.set_material.assert_called_once_with("copper")
+
+    def test_convert_hole_to_conical_shape_skips_add_material_when_copper_already_defined(self):
+        """If ``copper`` is already defined in the material library, it must not be re-added."""
+        instance, definition = self._build_instance(material="")
+        instance._pedb.materials.__contains__ = MagicMock(return_value=True)
+
+        mock_s3d = self._run_with_mocks(instance, definition)
+
+        assert definition.material == "copper"
+        instance._pedb.materials.add_conductor_material.assert_not_called()
+        mock_s3d.set_material.assert_called_once_with("copper")
+
+    def test_convert_hole_to_conical_shape_keeps_existing_material(self):
+        """An already defined hole material must be passed through unchanged to set_material."""
+        instance, definition = self._build_instance(material="gold")
+
+        mock_s3d = self._run_with_mocks(instance, definition)
+
+        assert definition.material == "gold"
+        instance._pedb.materials.add_conductor_material.assert_not_called()
+        mock_s3d.set_material.assert_called_once_with("gold")
