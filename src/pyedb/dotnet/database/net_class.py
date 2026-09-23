@@ -224,8 +224,16 @@ class EdbExtendedNets(EdbCommon, object):
         _extended_nets = []
         _nets = self._pedb.nets.nets
         all_nets = list(_nets.keys())[:]
-        net_dicts = self._pedb.nets._comps_by_nets_dict if self._pedb.nets._comps_by_nets_dict else self._pedb.nets.components_by_nets
-        comp_dict = self._pedb.nets._nets_by_comp_dict if self._pedb.nets._nets_by_comp_dict else self._pedb.nets.nets_by_components
+        net_dicts = (
+            self._pedb.nets._comps_by_nets_dict
+            if self._pedb.nets._comps_by_nets_dict
+            else self._pedb.nets.components_by_nets
+        )
+        comp_dict = (
+            self._pedb.nets._nets_by_comp_dict
+            if self._pedb.nets._nets_by_comp_dict
+            else self._pedb.nets.nets_by_components
+        )
 
         def get_net_list(net_name, _net_list):
             comps = []
@@ -273,7 +281,7 @@ class EdbExtendedNets(EdbCommon, object):
                     continue
 
                 for net in comp_dict[refdes]:
-                    if net not in _net_list and net !="":
+                    if net not in _net_list and net != "":
                         _net_list.append(net)
                         get_net_list(net, _net_list)
 
