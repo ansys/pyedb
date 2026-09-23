@@ -908,6 +908,10 @@ class PadstackDef:
                             self._pedb.logger.warning(
                                 f"Padstack definution {self.name} has no material defined.Defaulting to copper"
                             )
+                            if "copper" not in self._pedb.materials:
+                                self._pedb.materials.add_conductor_material(
+                                    "copper", self._pedb.materials.default_conductor_property_values["conductivity"]
+                                )
                             self.data.material = "copper"
                         s3d.set_material(self.core.data.material.value)
                         s3d.mesh_closure = CoreMeshClosure.ENDS_CLOSED
