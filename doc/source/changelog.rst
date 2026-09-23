@@ -9,6 +9,51 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.84.1 <https://github.com/ansys/pyedb/releases/tag/v0.84.1>`_ - September 23, 2026
+====================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Via hole default material
+          - `#2564 <https://github.com/ansys/pyedb/pull/2564>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ruff from 0.16.6 to 0.16.7
+          - `#2555 <https://github.com/ansys/pyedb/pull/2555>`_
+
+        * - Bump pyvista/setup-headless-display-action from 5.0.0 to 5.1.0
+          - `#2557 <https://github.com/ansys/pyedb/pull/2557>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.84.0
+          - `#2553 <https://github.com/ansys/pyedb/pull/2553>`_
+
+        * - Update dev version
+          - `#2554 <https://github.com/ansys/pyedb/pull/2554>`_
+
+        * - Pre-commit automatic update
+          - `#2560 <https://github.com/ansys/pyedb/pull/2560>`_
+
+
 `0.84.0 <https://github.com/ansys/pyedb/releases/tag/v0.84.0>`_ - September 17, 2026
 ====================================================================================
 
