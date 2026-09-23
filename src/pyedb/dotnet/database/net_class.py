@@ -237,7 +237,11 @@ class EdbExtendedNets(EdbCommon, object):
 
         extended_nets = []
         processed_nets = set()
-        all_nets = list(self._pedb.nets.nets.keys())
+        # Sorting guarantees a deterministic traversal seed regardless of the
+        # underlying dictionary ordering exposed by the backend, so that the
+        # resulting groups (and their member order) are consistent between the
+        # gRPC and legacy DotNet backends for the same design.
+        all_nets = sorted(self._pedb.nets.nets.keys())
 
         net_dicts = self._pedb.nets._comps_by_nets_dict or self._pedb.nets.components_by_nets
         comp_dict = self._pedb.nets._nets_by_comp_dict or self._pedb.nets.nets_by_components
@@ -330,6 +334,13 @@ class EdbExtendedNets(EdbCommon, object):
         exceptions,
         ignore_exceptions=False,
     ):
+        """Collect all nets connected through qualifying R/L/C components.
+
+        Traversal order is made deterministic (sorted refdes and net names) so
+        that the resulting grouping is independent of the underlying backend's
+        dictionary/list ordering (gRPC vs. legacy DotNet can expose components
+        and nets in a different order for the same design).
+        """
         net_group = []
         visited_nets = set()
         nets_to_visit = [net_name]
@@ -351,7 +362,16 @@ class EdbExtendedNets(EdbCommon, object):
                 exceptions=exceptions,
                 ignore_exceptions=ignore_exceptions,
             )
-            nets_to_visit.extend(connected_nets)
+
+            children = []
+            for connected_net in connected_nets:
+                if connected_net not in visited_nets and connected_net not in children:
+                    children.append(connected_net)
+
+            # Push in reverse so the alphabetically first child is popped (and
+            # its subtree fully explored) first, matching a deterministic
+            # depth-first visiting order.
+            nets_to_visit.extend(reversed(children))
 
         return net_group
 
@@ -366,7 +386,7 @@ class EdbExtendedNets(EdbCommon, object):
     ):
         connected_nets = []
 
-        for refdes in net_dicts.get(current_net, []):
+        for refdes in sorted(net_dicts.get(current_net, [])):
             component = self._pedb.components.instances[refdes]
 
             if not self._is_serial_component_for_extended_net(
@@ -374,7 +394,7 @@ class EdbExtendedNets(EdbCommon, object):
             ):
                 continue
 
-            connected_nets.extend(comp_dict.get(refdes, []))
+            connected_nets.extend(sorted(comp_dict.get(refdes, [])))
 
         return connected_nets
 

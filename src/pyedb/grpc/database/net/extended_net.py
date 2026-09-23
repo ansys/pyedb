@@ -286,7 +286,13 @@ class ExtendedNets:
             return False
 
         def collect_connected_nets(start_net, ignore_exceptions=False):
-            """Collect all nets connected through qualifying R/L/C components."""
+            """Collect all nets connected through qualifying R/L/C components.
+
+            Traversal order is made deterministic (sorted refdes and net names) so
+            that the resulting grouping is independent of the underlying backend's
+            dictionary/list ordering (gRPC vs. legacy DotNet can expose components
+            and nets in a different order for the same design).
+            """
             collected = []
             visited = set()
             stack = [start_net]
@@ -300,13 +306,19 @@ class ExtendedNets:
                 visited.add(net_name)
                 collected.append(net_name)
 
-                for refdes in net_dicts.get(net_name, []):
+                children = []
+                for refdes in sorted(net_dicts.get(net_name, [])):
                     if not component_passes_threshold(refdes, ignore_exceptions=ignore_exceptions):
                         continue
 
-                    for connected_net in comp_dict.get(refdes, []):
-                        if connected_net not in visited:
-                            stack.append(connected_net)
+                    for connected_net in sorted(comp_dict.get(refdes, [])):
+                        if connected_net not in visited and connected_net not in children:
+                            children.append(connected_net)
+
+                # Push in reverse so the alphabetically first child is popped
+                # (and its subtree fully explored) first, matching a deterministic
+                # depth-first visiting order.
+                stack.extend(reversed(children))
 
             return collected
 
