@@ -199,6 +199,23 @@ class TestClass(BaseTestClass):
         assert edbapp.extended_nets.create("new_ex_net", "DDR4_A1")
         edbapp.close(terminate_rpc_session=False)
 
+    def test_generate_extended_nets(self):
+        """Verify extended nets generation excludes power nets when include_power=False"""
+        edbapp = self.edb_examples.get_si_verse_sfp()
+        # Generate extended nets with include_power=False
+        result = edbapp.extended_nets.generate_extended_nets(
+            inductor_below=1, capacitor_above=1
+        )
+        assert result == [['5V', 'SFPA_VCCT', 'SFPA_VCCR']]
+        result = edbapp.extended_nets.generate_extended_nets(
+            inductor_below=1, capacitor_above=1
+        )
+        result = edbapp.extended_nets.generate_extended_nets(
+            inductor_below=1, capacitor_above=1, exception_list=["L7", "L8"]
+        )
+        assert result == [["5V"], ["SFPA_VCCT", "SFPA_VCCR"]]
+        edbapp.close(terminate_rpc_session=False)
+
     def test_generate_extended_nets_exclude_power(self):
         """Verify extended nets generation excludes power nets when include_power=False"""
         edbapp = self.edb_examples.get_si_verse()
