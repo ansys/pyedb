@@ -1150,6 +1150,15 @@ class PadstackInstance(conn_obj.ConnObj):
         )
         s3d.add_member(cloned_circle.core)
         s3d.add_member(cloned_circle2.core)
+        if not self.definition.material:
+            self._pedb.logger.warning(
+                f"Padstack definition {self.definition.name} has no material defined. Defaulting to copper"
+            )
+            if "copper" not in self._pedb.materials:
+                self._pedb.materials.add_conductor_material(
+                    "copper", self._pedb.materials.default_conductor_property_values["conductivity"]
+                )
+            self.definition.material = "copper"
         s3d.set_material(self.definition.material)
         s3d.mesh_closure = CoreMeshClosure.ENDS_CLOSED
         hole_override_enabled = True
