@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 import math
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
@@ -38,6 +38,8 @@ from ansys.edb.core.primitive.path import (
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
+
+PointData: TypeAlias = CorePointData | tuple[float | int, float | int] | list[float | int]
 
 mapping = {
     "flat": CorePathEndCapType.FLAT,
@@ -413,13 +415,15 @@ class Path(Primitive):
         return self.get_center_line()
 
     @center_line.setter
-    def center_line(self, points: list) -> None:
+    def center_line(self, points: list[PointData]) -> None:
         """Set the path center line from a list of points.
 
         Parameters
         ----------
-        points : list
+        points : list[PointData]
             List of points ``[[x0, y0], [x1, y1], ...]`` defining the new center line.
+            Each point can be an ``(x, y)`` tuple, a ``[x, y]`` list or a
+            :class:`ansys.edb.core.geometry.point_data.PointData` instance.
             Points are always applied as an open polyline (``closed=False``), which is
             the correct representation for a :class:`Path`.
 
