@@ -190,14 +190,26 @@ class TestClass(BaseTestClass):
         """Evaluate nets queries"""
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.extended_nets.auto_identify_power()
-        assert set(edbapp.padstacks["U3-43"].net.extended_net.nets) == {'5V', 'NetC34_2', 'NetIC1_8', 'PDEN',
-                                                                       'SFPA_VCCR', 'SFPA_VCCT', 'USB3_VBUS'}
-        assert edbapp.extended_nets.auto_identify_power(exception_list=["L7","L8"])
-        assert set(edbapp.padstacks["U3-43"].net.extended_net.nets) == {'5V', 'NetC34_2', 'NetIC1_8', 'PDEN',
-                                                                       'USB3_VBUS'}
+        assert set(edbapp.padstacks["U3-43"].net.extended_net.nets) == {
+            "5V",
+            "NetC34_2",
+            "NetIC1_8",
+            "PDEN",
+            "SFPA_VCCR",
+            "SFPA_VCCT",
+            "USB3_VBUS",
+        }
+        assert edbapp.extended_nets.auto_identify_power(exception_list=["L7", "L8"])
+        assert set(edbapp.padstacks["U3-43"].net.extended_net.nets) == {
+            "5V",
+            "NetC34_2",
+            "NetIC1_8",
+            "PDEN",
+            "USB3_VBUS",
+        }
         assert edbapp.extended_nets.auto_identify_signal()
 
-        assert set(edbapp.padstacks["X1-B8"].net.extended_net.nets) ==  {'PCIe_Gen4_TX2_CAP_P', 'PCIe_Gen4_TX2_P'}
+        assert set(edbapp.padstacks["X1-B8"].net.extended_net.nets) == {"PCIe_Gen4_TX2_CAP_P", "PCIe_Gen4_TX2_P"}
 
         extended_net_name, _ = next(iter(edbapp.extended_nets.items.items()))
         assert edbapp.extended_nets.items[extended_net_name]
