@@ -1587,16 +1587,16 @@ class SourceExcitation(SourceExcitationInternal):
 
     def _create_pin_group_terminal2(
         self,
-        positive_pins: Union[PadstackInstance, List[PadstackInstance]],
+        positive_pins: PadstackInstance | List[PadstackInstance],
         negatives_pins: Optional[Union[PadstackInstance, List[PadstackInstance]]] = None,
         name: Optional[str] = None,
-        impedance: Union[int, float, str] = 50,
+        impedance: int | float | str = 50,
         source_type: str = "circuit_port",
-        magnitude: Union[float, str] = 1.0,
-        phase: Union[float, str] = 0,
-        r: float = 0.0,
-        l: float = 0.0,
-        c: float = 0.0,
+        magnitude: float | int | str = 1.0,
+        phase: float | int | str = 0,
+        r: float | int = 0.0,
+        l: float | int = 0.0,
+        c: float | int = 0.0,
     ) -> str:
         """Create a pin group terminal.
 

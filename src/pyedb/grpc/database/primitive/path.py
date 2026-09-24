@@ -21,11 +21,13 @@
 # SOFTWARE.
 
 import math
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from ansys.edb.core.primitive.path import (
     Path as CorePath,
@@ -36,6 +38,8 @@ from ansys.edb.core.primitive.path import (
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
+
+PointData: TypeAlias = CorePointData | tuple[float | int, float | int] | list[float | int]
 
 mapping = {
     "flat": CorePathEndCapType.FLAT,
@@ -167,7 +171,7 @@ class Path(Primitive):
         if not points:
             raise ValueError("Points are required to create a path.")
         if isinstance(points, list):
-            points = CorePolygonData(points=points)
+            points = CorePolygonData(points=points, closed=False)
         _path = CorePath.create(
             layout=layout.core,
             layer=layer,
@@ -203,8 +207,7 @@ class Path(Primitive):
         if incremental:
             points = self.center_line
             points.append([x, y])
-            points = CorePolygonData(points=points)
-            self.core.center_line = points
+            self.center_line = points
             return True
         else:
             Exception("Only incremental point addition is supported currently.")
@@ -411,6 +414,72 @@ class Path(Primitive):
         """
         return self.get_center_line()
 
+    @center_line.setter
+    def center_line(self, points: list[PointData]) -> None:
+        """Set the path center line from a list of points.
+
+        Parameters
+        ----------
+        points : list[PointData]
+            List of points ``[[x0, y0], [x1, y1], ...]`` defining the new center line.
+            Each point can be an ``(x, y)`` tuple, a ``[x, y]`` list or a
+            :class:`ansys.edb.core.geometry.point_data.PointData` instance.
+            Points are always applied as an open polyline (``closed=False``), which is
+            the correct representation for a :class:`Path`.
+
+        Notes
+        -----
+        The underlying ``ansys.edb.core.primitive.path.Path.center_line`` setter builds
+        the ``SetCenterLineMessage`` request but never actually sends it through the gRPC
+        stub, making it a silent no-op. As a workaround, this setter deletes the current
+        primitive and re-creates an equivalent one (same layer, net, width, end caps and
+        corner style) using the new center line, keeping this wrapper's ``core`` reference
+        in sync. Check issue #806 in pyedb-core `https://github.com/ansys/pyedb-core/issues/806`.
+        """
+        if isinstance(points, CorePolygonData):
+            polygon_data = points
+        else:
+            new_points = [
+                CorePointData([self._pedb.value(pt[0]), self._pedb.value(pt[1])])
+                if not isinstance(pt, CorePointData)
+                else pt
+                for pt in points
+            ]
+            polygon_data = CorePolygonData(points=new_points, closed=False)
+
+        layout = self.core.layout
+        layer = self.core.layer
+        net = self.core.net
+        width = self.core.width
+        end_cap1, end_cap2 = self.core.get_end_cap_style()
+        corner_style = self.core.corner_style
+
+        # Preserve product properties (e.g. the DESIGNER "aedt_name") since they are
+        # attached to the underlying primitive object, which is about to be deleted.
+        # Only the DESIGNER product id is checked since it is the only one guaranteed
+        # to be queryable on every primitive (it backs the ``aedt_name`` property).
+        saved_product_properties = []
+        prod_id = CoreProductIdType.DESIGNER
+        attr_ids = self.core.get_product_property_ids(prod_id)
+        for attr_id in attr_ids:
+            value = self.core.get_product_property(prod_id, attr_id)
+            saved_product_properties.append((prod_id, attr_id, value))
+
+        self.core.delete()
+        self.core = CorePath.create(
+            layout=layout,
+            layer=layer,
+            net=net,
+            width=width,
+            end_cap1=end_cap1,
+            end_cap2=end_cap2,
+            corner_style=corner_style,
+            points=polygon_data,
+        )
+
+        for prod_id, attr_id, value in saved_product_properties:
+            self.core.set_product_property(prod_id, attr_id, value)
+
     def get_center_line(self) -> list[list[float]]:
         """Retrieve center line points list.
 
@@ -441,7 +510,7 @@ class Path(Primitive):
                 "mitter": CorePathCornerType.MITER,
                 "sharp": CorePathCornerType.SHARP,
             }
-            self.core.corner_style = mapping[corner_type]
+            self.core.corner_style = mapping[corner_type.lower()]
 
     @property
     def end_cap1(self) -> str:
@@ -458,7 +527,7 @@ class Path(Primitive):
     @end_cap1.setter
     def end_cap1(self, end_cap_style):
         if isinstance(end_cap_style, str):
-            self.core.set_end_cap_style(mapping[end_cap_style], self.core.get_end_cap_style()[1])
+            self.core.set_end_cap_style(mapping[end_cap_style.lower()], self.core.get_end_cap_style()[1])
 
     @property
     def end_cap2(self) -> str:
@@ -475,7 +544,7 @@ class Path(Primitive):
     @end_cap2.setter
     def end_cap2(self, end_cap_style):
         if isinstance(end_cap_style, str):
-            self.core.set_end_cap_style(self.core.get_end_cap_style()[0], mapping[end_cap_style])
+            self.core.set_end_cap_style(self.core.get_end_cap_style()[0], mapping[end_cap_style.lower()])
 
     def move(self, vector):
         """Move the path by a given vector.
