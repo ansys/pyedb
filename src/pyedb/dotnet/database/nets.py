@@ -210,20 +210,18 @@ class EdbNets(CommonNets):
                     self._comps_by_nets_dict[n] = [comp]
         return self._comps_by_nets_dict
 
-    @deprecated("use edb.extended_nets.generate_extended_nets method instead")
+    @deprecated("Use edb.extended_nets.generate_extended_nets method instead.")
     def generate_extended_nets(
         self,
-        resistor_below: int | float = 10,
-        inductor_below: int | float = 1e-6,
-        capacitor_above: int | float = 1e-9,
-        exception_list: list | None = None,
-        include_signal: bool = True,
-        include_power: bool = True,
+        resistor_below=10,
+        inductor_below=1,
+        capacitor_above=1,
+        exception_list=None,
+        include_signal=True,
+        include_power=True,
     ):
+        # type: (int | float, int | float, int |float, list, bool, bool) -> list
         """Get extended net and associated components.
-
-        .. deprecated:: pyedb 0.30.0
-            Use :func:`pyedb.grpc.extended_nets.generate_extended_nets` instead.
 
         Parameters
         ----------
@@ -238,24 +236,29 @@ class EdbNets(CommonNets):
         exception_list : list, optional
             List of components to bypass when performing threshold checks. Components
             in the list are considered as serial components. The default is ``None``.
-        include_signal : bool, optional
+        include_signal : str, optional
             Whether to generate extended signal nets. The default is ``True``.
-        include_power : bool, optional
+        include_power : str, optional
             Whether to generate extended power nets. The default is ``True``.
 
         Returns
         -------
         list
-            List of all generated extended net groups.
+            List of all extended nets.
 
         Examples
         --------
         >>> from pyedb import Edb
         >>> app = Edb()
-        >>> app.nets.generate_extended_nets()
+        >>> app.nets.get_extended_nets()
         """
         return self._pedb.extended_nets.generate_extended_nets(
-            resistor_below, inductor_below, capacitor_above, exception_list, include_signal, include_power
+            resistor_below=resistor_below,
+            inductor_below=inductor_below,
+            capacitor_above=capacitor_above,
+            exception_list=exception_list,
+            include_signal=include_signal,
+            include_power=include_power,
         )
 
     def _get_points_for_plot(self, my_net_points):

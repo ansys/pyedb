@@ -380,6 +380,7 @@ class Nets(CommonNets):
         >>> comps_by_nets = edb.nets.components_by_nets
         >>> print("Components on GND:", comps_by_nets.get("GND", []))
         """
+        self._comps_by_nets_dict = {}
         for comp, i in self._pedb.components.instances.items():
             for n in i.nets:
                 if n in self._comps_by_nets_dict:

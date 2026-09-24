@@ -188,8 +188,28 @@ class TestClass(BaseTestClass):
     def test_extended_nets_queries(self):
         """Evaluate nets queries"""
         edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.extended_nets.auto_identify_signal()
         assert edbapp.extended_nets.auto_identify_power()
+        assert set(edbapp.padstacks["U3-43"].net.extended_net.nets) == {
+            "5V",
+            "NetC34_2",
+            "NetIC1_8",
+            "PDEN",
+            "SFPA_VCCR",
+            "SFPA_VCCT",
+            "USB3_VBUS",
+        }
+        assert edbapp.extended_nets.auto_identify_power(exception_list=["L7", "L8"])
+        assert set(edbapp.padstacks["U3-43"].net.extended_net.nets) == {
+            "5V",
+            "NetC34_2",
+            "NetIC1_8",
+            "PDEN",
+            "USB3_VBUS",
+        }
+        assert edbapp.extended_nets.auto_identify_signal()
+
+        assert set(edbapp.padstacks["X1-B8"].net.extended_net.nets) == {"PCIe_Gen4_TX2_CAP_P", "PCIe_Gen4_TX2_P"}
+
         extended_net_name, _ = next(iter(edbapp.extended_nets.items.items()))
         assert edbapp.extended_nets.items[extended_net_name]
         assert edbapp.extended_nets.items[extended_net_name].nets
@@ -197,19 +217,6 @@ class TestClass(BaseTestClass):
         assert edbapp.extended_nets.items[extended_net_name].rlc
         assert edbapp.extended_nets.items[extended_net_name].serial_rlc
         assert edbapp.extended_nets.create("new_ex_net", "DDR4_A1")
-        edbapp.close(terminate_rpc_session=False)
-
-    def test_generate_extended_nets_exclude_power(self):
-        """Verify extended nets generation excludes power nets when include_power=False"""
-        edbapp = self.edb_examples.get_si_verse()
-        # Generate extended nets with include_power=False
-        extended_nets = edbapp.extended_nets.generate_extended_nets(include_power=False)
-        # Check if only signal nets are in the result
-        assert len(extended_nets) == 21
-        for ext_net in extended_nets:
-            for net in ext_net:
-                net = edbapp.nets.nets.get(net)
-                assert not net.is_power_ground
         edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_0(self):

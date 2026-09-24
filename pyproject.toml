@@ -278,7 +278,7 @@ testpaths = "tests"
 # Automatically retry flaky tests up to 2 times with a 10-second delay between
 # attempts.  This catches transient gRPC/filesystem race conditions without
 # masking real failures (a test must fail 6 times in a row to be reported).
-reruns = 5
+reruns = 1
 reruns_delay = 10
 #addopts = "-ra --cov=src/pyedb --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
 
