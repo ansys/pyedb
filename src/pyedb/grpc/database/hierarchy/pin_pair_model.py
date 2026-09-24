@@ -340,6 +340,9 @@ class PinPairModel:
         """
         if pin_pair in self.pin_pairs:
             self.core.delete_rlc(pin_pair=pin_pair)
+            component_property = self._component.component_property
+            component_property.model = self.core
+            self._component.component_property = component_property
 
     def add_pin_pair(
         self,
