@@ -290,10 +290,10 @@ class Net:
         >>> edb = Edb("myedb", version="2026.1")
         >>> edb.nets["BST_V3P3_S5"].extended_net
         """
-        if self.name in self._pedb.extended_nets.items:
-            return self._pedb.extended_nets.items[self.name]
-        else:
-            return None
+        for extended_net in self._pedb.extended_nets.items.values():
+            if self.name in extended_net.nets:
+                return extended_net
+        return None
 
     def delete(self):
         """Delete the net from the EDB database."""

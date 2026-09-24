@@ -185,7 +185,6 @@ class TestClass(BaseTestClass):
         assert "new_pair1" not in edbapp.differential_pairs.items
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="gprc fails")
     def test_extended_nets_queries(self):
         """Evaluate nets queries"""
         edbapp = self.edb_examples.get_si_verse()
