@@ -123,7 +123,7 @@ class ExtendedNets:
     def auto_identify_power(
         self,
         resistor_below: int | float = 10,
-        inductor_below: int | float = 1,
+        inductor_below: int | float = 2,
         capacitor_above: int | float = 1,
         exception_list: list | None = None,
     ):
@@ -206,7 +206,17 @@ class ExtendedNets:
         >>> app = Edb()
         >>> app.nets.generate_extended_nets()
         """
-        exception_set = set(exception_list or [])
+        for net in self.items.values():
+            net.delete()
+
+        components = self._pedb.components.instances
+        exception_list = [] if exception_list is None else exception_list
+        e_comps = []
+        for i in exception_list:
+            c = components[i]
+            if c.enabled:
+                c.enabled = False
+                e_comps.append(c)
 
         extended_nets = []
         nets = self._pedb.nets.nets
@@ -258,9 +268,6 @@ class ExtendedNets:
 
             if not cmp.enabled:
                 return False
-
-            if refdes in exception_set:
-                return True
 
             r_value, l_value, c_value = cmp.rlc_values[0] if isinstance(cmp.rlc_values[0], list) else cmp.rlc_values
 
@@ -340,6 +347,9 @@ class ExtendedNets:
 
             extended_nets.append(net_group)
 
+        for i in e_comps:
+            i.enabled = True
+
         return extended_nets
 
 
@@ -351,6 +361,10 @@ class ExtendedNet:
     def __init__(self, pedb, edb_object):
         self.core = edb_object
         self._pedb = pedb
+
+    def delete(self):
+        """Delete this extended net."""
+        self.core.delete()
 
     @classmethod
     def create(cls, layout, name):

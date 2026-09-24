@@ -219,8 +219,16 @@ class EdbExtendedNets(EdbCommon, object):
         >>> app = Edb()
         >>> app.extended_nets.generate_extended_nets()
         """
-        if exception_list is None:
-            exception_list = []
+        self.clean()
+        components = self._pedb.components.instances
+        exception_list = [] if exception_list is None else exception_list
+        e_comps = []
+        for i in exception_list:
+            c = components[i]
+            if c.enabled:
+                c.enabled = False
+                e_comps.append(c)
+
         _extended_nets = []
         _nets = self._pedb.nets.nets
         all_nets = list(_nets.keys())[:]
@@ -234,7 +242,7 @@ class EdbExtendedNets(EdbCommon, object):
 
             for vals in comps:
                 refdes = vals
-                cmp = self._pedb.components.instances[refdes]
+                cmp = components[refdes]
                 is_enabled = cmp.enabled
                 if not is_enabled:
                     continue
@@ -243,9 +251,7 @@ class EdbExtendedNets(EdbCommon, object):
                     continue
 
                 val_value = cmp.rlc_values
-                if refdes in exception_list:
-                    pass
-                elif val_type == "Inductor":
+                if val_type == "Inductor":
                     if val_value[1] is None:
                         continue
                     elif (
@@ -304,6 +310,8 @@ class EdbExtendedNets(EdbCommon, object):
                     else:  # pragma: no cover
                         pass
 
+        for i in e_comps:
+            i.enabled = True
         return _extended_nets
 
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
