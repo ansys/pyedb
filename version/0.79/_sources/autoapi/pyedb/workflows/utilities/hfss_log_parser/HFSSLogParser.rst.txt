@@ -1,0 +1,151 @@
+
+
+
+
+
+
+:class:`HFSSLogParser`
+======================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.HFSSLogParser(log_path: str | pathlib.Path)
+
+   
+   High-level parser that orchestrates all block parsers.
+
+   This class provides the main interface for parsing HFSS log files.
+   It coordinates multiple specialized parsers to extract project info,
+   mesh statistics, adaptive passes, and sweep data.
+
+   :Parameters:
+
+       **log_path** : :class:`python:str` or :obj:`pathlib.Path`
+           Path to the HFSS log file to parse.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pathlib import Path
+   >>> log = HFSSLogParser("/tmp/project.aedt.batchinfo.1234/hfss.log")
+   >>> data = log.parse()
+   >>> data.is_converged()
+   True
+
+   Parse and check for errors:
+
+   >>> log = HFSSLogParser("simulation.log")
+   >>> result = log.parse()
+   >>> if result.errors():
+   ...     print("Errors found:", result.errors())
+   ... else:
+   ...     print("No errors detected")
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSLogParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Execute all sub-parsers and return a unified object.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~BLOCK_MAP`
+            - 
+          * - :py:attr:`~path`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: BLOCK_MAP
+   :type:  dict[str, type[BlockParser]]
+
+.. py:attribute:: path
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> ParsedLog
+
+   
+   Execute all sub-parsers and return a unified object.
+
+
+
+
+
+   :Returns:
+
+       :obj:`ParsedLog`
+           Structured representation of the entire log including project info,
+           mesh statistics, adaptive passes, and sweep data.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> log = HFSSLogParser("hfss.log")
+   >>> result = log.parse()
+   >>> print(f"Converged: {result.is_converged()}")
+   >>> print(f"Passes: {len(result.adaptive)}")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

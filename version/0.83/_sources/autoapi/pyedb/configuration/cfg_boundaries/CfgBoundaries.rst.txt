@@ -1,0 +1,375 @@
+
+
+
+
+
+
+:class:`CfgBoundaries`
+======================
+
+.. toctree::
+   :hidden:
+
+    PaddingData</autoapi/pyedb/configuration/cfg_boundaries/CfgBoundaries.PaddingData>
+
+
+.. py:class:: pyedb.configuration.cfg_boundaries.CfgBoundaries(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Represent open-region and extent settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CfgBoundaries
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a :class:`CfgBoundaries` instance.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_radiation_boundary`
+            - Configure a radiation open region.
+          * - :py:attr:`~set_pml_boundary`
+            - Configure a perfectly matched layer boundary.
+          * - :py:attr:`~set_air_box_extents`
+            - Set horizontal and vertical air-box padding.
+          * - :py:attr:`~set_extent`
+            - Set the layout extent used for region construction.
+          * - :py:attr:`~set_dielectric_extent`
+            - Configure the dielectric extent envelope.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~use_open_region`
+            - 
+          * - :py:attr:`~open_region_type`
+            - 
+          * - :py:attr:`~is_pml_visible`
+            - 
+          * - :py:attr:`~operating_freq`
+            - 
+          * - :py:attr:`~radiation_level`
+            - 
+          * - :py:attr:`~dielectric_extent_type`
+            - 
+          * - :py:attr:`~dielectric_base_polygon`
+            - 
+          * - :py:attr:`~dielectric_extent_size`
+            - 
+          * - :py:attr:`~honor_user_dielectric`
+            - 
+          * - :py:attr:`~extent_type`
+            - 
+          * - :py:attr:`~base_polygon`
+            - 
+          * - :py:attr:`~truncate_air_box_at_ground`
+            - 
+          * - :py:attr:`~air_box_horizontal_extent`
+            - 
+          * - :py:attr:`~air_box_positive_vertical_extent`
+            - 
+          * - :py:attr:`~air_box_negative_vertical_extent`
+            - 
+          * - :py:attr:`~sync_air_box_vertical_extent`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_boundaries import CfgBoundaries
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: use_open_region
+   :type:  Optional[bool]
+   :value: None
+
+
+.. py:attribute:: open_region_type
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: is_pml_visible
+   :type:  Optional[bool]
+   :value: None
+
+
+.. py:attribute:: operating_freq
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: radiation_level
+   :type:  Optional[float | int]
+   :value: None
+
+
+.. py:attribute:: dielectric_extent_type
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: dielectric_base_polygon
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: dielectric_extent_size
+   :type:  Optional[CfgBoundaries.PaddingData]
+   :value: None
+
+
+.. py:attribute:: honor_user_dielectric
+   :type:  bool
+   :value: None
+
+
+.. py:attribute:: extent_type
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: base_polygon
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: truncate_air_box_at_ground
+   :type:  Optional[bool]
+   :value: None
+
+
+.. py:attribute:: air_box_horizontal_extent
+   :type:  Optional[CfgBoundaries.PaddingData]
+   :value: None
+
+
+.. py:attribute:: air_box_positive_vertical_extent
+   :type:  Optional[CfgBoundaries.PaddingData]
+   :value: None
+
+
+.. py:attribute:: air_box_negative_vertical_extent
+   :type:  Optional[CfgBoundaries.PaddingData]
+   :value: None
+
+
+.. py:attribute:: sync_air_box_vertical_extent
+   :type:  Optional[bool]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(**kwargs) -> CfgBoundaries
+   :classmethod:
+
+
+   
+   Create a :class:`CfgBoundaries` instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_radiation_boundary(use_open_region: bool = True)
+
+   
+   Configure a radiation open region.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_pml_boundary(operating_freq, radiation_level: float | int = 20, is_pml_visible: bool = False)
+
+   
+   Configure a perfectly matched layer boundary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_air_box_extents(horizontal_size: float | int = 0.15, horizontal_is_multiple: bool = False, positive_vertical_size: float | int = 0.15, positive_vertical_is_multiple: bool = False, negative_vertical_size: float | int = 0.15, negative_vertical_is_multiple: bool = False, sync: bool = False, truncate_at_ground: bool = False)
+
+   
+   Set horizontal and vertical air-box padding.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_extent(extent_type: str = 'BoundingBox', base_polygon: Optional[str] = None, truncate_air_box_at_ground: bool = False)
+
+   
+   Set the layout extent used for region construction.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_dielectric_extent(extent_type: str = 'BoundingBox', expansion_size: float | int = 0, is_multiple: bool = False, base_polygon: Optional[str] = None, honor_user_dielectric: bool = False)
+
+   
+   Configure the dielectric extent envelope.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.configuration.cfg_boundaries.CfgBoundaries.PaddingData
+
+
+
+

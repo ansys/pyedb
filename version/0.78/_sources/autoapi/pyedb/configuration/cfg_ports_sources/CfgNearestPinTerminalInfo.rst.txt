@@ -1,0 +1,123 @@
+
+
+
+
+
+
+:class:`CfgNearestPinTerminalInfo`
+==================================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgNearestPinTerminalInfo(pedb, **kwargs)
+
+   Bases: :py:obj:`CfgTerminalInfo`
+
+
+   
+   Represent a nearest-reference-pin selector for negative terminals.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgNearestPinTerminalInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~export_properties`
+            - Serialize to a dictionary with a ``"nearest_pin"`` key.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~reference_net`
+            - 
+          * - :py:attr:`~search_radius`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgNearestPinTerminalInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: reference_net
+
+.. py:attribute:: search_radius
+
+
+
+Method detail
+-------------
+
+.. py:method:: export_properties()
+
+   
+   Serialize to a dictionary with a ``"nearest_pin"`` key.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ``{"nearest_pin": {"reference_net": ..., "search_radius": ...}}``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

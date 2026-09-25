@@ -1,0 +1,6 @@
+model\_computed\_fields
+=======================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: MinAnnularRing.model_computed_fields

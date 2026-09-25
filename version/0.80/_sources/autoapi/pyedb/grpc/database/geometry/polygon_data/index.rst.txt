@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``polygon_data.py`` module
+==============================
+
+.. py:module:: pyedb.grpc.database.geometry.polygon_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: polygon_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.geometry.polygon_data.PolygonData`
+            - Class managing Polygon Data.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> PolygonData</autoapi/pyedb/grpc/database/geometry/polygon_data/PolygonData>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

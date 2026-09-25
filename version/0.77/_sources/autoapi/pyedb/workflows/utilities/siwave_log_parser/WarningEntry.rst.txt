@@ -1,0 +1,153 @@
+
+
+
+
+
+
+:class:`WarningEntry`
+=====================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.WarningEntry
+
+   
+   Single warning message from the simulation log.
+
+
+
+   :Attributes:
+
+       **timestamp** : :obj:`datetime`
+           When the warning occurred.
+
+       **category** : :class:`python:str`
+           Warning category: ``'SHORT'`` for electrical shorts or ``'OTHER'`` for
+           other warnings.
+
+       **net1** : :class:`python:str`
+           First net involved (for SHORT warnings).
+
+       **net2** : :class:`python:str`
+           Second net involved (for SHORT warnings).
+
+       **layer** : :class:`python:str`
+           Layer name where the issue occurred.
+
+       **x** : :class:`python:float`
+           X-coordinate in millimeters.
+
+       **y** : :class:`python:float`
+           Y-coordinate in millimeters.
+
+       **message** : :class:`python:str`
+           Complete warning message text.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from datetime import datetime
+   >>> warning = WarningEntry(
+   ...     timestamp=datetime(2025, 11, 10, 9, 15, 30),
+   ...     category="SHORT",
+   ...     net1="VCC",
+   ...     net2="GND",
+   ...     layer="TOP",
+   ...     x=12.5,
+   ...     y=34.8,
+   ...     message="Nets are electrically shorted",
+   ... )
+   >>> warning.category
+   'SHORT'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: WarningEntry
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~timestamp`
+            - 
+          * - :py:attr:`~category`
+            - 
+          * - :py:attr:`~net1`
+            - 
+          * - :py:attr:`~net2`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~x`
+            - 
+          * - :py:attr:`~y`
+            - 
+          * - :py:attr:`~message`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import WarningEntry
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: timestamp
+   :type:  datetime.datetime
+
+.. py:attribute:: category
+   :type:  str
+
+.. py:attribute:: net1
+   :type:  str
+
+.. py:attribute:: net2
+   :type:  str
+
+.. py:attribute:: layer
+   :type:  str
+
+.. py:attribute:: x
+   :type:  float
+
+.. py:attribute:: y
+   :type:  float
+
+.. py:attribute:: message
+   :type:  str
+
+
+
+
+

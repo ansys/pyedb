@@ -1,0 +1,133 @@
+
+
+
+
+
+
+:class:`SolderBallsInfo`
+========================
+
+
+.. py:class:: pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo
+
+   
+   Solder ball configuration for component modeling.
+
+   This dataclass stores geometric parameters for solder ball definitions
+   used in HFSS port creation and component modeling.
+
+
+   :Attributes:
+
+       **ref_des** : :class:`python:str`
+           Reference designator of the component. The default is ``""``.
+
+       **shape** : :class:`python:str`
+           Geometric shape of the solder ball: ``"cylinder"``, ``"sphere"``,
+           or ``"spheroid"``. The default is ``"cylinder"``.
+
+       **diameter** : :class:`python:str` or :class:`python:float` or :data:`python:None`
+           Nominal diameter of the solder ball. The default is ``None``.
+
+       **mid_diameter** : :class:`python:str` or :class:`python:float` or :data:`python:None`
+           Middle diameter for spheroid shapes only. The default is ``None``.
+
+       **height** : :class:`python:str` or :class:`python:float` or :data:`python:None`
+           Height of the solder ball. The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> ball = SolderBallsInfo(ref_des="U1", shape="cylinder", diameter="0.3mm", height="0.2mm")
+   >>> ball.ref_des
+   'U1'
+   >>> ball.diameter
+   '0.3mm'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SolderBallsInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ref_des`
+            - 
+          * - :py:attr:`~shape`
+            - 
+          * - :py:attr:`~diameter`
+            - 
+          * - :py:attr:`~mid_diameter`
+            - 
+          * - :py:attr:`~height`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.sipi.hfss_auto_configuration import SolderBallsInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: ref_des
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: shape
+   :type:  str
+   :value: 'cylinder'
+
+
+.. py:attribute:: diameter
+   :type:  str | float | None
+   :value: None
+
+
+.. py:attribute:: mid_diameter
+   :type:  str | float | None
+   :value: None
+
+
+.. py:attribute:: height
+   :type:  str | float | None
+   :value: None
+
+
+
+
+
+

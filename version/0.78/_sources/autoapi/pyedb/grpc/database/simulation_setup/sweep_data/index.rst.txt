@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``sweep_data.py`` module
+============================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.sweep_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: sweep_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.sweep_data.FrequencyData`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.sweep_data.SweepData`
+            - Frequency sweep data class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> FrequencyData</autoapi/pyedb/grpc/database/simulation_setup/sweep_data/FrequencyData>
+    <span class="nf nf-cod-symbol_class"></span> SweepData</autoapi/pyedb/grpc/database/simulation_setup/sweep_data/SweepData>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

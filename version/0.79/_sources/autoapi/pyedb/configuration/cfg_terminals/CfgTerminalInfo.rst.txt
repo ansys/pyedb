@@ -1,0 +1,306 @@
+
+
+
+
+
+
+:class:`CfgTerminalInfo`
+========================
+
+
+.. py:class:: pyedb.configuration.cfg_terminals.CfgTerminalInfo
+
+   
+   Factory for terminal-location descriptors used in port/source definitions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+
+.. py:currentmodule:: CfgTerminalInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~from_pin`
+            - Return a pin-based terminal descriptor.
+          * - :py:attr:`~from_net`
+            - Return a net-based terminal descriptor.
+          * - :py:attr:`~from_pin_group`
+            - Return a pin-group-based terminal descriptor.
+          * - :py:attr:`~from_padstack`
+            - Return a padstack-instance-based terminal descriptor.
+          * - :py:attr:`~from_coordinates`
+            - Return a coordinate-based terminal descriptor.
+          * - :py:attr:`~from_nearest_pin`
+            - Return a nearest-pin terminal descriptor.
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_terminals import CfgTerminalInfo
+
+
+
+Method detail
+-------------
+
+.. py:method:: from_pin(pin: str, reference_designator: str | None = None) -> dict
+   :staticmethod:
+
+
+   
+   Return a pin-based terminal descriptor.
+
+
+   :Parameters:
+
+       **pin** : :class:`python:str`
+           Pin name.
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Component reference designator.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: from_net(net: str, reference_designator: str | None = None) -> dict
+   :staticmethod:
+
+
+   
+   Return a net-based terminal descriptor.
+
+
+   :Parameters:
+
+       **net** : :class:`python:str`
+           Net name.
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Component reference designator.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: from_pin_group(pin_group: str) -> dict
+   :staticmethod:
+
+
+   
+   Return a pin-group-based terminal descriptor.
+
+
+   :Parameters:
+
+       **pin_group** : :class:`python:str`
+           Pin group name.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: from_padstack(padstack: str) -> dict
+   :staticmethod:
+
+
+   
+   Return a padstack-instance-based terminal descriptor.
+
+
+   :Parameters:
+
+       **padstack** : :class:`python:str`
+           Padstack instance name.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: from_coordinates(layer: str, x: float | int | str, y: float | int | str, net: str) -> dict
+   :staticmethod:
+
+
+   
+   Return a coordinate-based terminal descriptor.
+
+
+   :Parameters:
+
+       **layer** : :class:`python:str`
+           Layer name.
+
+       **x** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`
+           X coordinate.
+
+       **y** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`
+           Y coordinate.
+
+       **net** : :class:`python:str`
+           Net name.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: from_nearest_pin(reference_net: str, search_radius: str = '5mm') -> dict
+   :staticmethod:
+
+
+   
+   Return a nearest-pin terminal descriptor.
+
+
+   :Parameters:
+
+       **reference_net** : :class:`python:str`
+           Reference net name used to find the nearest pin.
+
+       **search_radius** : :class:`python:str`, :obj:`optional`
+           Search radius, default is ``"5mm"``.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

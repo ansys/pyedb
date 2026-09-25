@@ -1,0 +1,107 @@
+
+
+
+
+
+
+The ``misc`` package
+========================
+
+.. py:module:: pyedb.misc
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: misc
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config`
+            - 
+
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.aedtlib_personalib_install`
+            - 
+
+
+          * - :py:obj:`~pyedb.misc.decorators`
+            - 
+
+
+          * - :py:obj:`~pyedb.misc.downloads`
+            - Download example datasets from https://github.com/pyansys/example-data
+
+
+          * - :py:obj:`~pyedb.misc.misc`
+            - Miscellaneous Methods for PyEDB.
+
+
+          * - :py:obj:`~pyedb.misc.utilities`
+            - Module gathering utility functions for PyEDB modules.
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> siw_feature_config</autoapi/pyedb/misc/siw_feature_config/index>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> aedtlib_personalib_install</autoapi/pyedb/misc/aedtlib_personalib_install/index>
+    <span class="nf nf-fa-file"></span> decorators</autoapi/pyedb/misc/decorators/index>
+    <span class="nf nf-fa-file"></span> downloads</autoapi/pyedb/misc/downloads/index>
+    <span class="nf nf-fa-file"></span> misc</autoapi/pyedb/misc/misc/index>
+    <span class="nf nf-fa-file"></span> utilities</autoapi/pyedb/misc/utilities/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

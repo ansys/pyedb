@@ -1,0 +1,129 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_terminals`` library
+=================================================
+
+.. py:module:: pyedb.configuration.cfg_terminals
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_terminals
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgTerminalInfo`
+            - Factory for terminal-location descriptors used in port/source definitions.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgTerminal`
+            - Base class for explicit terminal definitions.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgPadstackInstanceTerminal`
+            - Represent a terminal created from a named padstack instance.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgPinGroupTerminal`
+            - Represent a terminal created from a named pin group.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgPointTerminal`
+            - Represent a terminal placed at explicit XY coordinates.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgEdgeTerminal`
+            - Represent a terminal attached to a primitive edge.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgBundleTerminal`
+            - Represent a bundle terminal built from other terminal names.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgTerminals`
+            - Collect low-level terminal definitions for serialization.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgTerminalInfo</autoapi/pyedb/configuration/cfg_terminals/CfgTerminalInfo>
+    <span class="nf nf-cod-symbol_class"></span> CfgTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstackInstanceTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgPadstackInstanceTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgPinGroupTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgPinGroupTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgPointTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgPointTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgEdgeTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgEdgeTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgBundleTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgBundleTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgTerminals</autoapi/pyedb/configuration/cfg_terminals/CfgTerminals>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Build explicit low-level terminal entries for configuration payloads.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

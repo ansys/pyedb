@@ -1,0 +1,113 @@
+
+
+
+
+
+
+:class:`CfgSIwaveDCSetup`
+=========================
+
+.. toctree::
+   :hidden:
+
+    CfgDCIRSettings</autoapi/pyedb/configuration/cfg_setup/CfgSIwaveDCSetup.CfgDCIRSettings>
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSIwaveDCSetup(/, **data: Any)
+
+   Bases: :py:obj:`CfgSetupDC`
+
+
+   
+   Represent one SIwave DC setup entry.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgSIwaveDCSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~dc_slider_position`
+            - 
+          * - :py:attr:`~dc_ir_settings`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgSIwaveDCSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: type
+   :type:  str
+   :value: 'siwave_dc'
+
+
+.. py:attribute:: dc_slider_position
+   :type:  int | str
+   :value: 1
+
+
+.. py:attribute:: dc_ir_settings
+   :type:  CfgSIwaveDCSetup.CfgDCIRSettings | None
+   :value: None
+
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.configuration.cfg_setup.CfgSIwaveDCSetup.CfgDCIRSettings
+
+
+
+

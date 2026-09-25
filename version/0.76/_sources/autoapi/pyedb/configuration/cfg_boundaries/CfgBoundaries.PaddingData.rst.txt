@@ -1,0 +1,85 @@
+
+
+
+
+
+
+:class:`PaddingData`
+====================
+
+
+.. py:class:: pyedb.configuration.cfg_boundaries.CfgBoundaries.PaddingData(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Represent padding data for extent regions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PaddingData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~size`
+            - 
+          * - :py:attr:`~is_multiple`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_boundaries.CfgBoundaries import PaddingData
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: size
+   :type:  float | str
+
+.. py:attribute:: is_multiple
+   :type:  bool
+
+
+
+
+

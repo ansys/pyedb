@@ -1,0 +1,171 @@
+
+
+
+
+
+
+:class:`CfgEdgePort`
+====================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgEdgePort(pedb=None, *args, **kwargs)
+
+   
+   Represent one wave-port or gap-port edge excitation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgEdgePort
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_parameters_to_edb`
+            - Write this edge port into the open EDB design.
+          * - :py:attr:`~export_properties`
+            - Serialize this edge port to a plain dictionary.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~primitive_name`
+            - 
+          * - :py:attr:`~point_on_edge`
+            - 
+          * - :py:attr:`~horizontal_extent_factor`
+            - 
+          * - :py:attr:`~vertical_extent_factor`
+            - 
+          * - :py:attr:`~pec_launch_width`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgEdgePort
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: type
+
+.. py:attribute:: primitive_name
+
+.. py:attribute:: point_on_edge
+
+.. py:attribute:: horizontal_extent_factor
+
+.. py:attribute:: vertical_extent_factor
+
+.. py:attribute:: pec_launch_width
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_parameters_to_edb()
+
+   
+   Write this edge port into the open EDB design.
+
+
+
+
+
+   :Returns:
+
+       :obj:`object` or :class:`python:dict`
+           Created EDB port object, or the serialized payload when no EDB
+           session is attached.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_properties()
+
+   
+   Serialize this edge port to a plain dictionary.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary with ``name``, ``type``, ``primitive_name``,
+           ``point_on_edge``, and extent parameters.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

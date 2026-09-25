@@ -1,0 +1,93 @@
+
+
+
+
+
+
+:class:`NetlistModel`
+=====================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.netlist_model.NetlistModel(component, core: ansys.edb.core.hierarchy.netlist_model.NetlistModel)
+
+   
+   Manage :class:`NetlistModel <ansys.edb.core.hierarchy.netlist_model.NetlistModel>`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: NetlistModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~netlist`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.netlist_model import NetlistModel
+
+Property detail
+---------------
+
+.. py:property:: netlist
+   :type: str
+
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

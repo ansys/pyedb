@@ -1,0 +1,47 @@
+
+
+
+
+
+
+:class:`DCBehaviorMapper`
+=========================
+
+.. toctree::
+   :hidden:
+
+    GRPC</autoapi/pyedb/generic/constants/DCBehaviorMapper.GRPC>
+    DOTNET</autoapi/pyedb/generic/constants/DCBehaviorMapper.DOTNET>
+
+
+.. py:class:: pyedb.generic.constants.DCBehaviorMapper
+
+   Bases: :py:obj:`CommonMapper`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import DCBehaviorMapper
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.generic.constants.DCBehaviorMapper.GRPC
+    pyedb.generic.constants.DCBehaviorMapper.DOTNET
+
+
+
+

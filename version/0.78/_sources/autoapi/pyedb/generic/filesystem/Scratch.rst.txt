@@ -1,0 +1,254 @@
+
+
+
+
+
+
+:class:`Scratch`
+================
+
+
+.. py:class:: pyedb.generic.filesystem.Scratch(local_path, permission=511, volatile=False)
+
+   
+   Class for managing a scratch directory.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: Scratch
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~remove`
+            - Remove the scratch directory and its contents.
+          * - :py:attr:`~copyfile`
+            - Copy a file to the scratch directory.
+          * - :py:attr:`~copyfolder`
+            - Copy a folder to the scratch directory.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~path`
+            - Get the path of the scratch directory.
+          * - :py:attr:`~is_empty`
+            - Check if the scratch directory is empty.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__enter__`
+            - 
+          * - :py:attr:`~__exit__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.filesystem import Scratch
+
+Property detail
+---------------
+
+.. py:property:: path
+   :type: str
+
+
+   
+   Get the path of the scratch directory.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_empty
+   :type: bool
+
+
+   
+   Check if the scratch directory is empty.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __enter__() -> Scratch
+
+.. py:method:: __exit__(exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: types.TracebackType | None) -> None
+
+.. py:method:: remove() -> None
+
+   
+   Remove the scratch directory and its contents.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: copyfile(src_file: str, dst_filename: str | None = None) -> str
+
+   
+   Copy a file to the scratch directory.
+
+
+   :Parameters:
+
+       **src_file** : :class:`python:str`
+           Source file with fullpath.
+
+       **dst_filename** : :class:`python:str`, :obj:`optional`
+           Destination filename with the extension. The default is ``None``,
+           in which case the destination file is given the same name as the
+           source file.
+
+
+
+   :Returns:
+
+       **dst_file** : :class:`python:str`
+           Full path and file name of the copied file.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: copyfolder(src_folder: str, destfolder: str | None = None) -> str
+
+   
+   Copy a folder to the scratch directory.
+
+
+   :Parameters:
+
+       **src_folder** : :class:`python:str`
+           Source folder with fullpath.
+
+       **destfolder** : :class:`python:str`, :obj:`optional`
+           Destination folder. The default is ``None``, in which case the destination folder
+           is given the same name as the source folder.
+
+
+
+   :Returns:
+
+       **destfolder** : :class:`python:str`
+           Full path of the copied folder.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,80 @@
+
+
+
+
+
+
+:class:`CfgSetupDC`
+===================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSetupDC(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base class for DC-style setup payloads.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgSetupDC
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgSetupDC
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+
+
+
+
