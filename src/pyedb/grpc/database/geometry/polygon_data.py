@@ -159,6 +159,7 @@ class PolygonData:
         # coordinates whose ``id`` is left unset (0), which is not a valid db/cell id
         # and fails evaluation. Re-wrap with the active cell as owner so parametric
         # expressions can still be evaluated instead of raising on readback.
+        # This code work around the pyedb-core issue #726
         owner = self._pedb.active_cell
         result = []
         for pt in self.core.points:
