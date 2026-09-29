@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING
 
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+from ansys.edb.core.utility.value import Value as CoreValue
 
 if TYPE_CHECKING:
     from ansys.edb.core.geometry.polygon_data import PolygonSenseType as CorePolygonSenseType
@@ -153,7 +154,21 @@ class PolygonData:
         -------
         list[tuple[float, float]]
         """
-        return [(pt.x.value, pt.y.value) for pt in self.core.points]
+        # NOTE: unlike some server-side getters (e.g. Path.width), the polygon points
+        # returned by the server carry a ``variable_owner`` submessage for parametric
+        # coordinates whose ``id`` is left unset (0), which is not a valid db/cell id
+        # and fails evaluation. Re-wrap with the active cell as owner so parametric
+        # expressions can still be evaluated instead of raising on readback.
+        owner = self._pedb.active_cell
+        result = []
+        for pt in self.core.points:
+            x, y = pt.x, pt.y
+            if x.is_parametric and x.msg.variable_owner.id == 0:
+                x = CoreValue(x.msg.text, owner)
+            if y.is_parametric and y.msg.variable_owner.id == 0:
+                y = CoreValue(y.msg.text, owner)
+            result.append((Value(x).value, Value(y).value))
+        return result
 
     @property
     def points_raw(self):

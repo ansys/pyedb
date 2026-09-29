@@ -555,7 +555,13 @@ class Primitive:
             if not center:
                 center = self.core.cast().polygon_data.bounding_circle()[0]
             elif isinstance(center, list) and len(center) == 2:
-                center = CorePointData([self._pedb._value_setter(center[0]), self._pedb._value_setter(center[1])])
+                # Unwrap to .core: pyedb's Value subclasses float, which would otherwise
+                # trigger gRPC's isinstance(val, (int, float)) fast-path and silently
+                # evaluate parametric expressions to constants (losing the variable link).
+                cx, cy = self._pedb._value_setter(center[0]), self._pedb._value_setter(center[1])
+                cx = cx.core if hasattr(cx, "core") else cx
+                cy = cy.core if hasattr(cy, "core") else cy
+                center = CorePointData([cx, cy])
             else:
                 self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             self.core.cast().polygon_data = self.polygon_data.scale(factor, center)
