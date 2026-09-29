@@ -190,13 +190,39 @@ class TestEdbLifecycle:
         assert edb.active_layout
         edb.close(terminate_rpc_session=False)
 
-    def test_create_edb_without_path(self):
-        """Create EDB without path."""
+    def test_create_edb_without_path(self, monkeypatch):
+        """Create EDB without path.
+
+        When no ``edbpath`` is provided, ``Edb`` falls back to creating a
+        project directly under the user's home directory (``~/Documents`` on
+        Windows, ``~`` on Linux) using a randomly generated
+        ``layout_<random>.aedb`` name. Left unredirected, this leaks a
+        project folder into the home directory on every CI run, which is
+        never cleaned up and eventually fills the machine's drive.
+
+        Redirect ``HOME``/``USERPROFILE`` to the scratch folder so the
+        fallback path lands somewhere that is automatically cleaned up by the
+        ``local_scratch``/``init_scratch`` fixtures, and assert it did.
+        """
         import time
 
+        from pyedb.generic.general_methods import is_windows
+
+        fake_home = str(self.local_scratch.path)
+        if is_windows:
+            os.makedirs(os.path.join(fake_home, "Documents"), exist_ok=True)
+            monkeypatch.setenv("USERPROFILE", fake_home)
+        else:
+            monkeypatch.setenv("HOME", fake_home)
+
         edbapp_without_path = Edb(version=desktop_version, isreadonly=False, grpc=GRPC)
-        time.sleep(2)
-        edbapp_without_path.close(terminate_rpc_session=False)
+        try:
+            time.sleep(2)
+            # Regression guard: the fallback project must live under the scratch
+            # folder, not leak into the real home directory.
+            assert os.path.commonpath([os.path.abspath(edbapp_without_path.edbpath), fake_home]) == fake_home
+        finally:
+            edbapp_without_path.close(terminate_rpc_session=False)
 
     def test_variables_value(self):
         """Evaluate variables value."""
