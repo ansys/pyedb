@@ -42,7 +42,7 @@ from ansys.edb.core.hierarchy.component_group import ComponentType as CoreCompon
 # (solder_ball_property, die_property, port_property).  Mutations on those copies are
 # persisted on the copy via direct RPC stubs, but the copy must be linked back to the
 # parent typed property via its setter (SetSolderBallProperty / SetDieProperty /
-# SetPortProperty) â€” no full SetComponentProperty write-back on the component is required.
+# SetPortProperty) - no full SetComponentProperty write-back on the component is required.
 # Older releases expose a flat ComponentProperty whose mutations must be committed via a
 # full SetComponentProperty write-back on the component.
 try:
