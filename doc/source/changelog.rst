@@ -9,6 +9,52 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.84.2 <https://github.com/ansys/pyedb/releases/tag/v0.84.2>`_ - September 25, 2026
+====================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Path center line setter added
+          - `#2559 <https://github.com/ansys/pyedb/pull/2559>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Revert 2288
+          - `#2566 <https://github.com/ansys/pyedb/pull/2566>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump the ansys-actions group with 12 updates
+          - `#2556 <https://github.com/ansys/pyedb/pull/2556>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.84.1
+          - `#2565 <https://github.com/ansys/pyedb/pull/2565>`_
+
+
 `0.84.1 <https://github.com/ansys/pyedb/releases/tag/v0.84.1>`_ - September 23, 2026
 ====================================================================================
 

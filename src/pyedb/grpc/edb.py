@@ -173,7 +173,11 @@ class Edb(EdbInit):
         Full path to AEDB folder or layout file to import. Accepts both string paths
         and ``pathlib.Path`` objects. Supported formats:
         BRD, MCM, XML (IPC2581), GDS, ODB++ (TGZ/ZIP), DXF.
-        Default creates new AEDB in documents folder.
+        Default creates a new AEDB named ``layout_<random>.aedb`` under the current
+        user's Documents folder (Windows) or home directory (Linux). This fallback
+        project is **not** deleted automatically; avoid relying on it in scripts,
+        tests, or CI pipelines that run repeatedly, as leftover projects will
+        accumulate and consume disk space.
     cellname : str, optional
         Specific cell to open. Default opens first cell.
     isreadonly : bool, optional
@@ -295,7 +299,16 @@ class Edb(EdbInit):
                 if not edbpath:
                     edbpath = os.path.expanduser("~")
                 edbpath = os.path.join(edbpath, generate_unique_name("layout") + ".aedb")
-            self.logger.info("No EDB is provided. Creating a new EDB {}.".format(edbpath))
+            # This project is not tracked or cleaned up automatically: callers
+            # (and tests/CI in particular) are responsible for deleting it, or
+            # for redirecting HOME/USERPROFILE to a scratch directory before
+            # instantiating Edb() without an explicit edbpath.
+            self.logger.warning(
+                "No edbpath was provided. Creating a new EDB at %s. This project will not be "
+                "deleted automatically; remove it manually or pass an explicit edbpath under a "
+                "scratch/temp directory instead.",
+                edbpath,
+            )
         self.edbpath = edbpath
         self.log_name = None
         if edbpath:
