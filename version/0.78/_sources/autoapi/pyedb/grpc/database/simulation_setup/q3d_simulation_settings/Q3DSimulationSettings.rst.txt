@@ -1,0 +1,322 @@
+
+
+
+
+
+
+:class:`Q3DSimulationSettings`
+==============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.q3d_simulation_settings.Q3DSimulationSettings(pedb, core: ansys.edb.core.simulation_setup.q3d_simulation_settings.Q3DSimulationSettings)
+
+   
+   Q3D simulation settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Q3DSimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~acrl`
+            - ACRL settings class.
+          * - :py:attr:`~advanced`
+            - Advanced settings class.
+          * - :py:attr:`~advanced_meshing`
+            - Advanced meshing settings class.
+          * - :py:attr:`~cg`
+            - CG settings class.
+          * - :py:attr:`~dcrl`
+            - DCRL settings class.
+          * - :py:attr:`~enabled`
+            - Enabled flag.
+          * - :py:attr:`~general`
+            - General settings class.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.q3d_simulation_settings import Q3DSimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: acrl
+   :type: pyedb.grpc.database.simulation_setup.q3d_acrl_settings.Q3DACRLSettings
+
+
+   
+   ACRL settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`Q3DACRLSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       q3d_acrl_settings.Q3DACRLSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: advanced
+   :type: pyedb.grpc.database.simulation_setup.q3d_advanced_settings.Q3DAdvancedSettings
+
+
+   
+   Advanced settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`Q3DAdvancedSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       q3d_advanced_settings.Q3DAdvancedSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: advanced_meshing
+   :type: pyedb.grpc.database.simulation_setup.q3d_advanced_meshing_settings.Q3DAdvancedMeshingSettings
+
+
+   
+   Advanced meshing settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`Q3DAdvancedMeshingSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       q3d_advanced_meshing_settings.Q3DAdvancedMeshingSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cg
+   :type: pyedb.grpc.database.simulation_setup.q3d_cg_settings.Q3DCGSettings
+
+
+   
+   CG settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`Q3DCGSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       q3d_cg_settings.Q3DCGSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dcrl
+   :type: pyedb.grpc.database.simulation_setup.q3d_dcrl_settings.Q3DDCRLSettings
+
+
+   
+   DCRL settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`Q3DDCRLSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       q3d_dcrl_settings.Q3DDCRLSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enabled
+   :type: bool
+
+
+   
+   Enabled flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Enabled flag.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: general
+   :type: pyedb.grpc.database.simulation_setup.q3d_general_settings.Q3DGeneralSettings
+
+
+   
+   General settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`Q3DGeneralSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       q3d_general_settings.Q3DGeneralSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

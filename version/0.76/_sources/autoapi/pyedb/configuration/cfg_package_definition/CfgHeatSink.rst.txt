@@ -1,0 +1,171 @@
+
+
+
+
+
+
+:class:`CfgHeatSink`
+====================
+
+
+.. py:class:: pyedb.configuration.cfg_package_definition.CfgHeatSink(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Configuration heat sink class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgHeatSink
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_attributes`
+            - Return non-null attribute dict (CfgBase compatibility).
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+          * - :py:attr:`~fin_base_height`
+            - 
+          * - :py:attr:`~fin_height`
+            - 
+          * - :py:attr:`~fin_orientation`
+            - 
+          * - :py:attr:`~fin_spacing`
+            - 
+          * - :py:attr:`~fin_thickness`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_package_definition import CfgHeatSink
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: fin_base_height
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: fin_height
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: fin_orientation
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: fin_spacing
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: fin_thickness
+   :type:  Optional[Any]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_attributes(exclude=None)
+
+   
+   Return non-null attribute dict (CfgBase compatibility).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

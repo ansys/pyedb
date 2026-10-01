@@ -1,0 +1,128 @@
+
+
+
+
+
+
+:class:`CfgRoughnessModel`
+==========================
+
+
+.. py:class:: pyedb.configuration.cfg_stackup.CfgRoughnessModel(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Collect top, bottom, and side roughness models for a layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgRoughnessModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~enabled`
+            - 
+          * - :py:attr:`~top`
+            - 
+          * - :py:attr:`~bottom`
+            - 
+          * - :py:attr:`~side`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_stackup import CfgRoughnessModel
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: enabled
+   :type:  Optional[bool]
+   :value: False
+
+
+.. py:attribute:: top
+   :type:  CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None
+   :value: None
+
+
+.. py:attribute:: bottom
+   :type:  CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None
+   :value: None
+
+
+.. py:attribute:: side
+   :type:  CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+

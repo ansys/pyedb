@@ -1,0 +1,103 @@
+
+
+
+
+
+
+:class:`MultiFrequencyAdaptiveSolution`
+=======================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_general_settings.MultiFrequencyAdaptiveSolution(pedb, core)
+
+
+.. py:currentmodule:: MultiFrequencyAdaptiveSolution
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~adaptive_frequencies`
+            - 
+          * - :py:attr:`~max_passes`
+            - Maximum number of passes for multi-frequency adaptive solution.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_general_settings import MultiFrequencyAdaptiveSolution
+
+Property detail
+---------------
+
+.. py:property:: adaptive_frequencies
+   :type: list[AdaptiveFrequency]
+
+
+.. py:property:: max_passes
+   :type: int
+
+
+   
+   Maximum number of passes for multi-frequency adaptive solution.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum number of passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

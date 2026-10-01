@@ -1,0 +1,136 @@
+
+
+
+
+
+
+The ``base_functions.py`` module
+================================
+
+.. py:module:: pyedb.libraries.rf_libraries.base_functions
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: base_functions
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.base_functions.HatchGround`
+            - Create a rectangular demo board whose ground layer is filled with an
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.base_functions.Meander`
+            - Fully-parametric micro-strip meander line.
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.base_functions.MIMCapacitor`
+            - Metal–Insulator–Metal parallel-plate capacitor.
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.base_functions.SpiralInductor`
+            - Square spiral inductor with an optional under-pass bridge.
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.base_functions.CPW`
+            - Coplanar waveguide with side ground planes.
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.base_functions.RadialStub`
+            - Radial (fan) open stub for RF matching.
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.base_functions.RatRace`
+            - 180° rat-race (ring) hybrid coupler.
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.base_functions.InterdigitalCapacitor`
+            - Inter-digitated comb capacitor with fully parametric fingers.
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.base_functions.DifferentialTLine`
+            - Edge-coupled differential pair with fully parametric geometry.
+
+
+          * - :py:obj:`~pyedb.libraries.rf_libraries.base_functions.MicroStripLine`
+            - Single-ended micro-strip line with fixed geometry and editable stack-up.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HatchGround</autoapi/pyedb/libraries/rf_libraries/base_functions/HatchGround>
+    <span class="nf nf-cod-symbol_class"></span> Meander</autoapi/pyedb/libraries/rf_libraries/base_functions/Meander>
+    <span class="nf nf-cod-symbol_class"></span> MIMCapacitor</autoapi/pyedb/libraries/rf_libraries/base_functions/MIMCapacitor>
+    <span class="nf nf-cod-symbol_class"></span> SpiralInductor</autoapi/pyedb/libraries/rf_libraries/base_functions/SpiralInductor>
+    <span class="nf nf-cod-symbol_class"></span> CPW</autoapi/pyedb/libraries/rf_libraries/base_functions/CPW>
+    <span class="nf nf-cod-symbol_class"></span> RadialStub</autoapi/pyedb/libraries/rf_libraries/base_functions/RadialStub>
+    <span class="nf nf-cod-symbol_class"></span> RatRace</autoapi/pyedb/libraries/rf_libraries/base_functions/RatRace>
+    <span class="nf nf-cod-symbol_class"></span> InterdigitalCapacitor</autoapi/pyedb/libraries/rf_libraries/base_functions/InterdigitalCapacitor>
+    <span class="nf nf-cod-symbol_class"></span> DifferentialTLine</autoapi/pyedb/libraries/rf_libraries/base_functions/DifferentialTLine>
+    <span class="nf nf-cod-symbol_class"></span> MicroStripLine</autoapi/pyedb/libraries/rf_libraries/base_functions/MicroStripLine>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

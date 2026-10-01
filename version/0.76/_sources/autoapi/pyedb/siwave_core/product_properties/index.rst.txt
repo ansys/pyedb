@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``pyedb.siwave_core.product_properties`` library
+====================================================
+
+.. py:module:: pyedb.siwave_core.product_properties
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: product_properties
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.siwave_core.product_properties.SIwaveProperties`
+            - 
+
+
+          * - :py:obj:`~pyedb.siwave_core.product_properties.AttribIndex`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SIwaveProperties</autoapi/pyedb/siwave_core/product_properties/SIwaveProperties>
+    <span class="nf nf-cod-symbol_class"></span> AttribIndex</autoapi/pyedb/siwave_core/product_properties/AttribIndex>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,145 @@
+
+
+
+
+
+
+:class:`ViaMeshingProperty`
+===========================
+
+
+.. py:class:: pyedb.grpc.database.inner.layout_obj.ViaMeshingProperty
+
+   
+   Represents the via meshing properties.
+
+   This class encapsulates configuration settings for via meshing,
+   including stack identifier, material type, and meshing settings.
+
+
+   :Attributes:
+
+       **sid** : :class:`python:int`
+           Stack identifier. Default is 0.
+
+       **material** : :class:`python:str`
+           Material name for the via. Default is "".
+
+       **meshing_setting** : :class:`python:str`
+           Meshing setting or technique (e.g., "Mesh", "Auto"). Default is "".
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ViaMeshingProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_property_string`
+            - Convert ViaMeshingProperty instance into a property string.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~sid`
+            - 
+          * - :py:attr:`~material`
+            - 
+          * - :py:attr:`~meshing_setting`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.inner.layout_obj import ViaMeshingProperty
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: sid
+   :type:  int
+   :value: 0
+
+
+.. py:attribute:: material
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: meshing_setting
+   :type:  str
+   :value: ''
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: to_property_string() -> str
+
+   
+   Convert ViaMeshingProperty instance into a property string.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           A formatted property string with all properties encoded.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

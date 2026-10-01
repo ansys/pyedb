@@ -1,0 +1,94 @@
+
+
+
+
+
+
+:class:`ScanType`
+=================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.xtalk_scan.scan_config.ScanType
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ScanType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~IMPEDANCE`
+            - 
+          * - :py:attr:`~FREQ_XTALK`
+            - 
+          * - :py:attr:`~TIME_XTALK`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import ScanType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: IMPEDANCE
+   :value: 0
+
+
+.. py:attribute:: FREQ_XTALK
+   :value: 1
+
+
+.. py:attribute:: TIME_XTALK
+   :value: 2
+
+
+
+
+
+

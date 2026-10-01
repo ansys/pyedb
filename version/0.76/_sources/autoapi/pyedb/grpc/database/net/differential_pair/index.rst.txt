@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``differential_pair.py`` module
+===================================
+
+.. py:module:: pyedb.grpc.database.net.differential_pair
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: differential_pair
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.net.differential_pair.DifferentialPairs`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.net.differential_pair.DifferentialPair`
+            - Manages EDB functionalities for a primitive.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> DifferentialPairs</autoapi/pyedb/grpc/database/net/differential_pair/DifferentialPairs>
+    <span class="nf nf-cod-symbol_class"></span> DifferentialPair</autoapi/pyedb/grpc/database/net/differential_pair/DifferentialPair>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

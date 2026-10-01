@@ -1,0 +1,228 @@
+
+
+
+
+
+
+:class:`Drc`
+============
+
+
+.. py:class:: pyedb.workflows.drc.drc.Drc(edb: pyedb.Edb)
+
+   
+   High-performance DRC engine for PyEDB.
+
+   This class provides a multi-threaded design rule checker that runs inside
+   an open PyEDB session. It uses R-tree spatial indexing for efficient
+   geometry queries and parallelizes all rule checks using ThreadPoolExecutor.
+
+   :Parameters:
+
+       **edb** : :obj:`pyedb.Edb`
+           Active EDB session that must already be open.
+
+   :Attributes:
+
+       **edb** : :obj:`pyedb.Edb`
+           Reference to the EDB instance.
+
+       **violations** : :class:`python:list` :obj:`of` :class:`python:dict`
+           List of violation dictionaries populated by ``check()``.
+
+       **idx_primitives** : :obj:`rtree.index.Index`
+           R-tree spatial index for primitive geometries.
+
+       **idx_vias** : :obj:`rtree.index.Index`
+           R-tree spatial index for via locations.
+
+       **idx_components** : :obj:`rtree.index.Index`
+           R-tree spatial index for component bounding boxes.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Basic DRC workflow:
+
+   >>> import pyedb
+   >>> from pyedb.workflows.drc.drc import Drc, Rules
+   >>> edb = pyedb.Edb("my_board.aedb")
+   >>> rules = Rules.parse_file("rules.json")
+   >>> drc = Drc(edb)
+   >>> violations = drc.check(rules)
+   >>> print(f"Found {len(violations)} violations")
+
+   Export to IPC-356A format:
+
+   >>> drc.to_ipc356a("review.ipc")
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Drc
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~check`
+            - Run all rules and return a list of violations.
+          * - :py:attr:`~to_ipc356a`
+            - Write a complete IPC-D-356A netlist with DRC annotations.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~edb`
+            - 
+          * - :py:attr:`~violations`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.drc.drc import Drc
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: edb
+
+.. py:attribute:: violations
+   :type:  list[dict[str, Any]]
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: check(rules: Rules) -> list[dict[str, Any]]
+
+   
+   Run all rules and return a list of violations.
+
+   This method dispatches each rule to its appropriate handler and
+   collects all violations. Successive calls overwrite previous results.
+
+   :Parameters:
+
+       **rules** : :obj:`Rules`
+           Validated rule container with design constraints.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`python:dict`
+           Each dictionary describes a single violation with keys:
+           
+           - ``rule`` : Rule type (e.g., ``"minLineWidth"``)
+           - ``limit_um`` : Limit value in micrometers
+           - Additional rule-specific keys (``layer``, ``net1``, ``primitive``, etc.)
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> rules = Rules().add_min_line_width("trace", "3.5mil")
+   >>> drc = Drc(edb)
+   >>> violations = drc.check(rules)
+   >>> for v in violations:
+   ...     print(f"{v['rule']}: {v}")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_ipc356a(file_path: str) -> None
+
+   
+   Write a complete IPC-D-356A netlist with DRC annotations.
+
+   This method exports the full netlist in IPC-D-356A format with all
+   detected violations appended as comment lines. The file can be imported
+   by CAM tools (Valor, Genesis, etc.) for fabrication review.
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`
+           Output file path. Overwrites existing files without warning.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   - File format follows IPC-D-356A specification
+   - Violations are appended as comment lines starting with ``C``
+   - Includes netlist information (nets, primitives, padstack instances)
+   - Compatible with major CAM software packages
+
+
+   .. rubric:: Examples
+
+   >>> drc = Drc(edb)
+   >>> violations = drc.check(rules)
+   >>> drc.to_ipc356a("fab_review.ipc")
+
+   Export with violations:
+
+   >>> rules = Rules().add_min_line_width("trace", "3mil")
+   >>> drc = Drc(edb)
+   >>> drc.check(rules)
+   >>> drc.to_ipc356a("review_with_violations.ipc")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

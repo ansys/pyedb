@@ -1,0 +1,28 @@
+
+
+
+
+
+
+:class:`CutoutSubdesignType`
+============================
+
+
+.. py:class:: pyedb.generic.constants.CutoutSubdesignType
+
+   Bases: :py:obj:`object`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import CutoutSubdesignType
+
+
+
+
+

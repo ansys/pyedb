@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``siwave_advanced_settings.py`` module
+==========================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.siwave_advanced_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave_advanced_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.siwave_advanced_settings.SIWaveAdvancedSettings`
+            - SIWave advanced settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SIWaveAdvancedSettings</autoapi/pyedb/grpc/database/simulation_setup/siwave_advanced_settings/SIWaveAdvancedSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

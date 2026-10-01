@@ -1,0 +1,166 @@
+
+
+
+
+
+
+:class:`XmlMaterials`
+=====================
+
+
+.. py:class:: pyedb.xml_parser.xml_stackup.XmlMaterials(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Container for material definitions in the XML stackup.
+
+
+   :Parameters:
+
+       **material** : :class:`python:list` :obj:`of` :obj:`XmlMaterial`, :obj:`optional`
+           List of material definitions. The default is an empty list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: XmlMaterials
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_material`
+            - Add a material to the stackup.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~material`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.xml_parser.xml_stackup import XmlMaterials
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: material
+   :type:  list[XmlMaterial] | None
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_material(name: str, **kwargs) -> XmlMaterial
+
+   
+   Add a material to the stackup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the material.
+
+       **\*\*kwargs** : :class:`python:float`
+           Material properties as keyword arguments. Supported properties include
+           ``permittivity``, ``permeability``, ``conductivity``,
+           ``dielectric_loss_tangent``, and ``magnetic_loss_tangent``.
+
+
+
+   :Returns:
+
+       :obj:`XmlMaterial`
+           The newly created material object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_stackup import XmlMaterials
+   >>> materials = XmlMaterials()
+   >>> copper = materials.add_material("copper", conductivity=5.8e7)
+   >>> fr4 = materials.add_material("fr4", permittivity=4.5, dielectric_loss_tangent=0.02)
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

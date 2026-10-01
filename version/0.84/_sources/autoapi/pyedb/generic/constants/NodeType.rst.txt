@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`NodeType`
+=================
+
+
+.. py:class:: pyedb.generic.constants.NodeType
+
+   Bases: :py:obj:`object`
+
+
+   
+   Type of node for source creation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import NodeType
+
+
+
+
+

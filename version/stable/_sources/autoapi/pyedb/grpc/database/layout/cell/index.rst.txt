@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``cell.py`` module
+======================
+
+.. py:module:: pyedb.grpc.database.layout.cell
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cell
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.layout.cell.Cell`
+            - Manage :class:`Cell <ansys.edb.core.layout.cell.Cell>`
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Cell</autoapi/pyedb/grpc/database/layout/cell/Cell>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

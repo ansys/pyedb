@@ -1,0 +1,133 @@
+
+
+
+
+
+
+:class:`SimSettings`
+====================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.SimSettings
+
+   
+   Simulation settings and configuration.
+
+
+
+   :Attributes:
+
+       **design_type** : :class:`python:str`
+           Type of design being simulated.
+
+       **allow_off_core** : :ref:`bool <python:bltin-boolean-values>`
+           Whether off-core solving is enabled.
+
+       **manual_settings** : :ref:`bool <python:bltin-boolean-values>`
+           Whether manual settings are being used.
+
+       **two_level** : :ref:`bool <python:bltin-boolean-values>`
+           Whether two-level solving is enabled.
+
+       **distribution_types** : :class:`python:list` :obj:`of` :class:`python:str`
+           Distribution types configured for the simulation.
+
+       **machines** : :class:`python:list` :obj:`of` :class:`python:str`
+           Machine specifications (RAM, cores, etc.).
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> settings = SimSettings(
+   ...     design_type="SIwave",
+   ...     allow_off_core=True,
+   ...     manual_settings=False,
+   ...     two_level=True,
+   ...     distribution_types=["Local"],
+   ...     machines=["localhost RAM: 32GB"],
+   ... )
+   >>> settings.allow_off_core
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SimSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~design_type`
+            - 
+          * - :py:attr:`~allow_off_core`
+            - 
+          * - :py:attr:`~manual_settings`
+            - 
+          * - :py:attr:`~two_level`
+            - 
+          * - :py:attr:`~distribution_types`
+            - 
+          * - :py:attr:`~machines`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import SimSettings
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: design_type
+   :type:  str
+
+.. py:attribute:: allow_off_core
+   :type:  bool
+
+.. py:attribute:: manual_settings
+   :type:  bool
+
+.. py:attribute:: two_level
+   :type:  bool
+
+.. py:attribute:: distribution_types
+   :type:  list[str]
+
+.. py:attribute:: machines
+   :type:  list[str]
+
+
+
+
+

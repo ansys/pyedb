@@ -1,0 +1,138 @@
+
+
+
+
+
+
+The ``pyedb.generic.plot`` library
+==================================
+
+.. py:module:: pyedb.generic.plot
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: plot
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~plot_matplotlib`
+            - Create a matplotlib plot based on a list of data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: plot_matplotlib(plot_data, size=(2000, 1000), show_legend=True, xlabel='', ylabel='', title='', save_plot=None, x_limits=None, y_limits=None, axis_equal=False, annotations=None, show=True)
+
+   
+   Create a matplotlib plot based on a list of data.
+
+
+   :Parameters:
+
+       **plot_data** : :class:`python:list` :obj:`of` :class:`python:list`
+           List of plot data. Every item has to be in the following format
+           For type ``fill``: `[x points, y points, color, label, alpha, type=="fill"]`.
+           For type ``path``: `[vertices, codes, color, label, alpha, type=="path"]`.
+           For type ``contour``: `[vertices, codes, color, label, alpha, line_width, type=="contour"]`.
+
+       **size** : :class:`python:tuple`, :obj:`optional`
+           Image size in pixel (width, height). Default is `(2000, 1000)`.
+
+       **show_legend** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either to show legend or not. Default is `True`.
+
+       **xlabel** : :class:`python:str`, :obj:`optional`
+           Plot X label. Default is `""`.
+
+       **ylabel** : :class:`python:str`, :obj:`optional`
+           Plot Y label. Default is `""`.
+
+       **title** : :class:`python:str`, :obj:`optional`
+           Plot Title label. Default is `""`.
+
+       **save_plot** : :class:`python:str`, :obj:`optional`
+           If a path is specified the plot will be saved in this location.
+           If ``save_plot`` is provided, the ``show`` parameter is ignored.
+
+       **x_limits** : :class:`python:list`, :obj:`optional`
+           List of x limits (left and right). Default is `None`.
+
+       **y_limits** : :class:`python:list`, :obj:`optional`
+           List of y limits (bottom and top). Default is `None`.
+
+       **axis_equal** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+            Whether to show the same scale on both axis or have a different scale based on plot size.
+           Default is `False`.
+
+       **annotations** : :class:`python:list`, :obj:`optional`
+           List of annotations to add to the plot. The format is [x, y, string, dictionary of font options].
+           Default is `None`.
+
+       **show** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to show the plot or return the matplotlib object. Default is `True`.
+
+
+
+   :Returns:
+
+       :class:`matplotlib.plt`
+           Matplotlib fig object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

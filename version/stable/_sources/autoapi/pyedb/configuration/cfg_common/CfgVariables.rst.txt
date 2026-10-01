@@ -1,0 +1,133 @@
+
+
+
+
+
+
+:class:`CfgVariables`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_common.CfgVariables(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Collect variable definitions for the ``variables`` section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgVariables
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add`
+            - Add a design or project variable.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~variables`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_common import CfgVariables
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: variables
+   :type:  list[CfgVar]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add(name: str, value: Union[int, float, str], description: str = '') -> None
+
+   
+   Add a design or project variable.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Variable name.  Prefix with ``$`` for project-scope, e.g.
+           ``"$project_temp"``; unprefixed names are design-scope.
+
+       **value** : :class:`python:int`, :class:`python:float`, :obj:`or` :class:`python:str`
+           Variable value.
+
+       **description** : :class:`python:str`, :obj:`optional`
+           Human-readable description.  Default is ``""``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg.variables.add("trace_width", "0.15mm", "Default trace width")
+   cfg.variables.add("$project_temp", "25cel")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
