@@ -9,6 +9,66 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.84.3 <https://github.com/ansys/pyedb/releases/tag/v0.84.3>`_ - October 01, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Grpc Trace, Polygon parametrized fixed
+          - `#2576 <https://github.com/ansys/pyedb/pull/2576>`_
+
+        * - Default folder when edbpath not provided to prevent uncleaned project
+          - `#2578 <https://github.com/ansys/pyedb/pull/2578>`_
+
+        * - Resolving CI linux issue with 2027.1
+          - `#2579 <https://github.com/ansys/pyedb/pull/2579>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ruff from 0.16.7 to 0.16.8
+          - `#2569 <https://github.com/ansys/pyedb/pull/2569>`_
+
+        * - Bump codecov/codecov-action from 7.0.0 to 7.1.1
+          - `#2570 <https://github.com/ansys/pyedb/pull/2570>`_
+
+        * - Bump astral-sh/setup-uv from 10.0.1 to 10.1.0
+          - `#2571 <https://github.com/ansys/pyedb/pull/2571>`_
+
+        * - Bump sphinx-gallery from 0.21.0 to 0.22.1
+          - `#2572 <https://github.com/ansys/pyedb/pull/2572>`_
+
+        * - Bump numpydoc from 1.10.0 to 1.11.0
+          - `#2573 <https://github.com/ansys/pyedb/pull/2573>`_
+
+        * - Bump pytest-rerunfailures from 16.6.1 to 16.7
+          - `#2574 <https://github.com/ansys/pyedb/pull/2574>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.84.2
+          - `#2568 <https://github.com/ansys/pyedb/pull/2568>`_
+
+        * - Pre-commit automatic update
+          - `#2575 <https://github.com/ansys/pyedb/pull/2575>`_
+
+
 `0.84.2 <https://github.com/ansys/pyedb/releases/tag/v0.84.2>`_ - September 25, 2026
 ====================================================================================
 
