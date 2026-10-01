@@ -42,7 +42,7 @@ from ansys.edb.core.hierarchy.component_group import ComponentType as CoreCompon
 # (solder_ball_property, die_property, port_property).  Mutations on those copies are
 # persisted on the copy via direct RPC stubs, but the copy must be linked back to the
 # parent typed property via its setter (SetSolderBallProperty / SetDieProperty /
-# SetPortProperty) — no full SetComponentProperty write-back on the component is required.
+# SetPortProperty) - no full SetComponentProperty write-back on the component is required.
 # Older releases expose a flat ComponentProperty whose mutations must be committed via a
 # full SetComponentProperty write-back on the component.
 try:
@@ -1370,19 +1370,36 @@ class Components(object):
                 else:
                     ic_die_prop.die_orientation = CoreDieOrientation.CHIP_DOWN
                 cmp_property.die_property = ic_die_prop
+                cmp.core.component_property = cmp_property.clone()
 
-            solder_ball_prop = cmp_property.solder_ball_property
-            solder_ball_prop.set_diameter(
-                self._pedb._value_setter(sball_diam), self._pedb._value_setter(sball_mid_diam)
-            )
-            solder_ball_prop.height = self._pedb._value_setter(sball_height)
-            solder_ball_prop.shape = sball_shape
+            # Linux 2027.1 server: the solder ball sub-properties interact (setting one can reset
+            # another) when modified on the same local copy. Commit each change to the component
+            # and re-read the property before applying the next one.
             if material_name:
                 if not material_name in self._pedb.materials:
                     self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
-                solder_ball_prop.material_name = material_name
-            cmp_property.solder_ball_property = solder_ball_prop
 
+            def _commit(apply_fn):
+                prop = cmp.core.component_property
+                sb_prop = prop.solder_ball_property
+                apply_fn(sb_prop)
+                prop.solder_ball_property = sb_prop
+                cmp.core.component_property = prop.clone()
+
+            _commit(lambda sb: setattr(sb, "shape", sball_shape))
+            _commit(lambda sb: setattr(sb, "height", self._pedb._value_setter(sball_height)))
+            _commit(
+                lambda sb: sb.set_diameter(
+                    self._pedb._value_setter(sball_diam), self._pedb._value_setter(sball_mid_diam)
+                )
+            )
+            if material_name:
+                _commit(lambda sb: setattr(sb, "material_name", material_name))
+            # Re-apply shape last if a later step reset it.
+            if cmp.core.component_property.solder_ball_property.shape != sball_shape:
+                _commit(lambda sb: setattr(sb, "shape", sball_shape))
+
+            cmp_property = cmp.core.component_property
             port_prop = cmp_property.port_property
             port_prop.reference_height = self._pedb._value_setter(reference_height)
             port_prop.reference_size_auto = auto_reference_size
@@ -1393,7 +1410,7 @@ class Components(object):
             cmp_property.port_property = port_prop
             cmp.core.component_property = cmp_property.clone()
         else:
-            # ansys-edb-core < 0.4: flat ComponentProperty — must write back via SetComponentProperty.
+            # ansys-edb-core < 0.4: flat ComponentProperty - must write back via SetComponentProperty.
             cmp_property = cmp.component_property
             if cmp.core.component_type == CoreComponentType.IC:
                 ic_die_prop = cmp_property.die_property
@@ -1410,11 +1427,13 @@ class Components(object):
                 cmp_property.die_property = ic_die_prop
 
             solder_ball_prop = cmp_property.solder_ball_property
+            # Shape must be set first: on some server builds (Linux 2027.1) changing the shape
+            # resets the diameters, so diameter/height are applied afterwards.
+            solder_ball_prop.shape = sball_shape
+            solder_ball_prop.height = self._pedb._value_setter(sball_height)
             solder_ball_prop.set_diameter(
                 self._pedb._value_setter(sball_diam), self._pedb._value_setter(sball_mid_diam)
             )
-            solder_ball_prop.height = self._pedb._value_setter(sball_height)
-            solder_ball_prop.shape = sball_shape
             if material_name:
                 if not material_name in self._pedb.materials:
                     self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
