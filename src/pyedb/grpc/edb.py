@@ -173,7 +173,11 @@ class Edb(EdbInit):
         Full path to AEDB folder or layout file to import. Accepts both string paths
         and ``pathlib.Path`` objects. Supported formats:
         BRD, MCM, XML (IPC2581), GDS, ODB++ (TGZ/ZIP), DXF.
-        Default creates new AEDB in documents folder.
+        Default creates a new AEDB named ``layout_<random>.aedb`` under the current
+        user's Documents folder (Windows) or home directory (Linux). This fallback
+        project is **not** deleted automatically; avoid relying on it in scripts,
+        tests, or CI pipelines that run repeatedly, as leftover projects will
+        accumulate and consume disk space.
     cellname : str, optional
         Specific cell to open. Default opens first cell.
     isreadonly : bool, optional
@@ -295,7 +299,16 @@ class Edb(EdbInit):
                 if not edbpath:
                     edbpath = os.path.expanduser("~")
                 edbpath = os.path.join(edbpath, generate_unique_name("layout") + ".aedb")
-            self.logger.info("No EDB is provided. Creating a new EDB {}.".format(edbpath))
+            # This project is not tracked or cleaned up automatically: callers
+            # (and tests/CI in particular) are responsible for deleting it, or
+            # for redirecting HOME/USERPROFILE to a scratch directory before
+            # instantiating Edb() without an explicit edbpath.
+            self.logger.warning(
+                "No edbpath was provided. Creating a new EDB at %s. This project will not be "
+                "deleted automatically; remove it manually or pass an explicit edbpath under a "
+                "scratch/temp directory instead.",
+                edbpath,
+            )
         self.edbpath = edbpath
         self.log_name = None
         if edbpath:
@@ -509,7 +522,7 @@ class Edb(EdbInit):
     def _value_setter(self, val) -> Value | float | str:
         """Helper for setting variable values with unit handling."""
         if isinstance(val, Value):
-            # Value already wraps a CoreValue expression — pass through as-is
+            # Value already wraps a CoreValue expression to preserve parametrization — pass through as-is
             return val
         try:
             float(val)
@@ -1541,16 +1554,26 @@ class Edb(EdbInit):
 
         # If x is an iterable (list/tuple) assume coordinates sequence
         if y is None and isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
-            core_pd = GrpcPointData([self._value_setter(i) for i in x])
+            # Unwrap to .core: pyedb's Value subclasses float, which would otherwise
+            # trigger gRPC's isinstance(val, (int, float)) fast-path and silently
+            # evaluate parametric expressions to constants (losing the variable link).
+            coords = [self._value_setter(i) for i in x]
+            coords = [c.core if hasattr(c, "core") else c for c in coords]
+            core_pd = GrpcPointData(coords)
             return PointData(core_pd)
 
         # If numeric x and y provided
         if y is not None:
-            core_pd = GrpcPointData([self._value_setter(x), self._value_setter(y)])
+            vx, vy = self._value_setter(x), self._value_setter(y)
+            vx = vx.core if hasattr(vx, "core") else vx
+            vy = vy.core if hasattr(vy, "core") else vy
+            core_pd = GrpcPointData([vx, vy])
             return PointData(core_pd)
 
         # Fallback: single value
-        core_pd = GrpcPointData([self._value_setter(x)])
+        vx = self._value_setter(x)
+        vx = vx.core if hasattr(vx, "core") else vx
+        core_pd = GrpcPointData([vx])
         return PointData(core_pd)
 
     @staticmethod

@@ -34,6 +34,7 @@ from ansys.edb.core.primitive.path import (
     PathCornerType as CorePathCornerType,
     PathEndCapType as CorePathEndCapType,
 )
+from ansys.edb.core.utility.value import Value as CoreValue
 
 from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.primitive.primitive import Primitive
@@ -439,8 +440,11 @@ class Path(Primitive):
         if isinstance(points, CorePolygonData):
             polygon_data = points
         else:
+            # Unwrap to .core: pyedb's Value subclasses float, which would otherwise
+            # trigger gRPC's isinstance(val, (int, float)) fast-path and silently
+            # evaluate parametric expressions to constants (losing the variable link).
             new_points = [
-                CorePointData([self._pedb.value(pt[0]), self._pedb.value(pt[1])])
+                CorePointData([self._pedb.value(pt[0]).core, self._pedb.value(pt[1]).core])
                 if not isinstance(pt, CorePointData)
                 else pt
                 for pt in points
@@ -488,7 +492,22 @@ class Path(Primitive):
         List[List[float, float]].
 
         """
-        return [[Value(pt.x), Value(pt.y)] for pt in self.core.center_line.points]
+        # NOTE: unlike other server-side getters (e.g. Path.width), the
+        # ``GetCenterLine`` gRPC call returns parametric point coordinates with a
+        # ``variable_owner`` submessage whose ``id`` is left unset (0), which is not
+        # a valid db/cell id and fails evaluation. Re-wrap with the active cell as
+        # owner so parametric expressions (e.g. a coordinate driven by a design
+        # variable) can still be evaluated instead of raising on readback.
+        owner = self._pedb.active_cell
+        points = []
+        for pt in self.core.center_line.points:
+            x, y = pt.x, pt.y
+            if x.is_parametric and x.msg.variable_owner.id == 0:
+                x = CoreValue(x.msg.text, owner)
+            if y.is_parametric and y.msg.variable_owner.id == 0:
+                y = CoreValue(y.msg.text, owner)
+            points.append([Value(x), Value(y)])
+        return points
 
     @property
     def corner_style(self) -> str:

@@ -774,9 +774,11 @@ class PadstackInstance(conn_obj.ConnObj):
         pos = []
         for v in value:
             if isinstance(v, (float, int, str)):
-                pos.append(self._pedb._value_setter(v))
-            else:
-                pos.append(v)
+                v = self._pedb._value_setter(v)
+            # Unwrap to .core: pyedb's Value subclasses float, which would otherwise
+            # trigger gRPC's isinstance(val, (int, float)) fast-path and silently
+            # evaluate parametric expressions to constants (losing the variable link).
+            pos.append(v.core if hasattr(v, "core") else v)
         point_data = CorePointData(pos[0], pos[1])
         self.core.set_position_and_rotation(
             x=point_data.x, y=point_data.y, rotation=self._pedb._value_setter(self.rotation)

@@ -439,43 +439,43 @@ class Stackup:
             return False
 
         self.add_layer(
-            "BOT",
-            None,
+            layer_name="BOT",
+            base_layer=None,
             material="copper",
             thickness=outer_layer_thickness,
-            fillMaterial=dielectric_material,
+            filling_material=dielectric_material,
         )
         self.add_layer(
             "D" + str(int(layer_count / 2)),
-            None,
+            base_layer=None,
             material="FR4_epoxy",
             thickness=dielectric_thickness,
             layer_type="dielectric",
-            fillMaterial=dielectric_material,
+            filling_material=dielectric_material,
         )
         self.add_layer(
-            "TOP",
-            None,
+            layer_name="TOP",
+            base_layer=None,
             material="copper",
             thickness=outer_layer_thickness,
-            fillMaterial=dielectric_material,
+            filling_material=dielectric_material,
         )
         if soldermask:
             self.add_layer(
-                "SMT",
-                None,
+                layer_name="SMT",
+                base_layer=None,
                 material="SolderMask",
                 thickness=soldermask_thickness,
                 layer_type="dielectric",
-                fillMaterial=dielectric_material,
+                filling_material=dielectric_material,
             )
             self.add_layer(
-                "SMB",
-                None,
+                layer_name="SMB",
+                base_layer=None,
                 material="SolderMask",
                 thickness=soldermask_thickness,
                 layer_type="dielectric",
-                fillMaterial=dielectric_material,
+                filling_material=dielectric_material,
                 method="add_on_bottom",
             )
             self.layers["TOP"].dielectric_fill = "SolderMask"
@@ -484,39 +484,39 @@ class Stackup:
         for layer_num in np.arange(int(layer_count / 2), 1, -1):
             # Generate upper half
             self.add_layer(
-                "L" + str(layer_num),
-                "TOP",
+                layer_name="L" + str(layer_num),
+                base_layer="TOP",
                 material="copper",
                 thickness=inner_layer_thickness,
-                fillMaterial=dielectric_material,
+                filling_material=dielectric_material,
                 method="insert_below",
             )
             self.add_layer(
-                "D" + str(layer_num - 1),
-                "TOP",
+                layer_name="D" + str(layer_num - 1),
+                base_layer="TOP",
                 material=dielectric_material,
                 thickness=dielectric_thickness,
                 layer_type="dielectric",
-                fillMaterial=dielectric_material,
+                filling_material=dielectric_material,
                 method="insert_below",
             )
 
             # Generate lower half
             self.add_layer(
-                "L" + str(layer_count - layer_num + 1),
-                "BOT",
+                layer_name="L" + str(layer_count - layer_num + 1),
+                base_layer="BOT",
                 material="copper",
                 thickness=inner_layer_thickness,
-                fillMaterial=dielectric_material,
+                filling_material=dielectric_material,
                 method="insert_above",
             )
             self.add_layer(
-                "D" + str(layer_count - layer_num + 1),
-                "BOT",
+                layer_name="D" + str(layer_count - layer_num + 1),
+                base_layer="BOT",
                 material=dielectric_material,
                 thickness=dielectric_thickness,
                 layer_type="dielectric",
-                fillMaterial=dielectric_material,
+                filling_material=dielectric_material,
                 method="insert_above",
             )
         return True
