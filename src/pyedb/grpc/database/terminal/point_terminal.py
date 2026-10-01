@@ -70,7 +70,12 @@ class PointTerminal(Terminal):
             Point terminal object.
         """
         if isinstance(point, list):
-            point = CorePointData([layout._pedb._value_setter(i) for i in point])
+            # Unwrap to .core: pyedb's Value subclasses float, which would otherwise
+            # trigger gRPC's isinstance(val, (int, float)) fast-path and silently
+            # evaluate parametric expressions to constants (losing the variable link).
+            coords = [layout._pedb._value_setter(i) for i in point]
+            coords = [c.core if hasattr(c, "core") else c for c in coords]
+            point = CorePointData(coords)
         if isinstance(net, str):
             net = layout._pedb.nets[net]
         if isinstance(layer, str):
@@ -118,7 +123,11 @@ class PointTerminal(Terminal):
     def location(self, value):
         if not isinstance(value, list):
             return
+        # Unwrap to .core: pyedb's Value subclasses float, which would otherwise
+        # trigger gRPC's isinstance(val, (int, float)) fast-path and silently
+        # evaluate parametric expressions to constants (losing the variable link).
         value = [self._pedb._value_setter(i) for i in value]
+        value = [v.core if hasattr(v, "core") else v for v in value]
         self.core.point = CorePointData(value)
 
     @property
