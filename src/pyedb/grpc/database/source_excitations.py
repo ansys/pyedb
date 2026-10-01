@@ -264,8 +264,15 @@ class SourceExcitationInternal:
                 # List of points
                 point_on_edge = [CorePointData(self._pedb.value(point)) for point in point_on_edge]
             else:
-                # Single point [x, y]
-                point_on_edge = CorePointData([self._pedb.value(point_on_edge[0]), self._pedb.value(point_on_edge[1])])
+                # Single point [x, y].  Unwrapto .core: pyedb's Value subclasses float,
+                # which would otherwise trigger gRPC's isinstance(val, (int, float))
+                # fast-path and silently evaluate parametric expressions to constants
+                # (losing the variable link).
+                vx = self._pedb.value(point_on_edge[0])
+                vy = self._pedb.value(point_on_edge[1])
+                vx = vx.core if hasattr(vx, "core") else vx
+                vy = vy.core if hasattr(vy, "core") else vy
+                point_on_edge = CorePointData([vx, vy])
         primitive_lookup_id = prim_id.edb_uid if isinstance(prim_id, Primitive) else prim_id
         try:
             prim = self._pedb.layout.find_object_by_id(primitive_lookup_id)
@@ -2832,7 +2839,12 @@ class SourceExcitation(SourceExcitationInternal):
             location = [location]
         points_on_edge = []
         for point in location:
-            point_on_edge = CorePointData([self._pedb.value(pt) for pt in point])
+            # Unwrap to .core: pyedb's Value subclasses float, which would otherwise
+            # trigger gRPC's isinstance(val, (int, float)) fast-path and silently
+            # evaluate parametric expressions to constants (losing the variable link).
+            coords = [self._pedb.value(pt) for pt in point]
+            coords = [c.core if hasattr(c, "core") else c for c in coords]
+            point_on_edge = CorePointData(coords)
             points_on_edge.append(point_on_edge)
         primitive = self._pedb.layout.find_primitive(name=primitive_name)
         if primitive:
@@ -3653,7 +3665,13 @@ class SourceExcitation(SourceExcitationInternal):
 
     def create_edge_terminal(self, primitive_name, x, y, name="") -> EdgeTerminal:
         primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
-        point_on_edge = CorePointData([self._pedb.value(x), self._pedb.value(y)])
+        # Unwrap to .core: pyedb's Value subclasses float, which would otherwise
+        # trigger gRPC's isinstance(val, (int, float)) fast-path and silently
+        # evaluate parametric expressions to constants (losing the variable link).
+        vx, vy = self._pedb.value(x), self._pedb.value(y)
+        vx = vx.core if hasattr(vx, "core") else vx
+        vy = vy.core if hasattr(vy, "core") else vy
+        point_on_edge = CorePointData([vx, vy])
         pos_edge = [CorePrimitiveEdge.create(primitive.core, point_on_edge)]
         terminal = EdgeTerminal.create(layout=primitive.layout, name=name, edges=pos_edge, net=primitive.net)
 

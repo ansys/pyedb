@@ -478,10 +478,16 @@ class Modeler(object):
             for pt in points:
                 _pt = []
                 for coord in pt:
-                    coord = self._pedb.value(coord)
+                    # NOTE: pyedb's Value subclasses float, so it satisfies gRPC's
+                    # isinstance(val, (int, float)) fast-path check even when it wraps a
+                    # parametric expression. That fast path silently evaluates the
+                    # expression to a constant and drops the variable reference. Unwrap
+                    # to the underlying ansys.edb.core Value (.core) so parametrized
+                    # coordinates are preserved.
+                    coord = self._pedb.value(coord).core
                     _pt.append(coord)
                 _points.append(CorePointData(_pt))
-            width = self._pedb.value(width)
+            width = self._pedb.value(width).core
             polygon_data = CorePolygonData(_points, closed=False)
         elif isinstance(points, CorePolygonData):
             polygon_data = points
@@ -578,7 +584,10 @@ class Modeler(object):
         if isinstance(points, list):
             new_points = []
             for idx, i in enumerate(points):
-                new_points.append(CorePointData([self._pedb.value(i[0]), self._pedb.value(i[1])]))
+                # Unwrap to .core: pyedb's Value subclasses float, which would otherwise
+                # trigger gRPC's isinstance(val, (int, float)) fast-path and silently
+                # evaluate parametric expressions to constants (losing the variable link).
+                new_points.append(CorePointData([self._pedb.value(i[0]).core, self._pedb.value(i[1]).core]))
             polygon_data = CorePolygonData(points=new_points)
 
         elif isinstance(points, CorePolygonData):
