@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
+1  # Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -1395,7 +1395,7 @@ class Components(object):
             cmp_property.port_property = port_prop
             cmp.core.component_property = cmp_property.clone()
         else:
-            # ansys-edb-core < 0.4: flat ComponentProperty â€” must write back via SetComponentProperty.
+            # ansys-edb-core < 0.4: flat ComponentProperty - must write back via SetComponentProperty.
             cmp_property = cmp.component_property
             if cmp.core.component_type == CoreComponentType.IC:
                 ic_die_prop = cmp_property.die_property
