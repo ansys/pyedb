@@ -223,6 +223,104 @@ class TestCfgEdgePort:
         assert result == ep.export_properties()
 
 
+class TestCfgEdgePortOnPad:
+    ARC = {"start": [0.001, 0.002], "end": [0.003, 0.004], "height": 0.0}
+
+    def test_pad_edge_port(self):
+        ep = CfgEdgePort(name="gp1", type="gap_port", padstack_instance="U1-A1", layer="top", arc=self.ARC)
+        assert ep.edge_type == "pad"
+        d = ep.export_properties()
+        assert d["type"] == "gap_port"
+        assert d["padstack_instance"] == "U1-A1"
+        assert d["layer"] == "top"
+        assert d["arc"] == self.ARC
+        assert "primitive_name" not in d
+        assert "point_on_edge" not in d
+
+    def test_primitive_edge_port_omits_pad_keys(self):
+        d = CfgEdgePort("wp1", "wave_port", "trace1", [0.001, 0.002]).export_properties()
+        assert "padstack_instance" not in d
+        assert "layer" not in d
+        assert "arc" not in d
+
+    def test_round_trip(self):
+        ep = CfgEdgePort(name="gp1", type="gap_port", padstack_instance="U1-A1", layer="top", arc=self.ARC)
+        d = ep.export_properties()
+        assert CfgEdgePort(None, **d).export_properties() == d
+
+    def test_reference_terminal_round_trip(self):
+        ep = CfgEdgePort(
+            name="gp1",
+            type="gap_port",
+            padstack_instance="U1-A1",
+            layer="top",
+            arc=self.ARC,
+            reference_terminal="gnd_term",
+        )
+        assert ep.export_properties()["reference_terminal"] == "gnd_term"
+
+    def test_reference_terminal_descriptor_round_trip(self):
+        reference = {"name": "gp1_ref", "padstack_instance": "U1-A2", "layer": "top", "arc": self.ARC}
+        ep = CfgEdgePort(
+            name="gp1",
+            type="gap_port",
+            padstack_instance="U1-A1",
+            layer="top",
+            arc=self.ARC,
+            reference_terminal=reference,
+        )
+        d = ep.export_properties()
+        assert d["reference_terminal"] == reference
+        assert CfgEdgePort(None, **d).export_properties() == d
+
+    def test_mixed_descriptor_raises(self):
+        with pytest.raises(ValueError):
+            CfgEdgePort(
+                name="gp1",
+                type="gap_port",
+                primitive_name="trace1",
+                point_on_edge=[0, 0],
+                padstack_instance="U1-A1",
+                layer="top",
+                arc=self.ARC,
+            )
+
+    def test_missing_descriptor_raises(self):
+        with pytest.raises(ValueError):
+            CfgEdgePort(name="gp1", type="gap_port")
+
+    def test_pad_descriptor_without_arc_raises(self):
+        with pytest.raises(ValueError):
+            CfgEdgePort(name="gp1", type="gap_port", padstack_instance="U1-A1", layer="top")
+
+    def test_add_gap_port_on_pad(self):
+        pc = CfgPorts()
+        pc.add_gap_port_on_pad("gp1", "U1-A1", "top", self.ARC)
+        d = pc.export_properties()[0]
+        assert d["type"] == "gap_port"
+        assert d["padstack_instance"] == "U1-A1"
+
+    def test_add_wave_port_on_pad(self):
+        pc = CfgPorts()
+        pc.add_wave_port_on_pad("wp1", "U1-A1", "top", self.ARC, horizontal_extent_factor=4)
+        d = pc.export_properties()[0]
+        assert d["type"] == "wave_port"
+        assert d["horizontal_extent_factor"] == 4
+
+    def test_init_from_pad_edge_port_data(self):
+        data = [
+            {
+                "name": "gp1",
+                "type": "gap_port",
+                "padstack_instance": "U1-A1",
+                "layer": "top",
+                "arc": self.ARC,
+            }
+        ]
+        pc = CfgPorts(ports_data=data)
+        assert pc.ports[0].edge_type == "pad"
+
+
 # ---------------------------------------------------------------------------
 # CfgDiffWavePort
 # ---------------------------------------------------------------------------
