@@ -491,7 +491,8 @@ class CfgPorts:
         _edge_types = {"wave_port", "gap_port"}
         for p in ports_data or []:
             ptype = p["type"]
-            if ptype in _edge_types:
+            is_circuit_edge = ptype == "circuit" and ("primitive_name" in p or "padstack_instance" in p)
+            if ptype in _edge_types or is_circuit_edge:
                 self.ports.append(CfgEdgePort(self._pedb, **p))
             elif ptype == "diff_wave_port":
                 self.ports.append(CfgDiffWavePort(self._pedb, **p))
@@ -556,6 +557,7 @@ class CfgPorts:
             self._pedb,
             name=p.name,
             type=port_type,
+            is_circuit_port=p.is_circuit_port,
             horizontal_extent_factor=p.horizontal_extent_factor,
             vertical_extent_factor=p.vertical_extent_factor,
             pec_launch_width=p.pec_launch_width,
@@ -1212,10 +1214,12 @@ class CfgPorts:
     def _get_port_from_edb(self, p):
         """Build the configuration object describing a single EDB port."""
         terminal_type = p.terminal_type
-        if terminal_type == TerminalTypeMapper.get("EdgeTerminal", as_grpc=settings.is_grpc):
-            # Edge terminals carry a reference terminal in 3D Layout, so the terminal
-            # type must be resolved before falling back to the circuit-port branch.
-            port_type = "wave_port" if p.hfss_type == "Wave" else "gap_port"
+        is_edge_terminal = terminal_type == TerminalTypeMapper.get("EdgeTerminal", as_grpc=settings.is_grpc)
+        if is_edge_terminal:
+            if p.is_circuit_port:
+                port_type = "circuit"
+            else:
+                port_type = "wave_port" if p.hfss_type == "Wave" else "gap_port"
         elif p.reference_terminal:
             port_type = "circuit"
         elif terminal_type in TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
@@ -1225,7 +1229,7 @@ class CfgPorts:
         else:
             raise ValueError("Unknown terminal type")
 
-        if port_type in {"wave_port", "gap_port"}:
+        if is_edge_terminal:
             return self._get_edge_port_from_edb(p, port_type)
 
         refdes = ""
@@ -1791,7 +1795,7 @@ class CfgProbe(CfgCircuitElement):
 
 
 class CfgEdgePort:
-    """Represent one wave-port or gap-port edge excitation.
+    """Represent one edge-based circuit, wave, or gap port.
 
     The hosting edge is described either by a primitive edge
     (``primitive_name`` + ``point_on_edge``) or by a padstack pad edge
@@ -1810,6 +1814,9 @@ class CfgEdgePort:
         if self._pedb is None:
             return self.export_properties()
         port = self._create_edge_terminal(self.name, self._edge_descriptor(), is_reference=False)
+        if self.is_circuit_port:
+            port.is_circuit_port = True
+            port.hfss_type = "Circuit"
         self._apply_reference_terminal(port)
         return port
 
@@ -1915,6 +1922,7 @@ class CfgEdgePort:
         self.horizontal_extent_factor = kwargs.get("horizontal_extent_factor", 5)
         self.vertical_extent_factor = kwargs.get("vertical_extent_factor", 3)
         self.pec_launch_width = kwargs.get("pec_launch_width", "0.01mm")
+        self.is_circuit_port = kwargs.get("is_circuit_port", self.type == "circuit")
 
         on_primitive = self.primitive_name is not None
         on_pad = self.padstack_instance is not None
