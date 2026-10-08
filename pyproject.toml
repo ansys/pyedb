@@ -25,6 +25,7 @@ classifiers = [
 ]
 
 dependencies = [
+    "ansys-tools-common>=0.5.3",
     "numpy>=1.20.0,<3",
     "pydantic>=2.6.4,<2.14",
     "toml>=0.10.2",
