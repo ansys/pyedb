@@ -491,7 +491,8 @@ class CfgPorts:
         _edge_types = {"wave_port", "gap_port"}
         for p in ports_data or []:
             ptype = p["type"]
-            if ptype in _edge_types:
+            is_circuit_edge = ptype == "circuit" and ("primitive_name" in p or "padstack_instance" in p)
+            if ptype in _edge_types or is_circuit_edge:
                 self.ports.append(CfgEdgePort(self._pedb, **p))
             elif ptype == "diff_wave_port":
                 self.ports.append(CfgDiffWavePort(self._pedb, **p))
@@ -515,20 +516,54 @@ class CfgPorts:
         """
         return port.pin_group
 
-    def _get_edge_port_from_edb(self, p, port_type):
-        _, primitive, point = self._pedb.excitation_manager.get_edge_from_port(p)
+    def _get_edge_descriptor(self, edge_info):
+        """Return the serializable edge keys for an edge-info payload."""
+        if edge_info["edge_type"] == "pad":
+            padstack_instance = edge_info["padstack_instance"]
+            return {
+                "padstack_instance": padstack_instance.aedt_name or padstack_instance.name,
+                "layer": edge_info["layer"],
+                "arc": edge_info["arc"],
+            }
+        point = edge_info["point"]
+        return {
+            "primitive_name": edge_info["primitive"].aedt_name,
+            "point_on_edge": [point[0], point[1]],
+        }
 
-        cfg_port = CfgEdgePort(
+    def _get_reference_terminal_info(self, p):
+        """Describe the reference terminal of an edge port.
+
+        Reference terminals are flagged ``is_reference_terminal`` and are therefore not
+        exported as ports in their own right, so an edge reference is serialized inline
+        as a full descriptor. Non-edge references are emitted as a plain name.
+        """
+        ref = p.reference_terminal
+        if ref is None:
+            return None
+        if ref.terminal_type != TerminalTypeMapper.get("EdgeTerminal", as_grpc=settings.is_grpc):
+            return ref.name
+        edge_info = self._pedb.excitation_manager.get_edge_info_from_port(ref)
+        if edge_info is None:
+            return ref.name
+        return {"name": ref.name, **self._get_edge_descriptor(edge_info)}
+
+    def _get_edge_port_from_edb(self, p, port_type):
+        edge_info = self._pedb.excitation_manager.get_edge_info_from_port(p)
+        if edge_info is None:
+            raise ValueError(f"Edge terminal '{p.name}' carries no edge.")
+
+        return CfgEdgePort(
             self._pedb,
             name=p.name,
             type=port_type,
-            primitive_name=primitive.aedt_name,
-            point_on_edge=[point[0], point[1]],
+            is_circuit_port=p.is_circuit_port,
             horizontal_extent_factor=p.horizontal_extent_factor,
             vertical_extent_factor=p.vertical_extent_factor,
             pec_launch_width=p.pec_launch_width,
+            reference_terminal=self._get_reference_terminal_info(p),
+            **self._get_edge_descriptor(edge_info),
         )
-        return cfg_port
 
     def add_circuit_port(
         self,
@@ -909,6 +944,128 @@ class CfgPorts:
             pec_launch_width=pec_launch_width,
         )
 
+    def _add_pad_edge_port(
+        self,
+        port_type,
+        name,
+        padstack_instance,
+        layer,
+        arc,
+        horizontal_extent_factor: int = 5,
+        vertical_extent_factor: int = 3,
+        pec_launch_width: str = "0.01mm",
+    ):
+        instance_name = (
+            padstack_instance
+            if isinstance(padstack_instance, str)
+            else (getattr(padstack_instance, "aedt_name", None) or getattr(padstack_instance, "name", None))
+        )
+        port = CfgEdgePort(
+            self._pedb,
+            name=name,
+            type=port_type,
+            padstack_instance=instance_name,
+            layer=layer,
+            arc=arc,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
+        self.ports.append(port)
+        return port
+
+    def add_wave_port_on_pad(
+        self,
+        name: str,
+        padstack_instance: str | Any,
+        layer: str,
+        arc: dict,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+    ):
+        """Add a wave port on the pad edge of a padstack instance.
+
+        Parameters
+        ----------
+        name : str
+            Unique port name.
+        padstack_instance : str or padstack-instance object
+            AEDT name of the padstack instance hosting the pad, or an object whose
+            ``aedt_name`` (or ``name``) attribute is used automatically.
+        layer : str
+            Name of the layer the pad edge lies on, e.g. ``"top"``.
+        arc : dict
+            ``{"start": [x, y], "end": [x, y], "height": float}`` describing the pad edge.
+        horizontal_extent_factor : int or float, optional
+            Default is ``5``.
+        vertical_extent_factor : int or float, optional
+            Default is ``3``.
+        pec_launch_width : str, optional
+            Default is ``"0.01mm"``.
+
+        Returns
+        -------
+        CfgEdgePort
+            The newly created edge-port object.
+        """
+        return self._add_pad_edge_port(
+            port_type="wave_port",
+            name=name,
+            padstack_instance=padstack_instance,
+            layer=layer,
+            arc=arc,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
+
+    def add_gap_port_on_pad(
+        self,
+        name: str,
+        padstack_instance: str | Any,
+        layer: str,
+        arc: dict,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+    ):
+        """Add a gap port on the pad edge of a padstack instance.
+
+        Parameters
+        ----------
+        name : str
+            Unique port name.
+        padstack_instance : str or padstack-instance object
+            AEDT name of the padstack instance hosting the pad, or an object whose
+            ``aedt_name`` (or ``name``) attribute is used automatically.
+        layer : str
+            Name of the layer the pad edge lies on.
+        arc : dict
+            ``{"start": [x, y], "end": [x, y], "height": float}`` describing the pad edge.
+        horizontal_extent_factor : int or float, optional
+            Default is ``5``.
+        vertical_extent_factor : int or float, optional
+            Default is ``3``.
+        pec_launch_width : str, optional
+            Default is ``"0.01mm"``.
+
+        Returns
+        -------
+        CfgEdgePort
+            The newly created edge-port object.
+        """
+        return self._add_pad_edge_port(
+            port_type="gap_port",
+            name=name,
+            padstack_instance=padstack_instance,
+            layer=layer,
+            arc=arc,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
+
     def add_diff_wave_port(
         self,
         name: str = None,
@@ -1034,6 +1191,9 @@ class CfgPorts:
     def get_data_from_db(self):
         """Read existing ports from the open EDB design.
 
+        Ports that cannot be serialized are skipped with a warning so that a single
+        unsupported excitation never aborts the whole configuration export.
+
         Returns
         -------
         list of dict
@@ -1044,66 +1204,75 @@ class CfgPorts:
         self.ports = []
         ports = {name: t for name, t in self._pedb.terminals.items() if not t.is_reference_terminal and t.is_port}
 
-        for p in ports.values():
-            if not p.reference_terminal:
-                if p.terminal_type in TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
-                    port_type = "coax"
-                elif p.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
-                    port_type = "circuit"
-                elif p.terminal_type == TerminalTypeMapper.get("EdgeTerminal", as_grpc=settings.is_grpc):
-                    port_type = "wave_port" if p.hfss_type == "Wave" else "gap_port"
-                else:
-                    raise ValueError("Unknown terminal type")
-            else:
-                port_type = "circuit"
-            refdes = ""
-            pos_term_info = {}
-            if p.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
-                pos_term_info = {"pin_group": self.get_pin_group(p).name}
-            elif p.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
-                refdes = p.component.refdes if p.component else ""
-                pos_term_info = {"padstack": p.padstack_instance.aedt_name}
-            elif p.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
-                pos_term_info = {"coordinates": {"layer": p.layer.name, "point": p.location, "net": p.net.name}}
-            neg_term_info = {}
-            if port_type == "circuit":
-                neg_term = self._pedb.terminals[p.reference_terminal.name]
-                if neg_term.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
-                    neg_term_info = {"pin_group": self.get_pin_group(neg_term).name}
-                elif neg_term.terminal_type == TerminalTypeMapper.get(
-                    "PadstackInstanceTerminal", as_grpc=settings.is_grpc
-                ):
-                    neg_term_info = {"padstack": neg_term.padstack_instance.aedt_name}
-                elif neg_term.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
-                    neg_term_info = {
-                        "coordinates": {
-                            "layer": neg_term.layer.name,
-                            "point": neg_term.location,
-                            "net": neg_term.net.name,
-                        }
-                    }
-                cfg_port = CfgPort(
-                    self._pedb,
-                    name=p.name,
-                    type=port_type,
-                    impedance=p.impedance,
-                    reference_designator=refdes,
-                    positive_terminal=pos_term_info,
-                    negative_terminal=neg_term_info,
-                )
-            elif port_type == "coax":
-                cfg_port = CfgPort(
-                    self._pedb,
-                    name=p.name,
-                    type=port_type,
-                    impedance=p.impedance,
-                    reference_designator=refdes,
-                    positive_terminal=pos_term_info,
-                )
-            else:
-                cfg_port = self._get_edge_port_from_edb(p, port_type)
-            self.ports.append(cfg_port)
+        for name, p in ports.items():
+            try:
+                self.ports.append(self._get_port_from_edb(p))
+            except Exception as e:  # pragma: no cover - defensive
+                self._pedb.logger.warning(f"Port '{name}' skipped during configuration export: {e}")
         return self.export_properties()
+
+    def _get_port_from_edb(self, p):
+        """Build the configuration object describing a single EDB port."""
+        terminal_type = p.terminal_type
+        is_edge_terminal = terminal_type == TerminalTypeMapper.get("EdgeTerminal", as_grpc=settings.is_grpc)
+        if is_edge_terminal:
+            if p.is_circuit_port:
+                port_type = "circuit"
+            else:
+                port_type = "wave_port" if p.hfss_type == "Wave" else "gap_port"
+        elif p.reference_terminal:
+            port_type = "circuit"
+        elif terminal_type in TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
+            port_type = "coax"
+        elif terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
+            port_type = "circuit"
+        else:
+            raise ValueError("Unknown terminal type")
+
+        if is_edge_terminal:
+            return self._get_edge_port_from_edb(p, port_type)
+
+        refdes = ""
+        pos_term_info = {}
+        if terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
+            pos_term_info = {"pin_group": self.get_pin_group(p).name}
+        elif terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
+            refdes = p.component.refdes if p.component else ""
+            pos_term_info = {"padstack": p.padstack_instance.aedt_name}
+        elif terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
+            pos_term_info = {"coordinates": {"layer": p.layer.name, "point": p.location, "net": p.net.name}}
+        neg_term_info = {}
+        if port_type == "circuit":
+            neg_term = self._pedb.terminals[p.reference_terminal.name]
+            if neg_term.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
+                neg_term_info = {"pin_group": self.get_pin_group(neg_term).name}
+            elif neg_term.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
+                neg_term_info = {"padstack": neg_term.padstack_instance.aedt_name}
+            elif neg_term.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
+                neg_term_info = {
+                    "coordinates": {
+                        "layer": neg_term.layer.name,
+                        "point": neg_term.location,
+                        "net": neg_term.net.name,
+                    }
+                }
+            return CfgPort(
+                self._pedb,
+                name=p.name,
+                type=port_type,
+                impedance=p.impedance,
+                reference_designator=refdes,
+                positive_terminal=pos_term_info,
+                negative_terminal=neg_term_info,
+            )
+        return CfgPort(
+            self._pedb,
+            name=p.name,
+            type=port_type,
+            impedance=p.impedance,
+            reference_designator=refdes,
+            positive_terminal=pos_term_info,
+        )
 
     def export_properties(self):
         """Serialize all ports to plain dictionaries."""
@@ -1626,7 +1795,12 @@ class CfgProbe(CfgCircuitElement):
 
 
 class CfgEdgePort:
-    """Represent one wave-port or gap-port edge excitation."""
+    """Represent one edge-based circuit, wave, or gap port.
+
+    The hosting edge is described either by a primitive edge
+    (``primitive_name`` + ``point_on_edge``) or by a padstack pad edge
+    (``padstack_instance`` + ``layer`` + ``arc``).
+    """
 
     def set_parameters_to_edb(self):
         """Write this edge port into the open EDB design.
@@ -1639,16 +1813,62 @@ class CfgEdgePort:
         """
         if self._pedb is None:
             return self.export_properties()
-        return self._pedb.excitation_manager.create_edge_port(
-            location=self.point_on_edge,
-            primitive_name=self.primitive_name,
-            name=self.name,
+        port = self._create_edge_terminal(self.name, self._edge_descriptor(), is_reference=False)
+        if self.is_circuit_port:
+            port.is_circuit_port = True
+            port.hfss_type = "Circuit"
+        self._apply_reference_terminal(port)
+        return port
+
+    def _edge_descriptor(self):
+        """Return this port's own edge-descriptor keys."""
+        if self.edge_type == "pad":
+            return {"padstack_instance": self.padstack_instance, "layer": self.layer, "arc": self.arc}
+        return {"primitive_name": self.primitive_name, "point_on_edge": self.point_on_edge}
+
+    def _create_edge_terminal(self, name, descriptor, is_reference):
+        """Create one edge terminal from a primitive-edge or pad-edge descriptor."""
+        manager = self._pedb.excitation_manager
+        common = dict(
+            name=name,
             impedance=50,
             is_wave_port=self.type == "wave_port",
             horizontal_extent_factor=self.horizontal_extent_factor,
             vertical_extent_factor=self.vertical_extent_factor,
             pec_launch_width=self.pec_launch_width,
+            is_reference=is_reference,
         )
+        if descriptor.get("padstack_instance"):
+            return manager.create_pad_edge_port(
+                padstack_instance=descriptor["padstack_instance"],
+                layer=descriptor["layer"],
+                arc=descriptor["arc"],
+                **common,
+            )
+        return manager.create_edge_port(
+            location=descriptor["point_on_edge"],
+            primitive_name=descriptor["primitive_name"],
+            **common,
+        )
+
+    def _apply_reference_terminal(self, port):
+        """Attach the reference terminal, creating it when given as a descriptor."""
+        reference = self.reference_terminal
+        if not reference:
+            return
+        if isinstance(reference, dict):
+            name = reference.get("name") or f"{self.name}_ref"
+            reference_port = self._create_edge_terminal(name, reference, is_reference=True)
+            port.core.reference_terminal = reference_port.core
+            return
+        existing = self._pedb.terminals.get(reference)
+        if existing is None:
+            self._pedb.logger.warning(
+                f"Reference terminal '{reference}' of port '{self.name}' was not found; "
+                "the port is created without a reference."
+            )
+            return
+        port.core.reference_terminal = existing.core
 
     def export_properties(self):
         """Serialize this edge port to a plain dictionary.
@@ -1656,18 +1876,25 @@ class CfgEdgePort:
         Returns
         -------
         dict
-            Dictionary with ``name``, ``type``, ``primitive_name``,
-            ``point_on_edge``, and extent parameters.
+            Dictionary with ``name``, ``type``, the edge descriptor keys, and
+            extent parameters.  A primitive edge emits ``primitive_name`` and
+            ``point_on_edge``; a pad edge emits ``padstack_instance``,
+            ``layer``, and ``arc``.
         """
-        return {
-            "name": self.name,
-            "type": self.type,
-            "primitive_name": self.primitive_name,
-            "point_on_edge": self.point_on_edge,
-            "horizontal_extent_factor": self.horizontal_extent_factor,
-            "vertical_extent_factor": self.vertical_extent_factor,
-            "pec_launch_width": self.pec_launch_width,
-        }
+        data = {"name": self.name, "type": self.type}
+        if self.edge_type == "pad":
+            data["padstack_instance"] = self.padstack_instance
+            data["layer"] = self.layer
+            data["arc"] = self.arc
+        else:
+            data["primitive_name"] = self.primitive_name
+            data["point_on_edge"] = self.point_on_edge
+        data["horizontal_extent_factor"] = self.horizontal_extent_factor
+        data["vertical_extent_factor"] = self.vertical_extent_factor
+        data["pec_launch_width"] = self.pec_launch_width
+        if self.reference_terminal is not None:
+            data["reference_terminal"] = self.reference_terminal
+        return data
 
     def __init__(self, pedb=None, *args, **kwargs):
         if isinstance(pedb, str):
@@ -1686,11 +1913,32 @@ class CfgEdgePort:
         self._pedb = pedb
         self.name = kwargs["name"]
         self.type = kwargs["type"]
-        self.primitive_name = kwargs["primitive_name"]
-        self.point_on_edge = kwargs["point_on_edge"]
+        self.primitive_name = kwargs.get("primitive_name")
+        self.point_on_edge = kwargs.get("point_on_edge")
+        self.padstack_instance = kwargs.get("padstack_instance")
+        self.layer = kwargs.get("layer")
+        self.arc = kwargs.get("arc")
+        self.reference_terminal = kwargs.get("reference_terminal")
         self.horizontal_extent_factor = kwargs.get("horizontal_extent_factor", 5)
         self.vertical_extent_factor = kwargs.get("vertical_extent_factor", 3)
         self.pec_launch_width = kwargs.get("pec_launch_width", "0.01mm")
+        self.is_circuit_port = kwargs.get("is_circuit_port", self.type == "circuit")
+
+        on_primitive = self.primitive_name is not None
+        on_pad = self.padstack_instance is not None
+        if on_primitive and on_pad:
+            raise ValueError(
+                f"Edge port '{self.name}' defines both 'primitive_name' and 'padstack_instance'. "
+                "Provide exactly one edge descriptor."
+            )
+        if not on_primitive and not on_pad:
+            raise ValueError(
+                f"Edge port '{self.name}' must define either 'primitive_name' and 'point_on_edge', "
+                "or 'padstack_instance', 'layer' and 'arc'."
+            )
+        if on_pad and (self.layer is None or self.arc is None):
+            raise ValueError(f"Edge port '{self.name}' on a pad edge requires both 'layer' and 'arc'.")
+        self.edge_type = "pad" if on_pad else "primitive"
 
 
 class CfgDiffWavePort:

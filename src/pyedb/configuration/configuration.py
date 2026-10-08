@@ -1251,9 +1251,9 @@ class Configuration:
                     terminal_to_ground=i.terminal_to_ground,
                     net=i.net_name,
                 )
-            elif i.terminal_type == "EdgeTerminal":
+            elif i.terminal_type == TerminalTypeMapper.get("EdgeTerminal", as_grpc=settings.is_grpc):
                 pass
-            elif i.terminal_type == "BundleTerminal":
+            elif i.terminal_type == TerminalTypeMapper.get("BundleTerminal", as_grpc=settings.is_grpc):
                 pass
             else:  # pragma: no cover
                 raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
