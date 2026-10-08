@@ -49,6 +49,9 @@ geometry = [
 graphics = [
     "matplotlib>=3.5.0,<3.11"
 ]
+viewer = [
+    "shapely>=2.1",
+]
 analysis = [
     "pandas>=1.1.0,<2.4",
     "scikit-rf"

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>PyEDB layout viewer</title>
+<style>
+html,body{margin:0;height:100%;background:#1b1e23;color:#dce1ec;font:13px 'Segoe UI',sans-serif;overflow:hidden}
+#bar{height:36px;display:flex;align-items:center;gap:8px;padding:0 10px;background:#21252d;
+border-bottom:1px solid #3d4452;box-sizing:border-box}
+#main{display:flex;height:calc(100% - 36px)}
+#side{width:230px;overflow:auto;background:#21252d;border-right:1px solid #3d4452;padding:8px;box-sizing:border-box}
+#view{flex:1;position:relative;min-width:0}
+#view canvas{display:block;width:100%;height:100%}
+button{background:#2c313c;color:#dce1ec;border:1px solid #3d4452;border-radius:4px;padding:3px 12px;cursor:pointer}
+button.on{background:#568af2;border-color:#568af2}
+h4{margin:10px 0 4px;color:#8a95aa;font-weight:600;text-transform:uppercase;font-size:11px}
+label{display:flex;align-items:center;gap:6px;padding:1px 0;cursor:pointer}
+.sw{width:11px;height:11px;border-radius:2px;display:inline-block}
+input[type=text]{width:100%;box-sizing:border-box;background:#2c313c;color:#dce1ec;border:1px solid #3d4452;
+border-radius:4px;padding:3px 6px}
+input[type=range]{width:100%}
+#info{margin-left:auto;color:#8a95aa}
+#tip{position:absolute;pointer-events:none;display:none;background:rgba(20,22,27,.92);border:1px solid #3d4452;
+border-radius:4px;padding:3px 8px;white-space:nowrap}
+#msg{position:absolute;left:12px;bottom:8px;color:#8a95aa}
+</style></head><body>
+<div id="bar"><b>PyEDB layout viewer</b>
+<button id="b2d">2D</button><button id="b3d">3D</button>
+<button id="bcol">Color: layer</button><button id="bfit">Fit</button>
+<span id="info"></span></div>
+<div id="main">
+<div id="side">
+<h4>Layers</h4><div id="layers"></div>
+<h4>Display</h4>
+<label><input type="checkbox" id="cvias" checked>Vias / pads</label>
+<label><input type="checkbox" id="ccomps" checked>Components</label>
+<label><input type="checkbox" id="cdiel">Dielectrics (3D)</label>
+<h4>Z scale (3D)</h4><input type="range" id="zs" min="1" max="50" step="0.5">
+<h4>Opacity (2D)</h4><input type="range" id="op" min="0.2" max="1" step="0.05" value="0.75">
+<h4>Highlight nets</h4><input type="text" id="hl" list="netlist" placeholder="net name contains...">
+<datalist id="netlist"></datalist>
+</div>
+<div id="view"><div id="tip"></div><div id="msg">Loading...</div></div>
+</div></div>
+<script type="importmap">__IMPORTMAP__</script>
+<script>window.PYEDB_VIEWER = __BOOT__;</script>
+<script type="module">
+__JS__
+</script>
+</body></html>
+

@@ -1770,6 +1770,35 @@ class Edb(EdbInit):
             self.edbpath = temp_input_gds + ".aedb"
             return self.open()
 
+    def view(self, nets=None, mode="2d", open_browser=True, **kwargs):
+        """Open a live interactive 2D / 3D layout viewer (Three.js) in the web browser.
+
+        Parameters
+        ----------
+        nets : list[str], optional
+            Nets to display. ``None`` or an empty list displays all nets.
+        mode : str, optional
+            Initial view, ``"2d"`` (default) or ``"3d"``.
+        open_browser : bool, optional
+            Open the default browser. Default is ``True``.
+        **kwargs
+            Additional arguments of :class:`pyedb.extensions.layout_viewer.LayoutViewer`.
+
+        Returns
+        -------
+        pyedb.extensions.layout_viewer.LayoutViewer
+            Call ``refresh()`` after modifying the design to update the view.
+
+        Examples
+        --------
+        >>> viewer = edb.view(nets=["GND"], mode="3d")
+        >>> edb.modeler.create_trace([[0, 0], [1e-3, 0]], "TOP", net_name="GND")
+        >>> viewer.refresh()
+        """
+        from pyedb.extensions.layout_viewer import view_layout
+
+        return view_layout(self, nets=nets, mode=mode, open_browser=open_browser, **kwargs)
+
     @deprecate_argument_name({"signal_list": "signal_nets", "reference_list": "reference_nets"})
     def cutout(
         self,
