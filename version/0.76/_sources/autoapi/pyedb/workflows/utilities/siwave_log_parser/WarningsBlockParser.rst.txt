@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`WarningsBlockParser`
+============================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.WarningsBlockParser(lines: list[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract warning entries from the simulation log.
+
+   This parser identifies and extracts warning messages, particularly focusing
+   on electrical short warnings with location information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = [
+   ...     "11/10/2025 09:15:30 AM [warning] Geometry on nets VCC and GND on layer \"TOP\" "
+   ...     "are electrically shorted at approximately (12.5, 34.8)mm"
+   ... ]
+   >>> parser = WarningsBlockParser(lines)
+   >>> warnings = parser.parse()
+   >>> warnings[0].category
+   'SHORT'
+   >>> warnings[0].net1
+   'VCC'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: WarningsBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse warning messages from log lines.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import WarningsBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> list[WarningEntry]
+
+   
+   Parse warning messages from log lines.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :obj:`WarningEntry`
+           List of parsed warning entries with categorization and location data.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = ["No warnings"]
+   >>> parser = WarningsBlockParser(lines)
+   >>> warnings = parser.parse()
+   >>> len(warnings)
+   0
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

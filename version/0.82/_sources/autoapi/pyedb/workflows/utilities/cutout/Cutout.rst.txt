@@ -1,0 +1,48 @@
+
+
+
+
+
+
+:class:`Cutout`
+===============
+
+
+.. py:class:: pyedb.workflows.utilities.cutout.Cutout
+
+   
+   Factory class for creating cutout instances based on EDB mode.
+
+   This class automatically selects the appropriate cutout implementation
+   (gRPC or .NET) based on the EDB object's configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.cutout import Cutout
+
+
+
+
+

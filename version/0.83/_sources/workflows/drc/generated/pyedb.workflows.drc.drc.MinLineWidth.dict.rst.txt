@@ -1,0 +1,6 @@
+dict
+====
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinLineWidth.dict

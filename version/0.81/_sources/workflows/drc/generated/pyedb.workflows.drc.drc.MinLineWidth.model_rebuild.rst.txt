@@ -1,0 +1,6 @@
+model\_rebuild
+==============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinLineWidth.model_rebuild

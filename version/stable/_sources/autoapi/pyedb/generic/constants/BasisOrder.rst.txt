@@ -1,0 +1,51 @@
+
+
+
+
+
+
+:class:`BasisOrder`
+===================
+
+
+.. py:class:: pyedb.generic.constants.BasisOrder
+
+   Bases: :py:obj:`object`
+
+
+   
+   Enumeration-class for HFSS basis order settings.
+
+   Warning: the value ``single`` has been renamed to ``Single`` for consistency. Please update references to
+   ``single``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import BasisOrder
+
+
+
+
+

@@ -1,0 +1,6 @@
+model\_dump\_json
+=================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: CopperBalance.model_dump_json

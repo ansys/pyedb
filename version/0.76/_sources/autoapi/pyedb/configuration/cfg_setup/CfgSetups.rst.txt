@@ -1,0 +1,328 @@
+
+
+
+
+
+
+:class:`CfgSetups`
+==================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSetups(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Collect all configured HFSS and SIwave setup entries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CfgSetups
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Reconstruct a :class:`CfgSetups` instance from setup dictionaries.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_hfss_setup`
+            - Create and register an HFSS setup.
+          * - :py:attr:`~add_siwave_ac_setup`
+            - Create and register a SIwave AC setup.
+          * - :py:attr:`~add_siwave_dc_setup`
+            - Create and register a SIwave DC setup.
+          * - :py:attr:`~get`
+            - Return an existing registered setup by name.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~setups`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgSetups
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: setups
+   :type:  List[Union[CfgHFSSSetup, CfgSIwaveACSetup, CfgSIwaveDCSetup]]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(setups: List[dict])
+   :classmethod:
+
+
+   
+   Reconstruct a :class:`CfgSetups` instance from setup dictionaries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_hfss_setup(config: CfgHFSSSetup = None, **kwargs)
+
+   
+   Create and register an HFSS setup.
+
+
+   :Parameters:
+
+       **config** : :obj:`CfgHFSSSetup`, :obj:`optional`
+           Pre-built setup object, or *None* to construct a new setup from
+           *kwargs*.
+
+       **\*\*kwargs**
+           Keyword arguments forwarded to :class:`CfgHFSSSetup` when *config*
+           is *None*.  Common parameters:
+           
+           - ``name`` *(str, required)* — setup name.
+           - ``adapt_type`` *(str)* — ``"single"`` | ``"broadband"`` |
+             ``"multi_frequencies"``.  Default is ``"single"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgHFSSSetup`
+           The newly created (or registered) setup object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> hfss = cfg.setups.add_hfss_setup(name="hfss_1", adapt_type="broadband")
+   >>> hfss.set_broadband_adaptive("1GHz", "20GHz")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_siwave_ac_setup(config: CfgSIwaveACSetup = None, name: str = None, si_slider_position: int = 1, pi_slider_position: int = 1, use_si_settings: bool = True, **kwargs)
+
+   
+   Create and register a SIwave AC setup.
+
+
+   :Parameters:
+
+       **config** : :obj:`CfgSIwaveACSetup`, :obj:`optional`
+           Pre-built setup object, or *None* to construct from the remaining
+           parameters.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name.
+
+       **si_slider_position** : :class:`python:int`, :obj:`optional`
+           SI accuracy slider.  ``0`` = Speed, ``1`` = Balanced (default),
+           ``2`` = Accuracy.
+
+       **pi_slider_position** : :class:`python:int`, :obj:`optional`
+           PI accuracy slider.  Same values as *si_slider_position*.
+
+       **use_si_settings** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           ``True`` (default) activates the SI slider rather than the PI
+           slider.
+
+       **\*\*kwargs**
+           Additional keyword arguments forwarded to
+           :class:`CfgSIwaveACSetup`.
+
+
+
+   :Returns:
+
+       :obj:`CfgSIwaveACSetup`
+           The newly created (or registered) setup object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> siw = cfg.setups.add_siwave_ac_setup(name="siw_ac", si_slider_position=2)
+   >>> siw.add_frequency_sweep("sw1", start="1kHz", stop="1GHz", step_or_count=100)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_siwave_dc_setup(config: CfgSIwaveDCSetup = None, name: str = None, dc_slider_position: int = 1, export_dc_thermal_data: bool = False, **kwargs)
+
+   
+   Create and register a SIwave DC setup.
+
+
+   :Parameters:
+
+       **config** : :obj:`CfgSIwaveDCSetup`, :obj:`optional`
+           Pre-built setup object, or *None* to construct from the remaining
+           parameters.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name.
+
+       **dc_slider_position** : :class:`python:int`, :obj:`optional`
+           DC accuracy slider.  ``0`` = Speed, ``1`` = Balanced (default),
+           ``2`` = Accuracy.
+
+       **export_dc_thermal_data** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Export IR-drop thermal data after solving.  Default is ``False``.
+
+       **\*\*kwargs**
+           Additional keyword arguments forwarded to :class:`CfgSIwaveDCSetup`.
+
+
+
+   :Returns:
+
+       :obj:`CfgSIwaveDCSetup`
+           The newly created (or registered) setup object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.setups.add_siwave_dc_setup(name="siw_dc", dc_slider_position=1, export_dc_thermal_data=True)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get(name: str)
+
+   
+   Return an existing registered setup by name.
+
+   Looks through the current :attr:`setups` list and returns the first
+   entry whose ``name`` attribute matches *name*.  This is useful when
+   you want to modify a setup that was registered earlier (e.g. by a
+   template function) without having to keep a reference to the object.
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Setup name, e.g. ``"hfss_bb"`` or ``"siw_ac"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgHFSSSetup` | :obj:`CfgSIwaveACSetup` | :obj:`CfgSIwaveDCSetup`
+           The matching setup builder object.
+
+
+
+
+   :Raises:
+
+       :obj:`KeyError`
+           If no registered setup with *name* exists.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = edb.configuration.create_config_builder()
+   >>> cfg.setups.add_hfss_setup("hfss_bb", adapt_type="broadband")
+   >>> # ... later, retrieve and modify:
+   >>> setup = cfg.setups.get("hfss_bb")
+   >>> setup.add_frequency_sweep("sweep2", start="1GHz", stop="20GHz", step_or_count=100)
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

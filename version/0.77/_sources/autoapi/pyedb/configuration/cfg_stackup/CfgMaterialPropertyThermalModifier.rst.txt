@@ -1,0 +1,136 @@
+
+
+
+
+
+
+:class:`CfgMaterialPropertyThermalModifier`
+===========================================
+
+
+.. py:class:: pyedb.configuration.cfg_stackup.CfgMaterialPropertyThermalModifier(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Represent one thermal modifier applied to a material property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgMaterialPropertyThermalModifier
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~property_name`
+            - 
+          * - :py:attr:`~basic_quadratic_c1`
+            - 
+          * - :py:attr:`~basic_quadratic_c2`
+            - 
+          * - :py:attr:`~basic_quadratic_temperature_reference`
+            - 
+          * - :py:attr:`~advanced_quadratic_lower_limit`
+            - 
+          * - :py:attr:`~advanced_quadratic_upper_limit`
+            - 
+          * - :py:attr:`~advanced_quadratic_auto_calculate`
+            - 
+          * - :py:attr:`~advanced_quadratic_lower_constant`
+            - 
+          * - :py:attr:`~advanced_quadratic_upper_constant`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_stackup import CfgMaterialPropertyThermalModifier
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: property_name
+   :type:  str
+
+.. py:attribute:: basic_quadratic_c1
+   :type:  float | int
+   :value: 0
+
+
+.. py:attribute:: basic_quadratic_c2
+   :type:  float | int
+   :value: 0
+
+
+.. py:attribute:: basic_quadratic_temperature_reference
+   :type:  float | int
+   :value: 22
+
+
+.. py:attribute:: advanced_quadratic_lower_limit
+   :type:  float | int
+   :value: -273.15
+
+
+.. py:attribute:: advanced_quadratic_upper_limit
+   :type:  float | int
+   :value: 1000
+
+
+.. py:attribute:: advanced_quadratic_auto_calculate
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: advanced_quadratic_lower_constant
+   :type:  float | int
+   :value: 1
+
+
+.. py:attribute:: advanced_quadratic_upper_constant
+   :type:  float | int
+   :value: 1
+
+
+
+
+
+

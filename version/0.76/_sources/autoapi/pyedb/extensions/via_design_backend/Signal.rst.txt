@@ -1,0 +1,113 @@
+
+
+
+
+
+
+:class:`Signal`
+===============
+
+
+.. py:class:: pyedb.extensions.via_design_backend.Signal(p_board, signal_name, name_suffix: Union[None, str], base_x, base_y, stacked_vias, flip_x, flip_y)
+
+   
+   vias and traces.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Signal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~populate_config`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~p_board`
+            - 
+          * - :py:attr:`~net_name`
+            - 
+          * - :py:attr:`~name_suffix`
+            - 
+          * - :py:attr:`~base_x`
+            - 
+          * - :py:attr:`~base_y`
+            - 
+          * - :py:attr:`~vias`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.extensions.via_design_backend import Signal
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: p_board
+
+.. py:attribute:: net_name
+
+.. py:attribute:: name_suffix
+
+.. py:attribute:: base_x
+
+.. py:attribute:: base_y
+
+.. py:attribute:: vias
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: populate_config(cfg_modeler)
+
+
+
+

@@ -1,0 +1,129 @@
+﻿Rules
+=====
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoclass:: Rules
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Rules.add_back_drill_stub_length
+      
+      
+      Rules.add_copper_balance
+      
+      
+      Rules.add_diff_pair_length_match
+      
+      
+      Rules.add_min_annular_ring
+      
+      
+      Rules.add_min_clearance
+      
+      
+      Rules.add_min_line_width
+      
+      
+      Rules.construct
+      
+      
+      Rules.copy
+      
+      
+      Rules.dict
+      
+      
+      Rules.from_dict
+      
+      
+      Rules.from_orm
+      
+      
+      Rules.json
+      
+      
+      Rules.model_construct
+      
+      
+      Rules.model_copy
+      
+      
+      Rules.model_dump
+      
+      
+      Rules.model_dump_json
+      
+      
+      Rules.model_json_schema
+      
+      
+      Rules.model_parametrized_name
+      
+      
+      Rules.model_post_init
+      
+      
+      Rules.model_rebuild
+      
+      
+      Rules.model_validate
+      
+      
+      Rules.model_validate_json
+      
+      
+      Rules.model_validate_strings
+      
+      
+      Rules.parse_file
+      
+      
+      Rules.parse_obj
+      
+      
+      Rules.parse_raw
+      
+      
+      Rules.schema
+      
+      
+      Rules.schema_json
+      
+      
+      Rules.to_dict
+      
+      
+      Rules.update_forward_refs
+      
+      
+      Rules.validate
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Rules.model_computed_fields
+      Rules.model_config
+      Rules.model_fields
+      Rules.min_line_width
+      Rules.min_clearance
+      Rules.min_annular_ring
+      Rules.diff_pair_length_match
+      Rules.back_drill_stub_length
+      Rules.copper_balance
+   
+   

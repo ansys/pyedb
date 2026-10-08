@@ -1,0 +1,116 @@
+
+
+
+
+
+
+:class:`CfgPointTerminal`
+=========================
+
+
+.. py:class:: pyedb.configuration.cfg_terminals.CfgPointTerminal(/, **data: Any)
+
+   Bases: :py:obj:`CfgTerminal`
+
+
+   
+   Represent a terminal placed at explicit XY coordinates.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPointTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~terminal_type`
+            - 
+          * - :py:attr:`~is_circuit_port`
+            - 
+          * - :py:attr:`~hfss_type`
+            - 
+          * - :py:attr:`~x`
+            - 
+          * - :py:attr:`~y`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~net`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_terminals import CfgPointTerminal
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: terminal_type
+   :type:  str
+   :value: 'point'
+
+
+.. py:attribute:: is_circuit_port
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: hfss_type
+   :type:  Literal['Wave', 'Gap', None]
+   :value: None
+
+
+.. py:attribute:: x
+   :type:  float | int | str
+
+.. py:attribute:: y
+   :type:  float | int | str
+
+.. py:attribute:: layer
+   :type:  str
+
+.. py:attribute:: net
+   :type:  str
+
+
+
+
+

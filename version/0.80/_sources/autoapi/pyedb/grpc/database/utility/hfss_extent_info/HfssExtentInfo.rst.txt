@@ -1,0 +1,703 @@
+
+
+
+
+
+
+:class:`HfssExtentInfo`
+=======================
+
+
+.. py:class:: pyedb.grpc.database.utility.hfss_extent_info.HfssExtentInfo(pedb)
+
+   
+   Manages EDB functionalities for HFSS extent information.
+
+
+   :Parameters:
+
+       **pedb** : :class:`pyedb.grpc.edb.Edb`
+           Inherited EDB object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HfssExtentInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_air_box_horizontal_extent`
+            - Size of horizontal extent for the air box.
+          * - :py:attr:`~set_air_box_horizontal_extent`
+            - 
+          * - :py:attr:`~get_air_box_positive_vertical_extent`
+            - Negative vertical extent for the air box.
+          * - :py:attr:`~set_air_box_positive_vertical_extent`
+            - 
+          * - :py:attr:`~get_air_box_negative_vertical_extent`
+            - Negative vertical extent for the airbox.
+          * - :py:attr:`~set_air_box_negative_vertical_extent`
+            - 
+          * - :py:attr:`~get_dielectric_extent`
+            - Dielectric extent size.
+          * - :py:attr:`~set_dielectric_extent`
+            - 
+          * - :py:attr:`~load_config`
+            - Load HFSS extent configuration.
+          * - :py:attr:`~export_config`
+            - Export HFSS extent information.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~base_polygon`
+            - Base polygon.
+          * - :py:attr:`~dielectric_base_polygon`
+            - Dielectric base polygon.
+          * - :py:attr:`~dielectric_extent_type`
+            - Dielectric extent type.
+          * - :py:attr:`~extent_type`
+            - Extent type.
+          * - :py:attr:`~honor_user_dielectric`
+            - Honor user dielectric.
+          * - :py:attr:`~is_pml_visible`
+            - Whether visibility of the PML is enabled.
+          * - :py:attr:`~open_region_type`
+            - Open region type.
+          * - :py:attr:`~operating_freq`
+            - PML Operating frequency.
+          * - :py:attr:`~radiation_level`
+            - PML Radiation level to calculate the thickness of boundary.
+          * - :py:attr:`~sync_air_box_vertical_extent`
+            - Vertical extent of the sync air box.
+          * - :py:attr:`~truncate_air_box_at_ground`
+            - Truncate air box at ground.
+          * - :py:attr:`~use_open_region`
+            - Whether using an open region is enabled.
+          * - :py:attr:`~use_xy_data_extent_for_vertical_expansion`
+            - Whether using the xy data extent for vertical expansion is enabled.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+          * - :py:attr:`~extent_type_mapping`
+            - 
+          * - :py:attr:`~hfss_extent_type`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.hfss_extent_info import HfssExtentInfo
+
+Property detail
+---------------
+
+.. py:property:: base_polygon
+   :type: any
+
+
+   
+   Base polygon.
+
+
+
+
+
+   :Returns:
+
+       :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_base_polygon
+   :type: any
+
+
+   
+   Dielectric base polygon.
+
+
+
+
+
+   :Returns:
+
+       :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_extent_type
+   :type: str
+
+
+   
+   Dielectric extent type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Dielectric extent type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: extent_type
+   :type: str
+
+
+   
+   Extent type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Extent type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: honor_user_dielectric
+   :type: bool
+
+
+   
+   Honor user dielectric.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_pml_visible
+   :type: bool
+
+
+   
+   Whether visibility of the PML is enabled.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: open_region_type
+   :type: str
+
+
+   
+   Open region type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Open region type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: operating_freq
+   :type: float
+
+
+   
+   PML Operating frequency.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Operating frequency value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: radiation_level
+   :type: float
+
+
+   
+   PML Radiation level to calculate the thickness of boundary.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Boundary thickness value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sync_air_box_vertical_extent
+   :type: bool
+
+
+   
+   Vertical extent of the sync air box.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Synchronise vertical extent.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: truncate_air_box_at_ground
+   :type: bool
+
+
+   
+   Truncate air box at ground.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Truncate air box at ground.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_open_region
+   :type: bool
+
+
+   
+   Whether using an open region is enabled.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Use open region.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_xy_data_extent_for_vertical_expansion
+   :type: bool
+
+
+   
+   Whether using the xy data extent for vertical expansion is enabled.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           USe x y data extent for vertical expansion.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+.. py:attribute:: extent_type_mapping
+
+.. py:attribute:: hfss_extent_type
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_air_box_horizontal_extent() -> (float, bool)
+
+   
+   Size of horizontal extent for the air box.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Air box horizontal extent value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_air_box_horizontal_extent(size: float, is_multiple: bool = True)
+
+.. py:method:: get_air_box_positive_vertical_extent() -> (float, bool)
+
+   
+   Negative vertical extent for the air box.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Air box positive vertical extent value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_air_box_positive_vertical_extent(size: float, is_multiple: bool)
+
+.. py:method:: get_air_box_negative_vertical_extent() -> (float, bool)
+
+   
+   Negative vertical extent for the airbox.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Air box negative vertical extent value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_air_box_negative_vertical_extent(size: float, is_multiple: bool = True)
+
+.. py:method:: get_dielectric_extent() -> (float, bool)
+
+   
+   Dielectric extent size.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Dielectric extent size value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_dielectric_extent(size: float, is_multiple: bool = True)
+
+.. py:method:: load_config(config)
+
+   
+   Load HFSS extent configuration.
+
+
+   :Parameters:
+
+       **config: dict**
+           Parameters of the HFSS extent information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_config()
+
+   
+   Export HFSS extent information.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Parameters of the HFSS extent information.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

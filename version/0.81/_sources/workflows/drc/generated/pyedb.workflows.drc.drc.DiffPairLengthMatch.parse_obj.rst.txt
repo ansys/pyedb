@@ -1,0 +1,6 @@
+parse\_obj
+==========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: DiffPairLengthMatch.parse_obj

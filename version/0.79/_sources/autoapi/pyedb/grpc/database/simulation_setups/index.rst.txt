@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``simulation_setups.py`` module
+===================================
+
+.. py:module:: pyedb.grpc.database.simulation_setups
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: simulation_setups
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setups.SimulationSetups`
+            - Simulation setups container class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SimulationSetups</autoapi/pyedb/grpc/database/simulation_setups/SimulationSetups>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

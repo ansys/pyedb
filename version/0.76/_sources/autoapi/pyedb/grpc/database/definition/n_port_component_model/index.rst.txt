@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``n_port_component_model.py`` module
+========================================
+
+.. py:module:: pyedb.grpc.database.definition.n_port_component_model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: n_port_component_model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.n_port_component_model.NPortComponentModel`
+            - Class managing :class:`NPortComponentModel <ansys.edb.core.definition.component_model.NPortComponentModel>`
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> NPortComponentModel</autoapi/pyedb/grpc/database/definition/n_port_component_model/NPortComponentModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

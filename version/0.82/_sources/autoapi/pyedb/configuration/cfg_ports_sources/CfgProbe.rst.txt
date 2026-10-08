@@ -1,0 +1,130 @@
+
+
+
+
+
+
+:class:`CfgProbe`
+=================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgProbe(pedb=None, *args, **kwargs)
+
+   Bases: :py:obj:`CfgCircuitElement`
+
+
+   
+   Represent one voltage-probe entry.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgProbe
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_parameters_to_edb`
+            - Write this probe into the open EDB design.
+          * - :py:attr:`~export_properties`
+            - Serialize this probe to a plain dictionary.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgProbe
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_parameters_to_edb()
+
+   
+   Write this probe into the open EDB design.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           Created EDB excitation objects, or the serialized payload when
+           no EDB session is attached.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_properties()
+
+   
+   Serialize this probe to a plain dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

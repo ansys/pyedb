@@ -1,0 +1,133 @@
+
+
+
+
+
+
+The ``pyedb.misc.utilities`` library
+====================================
+
+.. py:module:: pyedb.misc.utilities
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: utilities
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~compute_arc_points`
+            - Get the points of the arc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Module gathering utility functions for PyEDB modules.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: compute_arc_points(p1: list[float], p2: list[float], h: float, n: int = 6, tol: float = 1e-12) -> tuple[list[float], list[float]]
+
+   
+   Get the points of the arc.
+
+
+   :Parameters:
+
+       **p1** : :class:`python:list`\[:class:`python:float`]
+           Arc starting point.
+
+       **p2** : :class:`python:list`\[:class:`python:float`]
+           Arc ending point.
+
+       **h** : :class:`python:float`
+           Arc height (sagitta). Positive values arc upward from p1 to p2,
+           negative values arc downward.
+
+       **n** : :class:`python:int`, :obj:`optional`
+           Number of points to generate along the arc.
+           The default is ``6``.
+
+       **tol** : :class:`python:float`, :obj:`optional`
+           Geometric tolerance.
+           The default is ``1e-12``.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[:class:`python:list`\[:class:`python:float`], :class:`python:list`\[:class:`python:float`]]
+           Points generated along the arc as (x_coordinates, y_coordinates).
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   Correctly handles arcs that subtend more than 180° (h > r case).
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.utilities import compute_arc_points
+   >>> p1 = [0.0, 0.0]
+   >>> p2 = [1.0, 0.0]
+   >>> h = 0.2
+   >>> xr, yr = compute_arc_points(p1, p2, h, n=6)
+   >>> len(xr) == len(yr) == 6
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+
+

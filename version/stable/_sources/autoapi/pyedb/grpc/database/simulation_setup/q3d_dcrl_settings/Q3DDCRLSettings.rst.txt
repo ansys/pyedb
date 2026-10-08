@@ -1,0 +1,252 @@
+
+
+
+
+
+
+:class:`Q3DDCRLSettings`
+========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.q3d_dcrl_settings.Q3DDCRLSettings(pedb, core: ansys.edb.core.simulation_setup.q3d_simulation_settings.Q3DDCRLSettings)
+
+
+.. py:currentmodule:: Q3DDCRLSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~max_passes`
+            - Maximum number of passes.
+          * - :py:attr:`~max_refine_per_pass`
+            - Maximum refinement per pass.
+          * - :py:attr:`~min_converged_passes`
+            - Minimum number of converged passes.
+          * - :py:attr:`~min_passes`
+            - Minimum number of passes.
+          * - :py:attr:`~percent_error`
+            - Percent error.
+          * - :py:attr:`~solution_order`
+            - Solution order.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.q3d_dcrl_settings import Q3DDCRLSettings
+
+Property detail
+---------------
+
+.. py:property:: max_passes
+   :type: int
+
+
+   
+   Maximum number of passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum number of passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_refine_per_pass
+   :type: float
+
+
+   
+   Maximum refinement per pass.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Maximum refinement per pass.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_converged_passes
+   :type: int
+
+
+   
+   Minimum number of converged passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Minimum number of converged passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_passes
+   :type: int
+
+
+   
+   Minimum number of passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Minimum number of passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: percent_error
+   :type: float
+
+
+   
+   Percent error.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Percent error.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solution_order
+   :type: str
+
+
+   
+   Solution order.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Solution order.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

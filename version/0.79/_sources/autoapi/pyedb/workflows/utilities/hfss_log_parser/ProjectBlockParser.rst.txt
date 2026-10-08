@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`ProjectBlockParser`
+===========================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.ProjectBlockParser(lines: list[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract project meta-data from the log header.
+
+   This parser searches for project name, design name, user information,
+   and command line arguments in the log file header section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = [
+   ...     "Project: MyProject, Design: HFSSDesign1",
+   ...     "Running as user: engineer",
+   ...     'Using command line: "ansysedt.exe"',
+   ...     "Batch Solve/Save: /path/to/project.aedt",
+   ... ]
+   >>> parser = ProjectBlockParser(lines)
+   >>> info = parser.parse()
+   >>> info.name
+   'MyProject'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ProjectBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse the stored lines and return a ProjectInfo instance.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import ProjectBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> ProjectInfo
+
+   
+   Parse the stored lines and return a ProjectInfo instance.
+
+
+
+
+
+   :Returns:
+
+       :obj:`ProjectInfo`
+           Populated project meta-data object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = ["Project: Antenna, Design: HFSS1", "Batch Solve/Save: /tmp/antenna.aedt"]
+   >>> parser = ProjectBlockParser(lines)
+   >>> info = parser.parse()
+   >>> info.name
+   'Antenna'
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

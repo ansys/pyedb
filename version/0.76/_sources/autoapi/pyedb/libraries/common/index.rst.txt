@@ -1,0 +1,122 @@
+
+
+
+
+
+
+The ``pyedb.libraries.common`` library
+======================================
+
+.. py:module:: pyedb.libraries.common
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: common
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.libraries.common.Substrate`
+            - Small helper that groups the four basic substrate parameters used
+
+
+          * - :py:obj:`~pyedb.libraries.common.Material`
+            - Generic material definition.
+
+
+          * - :py:obj:`~pyedb.libraries.common.Conductor`
+            - Metallic conductor material with electrical conductivity.
+
+
+          * - :py:obj:`~pyedb.libraries.common.Dielectric`
+            - Dielectric material with relative permittivity and loss tangent.
+
+
+          * - :py:obj:`~pyedb.libraries.common.Layer`
+            - Physical layer inside a stackup.
+
+
+          * - :py:obj:`~pyedb.libraries.common.MetalLayer`
+            - Convenience wrapper for metallic layers.
+
+
+          * - :py:obj:`~pyedb.libraries.common.DielectricLayer`
+            - Convenience wrapper for dielectric layers.
+
+
+          * - :py:obj:`~pyedb.libraries.common.MicroStripTechnologyStackup`
+            - Pre-defined micro-strip stackup with bottom metal, substrate and top metal.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Substrate</autoapi/pyedb/libraries/common/Substrate>
+    <span class="nf nf-cod-symbol_class"></span> Material</autoapi/pyedb/libraries/common/Material>
+    <span class="nf nf-cod-symbol_class"></span> Conductor</autoapi/pyedb/libraries/common/Conductor>
+    <span class="nf nf-cod-symbol_class"></span> Dielectric</autoapi/pyedb/libraries/common/Dielectric>
+    <span class="nf nf-cod-symbol_class"></span> Layer</autoapi/pyedb/libraries/common/Layer>
+    <span class="nf nf-cod-symbol_class"></span> MetalLayer</autoapi/pyedb/libraries/common/MetalLayer>
+    <span class="nf nf-cod-symbol_class"></span> DielectricLayer</autoapi/pyedb/libraries/common/DielectricLayer>
+    <span class="nf nf-cod-symbol_class"></span> MicroStripTechnologyStackup</autoapi/pyedb/libraries/common/MicroStripTechnologyStackup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

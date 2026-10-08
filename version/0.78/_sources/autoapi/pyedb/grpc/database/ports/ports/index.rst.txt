@@ -1,0 +1,108 @@
+
+
+
+
+
+
+The ``ports.py`` module
+=======================
+
+.. py:module:: pyedb.grpc.database.ports.ports
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: ports
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.ports.ports.GapPort`
+            - Manages gap port properties.
+
+
+          * - :py:obj:`~pyedb.grpc.database.ports.ports.CircuitPort`
+            - Manages gap port properties.
+
+
+          * - :py:obj:`~pyedb.grpc.database.ports.ports.WavePort`
+            - Manages wave port properties.
+
+
+          * - :py:obj:`~pyedb.grpc.database.ports.ports.ExcitationSources`
+            - Manage sources properties.
+
+
+          * - :py:obj:`~pyedb.grpc.database.ports.ports.BundleWavePort`
+            - Manages bundle wave port properties.
+
+
+          * - :py:obj:`~pyedb.grpc.database.ports.ports.CoaxPort`
+            - Manages bundle wave port properties.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> GapPort</autoapi/pyedb/grpc/database/ports/ports/GapPort>
+    <span class="nf nf-cod-symbol_class"></span> CircuitPort</autoapi/pyedb/grpc/database/ports/ports/CircuitPort>
+    <span class="nf nf-cod-symbol_class"></span> WavePort</autoapi/pyedb/grpc/database/ports/ports/WavePort>
+    <span class="nf nf-cod-symbol_class"></span> ExcitationSources</autoapi/pyedb/grpc/database/ports/ports/ExcitationSources>
+    <span class="nf nf-cod-symbol_class"></span> BundleWavePort</autoapi/pyedb/grpc/database/ports/ports/BundleWavePort>
+    <span class="nf nf-cod-symbol_class"></span> CoaxPort</autoapi/pyedb/grpc/database/ports/ports/CoaxPort>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

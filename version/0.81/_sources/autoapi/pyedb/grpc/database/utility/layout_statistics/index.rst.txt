@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``layout_statistics.py`` module
+===================================
+
+.. py:module:: pyedb.grpc.database.utility.layout_statistics
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: layout_statistics
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.layout_statistics.LayoutStatistics`
+            - Statistics object
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> LayoutStatistics</autoapi/pyedb/grpc/database/utility/layout_statistics/LayoutStatistics>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

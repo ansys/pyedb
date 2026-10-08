@@ -1,0 +1,266 @@
+
+
+
+
+
+
+:class:`MicroStripLine`
+=======================
+
+
+.. py:class:: pyedb.libraries.rf_libraries.base_functions.MicroStripLine(edb_cell, layer: str, net: str, x0: Union[float, str] = 0.0, y0: Union[float, str] = 0.0, length: Union[float, str] = '1mm', width: Union[float, str] = '0.2mm', angle: Union[float, str] = 0.0, freq: Optional[Union[float, str]] = None)
+
+   
+   Single-ended micro-strip line with fixed geometry and editable stack-up.
+
+
+   :Parameters:
+
+       **edb** : :obj:`object`
+           EDB application / API handle.
+
+       **layer** : :class:`python:str`
+           Conductor layer on which the trace is drawn.
+
+       **net** : :class:`python:str`
+           Net name assigned to the trace.
+
+       **x0, y0** : :class:`python:float`
+           Global start coordinates (mm, m, or whatever length unit is active in AEDT).
+
+       **length** : :class:`python:float`
+           Physical length of the line (same unit as x0/y0).
+
+       **angle** : :class:`python:float`
+           Rotation angle in degrees (0° = along +X).
+
+       **freq** : :class:`python:float`, :obj:`optional`
+           Reference frequency (Hz) used to compute the electrical length.
+           If None, electrical_length will be None.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MicroStripLine
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create the trace and return its EDB object.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~width`
+            - 
+          * - :py:attr:`~length`
+            - Physical length of the micro-strip line.
+          * - :py:attr:`~impedance`
+            - Accurate characteristic impedance (Ω) for a micro-strip line.
+          * - :py:attr:`~electrical_length`
+            - Electrical length in degrees at self.freq.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~net`
+            - 
+          * - :py:attr:`~x0`
+            - 
+          * - :py:attr:`~y0`
+            - 
+          * - :py:attr:`~angle`
+            - 
+          * - :py:attr:`~freq`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+          * - :py:attr:`~id`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.base_functions import MicroStripLine
+
+Property detail
+---------------
+
+.. py:property:: width
+
+.. py:property:: length
+   :type: float
+
+
+   
+   Physical length of the micro-strip line.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+   :type: float
+
+
+   
+   Accurate characteristic impedance (Ω) for a micro-strip line.
+   Valid for 0.05 ≤ w/h ≤ 1000 and 1 ≤ εr ≤ 128.
+   Source: G. Wheeler, E. Hammerstad & Jensen, IEEE-MTT 1980.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: electrical_length
+   :type: Optional[float]
+
+
+   
+   Electrical length in degrees at self.freq.
+   Returns None if freq is None.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: layer
+
+.. py:attribute:: net
+
+.. py:attribute:: x0
+
+.. py:attribute:: y0
+
+.. py:attribute:: angle
+
+.. py:attribute:: freq
+   :value: None
+
+
+.. py:attribute:: substrate
+
+.. py:attribute:: id
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create() -> List[float]
+
+   
+   Create the trace and return its EDB object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

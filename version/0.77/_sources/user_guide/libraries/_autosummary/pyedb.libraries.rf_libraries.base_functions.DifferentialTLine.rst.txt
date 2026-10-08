@@ -1,0 +1,24 @@
+﻿DifferentialTLine
+=================
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoclass:: DifferentialTLine
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      DifferentialTLine.create
+      
+   
+   
+
+   
+   
+   

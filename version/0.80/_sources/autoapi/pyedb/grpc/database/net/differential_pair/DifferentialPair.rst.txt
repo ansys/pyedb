@@ -1,0 +1,130 @@
+
+
+
+
+
+
+:class:`DifferentialPair`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.net.differential_pair.DifferentialPair(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.net.differential_pair.DifferentialPair`
+
+
+   
+   Manages EDB functionalities for a primitive.
+   It inherits EDB object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DifferentialPair
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~positive_net`
+            - Positive Net.
+          * - :py:attr:`~negative_net`
+            - Negative Net.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.net.differential_pair import DifferentialPair
+
+Property detail
+---------------
+
+.. py:property:: positive_net
+   :type: pyedb.grpc.database.net.net.Net
+
+
+   
+   Positive Net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: negative_net
+   :type: pyedb.grpc.database.net.net.Net
+
+
+   
+   Negative Net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

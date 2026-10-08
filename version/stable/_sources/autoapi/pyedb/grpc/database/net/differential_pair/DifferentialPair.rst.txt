@@ -1,0 +1,343 @@
+
+
+
+
+
+
+:class:`DifferentialPair`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.net.differential_pair.DifferentialPair(pedb, core)
+
+   
+   Manages EDB functionalities for differential pair.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DifferentialPair
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete`
+            - Delete the differential pair.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~description`
+            - Description of the differential pair.
+          * - :py:attr:`~differential_pair`
+            - Differential pair Net objects. This property is also used to add or replace nets using the setter method.
+          * - :py:attr:`~id`
+            - ID of the differential pair.
+          * - :py:attr:`~is_null`
+            - Check if the differential pair is null.
+          * - :py:attr:`~is_power_ground`
+            - Check if the differential pair is a power or ground pair.
+          * - :py:attr:`~name`
+            - Name of the differential pair.
+          * - :py:attr:`~positive_net`
+            - Positive Net.
+          * - :py:attr:`~negative_net`
+            - Negative Net.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.net.differential_pair import DifferentialPair
+
+Property detail
+---------------
+
+.. py:property:: description
+   :type: str
+
+
+   
+   Description of the differential pair.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: differential_pair
+   :type: tuple[pyedb.grpc.database.net.net.Net, pyedb.grpc.database.net.net.Net]
+
+
+   
+   Differential pair Net objects. This property is also used to add or replace nets using the setter method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: id
+   :type: int
+
+
+   
+   ID of the differential pair.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Check if the differential pair is null.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_power_ground
+   :type: bool
+
+
+   
+   Check if the differential pair is a power or ground pair.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Name of the differential pair.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: positive_net
+   :type: pyedb.grpc.database.net.net.Net
+
+
+   
+   Positive Net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: negative_net
+   :type: pyedb.grpc.database.net.net.Net
+
+
+   
+   Negative Net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: delete() -> None
+
+   
+   Delete the differential pair.
+
+
+
+
+
+   :Returns:
+
+       :data:`python:None`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
