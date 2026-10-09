@@ -23,7 +23,7 @@ Working with Components
 -----------------------
 .. code-block:: python
 
-   from pyedn import Edb
+   from pyedb import Edb
 
    edb = Edb(edbpath=edb_path)
    # Get a component by name
