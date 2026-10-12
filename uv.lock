@@ -114,7 +114,7 @@ autoapi = [
 
 [[package]]
 name = "ansys-tools-common"
-version = "0.5.0"
+version = "0.5.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -123,9 +123,9 @@ dependencies = [
     { name = "scooby" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c1/2b/a8c625d424b5b933b6d27a325c1e4f4632bc7e2276204722058f65f7ab32/ansys_tools_common-0.5.0.tar.gz", hash = "sha256:2dd98e6fcb4a0ceb7e118b394575bffbd9c7b7dbcfc6d56ffdd03de79ce3145a", size = 323011, upload-time = "2026-03-17T09:48:41.562Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/04/0a/1291f8c5167c68a920361d214c6be8516f3452392dccbb72fb9f41a825ac/ansys_tools_common-0.5.3.tar.gz", hash = "sha256:f922fe151d76d94b42658c2f1a23111c9d05147a35aac0c88cba3155462bacae", size = 327064, upload-time = "2026-08-31T09:36:51.907Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/82/ba/81800ad31d57df6245ca6a9f63aaf39a649e3417a1a1f81d7572cb520765/ansys_tools_common-0.5.0-py3-none-any.whl", hash = "sha256:07f537d3095a731a6f9fd8909940ab1da2a4a108dedf52cd91596e28c685b5a1", size = 86936, upload-time = "2026-03-17T09:48:39.765Z" },
+    { url = "https://files.pythonhosted.org/packages/62/fc/30cee1f72d0add309f45503255040087f65458b446b47743c550aa2ff707/ansys_tools_common-0.5.3-py3-none-any.whl", hash = "sha256:f1f70e424ba5f5ead6925b7d9471b0df691d80f8371f36997dcca63bdd11af85", size = 88760, upload-time = "2026-08-31T09:36:50.268Z" },
 ]
 
 [[package]]
@@ -2683,6 +2683,7 @@ name = "pyedb"
 source = { editable = "." }
 dependencies = [
     { name = "ansys-edb-core" },
+    { name = "ansys-tools-common" },
     { name = "defusedxml" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
@@ -2789,6 +2790,7 @@ tests = [
 requires-dist = [
     { name = "ansys-edb-core", specifier = ">=0.3.3" },
     { name = "ansys-pythonnet", marker = "extra == 'dotnet'", specifier = ">=3.1.0rc6" },
+    { name = "ansys-tools-common", specifier = ">=0.5.3" },
     { name = "cffi", marker = "sys_platform == 'linux' and extra == 'dotnet'", specifier = ">=1.16.0,<2.2" },
     { name = "defusedxml", specifier = ">=0.7,<8.0" },
     { name = "ezdxf", marker = "extra == 'all'", specifier = ">=1.4.2" },
