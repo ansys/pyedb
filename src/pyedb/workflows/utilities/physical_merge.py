@@ -261,7 +261,7 @@ def __add_components(hosting_edb, merged_edb, components_dict, prefix):
 
 def physical_merge(
     hosting_edb,
-    merged_edb: str | Edb,
+    merged_edb: "str | Edb",
     on_top=True,
     vector=(0.0, 0.0),
     prefix="merged_",
