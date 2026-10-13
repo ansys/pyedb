@@ -33,6 +33,28 @@ from pyedb.configuration.cfg_common import CfgBase
 # can abort the process on Windows (https://github.com/ansys/pyedb/issues/2598). It is only imported lazily
 # inside the gRPC code paths below.
 
+# Names that used to be module-level imports. They are still exposed (lazily, via ``__getattr__``) so that
+# ``cfg_components.CoreDieProperty`` etc. keep working, e.g. for ``monkeypatch.setattr(mod.CoreDieProperty, ...)``.
+_LAZY_CORE_NAMES = {
+    "CoreComponentProperty": ("ansys.edb.core.definition.component_property", "ComponentProperty"),
+    "CoreDieOrientation": ("ansys.edb.core.definition.die_property", "DieOrientation"),
+    "CoreDieProperty": ("ansys.edb.core.definition.die_property", "DieProperty"),
+    "CoreDieType": ("ansys.edb.core.definition.die_property", "DieType"),
+    "CorePortProperty": ("ansys.edb.core.definition.port_property", "PortProperty"),
+    "CoreSolderBallProperty": ("ansys.edb.core.definition.solder_ball_property", "SolderBallProperty"),
+    "SolderballShape": ("ansys.edb.core.definition.solder_ball_property", "SolderballShape"),
+}
+
+
+def __getattr__(name):
+    """Lazily resolve the gRPC core classes without importing gRPC at module import time."""
+    if name in _LAZY_CORE_NAMES:
+        import importlib
+
+        module_name, attr = _LAZY_CORE_NAMES[name]
+        return getattr(importlib.import_module(module_name), attr)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 def _smallest_pin_pad_size(comp) -> float | None:
     """Return the smallest pin pad dimension (metres) for *comp*, or ``None``.
