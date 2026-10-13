@@ -323,7 +323,7 @@ class SimulationSetup(SystemObject):
         """
         if "sweep_type" in kwargs:
             self._pedb.logger.warning("sweep_type parameter is deprecated. Use ``discrete`` parameter instead")
-            discrete = False if kwargs["sweep_type"] == "interpolation" else True
+            discrete = False if kwargs["sweep_type"] in ("interpolation", "interpolating") else True
 
         name = generate_unique_name("sweep") if not name else name
         if name in self.sweeps:

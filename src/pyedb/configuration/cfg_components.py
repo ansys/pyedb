@@ -24,17 +24,14 @@
 
 import re
 
-from ansys.edb.core.definition.component_property import ComponentProperty as CoreComponentProperty
-from ansys.edb.core.definition.die_property import (
-    DieOrientation as CoreDieOrientation,
-    DieProperty as CoreDieProperty,
-    DieType as CoreDieType,
-)
-from ansys.edb.core.definition.port_property import PortProperty as CorePortProperty
-from ansys.edb.core.definition.solder_ball_property import SolderBallProperty as CoreSolderBallProperty, SolderballShape
 from pydantic import BaseModel
 
 from pyedb.configuration.cfg_common import CfgBase
+
+# NOTE: ``ansys.edb.core`` (gRPC) must NOT be imported at module level here. Importing it loads ``grpc`` and ``ssl``,
+# which makes Python load its own OpenSSL DLLs before the native EDB libraries used by the DotNet backend, and
+# can abort the process on Windows (https://github.com/ansys/pyedb/issues/2598). It is only imported lazily
+# inside the gRPC code paths below.
 
 
 def _smallest_pin_pad_size(comp) -> float | None:
@@ -81,19 +78,29 @@ def _get_snake_to_pascal():
     return snake_to_pascal
 
 
-_die_type_mapping = {
-    "flip_chip": CoreDieType.FLIPCHIP,
-    "flipchip": CoreDieType.FLIPCHIP,
-    "wire_bond": CoreDieType.WIREBOND,
-    "wirebond": CoreDieType.WIREBOND,
-    "no_die": CoreDieType.NONE,
-    "none": CoreDieType.NONE,
-}
+def _get_die_type_mapping():
+    """Lazy gRPC mapping from config die type strings to core ``DieType`` (avoids importing gRPC at module level)."""
+    from ansys.edb.core.definition.die_property import DieType as CoreDieType
 
-_die_orientation_mapping = {
-    "chip_up": CoreDieOrientation.CHIP_UP,
-    "chip_down": CoreDieOrientation.CHIP_DOWN,
-}
+    return {
+        "flip_chip": CoreDieType.FLIPCHIP,
+        "flipchip": CoreDieType.FLIPCHIP,
+        "wire_bond": CoreDieType.WIREBOND,
+        "wirebond": CoreDieType.WIREBOND,
+        "no_die": CoreDieType.NONE,
+        "none": CoreDieType.NONE,
+    }
+
+
+def _get_die_orientation_mapping():
+    """Lazy gRPC mapping from config orientation strings to core ``DieOrientation``."""
+    from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
+
+    return {
+        "chip_up": CoreDieOrientation.CHIP_UP,
+        "chip_down": CoreDieOrientation.CHIP_DOWN,
+    }
+
 
 _NO_DIE_TYPES = ("no_die", "none", None)
 
@@ -124,6 +131,8 @@ def _persist_component_property(core_component, cp) -> None:
         The mutated component property previously fetched from
         ``core_component.component_property``.
     """
+    from ansys.edb.core.definition.component_property import ComponentProperty as CoreComponentProperty
+
     core_component.component_property = CoreComponentProperty(cp.msg)
 
 
@@ -236,13 +245,15 @@ class CfgComponent(CfgBase):
             # sub-property must be a freshly ``.create()``-d instance, populated
             # locally, then assigned to the typed component property — only
             # then does a base-class write-back persist to disk.
+            from ansys.edb.core.definition.die_property import DieProperty as CoreDieProperty
+
             cp = self.pyedb_obj.core.component_property
             ic_die_prop = CoreDieProperty.create()
-            ic_die_prop.die_type = _die_type_mapping[die_type or "none"]
+            ic_die_prop.die_type = _get_die_type_mapping()[die_type or "none"]
             if die_type not in _NO_DIE_TYPES:
                 orientation = self.ic_die_properties.get("orientation")
                 if orientation:
-                    ic_die_prop.die_orientation = _die_orientation_mapping[orientation]
+                    ic_die_prop.die_orientation = _get_die_orientation_mapping()[orientation]
                 if die_type == "wire_bond":
                     height = self.ic_die_properties.get("height")
                     if height:
@@ -278,6 +289,8 @@ class CfgComponent(CfgBase):
             # to make the write-back persist on EDB 2026.1.  Initial defaults
             # for fields the user did not specify are copied from the existing
             # port_property so we do not regress unrelated settings.
+            from ansys.edb.core.definition.port_property import PortProperty as CorePortProperty
+
             cp = self.pyedb_obj.core.component_property
             existing = cp.port_property
             port_prop = CorePortProperty.create()
@@ -400,13 +413,24 @@ class CfgComponent(CfgBase):
         material = sbp_data.get("material") or "solder"
         orientation = sbp_data.get("orientation", "chip_down")
 
-        _shape_map = {
-            "cylinder": SolderballShape.SOLDERBALL_CYLINDER,
-            "spheroid": SolderballShape.SOLDERBALL_SPHEROID,
-        }
-        core_shape = _shape_map[shape.lower()]  # raises KeyError for unknown shapes
+        if shape.lower() not in ("cylinder", "spheroid"):
+            raise KeyError(shape.lower())  # unknown shapes are rejected for both backends
 
         if self._pedb.grpc:
+            from ansys.edb.core.definition.die_property import (
+                DieOrientation as CoreDieOrientation,
+                DieProperty as CoreDieProperty,
+                DieType as CoreDieType,
+            )
+            from ansys.edb.core.definition.solder_ball_property import (
+                SolderBallProperty as CoreSolderBallProperty,
+                SolderballShape,
+            )
+
+            core_shape = {
+                "cylinder": SolderballShape.SOLDERBALL_CYLINDER,
+                "spheroid": SolderballShape.SOLDERBALL_SPHEROID,
+            }[shape.lower()]
             cp = self.pyedb_obj.core.component_property
             # For IC components whose die type is NONE, default it to FLIPCHIP so
             # that HFSS recognises the solder balls during simulation.

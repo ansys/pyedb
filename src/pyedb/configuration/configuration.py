@@ -418,7 +418,9 @@ class Configuration:
                             f_set.append([f.distribution, f.start, f.stop, f.increment])
 
                     sweep = edb_setup.add_sweep(
-                        sw.name, frequency_set=f_set, discrete=False if sw.type == "interpolation" else True
+                        sw.name,
+                        frequency_set=f_set,
+                        discrete=False if sw.type in ("interpolation", "interpolating") else True,
                     )
 
                     sweep.use_q3d_for_dc = sw.use_q3d_for_dc
@@ -778,11 +780,19 @@ class Configuration:
         if len(cfg_stackup.materials):
             materials_in_db = {i.lower(): i for i, _ in self._pedb.materials.materials.items()}
             for mat_in_cfg in cfg_stackup.materials:
-                if mat_in_cfg.name.lower() in materials_in_db:
-                    self._pedb.materials.delete_material(materials_in_db[mat_in_cfg.name.lower()])
-
                 attrs = mat_in_cfg.model_dump(exclude_none=True)
-                mat = self._pedb.materials.add_material(**attrs)
+                if mat_in_cfg.name.lower() in materials_in_db:
+                    # Merge into the existing material so properties absent from the config are preserved.
+                    mat = self._pedb.materials.materials[materials_in_db[mat_in_cfg.name.lower()]]
+                    for key, value in attrs.items():
+                        if key in ("name", "thermal_modifiers"):
+                            continue
+                        try:
+                            setattr(mat, key, value)
+                        except Exception as e:  # pragma: no cover
+                            self._pedb.logger.warning(f"Unable to update '{key}' of material '{mat.name}': {e}")
+                else:
+                    mat = self._pedb.materials.add_material(**attrs)
 
                 for i in attrs.get("thermal_modifiers", []):
                     mat.set_thermal_modifier(**i)

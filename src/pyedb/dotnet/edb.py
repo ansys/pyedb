@@ -36,7 +36,7 @@ import subprocess  # nosec B404
 import sys
 import time
 import traceback
-from typing import Any, Dict, List, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Union
 import warnings
 from zipfile import ZipFile as zpf
 
@@ -103,7 +103,6 @@ from pyedb.generic.general_methods import generate_unique_name, is_linux, is_win
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
-from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.misc.decorators import (
     deprecate_argument_name,
     deprecated as runtime_deprecated,
@@ -111,7 +110,9 @@ from pyedb.misc.decorators import (
     execution_timer,
 )
 from pyedb.siwave_core.product_properties import SIwaveProperties
-from pyedb.workflows.utilities.cutout import Cutout
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 
 
 class Edb:
@@ -676,7 +677,7 @@ class Edb:
     @property
     def probes(
         self,
-    ) -> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
+    ) -> Dict[str, Union[PinGroupTerminal, PointTerminal, "BundleTerminal", PadstackInstanceTerminal, EdgeTerminal]]:
         """Get all layout probes."""
         temp = {}
         for name, val in self.terminals.items():
@@ -2043,7 +2044,9 @@ class Edb:
 
 
         """
-        cutout = Cutout(self)
+        from pyedb.workflows.utilities.dotnet_cutout import DotNetCutout
+
+        cutout = DotNetCutout(self)
         cutout.expansion_size = expansion_size
         cutout.signals = signal_nets if signal_nets is not None else []
         cutout.references = reference_nets if reference_nets is not None else list(self.nets.nets.keys())
