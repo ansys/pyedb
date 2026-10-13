@@ -89,11 +89,16 @@ def _add_inline_range(sweep, start, stop, step_or_count, distribution: Frequency
 class CfgFrequencies(CfgBaseModel):
     """Represent one frequency range or single-point sweep segment."""
 
-    start: float | str = Field(..., description="Start frequency in Hz")
-    stop: float | str = Field(..., description="Stop frequency in Hz")
+    start: float | int | str = Field(
+        ..., description="Start frequency, a number in Hz or a string with units, e.g. '1GHz'"
+    )
+    stop: float | int | str = Field(
+        ..., description="Stop frequency, a number in Hz or a string with units, e.g. '10GHz'"
+    )
     increment: int | float | str = Field(..., validation_alias=AliasChoices("increment", "points", "samples", "step"))
     distribution: FrequencyDistribution = Field(
-        ..., description="Frequency distribution type, e.g., linear_step, log_step, single, linear_count, log_count"
+        ...,
+        description="Frequency distribution type: linear_scale, log_scale, single, linear_count or log_count",
     )
 
 

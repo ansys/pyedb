@@ -1667,6 +1667,7 @@ class CfgEdgePort:
             "horizontal_extent_factor": self.horizontal_extent_factor,
             "vertical_extent_factor": self.vertical_extent_factor,
             "pec_launch_width": self.pec_launch_width,
+            "impedance": self.impedance,
         }
 
     def __init__(self, pedb=None, *args, **kwargs):
@@ -1691,6 +1692,7 @@ class CfgEdgePort:
         self.horizontal_extent_factor = kwargs.get("horizontal_extent_factor", 5)
         self.vertical_extent_factor = kwargs.get("vertical_extent_factor", 3)
         self.pec_launch_width = kwargs.get("pec_launch_width", "0.01mm")
+        self.impedance = kwargs.get("impedance", 50)
 
 
 class CfgDiffWavePort:
