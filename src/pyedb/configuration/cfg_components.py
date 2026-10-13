@@ -28,13 +28,6 @@ from pydantic import BaseModel
 
 from pyedb.configuration.cfg_common import CfgBase
 
-# NOTE: ``ansys.edb.core`` (gRPC) must NOT be imported at module level here. Importing it loads ``grpc`` and ``ssl``,
-# which makes Python load its own OpenSSL DLLs before the native EDB libraries used by the DotNet backend, and
-# can abort the process on Windows (https://github.com/ansys/pyedb/issues/2598). It is only imported lazily
-# inside the gRPC code paths below.
-
-# Names that used to be module-level imports. They are still exposed (lazily, via ``__getattr__``) so that
-# ``cfg_components.CoreDieProperty`` etc. keep working, e.g. for ``monkeypatch.setattr(mod.CoreDieProperty, ...)``.
 _LAZY_CORE_NAMES = {
     "CoreComponentProperty": ("ansys.edb.core.definition.component_property", "ComponentProperty"),
     "CoreDieOrientation": ("ansys.edb.core.definition.die_property", "DieOrientation"),
