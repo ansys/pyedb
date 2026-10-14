@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import math
 from unittest.mock import MagicMock
 
 import pytest
@@ -188,6 +189,74 @@ class TestCfgPort:
         )
         d = p.export_properties()
         assert "coordinates" in d["positive_terminal"]
+
+    def test_create_circuit_port_matches_component_and_partial_pin_names(self):
+        pin = MagicMock()
+        component = MagicMock()
+        component.pins = {"DDR4_A0": pin}
+        pedb = MagicMock()
+        pedb.components.instances = {"U6-P3": component}
+        port = CfgPort(
+            pedb,
+            name="port",
+            type="circuit",
+            positive_terminal={"pin": "U6.P3.DDR4", "reference_designator": "U6.P3"},
+        )
+
+        port.create_terminals()
+
+        pin.create_terminal.assert_called_once_with("U6.P3.DDR4")
+
+    def test_create_circuit_port_rejects_ambiguous_partial_component_name(self):
+        pedb = MagicMock()
+        pedb.components.instances = {"U6-P3-A": MagicMock(), "U6-P3-B": MagicMock()}
+        port = CfgPort(
+            pedb,
+            name="port",
+            type="circuit",
+            positive_terminal={"pin": "DDR4_A0", "reference_designator": "U6.P3"},
+        )
+
+        with pytest.raises(ValueError, match="Ambiguous component"):
+            port.create_terminals()
+
+    def test_create_circuit_port_rejects_ambiguous_partial_pin_name(self):
+        component = MagicMock()
+        component.pins = {"DDR4_A0": MagicMock(), "DDR4_A1": MagicMock()}
+        pedb = MagicMock()
+        pedb.components.instances = {"U6-P3": component}
+        port = CfgPort(
+            pedb,
+            name="port",
+            type="circuit",
+            positive_terminal={"pin": "DDR4", "reference_designator": "U6.P3"},
+        )
+
+        with pytest.raises(ValueError, match="Ambiguous pin"):
+            port.create_terminals()
+
+    def test_create_circuit_port_matches_refdes_prefixed_padstack_name(self):
+        component = MagicMock()
+        component.name = "U6"
+        component.pins = {}
+        padstack_instance = MagicMock()
+        padstack_instance.aedt_name = "U6-P3"
+        padstack_instance.name = "P3"
+        padstack_instance.component = component
+        padstack_instance.component_pin = "P3"
+        pedb = MagicMock()
+        pedb.components.instances = {"U6": component}
+        pedb.layout.padstack_instances = [padstack_instance]
+        port = CfgPort(
+            pedb,
+            name="port",
+            type="circuit",
+            positive_terminal={"padstack": "U6.P3.DDR4_A0", "reference_designator": "U6"},
+        )
+
+        port.create_terminals()
+
+        padstack_instance.create_terminal.assert_called_once_with("U6.P3.DDR4_A0")
 
 
 # ---------------------------------------------------------------------------
@@ -528,6 +597,8 @@ class TestCfgPorts:
         padstack_instance = MagicMock()
         padstack_instance.aedt_name = "U5-32"
         padstack_instance.name = "U5-32"
+        padstack_instance.core.get_position_and_rotation.return_value = [0.0, 0.0, 0.0]
+        padstack_instance.component = False
         pedb.excitation_manager.get_edge_info_from_port.return_value = {
             "edge_type": "pad",
             "padstack_instance": padstack_instance,
@@ -546,6 +617,16 @@ class TestCfgPorts:
         assert isinstance(exported, CfgEdgePort)
         assert exported.type == "circuit"
         assert exported.export_properties()["padstack_instance"] == "U5-32"
+
+    def test_pad_edge_descriptor_keeps_layout_arc(self):
+        padstack_instance = MagicMock()
+        padstack_instance.aedt_name = "U3-1"
+        arc = {"start": [0.11, 0.221], "end": [0.109, 0.22], "height": 0.0}
+        edge_info = {"edge_type": "pad", "padstack_instance": padstack_instance, "layer": "top", "arc": arc}
+
+        descriptor = CfgPorts()._get_edge_descriptor(edge_info)
+
+        assert descriptor == {"padstack_instance": "U3-1", "layer": "top", "arc": arc}
 
     def test_init_from_diff_port_data(self):
         data = [

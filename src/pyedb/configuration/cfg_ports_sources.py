@@ -1386,6 +1386,101 @@ class CfgCircuitElement(CfgBase):
         data.update({k: v for k, v in extra.items() if v is not None})
         return data
 
+    @staticmethod
+    def _name_tokens(value):
+        """Split an identifier into case-insensitive alphanumeric tokens."""
+        tokens = []
+        token = []
+        for character in str(value).casefold():
+            if character.isalnum():
+                token.append(character)
+            elif token:
+                tokens.append("".join(token))
+                token = []
+        if token:
+            tokens.append("".join(token))
+        return tuple(tokens)
+
+    def _resolve_mapping_key(self, mapping, requested_name, entity):
+        """Resolve an EDB component or pin key, rejecting ambiguous partial matches."""
+        if requested_name is None:
+            raise KeyError(f"A name is required to resolve {entity}.")
+        if requested_name in mapping:
+            return requested_name
+
+        requested_tokens = self._name_tokens(requested_name)
+        exact_matches = [key for key in mapping if self._name_tokens(key) == requested_tokens]
+        if len(exact_matches) == 1:
+            return exact_matches[0]
+        if len(exact_matches) > 1:
+            matches = exact_matches
+        else:
+            requested_length = sum(map(len, requested_tokens))
+            matches = []
+            if requested_length >= 3:
+                for key in mapping:
+                    candidate_tokens = self._name_tokens(key)
+                    candidate_length = sum(map(len, candidate_tokens))
+                    if min(requested_length, candidate_length) < 3:
+                        continue
+                    if requested_tokens != candidate_tokens and (
+                        candidate_tokens[: len(requested_tokens)] == requested_tokens
+                        or requested_tokens[: len(candidate_tokens)] == candidate_tokens
+                    ):
+                        matches.append(key)
+
+        if len(matches) == 1:
+            return matches[0]
+        if matches:
+            names = ", ".join(sorted(str(key) for key in matches))
+            raise ValueError(f"Ambiguous {entity} '{requested_name}'; matches: {names}.")
+        raise KeyError(f"No {entity} matching '{requested_name}' was found.")
+
+    def _resolve_component(self, reference_designator):
+        """Return the matched component key and component object."""
+        instances = self._pedb.components.instances
+        component_key = self._resolve_mapping_key(instances, reference_designator, "component")
+        return component_key, instances[component_key]
+
+    def _resolve_component_pin(self, component, component_key, pin_name):
+        """Resolve a pin within a component, including legacy refdes-prefixed selectors."""
+        pins = component.pins
+        if pin_name in pins:
+            return pins[pin_name]
+
+        component_tokens = self._name_tokens(component_key)
+        pin_tokens = self._name_tokens(pin_name)
+        if len(pin_tokens) > len(component_tokens) and pin_tokens[: len(component_tokens)] == component_tokens:
+            stripped_pin = "_".join(pin_tokens[len(component_tokens) :])
+            try:
+                pin_key = self._resolve_mapping_key(pins, stripped_pin, f"pin on component '{component_key}'")
+                return pins[pin_key]
+            except KeyError:
+                pass
+
+        pin_key = self._resolve_mapping_key(pins, pin_name, f"pin on component '{component_key}'")
+        return pins[pin_key]
+
+    def _resolve_padstack_instance(self, selector, reference_designator=None):
+        """Resolve a padstack selector against instance and component-pin names."""
+        instances = self._pedb.layout.padstack_instances
+        exact_matches = [instance for instance in instances if instance.aedt_name == selector]
+        if len(exact_matches) == 1:
+            return exact_matches[0]
+        if len(exact_matches) > 1:
+            raise ValueError(f"Ambiguous padstack instance '{selector}'.")
+
+        if reference_designator:
+            _, component = self._resolve_component(reference_designator)
+            component_name = component.name
+            instances = [
+                instance for instance in instances if instance.component and instance.component.name == component_name
+            ]
+
+        instances_by_name = {instance.aedt_name or instance.name: instance for instance in instances}
+        instance_name = self._resolve_mapping_key(instances_by_name, selector, "padstack instance")
+        return instances_by_name[instance_name]
+
     def create_terminals(self):
         """Collect and create positive and negative EDB terminals."""
         pos_type, pos_value = self.positive_terminal_info.type, self.positive_terminal_info.value
@@ -1409,12 +1504,11 @@ class CfgCircuitElement(CfgBase):
                 self.name, net_name, [pti.point_x, pti.point_y], pti.layer
             )
         elif pos_type == "padstack":
-            pds_obj = next((pds for pds in self._pedb.layout.padstack_instances if pds.aedt_name == pos_value), None)
-            if pds_obj is None:
-                raise ValueError(f"Padstack instance {pos_value} does not exist")
+            pds_obj = self._resolve_padstack_instance(pos_value, pti.reference_designator)
             pos_objs[pos_value] = pds_obj
         elif pos_type == "pin":
-            pins = {pos_value: self._pedb.components.instances[pti.reference_designator].pins[pos_value]}
+            component_key, component = self._resolve_component(pti.reference_designator)
+            pins = {pos_value: self._resolve_component_pin(component, component_key, pos_value)}
             if pti.contact_type in ("quad", "inline"):
                 for pin in pins.values():
                     virtual_pins = self._create_virtual_pins_on_pin(
@@ -1497,14 +1591,12 @@ class CfgCircuitElement(CfgBase):
                     pins = self._get_pins(neg_type, neg_value, nti.reference_designator)
                     neg_obj = self._create_pin_group(pins, nti.reference_designator, True)
                 elif neg_type == "padstack":
-                    pds_obj = next(
-                        (pds for pds in self._pedb.padstacks.instances.values() if pds.aedt_name == neg_value), None
-                    )
-                    if pds_obj is not None:
-                        neg_obj = {neg_value: pds_obj}
+                    pds_obj = self._resolve_padstack_instance(neg_value, nti.reference_designator)
+                    neg_obj = {neg_value: pds_obj}
                 elif neg_type == "pin":
                     terminal_name = f"{nti.reference_designator}_{neg_value}"
-                    neg_obj = {terminal_name: self._pedb.components.instances[nti.reference_designator].pins[neg_value]}
+                    component_key, component = self._resolve_component(nti.reference_designator)
+                    neg_obj = {terminal_name: self._resolve_component_pin(component, component_key, neg_value)}
                 else:
                     raise ValueError(f"Wrong negative terminal type {neg_type}.")
                 self.neg_terminal = [
@@ -1515,20 +1607,23 @@ class CfgCircuitElement(CfgBase):
         terminal_value = terminal_value if isinstance(terminal_value, list) else [terminal_value]
         pins = {}
         if terminal_type == "pin":
-            comp_pins = self._pedb.components.instances[reference_designator].pins
+            component_key, component = self._resolve_component(reference_designator)
             for name in terminal_value:
-                pins[name] = comp_pins[name]
+                pins[name] = self._resolve_component_pin(component, component_key, name)
         elif terminal_type == "padstack":
-            for inst in self._pedb.layout.find_padstack_instances(aedt_name=terminal_value):
+            for name in terminal_value:
+                inst = self._resolve_padstack_instance(name, reference_designator)
                 pins[inst.component_pin] = inst
         else:
+            resolved_refdes = reference_designator
             if terminal_type == "net":
-                temp = self._pedb.components.get_pins(reference_designator, terminal_value[0])
+                resolved_refdes, _ = self._resolve_component(reference_designator)
+                temp = self._pedb.components.get_pins(resolved_refdes, terminal_value[0])
             elif terminal_type == "pin_group":
                 temp = self._pedb.siwave.pin_groups[terminal_value[0]].pins
             else:
                 temp = {}
-            prefix = f"{reference_designator}_{terminal_value[0]}_"
+            prefix = f"{resolved_refdes}_{terminal_value[0]}_"
             pins.update({f"{prefix}{i}": j for i, j in temp.items()})
         return pins
 
@@ -1590,6 +1685,7 @@ class CfgCircuitElement(CfgBase):
 
     def _create_pin_group(self, pins, reference_designator, is_ref=False):
         suffix = "_ref" if is_ref else ""
+        reference_designator, _ = self._resolve_component(reference_designator)
         pg_name = f"pg_{self.name}_{reference_designator}{suffix}"
         pin_names = [i.component_pin for i in pins.values()]
         name, temp = self._pedb.siwave.create_pin_group(reference_designator, pin_names, pg_name)
