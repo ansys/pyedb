@@ -79,10 +79,11 @@ class TestPadArcFrame:
         pedb.layout.padstack_instances = [padstack_instance]
         layout_arc = {"start": [0.1105, 0.2195], "end": [0.1105, 0.2205], "height": 0.0}
 
-        with patch("pyedb.grpc.database.source_excitations.CorePadEdge") as pad_edge, patch(
-            "ansys.edb.core.geometry.arc_data.ArcData"
-        ) as arc_data, patch("ansys.edb.core.terminal.edge_terminal.EdgeTerminal"), patch(
-            "pyedb.grpc.database.source_excitations.WavePort"
+        with (
+            patch("pyedb.grpc.database.source_excitations.CorePadEdge") as pad_edge,
+            patch("ansys.edb.core.geometry.arc_data.ArcData") as arc_data,
+            patch("ansys.edb.core.terminal.edge_terminal.EdgeTerminal"),
+            patch("pyedb.grpc.database.source_excitations.WavePort"),
         ):
             exc.create_pad_edge_port("P1", "U1-1", "TOP", layout_arc)
 
@@ -102,10 +103,11 @@ class TestPadArcFrame:
         pedb.layout.padstack_instances = [padstack_instance]
         layout_arc = {"start": [0.1105, 0.2195], "end": [0.1105, 0.2205], "height": 0.0}
 
-        with patch("pyedb.grpc.database.source_excitations.CorePadEdge"), patch(
-            "ansys.edb.core.geometry.arc_data.ArcData"
-        ), patch("ansys.edb.core.terminal.edge_terminal.EdgeTerminal") as edge_terminal, patch(
-            "pyedb.grpc.database.source_excitations.WavePort"
+        with (
+            patch("pyedb.grpc.database.source_excitations.CorePadEdge"),
+            patch("ansys.edb.core.geometry.arc_data.ArcData"),
+            patch("ansys.edb.core.terminal.edge_terminal.EdgeTerminal") as edge_terminal,
+            patch("pyedb.grpc.database.source_excitations.WavePort"),
         ):
             exc.create_pad_edge_port("P1", "U1-1", "TOP", layout_arc)
 
