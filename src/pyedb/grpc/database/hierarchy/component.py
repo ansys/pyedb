@@ -998,8 +998,8 @@ class Component(Group):
         list
             [x value, y value].
         """
-        location = self.core.location
-        return location[0].value, location[1].value
+        bbox = self.bounding_box
+        return round((bbox[0] + bbox[2]) / 2, 6), round((bbox[1] + bbox[3]) / 2, 6)
 
     @center.setter
     def center(self, value):

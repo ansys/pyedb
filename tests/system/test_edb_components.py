@@ -532,11 +532,7 @@ class TestClass(BaseTestClass):
         assert edbapp.components.instances["Test"].res_value == 12.2
         assert edbapp.components.instances["Test"].ind_value == 0
         assert edbapp.components.instances["Test"].cap_value == 0
-        if edbapp.grpc:
-            # TODO check why grpc is returning different center value.
-            assert edbapp.components.instances["Test"].center == (0.07950000102, 0.03399999804)
-        else:
-            assert edbapp.components.instances["Test"].center == [0.068, 0.0165]
+        assert list(edbapp.components.instances["Test"].center) == [0.068, 0.0165]
         edbapp.close(terminate_rpc_session=False)
 
     def test_create_package_def(self):

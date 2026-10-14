@@ -122,14 +122,24 @@ def _download_file(
         destination = Path(destination) / local_relative_path
 
     try:
-        if not destination.exists() or force:
-            pyedb_logger.debug(f"Downloading file from {Path(Path(directory) / filename).as_posix()} to {destination}")
-            file_path = download_manager.download_file(
-                filename=filename,
-                directory=directory,
-                destination=str(destination.parent),
-                force=force,
-            )
+        if not destination.is_file() or force:
+            relative_path = Path(directory) / filename
+            pyedb_logger.debug(f"Downloading file from {relative_path.as_posix()} to {destination}")
+            # NOTE: ansys-tools-common 0.5.3+ preserves the repository directory
+            # beneath destination. Use a temporary root to avoid duplicating
+            # the path, then move the returned file to PyEDB's target path.
+            with tempfile.TemporaryDirectory() as temp_dir:
+                downloaded_file = download_manager.download_file(
+                    filename=filename,
+                    directory=directory,
+                    destination=temp_dir,
+                    force=True,
+                )
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                if destination.exists():
+                    destination.unlink()
+                shutil.move(str(downloaded_file), str(destination))
+            file_path = str(destination)
         else:
             file_path = str(destination)
             pyedb_logger.debug(f"File already exists in {destination}. Skipping download.")
@@ -146,9 +156,7 @@ def _download_file(
     return file_path
 
 
-def _download_folder(
-    directory: str, destination: str, strip_prefix: str | Path | None = None, force: bool = False
-) -> str:
+def _download_folder(directory: str, destination: str, force: bool = False) -> str:
     """Download a file from the example repository.
 
     Parameters
@@ -159,9 +167,6 @@ def _download_folder(
         File name to download.
     destination : str
         Destination path for the download.
-    strip_prefix : str | Path | None, optional
-        A prefix to strip from the relative path when saving the file locally.
-        The default is ``None``.
     force : bool, optional
         Force to delete cache and download files again.
         The default is ``False``.
@@ -174,8 +179,10 @@ def _download_folder(
     """
     files = list_examples_files(directory)
     for file in files:
-        directory, filename = Path(file).parent.as_posix(), Path(file).name
-        _download_file(directory, filename, destination=destination, strip_prefix=strip_prefix, force=force)
+        if Path(file).name == ".gitignore":
+            continue
+        file_directory, filename = Path(file).parent.as_posix(), Path(file).name
+        _download_file(file_directory, filename, destination=destination, force=force)
 
     return str(Path(destination) / directory)
 

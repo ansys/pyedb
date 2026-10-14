@@ -270,3 +270,45 @@ class Bondwire(Primitive):
             Definition name.
         """
         self.core.set_definition_name(definition_name)
+
+    @property
+    def start_pos(self) -> tuple[Value, Value]:
+        """Start position ``(x, y)`` of the bondwire trajectory.
+
+        The setter accepts numbers, strings with units, or parameter expressions.
+
+        Returns
+        -------
+        tuple[:class:`Value <pyedb.grpc.database.utility.value.Value>`, \
+:class:`Value <pyedb.grpc.database.utility.value.Value>`]
+            ``(x, y)`` coordinates of the start point.
+        """
+        x1, y1, _, _ = self.core.get_traj()
+        return Value(x1), Value(y1)
+
+    @start_pos.setter
+    def start_pos(self, pos: tuple[float | str, float | str]):
+        x, y = pos
+        _, _, x2, y2 = self.core.get_traj()
+        self.core.set_traj(self._pedb._value_setter(x), self._pedb._value_setter(y), x2, y2)
+
+    @property
+    def end_pos(self) -> tuple[Value, Value]:
+        """End position ``(x, y)`` of the bondwire trajectory.
+
+        The setter accepts numbers, strings with units, or parameter expressions.
+
+        Returns
+        -------
+        tuple[:class:`Value <pyedb.grpc.database.utility.value.Value>`, \
+:class:`Value <pyedb.grpc.database.utility.value.Value>`]
+            ``(x, y)`` coordinates of the end point.
+        """
+        _, _, x2, y2 = self.core.get_traj()
+        return Value(x2), Value(y2)
+
+    @end_pos.setter
+    def end_pos(self, pos: tuple[float | str, float | str]):
+        x, y = pos
+        x1, y1, _, _ = self.core.get_traj()
+        self.core.set_traj(x1, y1, self._pedb._value_setter(x), self._pedb._value_setter(y))

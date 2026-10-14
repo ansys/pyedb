@@ -977,6 +977,18 @@ class TestClass(BaseTestClass):
         )
         # create_bondwire returns a Bondwire object
         assert bw is not None
+        assert bw.start_pos == pytest.approx((0.0, 0.0))
+        assert bw.end_pos == pytest.approx((1e-3, 0.0))
+        assert bw.width == pytest.approx(0.05e-3)
+
+        bw.start_pos = ("0.2mm", "0.3mm")
+        bw.end_pos = (2e-3, 1e-3)
+        bw.width = "25um"
+
+        assert bw.start_pos == pytest.approx((0.2e-3, 0.3e-3))
+        assert bw.end_pos == pytest.approx((2e-3, 1e-3))
+        assert bw.width == pytest.approx(25e-6)
+
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — deprecated primitives_by_net wrapper")

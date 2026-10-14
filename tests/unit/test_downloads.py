@@ -22,6 +22,7 @@
 
 from pathlib import Path
 
+import pyedb.misc.downloads as downloads
 from pyedb.misc.downloads import (
     download_aedb,
     download_edb_merge_utility,
@@ -82,6 +83,8 @@ def test_download_file_on_folder(tmp_path):
     """Test downloading a folder."""
     directory = "pyaedt/edb/ansys_interposer"
     path = download_file(directory, destination=tmp_path)
+    expected_file = Path(path) / "dummy_interposer_hbm.map"
 
     assert Path(path).exists()
     assert path == str(Path(tmp_path) / directory)
+    assert expected_file.is_file()
