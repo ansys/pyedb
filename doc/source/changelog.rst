@@ -9,6 +9,79 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.85.0 <https://github.com/ansys/pyedb/releases/tag/v0.85.0>`_ - October 15, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Correct ports on pad edges export
+          - `#2589 <https://github.com/ansys/pyedb/pull/2589>`_
+
+        * - Bwr traj
+          - `#2594 <https://github.com/ansys/pyedb/pull/2594>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Download folder following ansys-tools-common update
+          - `#2587 <https://github.com/ansys/pyedb/pull/2587>`_
+
+        * - Grpc component center fix
+          - `#2596 <https://github.com/ansys/pyedb/pull/2596>`_
+
+        * - Adding parameters with arc
+          - `#2601 <https://github.com/ansys/pyedb/pull/2601>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump ruff from 0.16.8 to 0.16.9
+          - `#2581 <https://github.com/ansys/pyedb/pull/2581>`_
+
+        * - Bump astral-sh/setup-uv from 10.1.0 to 10.2.0
+          - `#2582 <https://github.com/ansys/pyedb/pull/2582>`_
+
+        * - Bump jupyterlab from 4.6.3 to 4.6.4
+          - `#2583 <https://github.com/ansys/pyedb/pull/2583>`_
+
+        * - Bump ruff from 0.16.9 to 0.16.10
+          - `#2591 <https://github.com/ansys/pyedb/pull/2591>`_
+
+        * - Bump imageio from 2.37.4 to 2.38.0
+          - `#2592 <https://github.com/ansys/pyedb/pull/2592>`_
+
+        * - Bump ansys-tools-common from 0.5.0 to 0.5.3
+          - `#2593 <https://github.com/ansys/pyedb/pull/2593>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.84.3
+          - `#2580 <https://github.com/ansys/pyedb/pull/2580>`_
+
+        * - Pre-commit automatic update
+          - `#2585 <https://github.com/ansys/pyedb/pull/2585>`_, `#2597 <https://github.com/ansys/pyedb/pull/2597>`_
+
+
 `0.84.3 <https://github.com/ansys/pyedb/releases/tag/v0.84.3>`_ - October 01, 2026
 ==================================================================================
 
