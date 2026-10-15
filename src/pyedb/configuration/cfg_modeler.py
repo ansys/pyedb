@@ -34,7 +34,7 @@ from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstack
 class CfgTrace(CfgBaseModel):
     """Represent one trace primitive scheduled for creation."""
 
-    model_config = {"populate_by_name": True, "extra": "ignore"}
+    model_config = {"populate_by_name": True, "extra": "forbid"}
 
     name: str
     layer: str
@@ -50,7 +50,7 @@ class CfgTrace(CfgBaseModel):
 class CfgPlane(CfgBaseModel):
     """Represent one plane primitive scheduled for creation."""
 
-    model_config = {"populate_by_name": True, "extra": "ignore"}
+    model_config = {"populate_by_name": True, "extra": "forbid"}
 
     name: str = ""
     layer: str = ""

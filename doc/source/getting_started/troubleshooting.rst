@@ -81,6 +81,35 @@ package management:
     # Now you can use uv for package management
     uv pip install pyedb
 
+**Alternative workaround: preload the AEDT OpenSSL libraries (DotNet backend)**
+
+If you must keep a ``uv`` or python-build-standalone environment and use the DotNet backend (for example
+with AEDT 2025 R1), load the OpenSSL libraries shipped with AEDT *before* importing ``pyedb`` or any other
+module that pulls in OpenSSL (``ssl``, ``hashlib``, ``secrets``, ...). Windows loads a given DLL name only
+once per process, so the AEDT copies are then used by both Python and the native EDB libraries:
+
+.. code:: python
+
+    import ctypes
+    import os
+
+    ansys_em = os.path.join(
+        os.environ["ANSYSEM_ROOT251"], "AnsysEM"
+    )  # adapt to your AEDT version
+    for dll in ("libcrypto-3-x64.dll", "libssl-3-x64.dll"):
+        ctypes.WinDLL(os.path.join(ansys_em, dll))  # absolute path, so the AEDT copy wins
+
+    import pyedb
+
+    edb = pyedb.Edb(edbpath="my_design.aedb", version="2025.1")
+
+.. note::
+
+    Once the AEDT copies are loaded, a later ``import ssl`` in the same process may fail, because it binds to
+    the AEDT OpenSSL version. Importing ``pyedb`` alone is not enough to avoid the conflict, since several
+    standard library modules load OpenSSL indirectly. The DotNet backend is deprecated; the gRPC backend
+    (AEDT 2026 R1 and later) is not affected.
+
 Getting Help
 ------------
 If you encounter an issue not covered here:

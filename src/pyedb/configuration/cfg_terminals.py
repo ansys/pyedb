@@ -144,7 +144,7 @@ class CfgTerminalInfo:
 class CfgTerminal(CfgBaseModel):
     """Base class for explicit terminal definitions."""
 
-    model_config = {"populate_by_name": True, "extra": "ignore"}
+    model_config = {"populate_by_name": True, "extra": "forbid"}
 
     name: str
     impedance: float | int | str
@@ -234,7 +234,7 @@ class CfgEdgeTerminal(CfgTerminal):
 class CfgBundleTerminal(CfgBaseModel):
     """Represent a bundle terminal built from other terminal names."""
 
-    model_config = {"populate_by_name": True, "extra": "ignore"}
+    model_config = {"populate_by_name": True, "extra": "forbid"}
 
     terminal_type: str = "bundle"
     terminals: list[str]

@@ -247,7 +247,7 @@ class CfgPinGroups:
 class CfgPinGroup(CfgBaseModel):
     """Represent one pin-group definition bound to a component."""
 
-    model_config = {"populate_by_name": True, "extra": "ignore", "arbitrary_types_allowed": True}
+    model_config = {"populate_by_name": True, "extra": "forbid", "arbitrary_types_allowed": True}
 
     name: Optional[str] = None
     reference_designator: Optional[str] = None

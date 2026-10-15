@@ -33,7 +33,7 @@ from pyedb.configuration.cfg_common import CfgBaseModel
 class CfgSpiceModel(CfgBaseModel):
     """Represent one SPICE subcircuit model assignment."""
 
-    model_config = {"populate_by_name": True, "extra": "ignore", "arbitrary_types_allowed": True}
+    model_config = {"populate_by_name": True, "extra": "forbid", "arbitrary_types_allowed": True}
 
     name: str = ""
     component_definition: str = ""

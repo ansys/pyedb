@@ -34,7 +34,7 @@ from pyedb.misc.decorators import deprecated_property
 class CfgSParameterModel(CfgBaseModel):
     """Represent one Touchstone model assignment for a component definition."""
 
-    model_config = {"populate_by_name": True, "extra": "ignore"}
+    model_config = {"populate_by_name": True, "extra": "forbid"}
 
     name: str = ""
     component_definition: str = ""

@@ -33,7 +33,7 @@ from pyedb.generic.settings import settings
 class CfgHeatSink(CfgBaseModel):
     """Configuration heat sink class."""
 
-    model_config = {"populate_by_name": True, "extra": "ignore"}
+    model_config = {"populate_by_name": True, "extra": "forbid"}
 
     fin_base_height: Optional[Any] = None
     fin_height: Optional[Any] = None
@@ -55,7 +55,7 @@ class CfgHeatSink(CfgBaseModel):
 class CfgPackage(CfgBaseModel):
     """Configuration package class."""
 
-    model_config = {"populate_by_name": True, "extra": "ignore", "arbitrary_types_allowed": True}
+    model_config = {"populate_by_name": True, "extra": "forbid", "arbitrary_types_allowed": True}
 
     # Attributes cannot be set to package definition class or don't exist in package definition class.
     _protected_attributes: List[str] = [
