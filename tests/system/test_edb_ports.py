@@ -22,6 +22,7 @@
 
 """Tests related to Edb ports, sources, and excitations."""
 
+import math
 import os
 from pathlib import Path
 
@@ -220,6 +221,72 @@ class TestClass(BaseTestClass):
         gap_port.is_circuit_port = True
         assert gap_port.is_circuit_port
         edb.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Pad-edge configuration export is gRPC-only")
+    def test_pad_edge_port_uses_layout_coordinates(self):
+        """Pad-edge arcs are created, read, exported and re-applied in layout coordinates."""
+        edb = self.edb_examples.get_si_verse()
+        try:
+            padstack_instances = {instance.aedt_name: instance for instance in edb.layout.padstack_instances}
+            port_pad = padstack_instances["U3-1"]
+            reference_pad = padstack_instances["U3-2"]
+            assert not port_pad.component.core.transform.is_identity
+
+            def layout_arc(pad, dy):
+                x, y = pad.position
+                return {"start": [x - 0.0001, y + dy], "end": [x + 0.0001, y + dy], "height": 0.0}
+
+            port_arc = layout_arc(port_pad, 0.00015)
+            reference_arc = layout_arc(reference_pad, -0.00015)
+            port = edb.excitation_manager.create_pad_edge_port(
+                name="pad_edge_port", padstack_instance=port_pad, layer=port_pad.start_layer, arc=port_arc
+            )
+            reference = edb.excitation_manager.create_pad_edge_port(
+                name="pad_edge_reference",
+                padstack_instance=reference_pad,
+                layer=reference_pad.start_layer,
+                arc=reference_arc,
+                is_reference=True,
+            )
+            port.core.reference_terminal = reference.core
+
+            from pyedb.grpc.database.source_excitations import _arc_data_from_message
+
+            # EDB stores the arc relative to the pad, so its distance from the pad center is preserved.
+            stored_start = _arc_data_from_message(port.core.edges[0]._params.arc).start
+            assert math.hypot(stored_start.x.value, stored_start.y.value) == pytest.approx(
+                math.hypot(0.0001, 0.00015), abs=1e-9
+            )
+
+            for terminal, expected in ((port, port_arc), (reference, reference_arc)):
+                arc = edb.excitation_manager.get_edge_info_from_port(terminal)["arc"]
+                for endpoint in ("start", "end"):
+                    assert arc[endpoint] == pytest.approx(expected[endpoint], abs=1e-9)
+
+            exported = next(
+                item for item in edb.configuration.get_data_from_db(ports=True)["ports"] if item["name"] == port.name
+            )
+            for endpoint in ("start", "end"):
+                assert exported["arc"][endpoint] == pytest.approx(port_arc[endpoint], abs=1e-9)
+                assert exported["reference_terminal"]["arc"][endpoint] == pytest.approx(
+                    reference_arc[endpoint], abs=1e-9
+                )
+        finally:
+            edb.close(terminate_rpc_session=False)
+
+        target = self.edb_examples.get_si_verse()
+        try:
+            target.configuration.load({"ports": [exported]}, apply_file=True)
+            imported = target.ports["pad_edge_port"]
+            arc = target.excitation_manager.get_edge_info_from_port(imported)["arc"]
+            reference_arc_imported = target.excitation_manager.get_edge_info_from_port(imported.reference_terminal)[
+                "arc"
+            ]
+            for endpoint in ("start", "end"):
+                assert arc[endpoint] == pytest.approx(port_arc[endpoint], abs=1e-9)
+                assert reference_arc_imported[endpoint] == pytest.approx(reference_arc[endpoint], abs=1e-9)
+        finally:
+            target.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",

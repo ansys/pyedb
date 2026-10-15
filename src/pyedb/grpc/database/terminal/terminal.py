@@ -187,7 +187,13 @@ class Terminal(ConnObj):
 
     @do_renormalize.setter
     def do_renormalize(self, value):
-        self.port_post_processing_prop.do_renormalize = value
+        self._set_post_processing("do_renormalize", value)
+
+    def _set_post_processing(self, name, value):
+        # The core property returns a copy, so it must be written back.
+        prop = PortPostProcessingProp(self.core.port_post_processing_prop)
+        setattr(prop, name, value)
+        self.core.port_post_processing_prop = prop.core
 
     @property
     def do_deembed(self) -> bool:
@@ -200,7 +206,7 @@ class Terminal(ConnObj):
 
     @do_deembed.setter
     def do_deembed(self, value):
-        self.port_post_processing_prop.do_deembed = value
+        self._set_post_processing("do_deembed", value)
 
     @property
     @deprecated_property("use do_deembed property instead")
@@ -214,7 +220,7 @@ class Terminal(ConnObj):
 
     @deembed.setter
     def deembed(self, value):
-        self.port_post_processing_prop.do_deembed = value
+        self._set_post_processing("do_deembed", value)
 
     @property
     def renormalization_impedance(self) -> float:
@@ -229,7 +235,7 @@ class Terminal(ConnObj):
 
     @renormalization_impedance.setter
     def renormalization_impedance(self, value):
-        self.port_post_processing_prop.renormalization_impedance = value
+        self._set_post_processing("renormalization_impedance", value)
 
     @property
     def net_name(self) -> str:

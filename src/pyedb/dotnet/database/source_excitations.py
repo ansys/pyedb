@@ -60,6 +60,62 @@ class SourceExcitation:
         point = [point.X.ToString(), point.Y.ToString()]
         return res, primitive, point
 
+    def get_edge_info_from_port(self, port):
+        """Describe the first edge of an edge terminal.
+
+        Unlike :meth:`get_edge_from_port`, this method also supports terminals placed on
+        padstack pad edges.
+
+        Parameters
+        ----------
+        port : :class:`EdgeTerminal <pyedb.dotnet.database.cell.terminal.edge_terminal.EdgeTerminal>`
+            Edge terminal to inspect.
+
+        Returns
+        -------
+        dict or None
+            ``{"edge_type": "primitive", "primitive": Primitive, "point": [x, y]}`` for a
+            primitive edge, or ``{"edge_type": "pad", "padstack_instance": EDBPadstackInstance,
+            "layer": str, "arc": {"start": [x, y], "end": [x, y], "height": float}}`` for a
+            pad edge. ``None`` when the terminal carries no edge.
+        """
+        edges = list(port._edb_object.GetEdges())
+        if not edges:
+            return None
+        params = edges[0].GetParameters()
+        if len(params) == 3:
+            _, primitive, point = params
+            return {
+                "edge_type": "primitive",
+                "primitive": Primitive(self._pedb, primitive),
+                "point": [point.X.ToString(), point.Y.ToString()],
+            }
+        elif len(params) == 4:
+            _, padstack_instance, layer, arc = params
+            return {
+                "edge_type": "pad",
+                "padstack_instance": EDBPadstackInstance(padstack_instance, self._pedb),
+                "layer": layer.GetName(),
+                "arc": {
+                    "start": [arc.Start.X.ToDouble(), arc.Start.Y.ToDouble()],
+                    "end": [arc.End.X.ToDouble(), arc.End.Y.ToDouble()],
+                    "height": arc.Height,
+                },
+            }
+        raise NotImplementedError("Unsupported edge type.")
+
+    def create_pad_edge_port(self, *args, **kwargs):
+        """Not available on the .NET backend.
+
+        Raises
+        ------
+        NotImplementedError
+        """
+        raise NotImplementedError(
+            "Creating a port on a padstack pad edge is only supported by the gRPC backend. "
+            "Open the design with 'grpc=True'."
+        )
+
     def _create_edge_terminal(self, prim_id, point_on_edge, terminal_name=None, is_ref=False):
         """Create an edge terminal.
 
@@ -1004,6 +1060,7 @@ class SourceExcitation:
         horizontal_extent_factor=1,
         vertical_extent_factor=1,
         pec_launch_width=0.0001,
+        is_reference=False,
     ) -> WavePort:
         """Create an edge port on a primitive specific location.
 
@@ -1025,6 +1082,8 @@ class SourceExcitation:
             Vertical extent factor for wave ports.
         pec_launch_width : float, optional
             Pec launcher width for wave ports.
+        is_reference : bool, optional
+            Whether to create the terminal as a reference terminal.
 
         """
         point_on_edge = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
@@ -1038,7 +1097,7 @@ class SourceExcitation:
             primitive._edb_object.GetNet(),
             name,
             pos_edge,
-            isRef=False,
+            isRef=is_reference,
         )
         edge_term.SetImpedance(self._pedb.edb_value(impedance))
         wave_port = WavePort(self._pedb, edge_term)

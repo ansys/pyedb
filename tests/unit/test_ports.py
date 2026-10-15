@@ -22,6 +22,7 @@
 
 """Unit tests for source_excitations.py – no EDB license required."""
 
+import math
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -29,6 +30,124 @@ import pytest
 from pyedb.grpc.database.source_excitations import SourceExcitation, SourceExcitationInternal
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.grpc]
+
+
+class TestPadArcFrame:
+    """Tests for pad-local <-> layout arc conversion."""
+
+    @staticmethod
+    def _padstack_instance(pose, component_map):
+        padstack_instance = MagicMock()
+        padstack_instance.core.get_position_and_rotation.return_value = pose
+        transform = padstack_instance.component.core.transform
+        transform.is_null = False
+        transform.transform_point.side_effect = lambda point: component_map(point.x.value, point.y.value)
+        return padstack_instance
+
+    def test_local_arc_is_rotated_translated_and_component_transformed(self):
+        from pyedb.grpc.database.source_excitations import _map_pad_arc, _pad_frame
+
+        padstack_instance = self._padstack_instance([0.01, 0.02, math.pi / 2], lambda x, y: [x + 0.1, y + 0.2])
+        local_arc = {"start": [0.001, 0.0], "end": [0.0, 0.001], "height": 0.0002}
+
+        layout_arc = _map_pad_arc(local_arc, _pad_frame(padstack_instance), to_layout=True)
+
+        assert layout_arc["start"] == pytest.approx([0.11, 0.221])
+        assert layout_arc["end"] == pytest.approx([0.109, 0.22])
+        assert layout_arc["height"] == pytest.approx(0.0002)
+
+    def test_layout_arc_round_trips_through_mirrored_frame(self):
+        from pyedb.grpc.database.source_excitations import _map_pad_arc, _pad_frame
+
+        padstack_instance = self._padstack_instance([0.003, -0.002, 0.3], lambda x, y: [-x + 0.05, y - 0.01])
+        frame = _pad_frame(padstack_instance)
+        layout_arc = {"start": [0.047, -0.012], "end": [0.0465, -0.0118], "height": 0.0001}
+
+        local_arc = _map_pad_arc(layout_arc, frame, to_layout=False)
+        round_trip = _map_pad_arc(local_arc, frame, to_layout=True)
+
+        assert local_arc["height"] == pytest.approx(-0.0001)
+        for endpoint in ("start", "end"):
+            assert round_trip[endpoint] == pytest.approx(layout_arc[endpoint])
+        assert round_trip["height"] == pytest.approx(0.0001)
+
+    def test_create_pad_edge_port_stores_pad_local_arc(self):
+        exc, pedb = _make_excitation()
+        pedb.value.side_effect = lambda value: value
+        padstack_instance = self._padstack_instance([0.01, 0.02, 0.0], lambda x, y: [x + 0.1, y + 0.2])
+        padstack_instance.aedt_name = "U1-1"
+        pedb.layout.padstack_instances = [padstack_instance]
+        layout_arc = {"start": [0.1105, 0.2195], "end": [0.1105, 0.2205], "height": 0.0}
+
+        with (
+            patch("pyedb.grpc.database.source_excitations.CorePadEdge") as pad_edge,
+            patch("ansys.edb.core.geometry.arc_data.ArcData") as arc_data,
+            patch("ansys.edb.core.terminal.edge_terminal.EdgeTerminal"),
+            patch("pyedb.grpc.database.source_excitations.WavePort"),
+        ):
+            exc.create_pad_edge_port("P1", "U1-1", "TOP", layout_arc)
+
+        (start, end), kwargs = arc_data.call_args_list[0]
+        assert start == pytest.approx([0.0005, -0.0005])
+        assert end == pytest.approx([0.0005, 0.0005])
+        assert kwargs["height"] == pytest.approx(0.0)
+        assert pad_edge.create.call_args.args[2] is arc_data.return_value
+
+    @pytest.mark.parametrize("has_component", [True, False])
+    def test_create_pad_edge_port_joins_component_group(self, has_component):
+        exc, pedb = _make_excitation()
+        pedb.value.side_effect = lambda value: value
+        padstack_instance = self._padstack_instance([0.01, 0.02, 0.0], lambda x, y: [x + 0.1, y + 0.2])
+        padstack_instance.aedt_name = "U1-1"
+        padstack_instance.core.component.is_null = not has_component
+        pedb.layout.padstack_instances = [padstack_instance]
+        layout_arc = {"start": [0.1105, 0.2195], "end": [0.1105, 0.2205], "height": 0.0}
+
+        with (
+            patch("pyedb.grpc.database.source_excitations.CorePadEdge"),
+            patch("ansys.edb.core.geometry.arc_data.ArcData"),
+            patch("ansys.edb.core.terminal.edge_terminal.EdgeTerminal") as edge_terminal,
+            patch("pyedb.grpc.database.source_excitations.WavePort"),
+        ):
+            exc.create_pad_edge_port("P1", "U1-1", "TOP", layout_arc)
+
+        group = padstack_instance.core.component
+        if has_component:
+            group.add_member.assert_called_once_with(edge_terminal.create.return_value)
+        else:
+            group.add_member.assert_not_called()
+
+    @staticmethod
+    def _stored_arc(start, end):
+        arc = MagicMock()
+        arc.start.x.value, arc.start.y.value = start
+        arc.end.x.value, arc.end.y.value = end
+        return arc
+
+    def test_placement_error_is_zero_for_matching_layout_arc(self):
+        from pyedb.grpc.database.source_excitations import _pad_edge_placement_error
+
+        padstack_instance = self._padstack_instance([0.01, 0.02, math.pi / 2], lambda x, y: [x + 0.1, y + 0.2])
+        stored = self._stored_arc([0.001, 0.0], [0.0, 0.001])
+        layout_arc = {"start": [0.11, 0.221], "end": [0.109, 0.22]}
+
+        with patch("pyedb.grpc.database.source_excitations._arc_data_from_message", return_value=stored):
+            error = _pad_edge_placement_error(MagicMock(), padstack_instance, layout_arc)
+
+        assert error == pytest.approx(0.0, abs=1e-12)
+
+    def test_placement_error_detects_arc_stored_in_wrong_frame(self):
+        from pyedb.grpc.database.source_excitations import _pad_edge_placement_error
+
+        padstack_instance = self._padstack_instance([0.01, 0.02, 0.0], lambda x, y: [x + 0.1, y + 0.2])
+        # Layout coordinates stored as if they were pad-local: the edge lands far from the pad.
+        stored = self._stored_arc([0.1105, 0.2195], [0.1105, 0.2205])
+        layout_arc = {"start": [0.1105, 0.2195], "end": [0.1105, 0.2205]}
+
+        with patch("pyedb.grpc.database.source_excitations._arc_data_from_message", return_value=stored):
+            error = _pad_edge_placement_error(MagicMock(), padstack_instance, layout_arc)
+
+        assert error > 0.1
 
 
 # ---------------------------------------------------------------------------

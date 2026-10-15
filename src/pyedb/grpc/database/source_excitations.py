@@ -20,12 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import math
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
-from ansys.edb.core.terminal.edge_terminal import PrimitiveEdge as CorePrimitiveEdge
+from ansys.edb.core.primitive.padstack_instance import (
+    PadstackInstance as CorePadstackInstance,
+)
+from ansys.edb.core.terminal.edge_terminal import PadEdge as CorePadEdge, PrimitiveEdge as CorePrimitiveEdge
 from ansys.edb.core.terminal.terminal import BoundaryType as CoreBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
@@ -47,6 +51,122 @@ from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.sources import Source, SourceType
 from pyedb.misc.decorators import deprecated_property
+
+_ARC_ROTATION_DIRECTIONS = {0: "ccw", 1: "cw", 2: "colinear"}
+_PAD_EDGE_TOLERANCE = 1e-9  # metres
+
+
+def _as_float(value):
+    return float(value.value if hasattr(value, "value") else value)
+
+
+def _component_to_layout(padstack_instance):
+    """Return a function mapping points of the component coordinate system to layout coordinates."""
+    component = padstack_instance.component
+    transform = component.core.transform if component else None
+
+    def convert(point):
+        if transform is None or transform.is_null:
+            return [_as_float(point[0]), _as_float(point[1])]
+        mapped = transform.transform_point(CorePointData(point))
+        if hasattr(mapped, "x"):
+            return [_as_float(mapped.x), _as_float(mapped.y)]
+        return [_as_float(mapped[0]), _as_float(mapped[1])]
+
+    return convert
+
+
+def _pad_to_component(padstack_instance, point):
+    """Map a pad-local point to the coordinate system of the component owning the pad."""
+    x0, y0, rotation = (_as_float(v) for v in padstack_instance.core.get_position_and_rotation())
+    cosine, sine = math.cos(rotation), math.sin(rotation)
+    x, y = _as_float(point[0]), _as_float(point[1])
+    return [x0 + cosine * x - sine * y, y0 + sine * x + cosine * y]
+
+
+def _pad_frame(padstack_instance):
+    """Return the affine map ``(a, b, c, d, e, f)`` from pad-local to layout coordinates.
+
+    A local point ``(x, y)`` maps to ``(a*x + b*y + e, c*x + d*y + f)``.
+    """
+    component_to_layout = _component_to_layout(padstack_instance)
+
+    def to_layout(x, y):
+        return component_to_layout(_pad_to_component(padstack_instance, [x, y]))
+
+    e, f = to_layout(0.0, 0.0)
+    ux, uy = to_layout(1.0, 0.0)
+    vx, vy = to_layout(0.0, 1.0)
+    return ux - e, vx - e, uy - f, vy - f, e, f
+
+
+def _map_pad_arc(arc, frame, to_layout):
+    """Map a pad-edge arc dictionary between pad-local and layout coordinates."""
+    a, b, c, d, e, f = frame
+    determinant = a * d - b * c
+    mapped = dict(arc)
+    for endpoint in ("start", "end"):
+        x, y = (_as_float(v) for v in arc[endpoint])
+        if to_layout:
+            mapped[endpoint] = [a * x + b * y + e, c * x + d * y + f]
+        else:
+            x, y = x - e, y - f
+            mapped[endpoint] = [(d * x - b * y) / determinant, (a * y - c * x) / determinant]
+    # A mirrored frame flips the side the arc bulges toward.
+    if determinant < 0:
+        mapped["height"] = -_as_float(arc.get("height", 0.0))
+    return mapped
+
+
+def _pad_edge_placement_error(pad_edge, padstack_instance, layout_arc):
+    """Return the largest distance between a requested layout arc and the arc stored in EDB.
+
+    The stored pad-local arc is read back from EDB, placed in the owning component's coordinate
+    system (pad position and rotation) and then moved to layout coordinates with the component
+    transform.
+    """
+    stored = _arc_data_from_message(pad_edge._params.arc)
+    component_to_layout = _component_to_layout(padstack_instance)
+    error = 0.0
+    for endpoint in ("start", "end"):
+        local = getattr(stored, endpoint)
+        in_component = _pad_to_component(padstack_instance, [local.x, local.y])
+        placed = component_to_layout(in_component)
+        wanted = [_as_float(v) for v in layout_arc[endpoint]]
+        error = max(error, math.hypot(placed[0] - wanted[0], placed[1] - wanted[1]))
+    return error
+
+
+def _arc_data_from_message(message):
+    """Rebuild an ``ArcData`` from a raw ``ArcMessage``.
+
+    Works around ``PadEdge.arc`` in ansys-edb-core, which passes the protobuf message
+    straight to the two-argument ``ArcData`` constructor and raises ``TypeError``.
+    """
+    from ansys.edb.core.geometry.arc_data import ArcData as CoreArcData
+    from ansys.edb.core.inner.parser import msg_to_point_data
+
+    start = msg_to_point_data(message.start)
+    end = msg_to_point_data(message.end)
+    option = message.WhichOneof("option")
+    if option == "thru":
+        return CoreArcData(start, end, thru=msg_to_point_data(message.thru))
+    elif option == "radius":
+        return CoreArcData(
+            start,
+            end,
+            radius=message.radius.radius,
+            direction=_ARC_ROTATION_DIRECTIONS[message.radius.dir],
+            is_big=message.radius.is_big,
+        )
+    elif option == "center":
+        return CoreArcData(
+            start,
+            end,
+            center=msg_to_point_data(message.center.point),
+            direction=_ARC_ROTATION_DIRECTIONS[message.center.dir],
+        )
+    return CoreArcData(start, end, height=message.height.value)
 
 
 class SourceExcitationInternal:
@@ -2819,6 +2939,56 @@ class SourceExcitation(SourceExcitationInternal):
             return True, primitive, point
         return False, None, None
 
+    def get_edge_info_from_port(self, port):
+        """Describe the first edge of an edge terminal.
+
+        Unlike :meth:`get_edge_from_port`, this method also supports terminals placed on
+        padstack pad edges.
+
+        Parameters
+        ----------
+        port : :class:`EdgeTerminal <pyedb.grpc.database.terminal.edge_terminal.EdgeTerminal>`
+            Edge terminal to inspect.
+
+        Returns
+        -------
+        dict or None
+            ``{"edge_type": "primitive", "primitive": Primitive, "point": [x, y]}`` for a
+            primitive edge, or ``{"edge_type": "pad", "padstack_instance": PadstackInstance,
+            "layer": str, "arc": {"start": [x, y], "end": [x, y], "height": float}}`` for a
+            pad edge, with arc endpoints in layout coordinates. ``None`` when the terminal
+            carries no edge.
+        """
+        edges = port.core.edges
+        if not edges:
+            return None
+        edge = edges[0]
+        if isinstance(edge, CorePrimitiveEdge):
+            point = edge.point
+            return {
+                "edge_type": "primitive",
+                "primitive": Primitive(self._pedb, edge.primitive),
+                "point": [str(point.x.value), str(point.y.value)],
+            }
+        elif isinstance(edge, CorePadEdge):
+            # PadEdge.padstack_instance/.arc in ansys-edb-core read fields that do not
+            # exist on PadEdgeParamsMessage, so the raw params are decoded here instead.
+            params = edge._params
+            arc = _arc_data_from_message(params.arc)
+            padstack_instance = PadstackInstance(self._pedb, CorePadstackInstance(params.padstack))
+            local_arc = {
+                "start": [arc.start.x.value, arc.start.y.value],
+                "end": [arc.end.x.value, arc.end.y.value],
+                "height": arc.height,
+            }
+            return {
+                "edge_type": "pad",
+                "padstack_instance": padstack_instance,
+                "layer": edge.layer.name,
+                "arc": _map_pad_arc(local_arc, _pad_frame(padstack_instance), to_layout=True),
+            }
+        raise NotImplementedError(f"Edge type {type(edge).__name__} is not supported.")
+
     def create_edge_port(
         self,
         location,
@@ -2829,6 +2999,7 @@ class SourceExcitation(SourceExcitationInternal):
         horizontal_extent_factor=1,
         vertical_extent_factor=1,
         pec_launch_width=0.0001,
+        is_reference=False,
     ):
         from ansys.edb.core.terminal.edge_terminal import (
             EdgeTerminal as GrpcEdgeTerminal,
@@ -2853,19 +3024,120 @@ class SourceExcitation(SourceExcitationInternal):
             raise Exception("Primitive not found")
         edges = [CorePrimitiveEdge.create(primitive.core, point) for point in points_on_edge]
         edge_term = GrpcEdgeTerminal.create(
-            layout=primitive.core.layout, edges=edges, net=primitive.core.net, name=name, is_ref=False
+            layout=primitive.core.layout, edges=edges, net=primitive.core.net, name=name, is_ref=is_reference
         )
 
         edge_term.impedance = self._pedb._value_setter(impedance)
         edge_term.name = name
         wave_port = WavePort(self._pedb, edge_term)
-        wave_port.horizontal_extent_factor = horizontal_extent_factor
-        wave_port.vertical_extent_factor = vertical_extent_factor
-        wave_port.pec_launch_width = pec_launch_width
         wave_port.hfss_type = "Wave" if is_wave_port else "Gap"
-        wave_port.do_renormalize = True
+        if not is_reference:
+            wave_port.horizontal_extent_factor = horizontal_extent_factor
+            wave_port.vertical_extent_factor = vertical_extent_factor
+            wave_port.pec_launch_width = pec_launch_width
+            wave_port.do_renormalize = True
 
         return wave_port
+
+    def create_pad_edge_port(
+        self,
+        name,
+        padstack_instance,
+        layer,
+        arc,
+        impedance=50,
+        is_wave_port=False,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+        is_reference=False,
+    ):
+        """Create an edge port on the pad edge of a padstack instance.
+
+        Parameters
+        ----------
+        name : str
+            Port name.
+        padstack_instance : str or :class:`PadstackInstance \
+<pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
+            AEDT name of the padstack instance hosting the pad, or the instance itself.
+        layer : str
+            Name of the layer the pad edge lies on.
+        arc : dict
+            ``{"start": [x, y], "end": [x, y], "height": float}`` describing the pad edge
+            in layout coordinates.
+        impedance : int or float, optional
+            Port impedance. Default is ``50``.
+        is_wave_port : bool, optional
+            Whether to create a wave port instead of a gap port. Default is ``False``.
+        horizontal_extent_factor : int or float, optional
+            Default is ``5``.
+        vertical_extent_factor : int or float, optional
+            Default is ``3``.
+        pec_launch_width : str, optional
+            Default is ``"0.01mm"``.
+        is_reference : bool, optional
+            Whether to create the terminal as a reference terminal. Default is ``False``.
+
+        Returns
+        -------
+        :class:`WavePort <pyedb.grpc.database.ports.ports.WavePort>`
+        """
+        from ansys.edb.core.geometry.arc_data import ArcData as CoreArcData
+        from ansys.edb.core.terminal.edge_terminal import (
+            EdgeTerminal as GrpcEdgeTerminal,
+        )
+
+        if isinstance(padstack_instance, PadstackInstance):
+            pedb_instance = padstack_instance
+        else:
+            pedb_instance = None
+            for instance in self._pedb.layout.padstack_instances:
+                if padstack_instance in (instance.aedt_name, instance.name):
+                    pedb_instance = instance
+                    break
+            if pedb_instance is None:
+                raise Exception(f"Padstack instance {padstack_instance} not found")
+
+        layout_arc = {
+            "start": [float(self._pedb.value(i)) for i in arc["start"]],
+            "end": [float(self._pedb.value(i)) for i in arc["end"]],
+            "height": float(self._pedb.value(arc.get("height", 0.0))),
+        }
+        # EDB stores pad edges in the pad-local frame.
+        local_arc = _map_pad_arc(layout_arc, _pad_frame(pedb_instance), to_layout=False)
+        pad_edge = CorePadEdge.create(
+            pedb_instance.core,
+            layer,
+            CoreArcData(local_arc["start"], local_arc["end"], height=local_arc["height"]),
+        )
+        error = _pad_edge_placement_error(pad_edge, pedb_instance, layout_arc)
+        if error > _PAD_EDGE_TOLERANCE:
+            self._pedb.logger.warning(
+                f"Pad edge of port '{name}' is stored {error * 1e3:.6f} mm away from the requested layout coordinates."
+            )
+
+        edge_term = GrpcEdgeTerminal.create(
+            layout=self._pedb.layout.core,
+            edges=[pad_edge],
+            net=pedb_instance.core.net,
+            name=name,
+            is_ref=is_reference,
+        )
+        # Only terminals grouped with their component get the component transform applied to the pad-local edge.
+        component = pedb_instance.core.component
+        if not component.is_null:
+            component.add_member(edge_term)
+        edge_term.impedance = self._pedb._value_setter(impedance)
+        edge_term.name = name
+        port = WavePort(self._pedb, edge_term)
+        port.hfss_type = "Wave" if is_wave_port else "Gap"
+        if not is_reference:
+            port.horizontal_extent_factor = horizontal_extent_factor
+            port.vertical_extent_factor = vertical_extent_factor
+            port.pec_launch_width = pec_launch_width
+            port.do_renormalize = True
+        return port
 
     def create_edge_port_on_polygon(
         self,
