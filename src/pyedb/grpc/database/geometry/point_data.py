@@ -40,13 +40,19 @@ class PointData:
     @classmethod
     def create(cls, pedb: "Edb", x: float | str, y: float | str) -> "PointData":
         """Create a new PointData object."""
-        core = pedb.core.geometry.point_data.PointData(pedb.value(x), pedb.value(y))
+        # Pass the underlying core values so variable expressions are preserved.
+        core = pedb.core.geometry.point_data.PointData(pedb.value(x).core, pedb.value(y).core)
         return cls(pedb, core)
 
     @classmethod
     def create_arc_point(cls, pedb: "Edb", arc_height):
-        """Create a arc PointData object."""
-        core = pedb.core.geometry.point_data.PointData(pedb.value(arc_height))
+        """Create a arc PointData object.
+
+        ``arc_height`` can be a number or a string expression containing variables.
+        """
+        # A single argument is interpreted by the core as the arc height. Pass the core value
+        # so that variable expressions are preserved.
+        core = pedb.core.geometry.point_data.PointData(pedb.value(arc_height).core)
         return cls(pedb, core)
 
     @property
