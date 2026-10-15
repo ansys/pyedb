@@ -1361,7 +1361,7 @@ class TestClass(BaseTestClass):
             open_voids=False,
             open_traces=True,
             traces_offset="0.05mm",
-            open_traces_net_filter=["SFPA_VCCR"],
+            open_traces_net_filter=["SFPA_VCCR", "SFPA_VCCT"],
         )
         assert "SM_traces" in edbapp.stackup.layers
         edbapp.close(terminate_rpc_session=False)
@@ -1606,4 +1606,40 @@ class TestPolygonData(BaseTestClass):
 
         poly_data = PolygonData.create(edbapp, points=[pdata1, pdata2, pdata3])
         assert poly_data
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="Only supported with gRPC.")
+    def test_create_arc_point_with_variable(self):
+        """Arc points keep the variable expression of their arc height (issue #2600)."""
+        from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.add_design_variable("arc_h", "0.5mm")
+
+        arc_point = PointData.create_arc_point(edbapp, "arc_h*2")
+        assert arc_point.is_arc
+        assert "arc_h" in str(arc_point.core.arc_height)
+        assert arc_point.arc_height == pytest.approx(0.001)
+
+        start = PointData.create(edbapp, "0mm", "0mm")
+        end = PointData.create(edbapp, "10mm", "0mm")
+        top = PointData.create(edbapp, "10mm", "5mm")
+        polygon_data = CorePolygonData(points=[start.core, arc_point.core, end.core, top.core], closed=True)
+        poly = edbapp.modeler.create_polygon(points=polygon_data, layer_name="Postprocessing")
+        assert not poly.is_null
+        arcs = [pt for pt in poly.polygon_data.core.points if pt.is_arc]
+        assert arcs
+        assert "arc_h" in str(arcs[0].x)
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="Only supported with gRPC.")
+    def test_create_point_with_variable(self):
+        """Regular points keep the variable expression of their coordinates."""
+        edbapp = self.edb_examples.get_si_verse()
+        edbapp.add_design_variable("px", "1mm")
+        point = PointData.create(edbapp, "px", "2*px")
+        assert "px" in str(point.core.x)
+        assert "px" in str(point.core.y)
+        assert point.x == pytest.approx(0.001)
+        assert point.y == pytest.approx(0.002)
         edbapp.close(terminate_rpc_session=False)
