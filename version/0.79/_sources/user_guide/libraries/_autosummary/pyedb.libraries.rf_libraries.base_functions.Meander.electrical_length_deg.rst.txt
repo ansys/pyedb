@@ -1,0 +1,6 @@
+electrical\_length\_deg
+=======================
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. automethod:: Meander.electrical_length_deg

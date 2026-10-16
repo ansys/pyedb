@@ -1,0 +1,184 @@
+
+
+
+
+
+
+:class:`CfgPlane`
+=================
+
+
+.. py:class:: pyedb.configuration.cfg_modeler.CfgPlane(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Represent one plane primitive scheduled for creation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPlane
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~net_name`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~lower_left_point`
+            - 
+          * - :py:attr:`~upper_right_point`
+            - 
+          * - :py:attr:`~corner_radius`
+            - 
+          * - :py:attr:`~rotation`
+            - 
+          * - :py:attr:`~voids`
+            - 
+          * - :py:attr:`~points`
+            - 
+          * - :py:attr:`~radius`
+            - 
+          * - :py:attr:`~position`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_modeler import CfgPlane
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: name
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: layer
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: net_name
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: type
+   :type:  str
+   :value: 'rectangle'
+
+
+.. py:attribute:: lower_left_point
+   :type:  list[float | int | str]
+   :value: None
+
+
+.. py:attribute:: upper_right_point
+   :type:  list[float | int | str]
+   :value: None
+
+
+.. py:attribute:: corner_radius
+   :type:  float | int | str
+   :value: 0
+
+
+.. py:attribute:: rotation
+   :type:  float | int | str
+   :value: 0
+
+
+.. py:attribute:: voids
+   :type:  list
+   :value: None
+
+
+.. py:attribute:: points
+   :type:  list[list[float | int | str]]
+   :value: None
+
+
+.. py:attribute:: radius
+   :type:  float | int | str
+   :value: 0
+
+
+.. py:attribute:: position
+   :type:  list[float | int | str]
+   :value: None
+
+
+
+
+
+

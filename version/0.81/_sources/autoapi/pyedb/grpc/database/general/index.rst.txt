@@ -1,0 +1,96 @@
+
+
+
+
+
+
+The ``general.py`` module
+=========================
+
+.. py:module:: pyedb.grpc.database.general
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: general
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pascal_to_snake`
+            - 
+
+
+          * - :py:obj:`~snake_to_pascal`
+            - 
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~logger`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains EDB general methods and related methods.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: pascal_to_snake(s)
+
+.. py:function:: snake_to_pascal(s)
+
+.. py:data:: logger
+
+
+

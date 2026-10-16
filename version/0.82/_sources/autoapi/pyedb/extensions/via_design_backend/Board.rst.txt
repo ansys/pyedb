@@ -1,0 +1,131 @@
+
+
+
+
+
+
+:class:`Board`
+==============
+
+
+.. py:class:: pyedb.extensions.via_design_backend.Board(stackup, padstack_defs, outline_extent, pitch, pin_map, signals, differential_signals)
+
+
+.. py:currentmodule:: Board
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_signal_location`
+            - 
+          * - :py:attr:`~parser_signals`
+            - 
+          * - :py:attr:`~parser_differential_signals`
+            - 
+          * - :py:attr:`~populate_config`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~conductor_layers`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~voids`
+            - 
+          * - :py:attr:`~variables`
+            - 
+          * - :py:attr:`~stackup`
+            - 
+          * - :py:attr:`~padstack_defs`
+            - 
+          * - :py:attr:`~outline_extent`
+            - 
+          * - :py:attr:`~pin_map`
+            - 
+          * - :py:attr:`~signals`
+            - 
+          * - :py:attr:`~differential_signals`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.extensions.via_design_backend import Board
+
+Property detail
+---------------
+
+.. py:property:: conductor_layers
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: voids
+   :value: []
+
+
+.. py:attribute:: variables
+
+.. py:attribute:: stackup
+
+.. py:attribute:: padstack_defs
+
+.. py:attribute:: outline_extent
+
+.. py:attribute:: pin_map
+
+.. py:attribute:: signals
+   :value: []
+
+
+.. py:attribute:: differential_signals
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_signal_location(signal_name)
+
+.. py:method:: parser_signals(data)
+
+.. py:method:: parser_differential_signals(data)
+
+.. py:method:: populate_config(cfg)
+
+
+
+

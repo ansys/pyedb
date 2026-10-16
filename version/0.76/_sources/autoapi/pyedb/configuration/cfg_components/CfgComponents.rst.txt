@@ -1,0 +1,300 @@
+
+
+
+
+
+
+:class:`CfgComponents`
+======================
+
+
+.. py:class:: pyedb.configuration.cfg_components.CfgComponents(pedb=None, components_data=None)
+
+   
+   Fluent builder for the ``components`` configuration list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgComponents
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get`
+            - Return a :class:`CfgComponent` for an *existing* EDB component.
+          * - :py:attr:`~add`
+            - Add a component configuration entry.
+          * - :py:attr:`~clean`
+            - Clear all components from the list.
+          * - :py:attr:`~apply`
+            - Apply all component settings to the EDB design.
+          * - :py:attr:`~retrieve_parameters_from_edb`
+            - Read all component settings from the open EDB design.
+          * - :py:attr:`~get_data_from_db`
+            - Read all component settings from the open EDB design.
+          * - :py:attr:`~to_list`
+            - Serialize all configured components.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_components import CfgComponents
+
+
+
+Method detail
+-------------
+
+.. py:method:: get(reference_designator: str) -> CfgComponent
+
+   
+   Return a :class:`CfgComponent` for an *existing* EDB component.
+
+   The component is looked up by *reference_designator* in the live EDB
+   session and its current properties (type, model, die, solder-ball,
+   port) are pre-loaded into the returned builder.  Mutate the returned
+   object and then call ``edb.configuration.run(cfg)`` to push the
+   changes back to the database.
+
+   If the component has already been registered via :meth:`add` or a
+   previous :meth:`get` call, the cached entry is returned instead of
+   creating a duplicate.
+
+   :Parameters:
+
+       **reference_designator** : :class:`python:str`
+           Reference designator of the component to retrieve, e.g. ``"U1"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgComponent`
+           Component builder pre-populated with current EDB properties.
+
+
+
+
+   :Raises:
+
+       :obj:`KeyError`
+           If no EDB session is attached or the component does not exist.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = edb.configuration.create_config_builder()
+   >>> u1 = cfg.components.get("U1")
+   >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
+   >>> edb.configuration.run(cfg)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add(reference_designator: str, part_type=None, enabled=None, definition=None, placement_layer=None)
+
+   
+   Add a component configuration entry.
+
+
+   :Parameters:
+
+       **reference_designator** : :class:`python:str`
+           Unique component reference designator (e.g. ``"U1"``).
+
+       **part_type** : :class:`python:str`, :obj:`optional`
+           Component type.  Accepted values: ``"resistor"``,
+           ``"capacitor"``, ``"inductor"``, ``"ic"``, ``"io"``,
+           ``"other"``.
+
+       **enabled** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the component is enabled in the simulation.
+
+       **definition** : :class:`python:str`, :obj:`optional`
+           Component part definition name.
+
+       **placement_layer** : :class:`python:str`, :obj:`optional`
+           Layer on which the component is placed.
+
+
+
+   :Returns:
+
+       :obj:`CfgComponent`
+           The newly created component builder.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> r1 = cfg.components.add("R1", part_type="resistor", enabled=True)
+   >>> r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: clean()
+
+   
+   Clear all components from the list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Apply all component settings to the EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: retrieve_parameters_from_edb()
+
+   
+   Read all component settings from the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db()
+
+   
+   Read all component settings from the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_list()
+
+   
+   Serialize all configured components.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

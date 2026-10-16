@@ -1,0 +1,79 @@
+
+
+
+
+
+
+The ``layout`` package
+==========================
+
+.. py:module:: pyedb.grpc.database.layout
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: layout
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.layout.cell`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.layout.layout`
+            - This module contains these classes: `EdbLayout` and `Shape`.
+
+
+          * - :py:obj:`~pyedb.grpc.database.layout.voltage_regulator`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> cell</autoapi/pyedb/grpc/database/layout/cell/index>
+    <span class="nf nf-fa-file"></span> layout</autoapi/pyedb/grpc/database/layout/layout/index>
+    <span class="nf nf-fa-file"></span> voltage_regulator</autoapi/pyedb/grpc/database/layout/voltage_regulator/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

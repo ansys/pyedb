@@ -1,0 +1,242 @@
+
+
+
+
+
+
+:class:`Q3DACRLSettings`
+========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.q3d_acrl_settings.Q3DACRLSettings(pedb, core: ansys.edb.core.simulation_setup.q3d_simulation_settings.Q3DACRLSettings)
+
+   
+   Q3D ACRL settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Q3DACRLSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~max_passes`
+            - Maximum number of mesh refinement cycles to perform.
+          * - :py:attr:`~max_refine_per_pass`
+            - Maximum percentage of elements to refine per pass.
+          * - :py:attr:`~min_converged_passes`
+            - Minimum number of converged passes required.
+          * - :py:attr:`~min_passes`
+            - Minimum number of passes required.
+          * - :py:attr:`~percent_error`
+            - Target percent error for convergence.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.q3d_acrl_settings import Q3DACRLSettings
+
+Property detail
+---------------
+
+.. py:property:: max_passes
+   :type: int
+
+
+   
+   Maximum number of mesh refinement cycles to perform.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum number of passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_refine_per_pass
+   :type: float
+
+
+   
+   Maximum percentage of elements to refine per pass.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Maximum percentage of elements to refine per pass.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_converged_passes
+   :type: int
+
+
+   
+   Minimum number of converged passes required.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Minimum number of converged passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_passes
+   :type: int
+
+
+   
+   Minimum number of passes required.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Minimum number of passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: percent_error
+   :type: float
+
+
+   
+   Target percent error for convergence.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Target percent error.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

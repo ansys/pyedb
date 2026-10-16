@@ -1,0 +1,478 @@
+
+
+
+
+
+
+:class:`SimulationSetup`
+========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.simulation_setup.SimulationSetup(pedb, core: ansys.edb.core.simulation_setup.simulation_setup.SimulationSetup)
+
+   Bases: :py:obj:`SimulationSetupDeprecated`, :py:obj:`abc.ABC`
+
+
+   
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~cast`
+            - Cast a core SimulationSetup to PyEDB SimulationSetup.
+          * - :py:attr:`~add_frequency_sweep`
+            - This method is deprecated. Please use 'add_sweep' with appropriate parameters instead.
+          * - :py:attr:`~add_sweep`
+            - Add a frequency sweep to the simulation setup.
+          * - :py:attr:`~clear_sweeps`
+            - Clear all frequency sweeps from the simulation setup.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - Unique ID of the EDB object.
+          * - :py:attr:`~is_null`
+            - Check if the simulation setup is null.
+          * - :py:attr:`~name`
+            - Get or set the name of the simulation setup.
+          * - :py:attr:`~position`
+            - Get or set the position of the simulation setup.
+          * - :py:attr:`~sweep_data`
+            - Get the sweep data associated with the simulation setup.
+          * - :py:attr:`~setup_type`
+            - Get the type of the simulation setup.
+          * - :py:attr:`~settings`
+            - Get the simulation settings.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: id
+   :type: int
+
+
+   
+   Unique ID of the EDB object.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Simulation setup ID.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Check if the simulation setup is null.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the simulation setup is null, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Get or set the name of the simulation setup.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Simulation setup name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: position
+   :type: int
+
+
+   
+   Get or set the position of the simulation setup.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Simulation setup position.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sweep_data
+   :type: list[pyedb.grpc.database.simulation_setup.sweep_data.SweepData]
+
+
+   
+   Get the sweep data associated with the simulation setup.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:obj:`SweepData`]
+           List of sweep data objects.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: setup_type
+   :type: str
+
+
+   
+   Get the type of the simulation setup.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Simulation setup type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: settings
+   :abstractmethod:
+
+
+   
+   Get the simulation settings.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Settings`
+           The simulation settings object specific to the simulation setup type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: cast()
+
+   
+   Cast a core SimulationSetup to PyEDB SimulationSetup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_frequency_sweep(frequency_sweep: list[str])
+
+   
+   This method is deprecated. Please use 'add_sweep' with appropriate parameters instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_sweep(name: str | None = None, distribution: str = 'linear', start_freq: str | float = '0GHz', stop_freq: str | float = '20GHz', step: str | float = '10MHz', discrete: bool = False, frequency_set: list[list[str]] | None = None) -> pyedb.grpc.database.simulation_setup.sweep_data.SweepData | None
+
+   
+   Add a frequency sweep to the simulation setup.
+
+   Accepts either a single-sweep shorthand (``distribution`` / ``start_freq`` /
+   ``stop_freq`` / ``step``) or a multi-band ``frequency_set`` list that groups
+   several sweep sub-ranges into one named sweep object.
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the sweep. Auto-generated when omitted.
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Sweep distribution used in single-sweep mode. Supported values:
+           ``"linear"`` (default), ``"linear_count"``, ``"decade_count"``,
+           ``"log_scale"``, ``"exponential"``, ``"octave_count"``.
+
+       **start_freq** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Start frequency for single-sweep mode (e.g. ``"0GHz"`` or ``0``).
+           Default is ``"0GHz"``.
+
+       **stop_freq** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Stop frequency for single-sweep mode (e.g. ``"20GHz"`` or ``20e9``).
+           Default is ``"20GHz"``.
+
+       **step** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Frequency step or point count for single-sweep mode
+           (e.g. ``"10MHz"`` or ``10e6``). Default is ``"10MHz"``.
+
+       **discrete** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           When ``True`` the sweep type is set to *discrete*; otherwise
+           *interpolating*. Default is ``False``.
+
+       **frequency_set** : :class:`python:list`\[:class:`python:list`\[:class:`python:str` or :class:`python:float`]] :obj:`or` :data:`python:None`, :obj:`optional`
+           Multi-band sweep definition. Each inner list has the form
+           ``[distribution, start_freq, stop_freq, step]`` and supports all
+           distribution aliases recognised by the ``distribution`` parameter.
+           When provided, ``distribution`` / ``start_freq`` / ``stop_freq`` /
+           ``step`` are ignored.
+
+
+
+   :Returns:
+
+       :obj:`SweepData` or :data:`python:None`
+           The newly added :class:`SweepData` object, or ``None`` if the sweep
+           could not be created.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Single linear sweep:
+
+   >>> setup = edbapp.simulation_setups.create_siwave_setup()
+   >>> sweep = setup.add_sweep(name="sweep1", start_freq="0GHz", stop_freq="10GHz", step="10MHz")
+
+   Multi-band sweep combining a DC point, a decade (log) band and a linear
+   band — all grouped under one sweep name:
+
+   >>> setup = edbapp.simulation_setups.create_siwave_setup()
+   >>> setup.add_sweep(
+   ...     name="sweep1",
+   ...     frequency_set=[
+   ...         ["linear_count", "0GHz", "0GHz", "1"],
+   ...         ["decade_count", "1Hz", "10MHz", "10"],
+   ...         ["linear", "10MHz", "10GHz", "10MHz"],
+   ...     ],
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: clear_sweeps()
+
+   
+   Clear all frequency sweeps from the simulation setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
