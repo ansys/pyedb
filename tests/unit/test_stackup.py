@@ -187,11 +187,14 @@ class TestGrpcStackupUnit:
         result = stackup.load("output.unsupported")
         assert result is False
 
-    def test_grpc_load_from_xml_delegates_to_load(self):
-        """load_from_xml delegates to load."""
+    def test_grpc_load_from_xml_falls_back_to_load(self):
+        """load_from_xml falls back to load when the core import fails."""
         stackup = self._make_grpc_stackup()
-        with patch.object(stackup, "load", return_value=True) as mock_load:
-            result = stackup.load_from_xml("stackup.xml")
+        with patch.object(stackup.core, "import_from_control_file", side_effect=RuntimeError) as mock_import:
+            with patch.object(stackup, "load", return_value=True) as mock_load:
+                result = stackup.load_from_xml("stackup.xml")
+        assert mock_import.called is True
+        mock_import.assert_called_once_with("stackup.xml")
         mock_load.assert_called_once_with("stackup.xml")
         assert result is True
 
