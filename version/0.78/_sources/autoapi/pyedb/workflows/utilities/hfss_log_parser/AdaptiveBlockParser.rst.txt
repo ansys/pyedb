@@ -1,0 +1,130 @@
+
+
+
+
+
+
+:class:`AdaptiveBlockParser`
+============================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.AdaptiveBlockParser(lines: list[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Build a list of AdaptivePass objects from the adaptive section.
+
+   This parser extracts all adaptive pass information including convergence
+   status, frequency, mesh statistics, and delta-S values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = [
+   ...     "Adaptive Pass 1 at Frequency: 3 GHz",
+   ...     "Tetrahedra: 10000",
+   ...     "Matrix size: 5000",
+   ...     "Memory 256.0 MB",
+   ...     "Max Mag. Delta S: 0.02",
+   ...     "[CONVERGE] Solution has converged at pass number 1",
+   ...     "Adaptive Passes converged",
+   ... ]
+   >>> parser = AdaptiveBlockParser(lines)
+   >>> passes = parser.parse()
+   >>> passes[0].pass_nr
+   1
+   >>> passes[0].converged
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AdaptiveBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse every adaptive pass and determine which one triggered convergence.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import AdaptiveBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> list[AdaptivePass]
+
+   
+   Parse every adaptive pass and determine which one triggered convergence.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :obj:`AdaptivePass`
+           Ordered list of passes (pass_nr always increases).
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = ["Adaptive Pass 1 at Frequency: 2 GHz", "Tetrahedra: 8000"]
+   >>> parser = AdaptiveBlockParser(lines)
+   >>> passes = parser.parse()
+   >>> len(passes)
+   0
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,146 @@
+
+
+
+
+
+
+:class:`BatchInfo`
+==================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.BatchInfo
+
+   
+   Batch simulation run metadata.
+
+
+
+   :Attributes:
+
+       **path** : :class:`python:str`
+           Full path to the project file.
+
+       **started** : :obj:`datetime`
+           Simulation start timestamp.
+
+       **stopped** : :obj:`datetime`
+           Simulation stop timestamp.
+
+       **run_by** : :class:`python:str`
+           Username who executed the simulation.
+
+       **temp_dir** : :class:`python:str`
+           Temporary directory used during simulation.
+
+       **project_dir** : :class:`python:str`
+           Project working directory.
+
+       **status** : :class:`python:str`, :obj:`optional`
+           Simulation completion status such as ``'Normal Completion'`` or ``'Aborted'``.
+           The default is ``""``.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from datetime import datetime
+   >>> batch = BatchInfo(
+   ...     path="C:\project\design.siw",
+   ...     started=datetime(2025, 11, 10, 9, 0, 0),
+   ...     stopped=datetime(2025, 11, 10, 10, 30, 0),
+   ...     run_by="engineer",
+   ...     temp_dir="C:\temp",
+   ...     project_dir="C:\project",
+   ...     status="Normal Completion",
+   ... )
+   >>> batch.status
+   'Normal Completion'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: BatchInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~path`
+            - 
+          * - :py:attr:`~started`
+            - 
+          * - :py:attr:`~stopped`
+            - 
+          * - :py:attr:`~run_by`
+            - 
+          * - :py:attr:`~temp_dir`
+            - 
+          * - :py:attr:`~project_dir`
+            - 
+          * - :py:attr:`~status`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import BatchInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: path
+   :type:  str
+
+.. py:attribute:: started
+   :type:  datetime.datetime
+
+.. py:attribute:: stopped
+   :type:  datetime.datetime
+
+.. py:attribute:: run_by
+   :type:  str
+
+.. py:attribute:: temp_dir
+   :type:  str
+
+.. py:attribute:: project_dir
+   :type:  str
+
+.. py:attribute:: status
+   :type:  str
+   :value: ''
+
+
+
+
+
+

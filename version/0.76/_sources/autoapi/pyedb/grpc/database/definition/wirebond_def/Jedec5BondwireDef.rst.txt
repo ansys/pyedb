@@ -1,0 +1,177 @@
+
+
+
+
+
+
+:class:`Jedec5BondwireDef`
+==========================
+
+
+.. py:class:: pyedb.grpc.database.definition.wirebond_def.Jedec5BondwireDef(pedb, core=None)
+
+   Bases: :py:obj:`BondwireDef`
+
+
+   
+   Class representing a JEDEC 5 bondwire definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: Jedec5BondwireDef
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a new JEDEC 5 bondwire definition.
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~find_by_name`
+            - Find a JEDEC 5 bondwire definition by name.
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.wirebond_def import Jedec5BondwireDef
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(edb, name)
+   :classmethod:
+
+
+   
+   Create a new JEDEC 5 bondwire definition.
+
+
+   :Parameters:
+
+       **edb** : :class:`pyedb.edb`
+           Inherited AEDT object.
+
+       **name** : :class:`python:str`
+           Name of the JEDEC 5 bondwire definition.
+
+
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.definition.wirebond_def.Jedec5BondwireDef`
+           The created JEDEC 5 bondwire definition.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_by_name(edb, name)
+   :staticmethod:
+
+
+   
+   Find a JEDEC 5 bondwire definition by name.
+
+
+   :Parameters:
+
+       **edb** : :class:`pyedb.edb`
+           Inherited AEDT object.
+
+       **name** : :class:`python:str`
+           Name of the JEDEC 5 bondwire definition.
+
+
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.definition.wirebond_def.Jedec5BondwireDef` or :data:`python:None`
+           The found JEDEC 5 bondwire definition or None if not found.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

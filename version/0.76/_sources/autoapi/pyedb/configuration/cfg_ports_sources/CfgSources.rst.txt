@@ -1,0 +1,292 @@
+
+
+
+
+
+
+:class:`CfgSources`
+===================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgSources(pedb=None, sources_data=None)
+
+   
+   Collect current-source and voltage-source entries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgSources
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_pin_group_name`
+            - 
+          * - :py:attr:`~add_current_source`
+            - Add a current source to this configuration.
+          * - :py:attr:`~add_voltage_source`
+            - Add a voltage source to this configuration.
+          * - :py:attr:`~apply`
+            - Write all configured sources into the open EDB design.
+          * - :py:attr:`~get_data_from_db`
+            - Read existing sources from the open EDB design.
+          * - :py:attr:`~export_properties`
+            - Serialize all sources to plain dictionaries.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~sources`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgSources
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: sources
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_pin_group_name(src)
+
+.. py:method:: add_current_source(name: str, positive_terminal: dict, negative_terminal: dict, magnitude=0.001, impedance=None, reference_designator=None, distributed=False)
+
+   
+   Add a current source to this configuration.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique source name.
+
+       **positive_terminal** : :class:`python:dict`
+           Terminal-selector dictionary for the positive pole.  Use
+           :class:`TerminalInfo` factory methods to build it.
+
+       **negative_terminal** : :class:`python:dict`
+           Terminal-selector dictionary for the negative (reference) pole.
+
+       **magnitude** : :class:`python:float`, :obj:`optional`
+           Source current magnitude in amperes.  Default is ``0.001`` A.
+
+       **impedance** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Source impedance.  When *None* the solver default of ``5e7 Ω`` is
+           used.
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Component reference designator to associate with this source.
+
+       **distributed** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           When ``True`` one source element is created per pin.  Default is
+           ``False``.
+
+
+
+   :Returns:
+
+       :obj:`CfgSource`
+           The newly created source object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.sources.add_current_source(
+   ...     "isrc1",
+   ...     positive_terminal=TerminalInfo.pin_group("pg_VDD"),
+   ...     negative_terminal=TerminalInfo.pin_group("pg_GND"),
+   ...     magnitude=0.5,
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_voltage_source(name: str, positive_terminal: dict, negative_terminal: dict, magnitude=1.0, impedance=None, reference_designator=None, distributed=False)
+
+   
+   Add a voltage source to this configuration.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique source name.
+
+       **positive_terminal** : :class:`python:dict`
+           Terminal-selector dictionary for the positive pole.
+
+       **negative_terminal** : :class:`python:dict`
+           Terminal-selector dictionary for the negative (reference) pole.
+
+       **magnitude** : :class:`python:float`, :obj:`optional`
+           Source voltage in volts.  Default is ``1.0`` V.
+
+       **impedance** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Source impedance.  When *None* the solver default of ``1e-6 Ω``
+           is used.
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Component reference designator.
+
+       **distributed** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Create one source per pin when ``True``.  Default is ``False``.
+
+
+
+   :Returns:
+
+       :obj:`CfgSource`
+           The newly created source object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.sources.add_voltage_source(
+   ...     "vsrc1",
+   ...     positive_terminal=TerminalInfo.net("VDD"),
+   ...     negative_terminal=TerminalInfo.net("GND"),
+   ...     magnitude=1.8,
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Write all configured sources into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db()
+
+   
+   Read existing sources from the open EDB design.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`python:dict`
+           Serialized source payloads.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_properties()
+
+   
+   Serialize all sources to plain dictionaries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

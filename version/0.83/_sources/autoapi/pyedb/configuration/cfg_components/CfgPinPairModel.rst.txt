@@ -1,0 +1,134 @@
+
+
+
+
+
+
+:class:`CfgPinPairModel`
+========================
+
+
+.. py:class:: pyedb.configuration.cfg_components.CfgPinPairModel(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Represent one pin-pair RLC model entry.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPinPairModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~first_pin`
+            - 
+          * - :py:attr:`~second_pin`
+            - 
+          * - :py:attr:`~resistance`
+            - 
+          * - :py:attr:`~inductance`
+            - 
+          * - :py:attr:`~capacitance`
+            - 
+          * - :py:attr:`~is_parallel`
+            - 
+          * - :py:attr:`~resistance_enabled`
+            - 
+          * - :py:attr:`~inductance_enabled`
+            - 
+          * - :py:attr:`~capacitance_enabled`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_components import CfgPinPairModel
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: first_pin
+   :type:  str
+
+.. py:attribute:: second_pin
+   :type:  str
+
+.. py:attribute:: resistance
+   :type:  str | float | int | None
+   :value: None
+
+
+.. py:attribute:: inductance
+   :type:  str | float | int | None
+   :value: None
+
+
+.. py:attribute:: capacitance
+   :type:  str | float | int | None
+   :value: None
+
+
+.. py:attribute:: is_parallel
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: resistance_enabled
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: inductance_enabled
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: capacitance_enabled
+   :type:  bool
+   :value: False
+
+
+
+
+
+

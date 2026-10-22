@@ -1,0 +1,158 @@
+
+
+
+
+
+
+:class:`CfgBase`
+================
+
+
+.. py:class:: pyedb.configuration.cfg_common.CfgBase
+
+   
+   Provide common attribute export and assignment helpers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgBase
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_attributes`
+            - Return a filtered dictionary of instance attributes.
+          * - :py:attr:`~set_attributes`
+            - Set all non-protected attributes from this instance onto *pedb_object*.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~protected_attributes`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_common import CfgBase
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: protected_attributes
+   :value: ['pedb', 'pyedb_obj', 'api']
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_attributes(exclude=None)
+
+   
+   Return a filtered dictionary of instance attributes.
+
+
+   :Parameters:
+
+       **exclude** : :class:`python:str` or :class:`python:list` :obj:`of` :class:`python:str`, :obj:`optional`
+           Attribute names to exclude in addition to the built-in
+           ``protected_attributes``.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Attribute name → value pairs, with ``None``, empty lists, and
+           empty dicts omitted, and private (``_``-prefixed) names excluded.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_attributes(pedb_object)
+
+   
+   Set all non-protected attributes from this instance onto *pedb_object*.
+
+
+   :Parameters:
+
+       **pedb_object** : :obj:`object`
+           Target object that must already expose the same attribute names.
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`AttributeError`
+           If an attribute returned by :meth:`get_attributes` is not present
+           on *pedb_object*.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

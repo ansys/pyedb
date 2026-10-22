@@ -1,0 +1,151 @@
+
+
+
+
+
+
+:class:`WavePort`
+=================
+
+
+.. py:class:: pyedb.grpc.database.ports.ports.WavePort(pedb, edb_terminal)
+
+   Bases: :py:obj:`pyedb.grpc.database.terminal.edge_terminal.EdgeTerminal`
+
+
+   
+   Manages wave port properties.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           EDB object from the ``Edblib`` library.
+
+       **edb_object** : :obj:`Ansys.Ansoft.Edb.Cell.Terminal.EdgeTerminal`
+           Edge terminal instance from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   This example shows how to access the ``WavePort`` class.
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("myaedb.aedb")
+   >>> exc = edb.ports
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: WavePort
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~deembed`
+            - Whether deembed is active.
+          * - :py:attr:`~deembed_length`
+            - Deembed Length.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.ports.ports import WavePort
+
+Property detail
+---------------
+
+.. py:property:: deembed
+   :type: bool
+
+
+   
+   Whether deembed is active.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: deembed_length
+   :type: float
+
+
+   
+   Deembed Length.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           deembed value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

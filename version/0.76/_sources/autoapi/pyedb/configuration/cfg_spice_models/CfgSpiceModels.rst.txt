@@ -1,0 +1,143 @@
+
+
+
+
+
+
+:class:`CfgSpiceModels`
+=======================
+
+
+.. py:class:: pyedb.configuration.cfg_spice_models.CfgSpiceModels(pdata=None, data=None, path_lib=None)
+
+   
+   Collect SPICE model assignments for serialization.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgSpiceModels
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_list`
+            - Serialize all SPICE models to a list of dictionaries.
+          * - :py:attr:`~add`
+            - Add a SPICE model assignment.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~path_libraries`
+            - 
+          * - :py:attr:`~models`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_spice_models import CfgSpiceModels
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: path_libraries
+   :value: None
+
+
+.. py:attribute:: models
+
+
+
+Method detail
+-------------
+
+.. py:method:: to_list()
+
+   
+   Serialize all SPICE models to a list of dictionaries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add(name: str, component_definition: str, file_path: str, sub_circuit_name: str = '', apply_to_all: bool = True, components=None, terminal_pairs=None)
+
+   
+   Add a SPICE model assignment.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

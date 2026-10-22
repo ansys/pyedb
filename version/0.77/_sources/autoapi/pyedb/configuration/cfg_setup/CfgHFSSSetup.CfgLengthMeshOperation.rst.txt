@@ -1,0 +1,124 @@
+
+
+
+
+
+
+:class:`CfgLengthMeshOperation`
+===============================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgLengthMeshOperation(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Mesh operation export/import payload.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgLengthMeshOperation
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~mesh_operation_type`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~max_elements`
+            - 
+          * - :py:attr:`~max_length`
+            - 
+          * - :py:attr:`~restrict_length`
+            - 
+          * - :py:attr:`~refine_inside`
+            - 
+          * - :py:attr:`~nets_layers_list`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup.CfgHFSSSetup import CfgLengthMeshOperation
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: mesh_operation_type
+   :type:  str
+   :value: None
+
+
+.. py:attribute:: name
+   :type:  str
+   :value: None
+
+
+.. py:attribute:: max_elements
+   :type:  int | str | None
+   :value: None
+
+
+.. py:attribute:: max_length
+   :type:  float | str | None
+   :value: None
+
+
+.. py:attribute:: restrict_length
+   :type:  bool | None
+   :value: None
+
+
+.. py:attribute:: refine_inside
+   :type:  bool | None
+   :value: None
+
+
+.. py:attribute:: nets_layers_list
+   :type:  dict[str, list]
+   :value: None
+
+
+
+
+
+

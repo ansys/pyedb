@@ -1,0 +1,111 @@
+
+
+
+
+
+
+:class:`XmlMaterialProperty`
+============================
+
+
+.. py:class:: pyedb.xml_parser.xml_stackup.XmlMaterialProperty(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Represents a material property value in the XML stackup.
+
+
+   :Parameters:
+
+       **value** : :class:`python:float`, :obj:`optional`
+           Numerical value of the material property. The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: XmlMaterialProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~value`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.xml_parser.xml_stackup import XmlMaterialProperty
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: value
+   :type:  float | None
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+

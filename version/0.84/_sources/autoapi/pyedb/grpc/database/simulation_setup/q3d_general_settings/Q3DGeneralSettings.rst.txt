@@ -1,0 +1,252 @@
+
+
+
+
+
+
+:class:`Q3DGeneralSettings`
+===========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.q3d_general_settings.Q3DGeneralSettings(pedb, core: ansys.edb.core.simulation_setup.q3d_simulation_settings.Q3DGeneralSettings)
+
+
+.. py:currentmodule:: Q3DGeneralSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~do_ac`
+            - Whether to perform AC analysis.
+          * - :py:attr:`~do_cg`
+            - Whether to perform CG analysis.
+          * - :py:attr:`~do_dc`
+            - Whether to perform DC analysis.
+          * - :py:attr:`~do_dc_res_only`
+            - Whether to perform DC resistance only analysis.
+          * - :py:attr:`~save_fields`
+            - Whether to save fields.
+          * - :py:attr:`~solution_frequency`
+            - Solution frequency in Hz.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.q3d_general_settings import Q3DGeneralSettings
+
+Property detail
+---------------
+
+.. py:property:: do_ac
+   :type: bool
+
+
+   
+   Whether to perform AC analysis.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if AC analysis is to be performed, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: do_cg
+   :type: bool
+
+
+   
+   Whether to perform CG analysis.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if CG analysis is to be performed, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: do_dc
+   :type: bool
+
+
+   
+   Whether to perform DC analysis.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if DC analysis is to be performed, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: do_dc_res_only
+   :type: bool
+
+
+   
+   Whether to perform DC resistance only analysis.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if DC resistance only analysis is to be performed, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: save_fields
+   :type: bool
+
+
+   
+   Whether to save fields.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if fields are to be saved, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solution_frequency
+   :type: float
+
+
+   
+   Solution frequency in Hz.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Solution frequency in Hz.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

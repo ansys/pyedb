@@ -1,0 +1,153 @@
+
+
+
+
+
+
+:class:`AdaptivePass`
+=====================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.AdaptivePass
+
+   
+   Single adaptive solution pass with convergence metrics.
+
+
+
+   :Attributes:
+
+       **pass_nr** : :class:`python:int`
+           1-based pass index.
+
+       **freq_hz** : :class:`python:float`
+           Target frequency in hertz.
+
+       **tetrahedra** : :class:`python:int`
+           Number of tetrahedra at end of pass.
+
+       **matrix_size** : :class:`python:int`
+           Order of the FEM matrix.
+
+       **memory_mb** : :class:`python:float`
+           Memory used in megabytes.
+
+       **delta_s** : :class:`python:float`, :obj:`optional`
+           Maximum |ΔS| observed. The default is ``None`` until reported.
+
+       **converged** : :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if this pass triggered convergence.
+
+       **elapsed_sec** : :class:`python:int`
+           Wall time spent in this pass.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> pass1 = AdaptivePass(
+   ...     pass_nr=1,
+   ...     freq_hz=3e9,
+   ...     tetrahedra=10000,
+   ...     matrix_size=5000,
+   ...     memory_mb=256.0,
+   ...     delta_s=0.02,
+   ...     converged=False,
+   ...     elapsed_sec=120,
+   ... )
+   >>> pass1.pass_nr
+   1
+   >>> pass1.converged
+   False
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AdaptivePass
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pass_nr`
+            - 
+          * - :py:attr:`~freq_hz`
+            - 
+          * - :py:attr:`~tetrahedra`
+            - 
+          * - :py:attr:`~matrix_size`
+            - 
+          * - :py:attr:`~memory_mb`
+            - 
+          * - :py:attr:`~delta_s`
+            - 
+          * - :py:attr:`~converged`
+            - 
+          * - :py:attr:`~elapsed_sec`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import AdaptivePass
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: pass_nr
+   :type:  int
+
+.. py:attribute:: freq_hz
+   :type:  float
+
+.. py:attribute:: tetrahedra
+   :type:  int
+
+.. py:attribute:: matrix_size
+   :type:  int
+
+.. py:attribute:: memory_mb
+   :type:  float
+
+.. py:attribute:: delta_s
+   :type:  Optional[float]
+
+.. py:attribute:: converged
+   :type:  bool
+
+.. py:attribute:: elapsed_sec
+   :type:  int
+
+
+
+
+

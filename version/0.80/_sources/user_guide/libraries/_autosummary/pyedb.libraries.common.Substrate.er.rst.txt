@@ -1,0 +1,6 @@
+er
+==
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoattribute:: Substrate.er

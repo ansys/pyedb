@@ -1,0 +1,172 @@
+
+
+
+
+
+
+:class:`SiwaveLogParser`
+========================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.SiwaveLogParser(log_path: str | pathlib.Path)
+
+   
+   High-level parser that orchestrates all block parsers.
+
+   This class provides the main interface for parsing SIwave log files.
+   It coordinates multiple specialized parsers to extract version info,
+   batch metadata, simulation settings, warnings, and profile data.
+
+   :Parameters:
+
+       **log_path** : :class:`python:str` or :obj:`pathlib.Path`
+           Path to the SIwave log file to parse.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Basic usage:
+
+   >>> from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
+   >>> parser = SiwaveLogParser("/tmp/siwave.log")
+   >>> log = parser.parse()
+   >>> log.summary()
+   Project : my_design
+   Run by  : engineer
+   ...
+
+   Check for warnings:
+
+   >>> parser = SiwaveLogParser("simulation.log")
+   >>> log = parser.parse()
+   >>> if log.warnings:
+   ...     print(f"Found {len(log.warnings)} warnings")
+   ...     for w in log.warnings[:3]:
+   ...         print(f"  {w.category}: {w.message}")
+
+   Export to JSON:
+
+   >>> parser = SiwaveLogParser("simulation.log")
+   >>> log = parser.parse()
+   >>> log.to_json("output.json", indent=2)
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SiwaveLogParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Execute all sub-parsers and return a unified object.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~BLOCK_MAP`
+            - 
+          * - :py:attr:`~path`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: BLOCK_MAP
+   :type:  dict[str, type[BlockParser]]
+
+.. py:attribute:: path
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> ParsedSiwaveLog
+
+   
+   Execute all sub-parsers and return a unified object.
+
+
+
+
+
+   :Returns:
+
+       :obj:`ParsedSiwaveLog`
+           Structured representation of the entire log including version info,
+           batch metadata, settings, warnings, and profile data.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Parse and check completion:
+
+   >>> parser = SiwaveLogParser("siwave.log")
+   >>> log = parser.parse()
+   >>> if log.is_completed():
+   ...     print("Simulation completed successfully")
+   ... else:
+   ...     print("Simulation did not complete")
+
+   Access profile data:
+
+   >>> parser = SiwaveLogParser("siwave.log")
+   >>> log = parser.parse()
+   >>> for entry in log.profile:
+   ...     print(f"{entry.task}: {entry.real_time}")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
