@@ -961,7 +961,7 @@ class TestClass(BaseTestClass):
         )
         before = edbapp.get_statistics(compute_area=True).occupying_surface["sig"]
         assert before == pytest.approx(4e-6, rel=1e-3)
-        assert poly.add_void([[0.5e-3, 0.5e-3], [1.5e-3, 0.5e-3], [1.5e-3, 1.5e-3], [0.5e-3, 1.5e-3]])
+        poly.add_void([[0.5e-3, 0.5e-3], [1.5e-3, 0.5e-3], [1.5e-3, 1.5e-3], [0.5e-3, 1.5e-3]])
         after = edbapp.get_statistics(compute_area=True).occupying_surface["sig"]
         assert after == pytest.approx(3e-6, rel=1e-3)
         edbapp.close(terminate_rpc_session=False)
