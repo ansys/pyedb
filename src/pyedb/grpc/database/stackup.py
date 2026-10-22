@@ -2432,7 +2432,12 @@ class Stackup:
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        return self.load(file_path)
+        try:
+            self.core.import_from_control_file(file_path)
+            return True
+        except Exception as e:
+            logger.debug("Core XML import failed, falling back to stackup load: %s", e)
+            return self.load(file_path)
 
     def plot(
         self,
