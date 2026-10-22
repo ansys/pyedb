@@ -1085,20 +1085,37 @@ class Modeler(object):
         stat_model.stackup_thickness = round(self._pedb.stackup.get_layout_thickness(), 6)
         if evaluate_area:
             outline_surface = stat_model.layout_size[0] * stat_model.layout_size[1]
-            if net_list:
-                netlist = list(self._pedb.nets.nets.keys())
-                _poly = self._pedb.get_conformal_polygon_from_netlist(netlist)
-            else:
-                for layer in list(self._pedb.stackup.signal_layers.keys()):
-                    surface = 0.0
-                    primitives = self._pedb.layout.primitives_by_layer[layer]
-                    for prim in primitives:
-                        if prim.primitive_type.name == "PATH":
-                            surface += Path(self._pedb, prim).length * self._pedb.value(prim.cast().width)
-                        if prim.primitive_type.name == "POLYGON":
-                            surface += prim.polygon_data.area()
-                            stat_model.occupying_surface[layer] = round(surface, 6)
-                            stat_model.occupying_ratio[layer] = round(surface / outline_surface, 6)
+            net_filter = set(net_list) if net_list else None
+            surfaces = {layer: 0.0 for layer in self._pedb.stackup.signal_layers.keys()}
+            # Single pass over raw core primitives; voids are accounted through their parent primitive.
+            for prim in self._pedb.layout.core.primitives:
+                if prim.is_void:
+                    continue
+                ptype = prim.primitive_type.name
+                if ptype not in ("PATH", "POLYGON", "RECTANGLE", "CIRCLE"):
+                    continue
+                layer = prim.layer.name
+                if layer not in surfaces:
+                    continue
+                if net_filter is not None and prim.net.name not in net_filter:
+                    continue
+                try:
+                    if ptype == "PATH":
+                        path = Path(self._pedb, prim)
+                        area = float(path.length) * float(path.width)
+                    else:
+                        area = prim.cast().polygon_data.area()
+                        for void in prim.voids:
+                            void_data = void.cast().polygon_data
+                            if void_data is not None:
+                                area -= void_data.area()
+                except Exception as exc:  # pragma: no cover - defensive against gRPC server errors
+                    self._pedb.logger.debug(f"Skipping primitive in area computation: {exc}")
+                    continue
+                surfaces[layer] += area
+            for layer, surface in surfaces.items():
+                stat_model.occupying_surface[layer] = round(surface, 6)
+                stat_model.occupying_ratio[layer] = round(surface / outline_surface, 6) if outline_surface else 0.0
         return stat_model
 
     def create_bondwire(
