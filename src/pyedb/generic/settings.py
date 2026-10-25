@@ -336,7 +336,7 @@ class Settings(object):
             raise RuntimeError("No version of AEDT is found.")
 
         if len(self.INSTALLED_VERSIONS):
-            for i in sorted([float(i) for i in standard_versions], reverse=True):
+            for i in sorted([float(i) for i in self.INSTALLED_VERSIONS], reverse=True):
                 if i <= self.CURRENT_STABLE_AEDT_VERSION:
                     self.LATEST_VERSION = str(i)
                     break
