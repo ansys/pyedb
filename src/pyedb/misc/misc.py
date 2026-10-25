@@ -95,6 +95,7 @@ def installed_versions() -> dict[str, str]:
             return_dict[v_key] = os.environ[version_env_var]
         except Exception:  # pragma: no cover
             from pyedb.generic.settings import settings
+
             settings.logger.debug(f"Failed to parse version and release from {current_version_id}")
     return return_dict
 

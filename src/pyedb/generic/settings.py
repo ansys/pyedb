@@ -27,7 +27,7 @@ import sys
 import time
 import warnings
 
-from pyedb.misc.misc import installed_versions, current_student_version
+from pyedb.misc.misc import current_student_version, installed_versions
 
 
 class Settings(object):
@@ -330,7 +330,7 @@ class Settings(object):
         self.INSTALLED_CLIENT_VERSIONS = client_versions
 
         self.INSTALLED_VERSIONS = installed_versions()
-        self.INSTALLED_STUDENT_VERSIONS = {i:j for i,j in self.INSTALLED_VERSIONS.items() if i.endswith("SV")}
+        self.INSTALLED_STUDENT_VERSIONS = {i: j for i, j in self.INSTALLED_VERSIONS.items() if i.endswith("SV")}
 
         if not self.INSTALLED_VERSIONS and not self.INSTALLED_STUDENT_VERSIONS and not self.INSTALLED_CLIENT_VERSIONS:
             raise RuntimeError("No version of AEDT is found.")
