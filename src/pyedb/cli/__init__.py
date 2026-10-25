@@ -28,6 +28,8 @@ from pathlib import Path
 import subprocess  # nosec B404
 import sys
 
+from pyedb.misc.misc import get_anstranslator
+
 try:
     import typer
 except ImportError as e:  # pragma: no cover
@@ -511,3 +513,83 @@ app.add_typer(export_app, name="export")
 app.add_typer(config_app, name="config")
 
 __all__ = ["app"]
+
+
+@app.command("anstranslator")
+def anstranslator(
+    input_file: str = typer.Argument(..., help="Path to the design file to translate."),
+    control_file: str = typer.Option(None, "--control", "-c", help="Path to control file (*.xml)."),
+    input_format: str = typer.Option(
+        None, "--format", "-i", help="Input file format (AutoCAD, GDSII, Extracta, IPC2581, ODB++, Gerber, anfv2)."
+    ),
+    log_file: str = typer.Option(None, "--log", "-l", help="Path to log file (*.log)."),
+    output_format: str = typer.Option(None, "--output-format", "-of", help="Output format (edb or ControlFile)."),
+    technology_file: str = typer.Option(
+        None, "--tech", "-t", help="Technology file (*.layermap, *.ircx, *.vlc.tech, or *.itf)."
+    ),
+    filter_file: str = typer.Option(None, "--filter", "-f", help="Layer filter file (*.ircx, *.itf, or *.vlc.tech)."),
+    gds_mapping_file: str = typer.Option(None, "--gds-map", "-g", help="GDS layer mapping file (*.map)."),
+    anfv2_cmp_file: str = typer.Option(None, "--anfv2-cmp", "-a", help="ANFV2 component file (*.cmp)."),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose logging."),
+    translator_version: str = typer.Option(None, "--version", help="AnsTranslator executable version."),
+) -> None:
+    """Run AnsTranslator to convert design files to EDB format.
+
+    Supports formats: AutoCAD, GDSII, Extracta, IPC2581, ODB++, Gerber, anfv2.
+    """
+
+    def _run() -> None:
+        input_path = common.normalize_path(input_file)
+        os.chdir(str(Path(input_path).parent))  # Change working directory for relative paths
+
+        if not Path(input_path).exists():
+            raise RuntimeError(f"Input file '{input_path}' does not exist.")
+
+        # Get AnsTranslator executable path
+        anstranslator_exe = get_anstranslator(translator_version)
+
+        # Construct AnsTranslator command
+        cmd = [anstranslator_exe, input_path]
+
+        if control_file:
+            cmd.append('-c="{}"'.format(common.normalize_path(control_file)))
+        if input_format:
+            cmd.append(f"-i={input_format}")
+        if log_file:
+            cmd.append('-l="{}"'.format(common.normalize_path(log_file)))
+        if output_format:
+            cmd.append(f"-o={output_format}")
+        if technology_file:
+            cmd.append('-t="{}"'.format(common.normalize_path(technology_file)))
+        if filter_file:
+            cmd.append('-f="{}"'.format(common.normalize_path(filter_file)))
+        if gds_mapping_file:
+            cmd.append('-g="{}"'.format(common.normalize_path(gds_mapping_file)))
+        if anfv2_cmp_file:
+            cmd.append('-a="{}"'.format(common.normalize_path(anfv2_cmp_file)))
+        if verbose:
+            cmd.append("-v")
+
+        # Execute translator
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True)  # nosec
+            if common.json_mode:
+                data = {
+                    "translated": True,
+                    "input_file": input_path,
+                    "stdout": result.stdout if result.stdout else None,
+                }
+                common.print_output(data=data)
+            else:
+                if result.stdout:
+                    typer.echo(result.stdout)
+                typer.secho("Translation completed successfully", fg="green")
+        except subprocess.CalledProcessError as e:  # nosec
+            error_msg = f"AnsTranslator failed: {e.stderr if e.stderr else str(e)}"
+            if common.json_mode:
+                common.print_output(error=error_msg)
+            else:
+                typer.secho(f"Error: {error_msg}", fg="red")
+            raise typer.Exit(code=1) from e
+
+    common.run_with_error_handling(_run)
