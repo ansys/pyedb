@@ -27,6 +27,8 @@ import sys
 import time
 import warnings
 
+from pyedb.misc.misc import installed_versions, current_student_version
+
 
 class Settings(object):
     """Manages all PyEDB environment variables and global settings."""
@@ -309,11 +311,8 @@ class Settings(object):
         This method returns a dictionary, with the version as the key and the installation path
         as the value.
         """
-        version_pattern = re.compile(r"^(ANSYSEM_ROOT|ANSYSEM_PY_CLIENT_ROOT|ANSYSEMSV_ROOT)\d{3}$")
+        version_pattern = re.compile(r"^(ANSYSEM_PY_CLIENT_ROOT)\d{3}$")
         env_list = sorted([x for x in os.environ if version_pattern.match(x)], reverse=True)
-        if not env_list:  # pragma: no cover
-            warnings.warn("No installed versions of AEDT are found in the system environment variables.")
-            return
 
         aedt_system_env_variables = {i: os.environ[i] for i in env_list}
 
@@ -325,18 +324,16 @@ class Settings(object):
             version_id = var_name[-3:]
             version, release = version_id[0:2], version_id[2]
             version_name = f"20{version}.{release}"
-            if "ANSYSEM_ROOT" in var_name:
-                standard_versions[version_name] = aedt_path
-            elif "ANSYSEM_PY_CLIENT_ROOT" in var_name:
+
+            if "ANSYSEM_PY_CLIENT_ROOT" in var_name:
                 client_versions[version_name] = aedt_path
-            else:
-                student_versions[version_name] = aedt_path
-        self.INSTALLED_VERSIONS = standard_versions
-        self.INSTALLED_STUDENT_VERSIONS = student_versions
         self.INSTALLED_CLIENT_VERSIONS = client_versions
 
+        self.INSTALLED_VERSIONS = installed_versions()
+        self.INSTALLED_STUDENT_VERSIONS = {i:j for i,j in self.INSTALLED_VERSIONS.items() if i.endswith("SV")}
+
         if not self.INSTALLED_VERSIONS and not self.INSTALLED_STUDENT_VERSIONS and not self.INSTALLED_CLIENT_VERSIONS:
-            raise RuntimeError("No stable version of AEDT is found.")
+            raise RuntimeError("No version of AEDT is found.")
 
         if len(self.INSTALLED_VERSIONS):
             for i in sorted([float(i) for i in standard_versions], reverse=True):
