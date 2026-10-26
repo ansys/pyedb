@@ -317,7 +317,6 @@ class Settings(object):
         aedt_system_env_variables = {i: os.environ[i] for i in env_list}
 
         client_versions = {}
-        student_versions = {}
         # version_list is ordered: first normal versions, then client versions, finally student versions
         for var_name, aedt_path in aedt_system_env_variables.items():
             version_id = var_name[-3:]
@@ -328,8 +327,9 @@ class Settings(object):
                 client_versions[version_name] = aedt_path
         self.INSTALLED_CLIENT_VERSIONS = client_versions
 
-        self.INSTALLED_VERSIONS = installed_versions()
-        self.INSTALLED_STUDENT_VERSIONS = {i: j for i, j in self.INSTALLED_VERSIONS.items() if i.endswith("SV")}
+        all_versions = installed_versions()
+        self.INSTALLED_VERSIONS = {i: j for i, j in all_versions.items() if not i.endswith("SV")}
+        self.INSTALLED_STUDENT_VERSIONS = {i: j for i, j in all_versions.items() if i.endswith("SV")}
 
         if not self.INSTALLED_VERSIONS and not self.INSTALLED_STUDENT_VERSIONS and not self.INSTALLED_CLIENT_VERSIONS:
             raise RuntimeError("No version of AEDT is found.")
@@ -343,7 +343,7 @@ class Settings(object):
                 warnings.warn("No stable version of AEDT is found.", stacklevel=2)
 
         if len(self.INSTALLED_STUDENT_VERSIONS):
-            self.LATEST_STUDENT_VERSION = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
+            self.LATEST_STUDENT_VERSION = max(self.INSTALLED_STUDENT_VERSIONS.keys(), key=lambda x: tuple(map(int, x.rstrip("SV").split("."))))
 
     @property
     def aedt_installation_path(self):

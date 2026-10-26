@@ -44,12 +44,12 @@ def test_general():
         "2025.1": "/fake/path251",
     }
     assert settings.INSTALLED_STUDENT_VERSIONS == {
-        "2025.2": "/fake/pathSV252",
-        "2025.1": "/fake/pathSV251",
+        "2025.2SV": "/fake/pathSV252",
+        "2025.1SV": "/fake/pathSV251",
     }
     assert settings.INSTALLED_CLIENT_VERSIONS == {"2025.2": "/fake/path_py_client"}
     assert settings.LATEST_VERSION == "2025.2"
-    assert settings.LATEST_STUDENT_VERSION == "2025.2"
+    assert settings.LATEST_STUDENT_VERSION == "2025.2SV"
     assert settings.aedt_installation_path == "/fake/path251"
 
 
