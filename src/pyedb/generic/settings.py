@@ -340,7 +340,9 @@ class Settings(object):
                 warnings.warn("No stable version of AEDT is found.", stacklevel=2)
 
         if len(self.INSTALLED_STUDENT_VERSIONS):
-            self.LATEST_STUDENT_VERSION = max(self.INSTALLED_STUDENT_VERSIONS.keys(), key=lambda x: tuple(map(int, x.rstrip("SV").split("."))))
+            self.LATEST_STUDENT_VERSION = max(
+                self.INSTALLED_STUDENT_VERSIONS.keys(), key=lambda x: tuple(map(int, x.rstrip("SV").split(".")))
+            )
 
     @property
     def aedt_installation_path(self):
