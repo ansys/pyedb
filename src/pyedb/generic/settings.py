@@ -316,7 +316,6 @@ class Settings(object):
 
         aedt_system_env_variables = {i: os.environ[i] for i in env_list}
 
-        standard_versions = {}
         client_versions = {}
         student_versions = {}
         # version_list is ordered: first normal versions, then client versions, finally student versions
