@@ -545,51 +545,38 @@ def anstranslator(
         if not Path(input_path).exists():
             raise RuntimeError(f"Input file '{input_path}' does not exist.")
 
-        # Get AnsTranslator executable path
         anstranslator_exe = get_anstranslator(translator_version)
-
-        # Construct AnsTranslator command
         cmd = [anstranslator_exe, input_path]
 
-        if control_file:
-            cmd.append('-c="{}"'.format(common.normalize_path(control_file)))
+        # Add path-based options (with normalization)
+        path_options = [
+            (control_file, '-c="{}"'),
+            (log_file, '-l="{}"'),
+            (technology_file, '-t="{}"'),
+            (filter_file, '-f="{}"'),
+            (gds_mapping_file, '-g="{}"'),
+            (anfv2_cmp_file, '-a="{}"'),
+        ]
+        for opt_value, opt_fmt in path_options:
+            if opt_value:
+                cmd.append(opt_fmt.format(common.normalize_path(opt_value)))
+
+        # Add format-only options
         if input_format:
             cmd.append(f"-i={input_format}")
-        if log_file:
-            cmd.append('-l="{}"'.format(common.normalize_path(log_file)))
         if output_format:
             cmd.append(f"-o={output_format}")
-        if technology_file:
-            cmd.append('-t="{}"'.format(common.normalize_path(technology_file)))
-        if filter_file:
-            cmd.append('-f="{}"'.format(common.normalize_path(filter_file)))
-        if gds_mapping_file:
-            cmd.append('-g="{}"'.format(common.normalize_path(gds_mapping_file)))
-        if anfv2_cmp_file:
-            cmd.append('-a="{}"'.format(common.normalize_path(anfv2_cmp_file)))
         if verbose:
             cmd.append("-v")
 
-        # Execute translator
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)  # nosec
-            if common.json_mode:
-                data = {
-                    "translated": True,
-                    "input_file": input_path,
-                    "stdout": result.stdout if result.stdout else None,
-                }
-                common.print_output(data=data)
-            else:
-                if result.stdout:
-                    typer.echo(result.stdout)
+            if result.stdout:
+                typer.echo(result.stdout)
                 typer.secho("Translation completed successfully", fg="green")
         except subprocess.CalledProcessError as e:  # nosec
             error_msg = f"AnsTranslator failed: {e.stderr if e.stderr else str(e)}"
-            if common.json_mode:
-                common.print_output(error=error_msg)
-            else:
-                typer.secho(f"Error: {error_msg}", fg="red")
+            typer.secho(f"Error: {error_msg}", fg="red")
             raise typer.Exit(code=1) from e
 
     common.run_with_error_handling(_run)
