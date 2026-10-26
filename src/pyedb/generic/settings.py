@@ -27,7 +27,7 @@ import sys
 import time
 import warnings
 
-from pyedb.misc.misc import current_student_version, installed_versions
+from pyedb.misc.misc import installed_versions
 
 
 class Settings(object):
