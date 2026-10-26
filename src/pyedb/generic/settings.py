@@ -331,9 +331,6 @@ class Settings(object):
         self.INSTALLED_VERSIONS = installed_versions()
         self.INSTALLED_STUDENT_VERSIONS = {i: j for i, j in self.INSTALLED_VERSIONS.items() if i.endswith("SV")}
 
-        if not self.INSTALLED_VERSIONS and not self.INSTALLED_STUDENT_VERSIONS and not self.INSTALLED_CLIENT_VERSIONS:
-            raise RuntimeError("No version of AEDT is found.")
-
         if len(self.INSTALLED_VERSIONS):
             for i in sorted([float(i) for i in self.INSTALLED_VERSIONS], reverse=True):
                 if i <= self.CURRENT_STABLE_AEDT_VERSION:

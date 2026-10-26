@@ -20,9 +20,53 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import os
+import subprocess
+import sys
 from unittest.mock import patch
 
+import pytest
+
 from pyedb.generic.settings import Settings
+
+
+@pytest.mark.unit
+def test_no_installed_versions(monkeypatch):
+    for name in os.environ:
+        if name.startswith(("ANSYSEM_ROOT", "ANSYSEMSV_ROOT", "ANSYSEM_PY_CLIENT_ROOT")):
+            monkeypatch.delenv(name)
+
+    with pytest.warns(UserWarning, match="No installed versions of AEDT"):
+        settings = Settings()
+
+    assert settings.INSTALLED_VERSIONS == {}
+    assert settings.INSTALLED_STUDENT_VERSIONS == {}
+    assert settings.INSTALLED_CLIENT_VERSIONS == {}
+    assert settings.LATEST_VERSION is None
+    assert settings.LATEST_STUDENT_VERSION is None
+    assert settings.logger is not None
+
+    settings.specified_version = "2026.1"
+    with pytest.raises(RuntimeError, match="Version 2026.1 is not installed"):
+        _ = settings.aedt_installation_path
+
+
+@pytest.mark.unit
+def test_import_without_aedt():
+    env = {
+        name: value
+        for name, value in os.environ.items()
+        if not name.startswith(("ANSYSEM_ROOT", "ANSYSEMSV_ROOT", "ANSYSEM_PY_CLIENT_ROOT"))
+    }
+    result = subprocess.run(
+        [sys.executable, "-c", "import pyedb; assert pyedb.__version__; assert callable(pyedb.Edb)"],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
+
 
 os_environ = {
     "ANSYSEM_ROOT251": "/fake/path251",
