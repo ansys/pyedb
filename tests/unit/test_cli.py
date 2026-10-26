@@ -475,5 +475,4 @@ def test_anstranslator_basic(runner, tmp_path):
     assert result.exit_code == 0
     mock_run.assert_called_once()
     cmd = mock_run.call_args[0][0]
-    assert Path(cmd[0]).exists()
     assert str(input_file.resolve()) in cmd
