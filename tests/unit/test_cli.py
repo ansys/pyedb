@@ -462,3 +462,17 @@ def test_attach_opens_interactive_console_namespace(runner, tmp_path, monkeypatc
     assert "save" in captured["local"]
     assert "export_hfss" in captured["local"]
     assert FakeEdb.instances[-1].closed is True
+
+
+def test_anstranslator_basic(runner, tmp_path):
+    """Test anstranslator with input file."""
+    input_file = tmp_path / "design.gds"
+    input_file.write_text("gds content", encoding="utf-8")
+
+    with patch.object(_subprocess, "run", return_value=_make_subprocess_result()) as mock_run:
+        result = runner.invoke(app, ["anstranslator", str(input_file), "--version", "2026.1"])
+
+    assert result.exit_code == 0
+    mock_run.assert_called_once()
+    cmd = mock_run.call_args[0][0]
+    assert str(input_file.resolve()) in cmd

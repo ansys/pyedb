@@ -25,8 +25,6 @@
 import os
 import warnings
 
-from pyedb.generic.settings import settings
-
 
 def list_installed_ansysem() -> list[str]:
     """Return a list of installed AEDT versions on ``ANSYSEM_ROOT``.
@@ -96,6 +94,8 @@ def installed_versions() -> dict[str, str]:
                 v_key = "20{0}.{1}".format(version, release)
             return_dict[v_key] = os.environ[version_env_var]
         except Exception:  # pragma: no cover
+            from pyedb.generic.settings import settings
+
             settings.logger.debug(f"Failed to parse version and release from {current_version_id}")
     return return_dict
 
@@ -142,3 +142,32 @@ def current_student_version() -> str:
         if "SV" in version_key:
             return version_key
     return ""
+
+
+def get_anstranslator(version: str | None = None) -> str:
+    """Get the path to the ANSTRANSLATOR executable for a given AEDT version.
+
+    Parameters
+    ----------
+    version : str, optional
+        AEDT version string (e.g., '2024.1'). If not specified, the current installed version is used.
+
+    Returns
+    -------
+    str
+        Path to the ANSTRANSLATOR executable.
+
+    Examples
+    --------
+    >>> from pyedb.misc.misc import get_anstranslator
+    >>> translator_path = get_anstranslator()
+    >>> translator_path
+    'C:/Program Files/AnsysEM/v241/Win64/anstranslator'
+    >>> translator_path = get_anstranslator("2023.2")
+    >>> translator_path
+    'C:/Program Files/AnsysEM/v232/Win64/anstranslator'
+
+    """
+    version = current_version() if version is None else version
+    exe = "anstranslator" if os.name == "posix" else "anstranslator.exe"
+    return os.path.join(installed_versions()[version], exe)
