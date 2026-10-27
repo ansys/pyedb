@@ -116,6 +116,8 @@ class CfgPadstackInstance(CfgBase):
     hole_override_diameter: str | float | None = None
     solder_ball_layer: str | None = None
 
+    side_number: int | None = None
+
     @field_validator("rotation", mode="before")
     @staticmethod
     def _coerce_rotation_to_str(v: str | float | None) -> str | None:

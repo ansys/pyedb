@@ -74,7 +74,6 @@ class PadstackInstance(conn_obj.ConnObj):
         self._pedb = pedb
         self._bounding_box = []
         self._position = []
-        self._side_number = None
         self._pdef = None
         self._object_instance = None
 

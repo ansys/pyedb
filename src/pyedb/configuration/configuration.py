@@ -78,6 +78,8 @@ def set_padstack_instance(inst, inst_obj):
         inst_obj.backdrill_parameters = inst.backdrill_parameters.model_dump(exclude_none=True)
     if inst.solder_ball_layer:
         inst_obj.solderball_layer = inst_obj._pedb.stackup[inst.solder_ball_layer].core
+    if inst.side_number:
+        inst_obj.side_number = inst.side_number
 
     hole_override_enabled, hole_override_diam = inst_obj.get_hole_overrides()
     hole_override_enabled = inst.hole_override_enabled if inst.hole_override_enabled else hole_override_enabled
@@ -988,7 +990,7 @@ class Configuration:
                 solderball_layer = obj.solderball_layer
             except Exception:
                 solderball_layer = None
-            padstacks.add_padstack_instance(
+            inst = padstacks.add_padstack_instance(
                 name=obj.aedt_name,
                 is_pin=obj.is_pin,
                 definition=obj.padstack_definition,
@@ -1001,6 +1003,7 @@ class Configuration:
                 solder_ball_layer=solderball_layer,
                 layer_range=[obj.start_layer, obj.stop_layer],
             )
+            inst.side_number = obj.side_number
 
     @execution_timer("Applying padstack definitions and instances")
     def apply_padstacks(self):

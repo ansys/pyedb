@@ -1608,6 +1608,7 @@ class TestClassPadstacks(BaseTestClass):
             hole_override_enabled=True,
             hole_override_diameter="0.5mm",
         )
+        cfg_pds.side_number = 8
         cfg_pds.backdrill_parameters.add_backdrill_to_layer(
             drill_to_layer="Inner3(Sig1)", diameter="0.5mm", stub_length="0.2mm", drill_from_bottom=False
         )
