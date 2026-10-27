@@ -47,17 +47,17 @@ geometry = [
     "scipy>=1.13,<2.0"
 ]
 graphics = [
-    "matplotlib>=3.5.0,<3.11"
+    "matplotlib>=3.5.0"
 ]
 analysis = [
-    "pandas>=1.1.0,<2.4",
+    "pandas>=1.1.0",
     "scikit-rf"
 ]
 all = [
     "ezdxf>=1.4.2",
     "scipy>=1.13,<2.0",
-    "matplotlib>=3.5.0,<3.11",
-    "pandas>=1.1.0,<2.4",
+    "matplotlib>=3.5.0",
+    "pandas>=1.1.0",
     "scikit-rf",
     "Rtree>=1.2.0",
     "shapely",
@@ -65,29 +65,11 @@ all = [
     "xmltodict",
 ]
 
-[tool.flit.module]
-name = "pyedb"
-
-[project.entry-points."pyaedt.cli"]
-antenna = "ansys.aedt.toolkits.antenna.cli:antenna_app"
-edb = "pyedb.cli:app"
-
-# uv configuration
-[tool.uv]
-compile-bytecode = true
-
 [dependency-groups]
 dev = [
-    "ruff>=0.4.0",
     { include-group = "doc" },
+    { include-group = "quality" },
     { include-group = "tests" },
-]
-tests = [
-    "mock>=5.1.0,<5.3",
-    "pytest>=7.4.0,<9.2",
-    "pytest-cov>=4.0.0,<7.2",
-    "pytest-xdist>=3.5.0,<3.9",
-    "pytest-rerunfailures>=14.0,<17",
 ]
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.10",
@@ -95,12 +77,12 @@ doc = [
     "imageio>=2.30.0,<2.39",
     "jupyterlab>=4.0.0,<4.7",
     "jupytext>=1.16.0,<1.20",
-    "matplotlib>=3.5.0,<3.11",
-    "nbsphinx>=0.9.0,<0.10",
+    "matplotlib>=3.5.0",
+    "nbsphinx>=0.9.0",
     "nbconvert<7.18",
     "numpydoc>=1.10.0",
-    "pandas>=1.1.0,<2.4",
-    "pypandoc>=1.10.0,<1.18",
+    "pandas>=1.1.0",
+    "pypandoc>=1.10.0",
     "recommonmark",
     "Rtree>=1.2.0",
     "shapely",
@@ -110,6 +92,22 @@ doc = [
     "sphinx-gallery>=0.14.0,<0.23",
     "sphinx_design>=0.4.0,<0.7",
 ]
+quality = [
+  "prek",
+  "ruff",
+  "ty",
+]
+tests = [
+    "mock>=5.1.0,<5.3",
+    "pytest>=7.4.0,<9.2",
+    "pytest-cov>=4.0.0,<7.2",
+    "pytest-xdist>=3.5.0,<3.9",
+    "pytest-rerunfailures>=14.0,<17",
+]
+
+[project.entry-points."pyaedt.cli"]
+antenna = "ansys.aedt.toolkits.antenna.cli:antenna_app"
+edb = "pyedb.cli:app"
 
 [project.urls]
 Bugs = "https://github.com/ansys/pyedb/issues"
@@ -117,6 +115,25 @@ Documentation = "https://edb.docs.pyansys.com"
 Source = "https://github.com/ansys/pyedb"
 Discussions = "https://github.com/ansys/pyedb/discussions"
 Releases = "https://github.com/ansys/pyedb/releases"
+
+[tool.flit.module]
+name = "pyedb"
+
+# uv configuration
+[tool.uv]
+compile-bytecode = true
+exclude-newer = "1 week"
+
+[tool.uv.exclude-newer-package]
+ansys-pythonnet = false
+ansys-sphinx-theme = false
+ansys-tools-common = false
+# NOTE: Temporary override to allow the certifi release fixing the eMudhra/emSign CA incident
+# (GHSA-6q48-6c7w-9gw2) despite the rolling exclude-newer window.
+# TODO: Remove this line after 2026-10-26, once "1 week" covers certifi 2026.10.19, then run `uv lock`.
+certifi = false
+prek = false
+grpcio = false
 
 [tool.ruff]
 line-length = 120
