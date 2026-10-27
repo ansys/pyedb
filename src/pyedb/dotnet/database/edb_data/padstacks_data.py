@@ -1442,7 +1442,6 @@ class EDBPadstackInstance(Connectable):
         super().__init__(_pedb, edb_padstackinstance)
         self._edb_padstackinstance = self._edb_object
         self._bounding_box = []
-        self._side_number = None
         self._object_instance = None
         self._position = []
         self._pdef = None
