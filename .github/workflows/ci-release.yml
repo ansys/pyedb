@@ -123,6 +123,13 @@ jobs:
         with:
           python-version: ${{ env.TESTS_VERSION }}
 
+      # Bootstrap from the PSF-published wheel and hash: an index-based upgrade
+      # would still rely on the old pip's compromised CA bundle.
+      - name: "Bootstrap pip with a safe certificate bundle"
+        shell: bash
+        run: |
+          python -m pip --disable-pip-version-check install --no-cache-dir --force-reinstall "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+
       - name: Install uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
@@ -177,6 +184,13 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.TESTS_VERSION }}
+
+      # Bootstrap from the PSF-published wheel and hash: an index-based upgrade
+      # would still rely on the old pip's compromised CA bundle.
+      - name: "Bootstrap pip with a safe certificate bundle"
+        shell: bash
+        run: |
+          python -m pip --disable-pip-version-check install --no-cache-dir --force-reinstall "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
 
       - name: Install uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
@@ -234,6 +248,13 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.TESTS_VERSION }}
+
+      # Bootstrap from the PSF-published wheel and hash: an index-based upgrade
+      # would still rely on the old pip's compromised CA bundle.
+      - name: "Bootstrap pip with a safe certificate bundle"
+        shell: bash
+        run: |
+          python -m pip --disable-pip-version-check install --no-cache-dir --force-reinstall "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
 
       - name: Install uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
@@ -294,6 +315,13 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.TESTS_VERSION }}
+
+      # Bootstrap from the PSF-published wheel and hash: an index-based upgrade
+      # would still rely on the old pip's compromised CA bundle.
+      - name: "Bootstrap pip with a safe certificate bundle"
+        shell: bash
+        run: |
+          python -m pip --disable-pip-version-check install --no-cache-dir --force-reinstall "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
 
       - name: Install uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
@@ -356,6 +384,13 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.TESTS_VERSION }}
+
+      # Bootstrap from the PSF-published wheel and hash: an index-based upgrade
+      # would still rely on the old pip's compromised CA bundle.
+      - name: "Bootstrap pip with a safe certificate bundle"
+        shell: bash
+        run: |
+          python -m pip --disable-pip-version-check install --no-cache-dir --force-reinstall "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
 
       - name: Install os packages
         run: |
@@ -424,6 +459,13 @@ jobs:
         with:
           python-version: ${{ env.TESTS_VERSION }}
 
+      # Bootstrap from the PSF-published wheel and hash: an index-based upgrade
+      # would still rely on the old pip's compromised CA bundle.
+      - name: "Bootstrap pip with a safe certificate bundle"
+        shell: bash
+        run: |
+          python -m pip --disable-pip-version-check install --no-cache-dir --force-reinstall "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+
       - name: Install os packages
         run: |
           sudo apt update
@@ -488,6 +530,13 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.TESTS_VERSION }}
+
+      # Bootstrap from the PSF-published wheel and hash: an index-based upgrade
+      # would still rely on the old pip's compromised CA bundle.
+      - name: "Bootstrap pip with a safe certificate bundle"
+        shell: bash
+        run: |
+          python -m pip --disable-pip-version-check install --no-cache-dir --force-reinstall "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
 
       - name: Install uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
@@ -578,6 +627,13 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      # Bootstrap from the PSF-published wheel and hash: an index-based upgrade
+      # would still rely on the old pip's compromised CA bundle.
+      - name: "Bootstrap pip with a safe certificate bundle"
+        shell: bash
+        run: |
+          python -m pip --disable-pip-version-check install --no-cache-dir --force-reinstall "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
 
       - name: Install uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
