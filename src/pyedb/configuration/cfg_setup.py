@@ -250,15 +250,75 @@ class CfgSetupAC(CfgSetupDC):
 
     freq_sweep: list[CfgFrequencySweep] | None = Field(default_factory=list)
 
-    def add_frequency_sweep(self, sweep: CfgFrequencySweep):
+    def append_frequency_sweep(self, sweep: CfgFrequencySweep):
         """Append a pre-built frequency sweep to this setup.
 
         Parameters
         ----------
         sweep : CfgFrequencySweep
-            Fully constructed sweep object.
+            Fully constructed sweep object (e.g. when round-tripping).
+
+        Returns
+        -------
+        CfgFrequencySweep
+            The appended sweep.
         """
         self.freq_sweep.append(sweep)
+        return sweep
+
+    def add_frequency_sweep(
+        self,
+        name: str,
+        sweep_type: str = "interpolation",
+        start=None,
+        stop=None,
+        step_or_count=None,
+        distribution: str = "linear_count",
+        **kwargs,
+    ):
+        """Create a frequency sweep and append it to this setup.
+
+        Parameters
+        ----------
+        name : str
+            Sweep name. For backward compatibility a pre-built
+            :class:`CfgFrequencySweep` is still accepted and forwarded to
+            :meth:`append_frequency_sweep`.
+        sweep_type : str, optional
+            ``"interpolation"`` (default) or ``"discrete"``.
+        start : str or float, optional
+            Inline range start frequency, e.g. ``"1GHz"``. When given,
+            *stop* and *step_or_count* are also required.
+        stop : str or float, optional
+            Inline range stop frequency.
+        step_or_count : str, float or int, optional
+            Point count (``"linear_count"``, ``"log_count"``) or step size
+            (``"linear_scale"``, ``"log_scale"``).
+        distribution : str, optional
+            Inline range distribution. Default is ``"linear_count"``.
+            Aliases such as ``"log count"`` or ``"logcount"`` are accepted;
+            ``"single"`` adds one point at *start*.
+        **kwargs
+            Forwarded to :class:`CfgFrequencySweep`, e.g.
+            ``enforce_passivity``.
+
+        Returns
+        -------
+        CfgFrequencySweep
+            The newly created sweep.
+
+        Examples
+        --------
+        >>> hfss.add_frequency_sweep("s1", start="1GHz", stop="20GHz", step_or_count=100)
+        >>> sw = hfss.add_frequency_sweep("s2")
+        >>> sw.add_linear_count_frequencies("1GHz", "10GHz", 100)
+        """
+        if isinstance(name, self.CfgFrequencySweep):
+            return self.append_frequency_sweep(name)
+        sweep = self.CfgFrequencySweep(name=name, sweep_type=sweep_type, **kwargs)
+        if start is not None:
+            _add_inline_range(sweep, start, stop, step_or_count, distribution)
+        return self.append_frequency_sweep(sweep)
 
 
 class CfgSIwaveACSetup(CfgSetupAC):
@@ -268,78 +328,6 @@ class CfgSIwaveACSetup(CfgSetupAC):
     use_si_settings: bool = Field(True, description="Use SI-Wave AC settings")
     si_slider_position: int = Field(1, description="SI slider position. Options are 0-speed, 1-balanced, 2-accuracy.")
     pi_slider_position: int = Field(1, description="PI Slider position. Options are 0-speed, 1-balanced, 2-accuracy.")
-
-    def add_frequency_sweep(
-        self,
-        name: CfgSetupAC.CfgFrequencySweep | str,
-        sweep_type: str = "interpolation",
-        start=None,
-        stop=None,
-        step_or_count=None,
-        distribution: str = "linear_count",
-        **kwargs,
-    ):
-        """Add a frequency sweep to this SIwave AC setup.
-
-        Parameters
-        ----------
-        name : CfgFrequencySweep or str
-            Either a pre-built :class:`CfgFrequencySweep` object (round-trip
-            use) or a name string for a new sweep.
-        sweep_type : str, optional
-            Sweep interpolation type.  Accepted values: ``"interpolation"``
-            (default) or ``"discrete"``.
-        start : str or float, optional
-            Inline range start frequency, e.g. ``"1kHz"``.  When provided,
-            *stop* and *step_or_count* are also required.
-        stop : str or float, optional
-            Inline range stop frequency, e.g. ``"1GHz"``.
-        step_or_count : str, float, or int, optional
-            Point count (for ``"linear_count"`` / ``"log_count"``) or step
-            size (for ``"linear_scale"`` / ``"log_scale"``).
-        distribution : str, optional
-            Frequency distribution.  Default is ``"linear_count"``.
-            Accepted values and aliases:
-
-            * ``"linear_count"`` / ``"linearcount"`` / ``"linear count"``
-            * ``"log_count"`` / ``"logcount"`` / ``"log count"``
-            * ``"linear_scale"`` / ``"linearscale"`` / ``"linear scale"``
-            * ``"log_scale"`` / ``"logscale"`` / ``"log scale"``
-            * ``"single"``
-        **kwargs
-            Additional keyword arguments forwarded to
-            :class:`CfgFrequencySweep` when *name* is a string.
-
-        Returns
-        -------
-        CfgFrequencySweep
-            The newly created (or passed-through) sweep object.
-
-        Examples
-        --------
-        Inline (single call):
-
-        siwave_ac.add_frequency_sweep(
-            "sw1",
-            start="1kHz",
-            stop="1GHz",
-            step_or_count=100,
-            distribution="log_count"
-        )
-
-        Chained ranges:
-
-        >>> sw = siwave_ac.add_frequency_sweep("sw2", sweep_type="interpolation")
-        >>> sw.add_linear_count_frequencies("1MHz", "500MHz", 50)
-        """
-        if isinstance(name, self.CfgFrequencySweep):
-            sweep = name
-        else:
-            sweep = self.CfgFrequencySweep(name=name, sweep_type=sweep_type, **kwargs)
-        if start is not None and not isinstance(name, self.CfgFrequencySweep):
-            _add_inline_range(sweep, start, stop, step_or_count, distribution)
-        self.freq_sweep.append(sweep)
-        return sweep
 
 
 class CfgSIwaveDCSetup(CfgSetupDC):
@@ -668,75 +656,6 @@ class CfgHFSSSetup(CfgSetupAC):
             )
         self.mesh_operations.append(mesh_op)
         return self
-
-    def add_frequency_sweep(
-        self,
-        name: CfgSetupAC.CfgFrequencySweep | str,
-        sweep_type: str = "interpolation",
-        start=None,
-        stop=None,
-        step_or_count=None,
-        distribution: str = "linear_count",
-        **kwargs,
-    ):
-        """
-        Add a frequency sweep to this HFSS setup.
-
-        Parameters
-        ----------
-        name : CfgFrequencySweep or str
-            Either a pre-built :class:`CfgFrequencySweep` object (round-trip
-            use) or a name string for a new sweep.
-        sweep_type : str, optional
-            Sweep interpolation type.  ``"interpolation"`` (default) or
-            ``"discrete"``.
-        start : str or float, optional
-            Inline range start frequency, e.g. ``"1GHz"``.  When supplied,
-            *stop* and *step_or_count* are also required.
-        stop : str or float, optional
-            Inline range stop frequency.
-        step_or_count : str, float, or int, optional
-            Point count (``"linear_count"``, ``"log_count"``) or step size
-            (``"linear_scale"``, ``"log_scale"``).
-        distribution : str, optional
-            Frequency distribution for the inline range.  Default is
-            ``"linear_count"``.
-        **kwargs
-            Extra keyword arguments forwarded to :class:`CfgFrequencySweep`
-            (e.g. ``enforce_passivity``, ``adv_dc_extrapolation``, …).
-
-        Returns
-        -------
-        CfgFrequencySweep
-            The newly created (or passed-through) sweep object.
-
-        Examples
-        --------
-        Inline — single call describes a complete sweep:
-
-        hfss.add_frequency_sweep(
-            "sweep1",
-            start="1GHz",
-            stop="20GHz",
-            step_or_count=100,
-            distribution="linear_count",
-            enforce_passivity=True
-        )
-
-        Chained — add multiple ranges to one sweep:
-
-        >>> sw = hfss.add_frequency_sweep("sweep2", sweep_type="interpolation")
-        >>> sw.add_linear_count_frequencies("1GHz", "10GHz", 100)
-        >>> sw.add_single_frequency("0Hz")
-        """
-        if isinstance(name, self.CfgFrequencySweep):
-            sweep = name
-        else:
-            sweep = self.CfgFrequencySweep(name=name, sweep_type=sweep_type, **kwargs)
-        if start is not None and not isinstance(name, self.CfgFrequencySweep):
-            _add_inline_range(sweep, start, stop, step_or_count, distribution)
-        self.freq_sweep.append(sweep)
-        return sweep
 
 
 class CfgSetups(CfgBaseModel):
