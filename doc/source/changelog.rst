@@ -9,6 +9,112 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.86.0 <https://github.com/ansys/pyedb/releases/tag/v0.86.0>`_ - October 27, 2026
+==================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Cli anstranlator
+          - `#2622 <https://github.com/ansys/pyedb/pull/2622>`_
+
+        * - Cfg via side number
+          - `#2628 <https://github.com/ansys/pyedb/pull/2628>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Xml stack import
+          - `#2611 <https://github.com/ansys/pyedb/pull/2611>`_
+
+        * - Grpc get_statistics(compute_area=True) fix
+          - `#2614 <https://github.com/ansys/pyedb/pull/2614>`_
+
+        * - Add_frequency_sweep cfg re-designed
+          - `#2624 <https://github.com/ansys/pyedb/pull/2624>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump black from 26.5.1 to 26.10.0
+          - `#2604 <https://github.com/ansys/pyedb/pull/2604>`_
+
+        * - Bump jupytext from 1.19.5 to 1.19.6
+          - `#2605 <https://github.com/ansys/pyedb/pull/2605>`_
+
+        * - Bump ruff from 0.16.10 to 0.17.0
+          - `#2606 <https://github.com/ansys/pyedb/pull/2606>`_
+
+        * - Bump actions/upload-artifact from 7.0.1 to 7.0.2
+          - `#2607 <https://github.com/ansys/pyedb/pull/2607>`_
+
+        * - Bump actions/download-artifact from 8.0.1 to 8.0.2
+          - `#2608 <https://github.com/ansys/pyedb/pull/2608>`_
+
+        * - Bump pydantic from 2.13.5 to 2.14.0
+          - `#2609 <https://github.com/ansys/pyedb/pull/2609>`_
+
+        * - Bump typer from 0.27.2 to 0.27.3
+          - `#2610 <https://github.com/ansys/pyedb/pull/2610>`_
+
+        * - Bump black from 26.10.0 to 26.10.1
+          - `#2616 <https://github.com/ansys/pyedb/pull/2616>`_
+
+        * - Bump nbconvert from 7.17.1 to 7.17.2
+          - `#2617 <https://github.com/ansys/pyedb/pull/2617>`_
+
+        * - Bump astral-sh/setup-uv from 10.2.0 to 10.3.0
+          - `#2618 <https://github.com/ansys/pyedb/pull/2618>`_
+
+        * - Bump ezdxf from 1.4.4 to 1.4.5
+          - `#2619 <https://github.com/ansys/pyedb/pull/2619>`_
+
+        * - Bump pydantic from 2.14.0 to 2.14.1
+          - `#2620 <https://github.com/ansys/pyedb/pull/2620>`_
+
+        * - Bump ruff from 0.17.0 to 0.17.1
+          - `#2621 <https://github.com/ansys/pyedb/pull/2621>`_
+
+        * - Bump ty from 0.0.89 to 0.0.90
+          - `#2627 <https://github.com/ansys/pyedb/pull/2627>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.85.0
+          - `#2602 <https://github.com/ansys/pyedb/pull/2602>`_
+
+        * - Bump release 0.86.dev0
+          - `#2603 <https://github.com/ansys/pyedb/pull/2603>`_
+
+        * - Pre-commit automatic update
+          - `#2612 <https://github.com/ansys/pyedb/pull/2612>`_, `#2623 <https://github.com/ansys/pyedb/pull/2623>`_
+
+        * - Update ansys/actions to v11.1.3 and upgrade uv.lock file
+          - `#2615 <https://github.com/ansys/pyedb/pull/2615>`_
+
+        * - Update lockfile and CI workflows
+          - `#2626 <https://github.com/ansys/pyedb/pull/2626>`_
+
+
 `0.85.0 <https://github.com/ansys/pyedb/releases/tag/v0.85.0>`_ - October 15, 2026
 ==================================================================================
 
