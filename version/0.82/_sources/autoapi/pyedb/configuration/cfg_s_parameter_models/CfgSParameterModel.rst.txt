@@ -1,0 +1,156 @@
+
+
+
+
+
+
+:class:`CfgSParameterModel`
+===========================
+
+
+.. py:class:: pyedb.configuration.cfg_s_parameter_models.CfgSParameterModel(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Represent one Touchstone model assignment for a component definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgSParameterModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~component_definition`
+            - 
+          * - :py:attr:`~file_path`
+            - 
+          * - :py:attr:`~reference_net`
+            - 
+          * - :py:attr:`~apply_to_all`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~reference_net_per_component`
+            - 
+          * - :py:attr:`~pin_order`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: name
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: component_definition
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: file_path
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: reference_net
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: apply_to_all
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: components
+   :type:  list[str]
+   :value: None
+
+
+.. py:attribute:: reference_net_per_component
+   :type:  dict[str, str]
+   :value: None
+
+
+.. py:attribute:: pin_order
+   :type:  Optional[Any]
+   :value: None
+
+
+
+
+
+

@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``q3d_general_settings.py`` module
+======================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.q3d_general_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: q3d_general_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.q3d_general_settings.Q3DGeneralSettings`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Q3DGeneralSettings</autoapi/pyedb/grpc/database/simulation_setup/q3d_general_settings/Q3DGeneralSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

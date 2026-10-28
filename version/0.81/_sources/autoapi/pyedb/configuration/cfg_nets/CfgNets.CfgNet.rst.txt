@@ -1,0 +1,164 @@
+
+
+
+
+
+
+:class:`CfgNet`
+===============
+
+
+.. py:class:: pyedb.configuration.cfg_nets.CfgNets.CfgNet(pedb, net_name: str)
+
+   
+   Represents a single net in the EDB layout with live session access.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`object`
+           Live EDB session.
+
+       **net_name** : :class:`python:str`
+           Name of the net in the EDB layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CfgNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_power_ground`
+            - bool: Whether this net is classified as power/ground.
+          * - :py:attr:`~classification`
+            - str: ``"power_ground"`` or ``"signal"`` based on the current EDB flag.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__repr__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_nets.CfgNets import CfgNet
+
+Property detail
+---------------
+
+.. py:property:: is_power_ground
+   :type: bool
+
+
+   
+   bool: Whether this net is classified as power/ground.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: classification
+   :type: str
+
+
+   
+   str: ``"power_ground"`` or ``"signal"`` based on the current EDB flag.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+
+
+Method detail
+-------------
+
+.. py:method:: __repr__() -> str
+
+
+
+

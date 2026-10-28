@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_components`` library
+==================================================
+
+.. py:module:: pyedb.configuration.cfg_components
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_components
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_components.CfgPinPairModel`
+            - Represent one pin-pair RLC model entry.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_components.CfgComponent`
+            - Fluent builder for a single component entry.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_components.CfgComponents`
+            - Fluent builder for the ``components`` configuration list.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgPinPairModel</autoapi/pyedb/configuration/cfg_components/CfgPinPairModel>
+    <span class="nf nf-cod-symbol_class"></span> CfgComponent</autoapi/pyedb/configuration/cfg_components/CfgComponent>
+    <span class="nf nf-cod-symbol_class"></span> CfgComponents</autoapi/pyedb/configuration/cfg_components/CfgComponents>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Build the ``components`` configuration section and its model helpers.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

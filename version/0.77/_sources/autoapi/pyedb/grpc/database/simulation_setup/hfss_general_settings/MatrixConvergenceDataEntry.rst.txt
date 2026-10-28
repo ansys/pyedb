@@ -1,0 +1,190 @@
+
+
+
+
+
+
+:class:`MatrixConvergenceDataEntry`
+===================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_general_settings.MatrixConvergenceDataEntry(pedb, core)
+
+
+.. py:currentmodule:: MatrixConvergenceDataEntry
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~mag_limit`
+            - Magnitude limit for the matrix convergence data entry.
+          * - :py:attr:`~phase_limit`
+            - Phase limit for the matrix convergence data entry.
+          * - :py:attr:`~port_1_name`
+            - Name of the first port.
+          * - :py:attr:`~port_2_name`
+            - Name of the second port.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_general_settings import MatrixConvergenceDataEntry
+
+Property detail
+---------------
+
+.. py:property:: mag_limit
+   :type: float
+
+
+   
+   Magnitude limit for the matrix convergence data entry.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Magnitude limit value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase_limit
+   :type: float
+
+
+   
+   Phase limit for the matrix convergence data entry.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Phase limit value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: port_1_name
+   :type: str
+
+
+   
+   Name of the first port.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           First port name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: port_2_name
+   :type: str
+
+
+   
+   Name of the second port.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Second port name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

@@ -1,0 +1,6 @@
+parse\_obj
+==========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: CopperBalance.parse_obj

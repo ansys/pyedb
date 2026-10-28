@@ -1,0 +1,74 @@
+
+
+
+
+
+
+The ``layers`` package
+==========================
+
+.. py:module:: pyedb.grpc.database.layers
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: layers
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.layers.layer`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.layers.stackup_layer`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> layer</autoapi/pyedb/grpc/database/layers/layer/index>
+    <span class="nf nf-fa-file"></span> stackup_layer</autoapi/pyedb/grpc/database/layers/stackup_layer/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

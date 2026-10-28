@@ -1,0 +1,6 @@
+model\_parametrized\_name
+=========================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: DiffPair.model_parametrized_name

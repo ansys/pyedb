@@ -1,0 +1,903 @@
+
+
+
+
+
+
+:class:`SIwaveProperties`
+=========================
+
+
+.. py:class:: pyedb.siwave_core.product_properties.SIwaveProperties
+
+
+.. py:currentmodule:: SIwaveProperties
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~PIN_GROUP`
+            - 
+          * - :py:attr:`~PART_NAME`
+            - 
+          * - :py:attr:`~REF_DES_NAME`
+            - 
+          * - :py:attr:`~PIN_NAME`
+            - 
+          * - :py:attr:`~INTER_COMPONENT_PIN_GROUP`
+            - 
+          * - :py:attr:`~DCIR_SIM_NAME`
+            - 
+          * - :py:attr:`~DCIR_INIT_MESH_MAX_EDGE_LEN`
+            - 
+          * - :py:attr:`~DCIR_MESH_BWS`
+            - 
+          * - :py:attr:`~DCIR_MESH_VIAS`
+            - 
+          * - :py:attr:`~DCIR_NUM_BW_FACETS`
+            - 
+          * - :py:attr:`~DCIR_NUM_VIA_FACETS`
+            - 
+          * - :py:attr:`~DCIR_ADAPTIVE_SOLVE`
+            - 
+          * - :py:attr:`~DCIR_MIN_NUM_PASSES`
+            - 
+          * - :py:attr:`~DCIR_MAX_NUM_PASSES`
+            - 
+          * - :py:attr:`~DCIR_LOCAL_REFINEMENT`
+            - 
+          * - :py:attr:`~DCIR_ENERGY_ERROR`
+            - 
+          * - :py:attr:`~DCIR_REFINE_BWS`
+            - 
+          * - :py:attr:`~DCIR_REFINE_VIAS`
+            - 
+          * - :py:attr:`~DCIR_PLOT_JV`
+            - 
+          * - :py:attr:`~DCIR_CKT_ELEM_CONTACT_R`
+            - 
+          * - :py:attr:`~DCIR_ICEPAK_TEMP_FILE_PATH`
+            - 
+          * - :py:attr:`~SOURCE_NEG_TERMINALS_TO_GROUND`
+            - 
+          * - :py:attr:`~SOURCE_POS_TERMINALS_TO_GROUND`
+            - 
+          * - :py:attr:`~DCIR_MIN_DC_PLANE_AREA_TO_MESH`
+            - 
+          * - :py:attr:`~DCIR_MIN_DC_VOID_AREA_TO_MESH`
+            - 
+          * - :py:attr:`~DCIR_COMPUTE_L`
+            - 
+          * - :py:attr:`~NUM_CPUS_TO_USE`
+            - 
+          * - :py:attr:`~USE_HPC_LICENSE`
+            - 
+          * - :py:attr:`~HPC_LICENSE_VENDOR`
+            - 
+          * - :py:attr:`~SYZ_COUPLING_COPLANE`
+            - 
+          * - :py:attr:`~SYZ_COUPLING_INTRA_PLANE`
+            - 
+          * - :py:attr:`~SYZ_COUPLING_SPLIT_PLANE`
+            - 
+          * - :py:attr:`~SYZ_COUPLING_CAVITY`
+            - 
+          * - :py:attr:`~SYZ_COUPLING_TRACE`
+            - 
+          * - :py:attr:`~SYZ_COUPLING_XTALK_THRESH`
+            - 
+          * - :py:attr:`~SY_ZMIN_VOID_MESH`
+            - 
+          * - :py:attr:`~SYZ_MESH_REFINEMENT`
+            - 
+          * - :py:attr:`~SYZ_TRACE_RETURN_CURRENT`
+            - 
+          * - :py:attr:`~SYZ_INCLUDE_SOURCE_PARASITICS`
+            - 
+          * - :py:attr:`~SYZ_USE_INF_GROUND_PLANE`
+            - 
+          * - :py:attr:`~SYZ_INF_GROUND_PLANE_DIST`
+            - 
+          * - :py:attr:`~SYZ_PERFORM_ERC`
+            - 
+          * - :py:attr:`~SYZ_EXCLUDE_NON_FUNCTIONAL_PADS`
+            - 
+          * - :py:attr:`~ICEPAK_SIM_NAME`
+            - 
+          * - :py:attr:`~ICEPAK_DC_SIM_NAME`
+            - 
+          * - :py:attr:`~ICEPAK_MESH_FIDELITY`
+            - 
+          * - :py:attr:`~ICEPAK_CAB_ABOVE_PERCENT`
+            - 
+          * - :py:attr:`~ICEPAK_CAB_BELOW_PERCENT`
+            - 
+          * - :py:attr:`~ICEPAK_CAB_HORIZ_PERCENT`
+            - 
+          * - :py:attr:`~ICEPAK_FLOW_STYLE`
+            - 
+          * - :py:attr:`~ICEPAK_FLOW_SPEED`
+            - 
+          * - :py:attr:`~ICEPAK_FLOW_DIR`
+            - 
+          * - :py:attr:`~ICEPAK_FLOW_TEMP`
+            - 
+          * - :py:attr:`~ICEPAK_COND_FLOW_SPEED_TOP`
+            - 
+          * - :py:attr:`~ICEPAK_COND_FLOW_SPEED_BOTTOM`
+            - 
+          * - :py:attr:`~ICEPAK_COND_FLOW_DIR_TOP`
+            - 
+          * - :py:attr:`~ICEPAK_COND_FLOW_DIR_BOTTOM`
+            - 
+          * - :py:attr:`~ICEPAK_COND_TEMP_TOP`
+            - 
+          * - :py:attr:`~ICEPAK_COND_TEMP_BOTTOM`
+            - 
+          * - :py:attr:`~ICEPAK_GRAV_X`
+            - 
+          * - :py:attr:`~ICEPAK_GRAV_Y`
+            - 
+          * - :py:attr:`~ICEPAK_GRAV_Z`
+            - 
+          * - :py:attr:`~ICEPAK_AMBIENT_TEMP`
+            - 
+          * - :py:attr:`~ICEPAK_COMPONENT_FILE`
+            - 
+          * - :py:attr:`~ICEPAK_BRD_OUTLINE_FIDELITY_MM`
+            - 
+          * - :py:attr:`~ICEPAK_USE_MINIMAL_COMP_DEFAULTS`
+            - 
+          * - :py:attr:`~PSI_AC_SIM_NAME`
+            - 
+          * - :py:attr:`~PSI_AC_SWEEP_STR`
+            - 
+          * - :py:attr:`~PSI_SYZ_SIM_NAME`
+            - 
+          * - :py:attr:`~PSI_SYZ_SWEEP_STR`
+            - 
+          * - :py:attr:`~PSI_SYZ_INTERPOLATING`
+            - 
+          * - :py:attr:`~PSI_SYZ_FAST_SWP`
+            - 
+          * - :py:attr:`~PSI_SYZ_ADAPTIVE_SAMPLING`
+            - 
+          * - :py:attr:`~PSI_SYZ_ENFORCE_DC`
+            - 
+          * - :py:attr:`~PSI_SYZ_PORT_TYPE`
+            - 
+          * - :py:attr:`~PSI_DISTRIBUTED`
+            - 
+          * - :py:attr:`~PSI_NUM_CPUS`
+            - 
+          * - :py:attr:`~PSI_USE_HPC`
+            - 
+          * - :py:attr:`~PSI_HPC_LICENSE_TYPE`
+            - 
+          * - :py:attr:`~PSI_SIM_SERVER_NAME`
+            - 
+          * - :py:attr:`~PSI_SIM_SERVER_PORT`
+            - 
+          * - :py:attr:`~PSI_SIMULATION_PREFERENCE`
+            - 
+          * - :py:attr:`~PSI_MODEL_TYPE`
+            - 
+          * - :py:attr:`~PSI_ENHANCED_BW_MODELING`
+            - 
+          * - :py:attr:`~PSI_SURFACE_ROUGHNESS_MODEL`
+            - 
+          * - :py:attr:`~PSI_RMS_ROUGHNESS`
+            - 
+          * - :py:attr:`~PSI_TEMP_WORKING_DIR`
+            - 
+          * - :py:attr:`~PSI_IGNORE_DUMMY_NETS`
+            - 
+          * - :py:attr:`~PSI_PERFORM_ERC`
+            - 
+          * - :py:attr:`~PSI_EXCLUDE_NONFUNCTIONAL_PADS`
+            - 
+          * - :py:attr:`~PSI_AUTO_NET_SELECT`
+            - 
+          * - :py:attr:`~PSI_IMPROVED_LOW_FREQ_RESIST`
+            - 
+          * - :py:attr:`~PSI_SMALL_HOLE_SIZE`
+            - 
+          * - :py:attr:`~PSI_SIGNAL_NET_ERROR_TOL`
+            - 
+          * - :py:attr:`~PSI_CONDUCTOR_MODELING`
+            - 
+          * - :py:attr:`~PSI_IMPROVED_METAL_LOSS`
+            - 
+          * - :py:attr:`~PSI_IMPROVED_DIELECTRIC_FILL`
+            - 
+          * - :py:attr:`~PSI_TOP_FILL_MATERIAL`
+            - 
+          * - :py:attr:`~PSI_BOTTOM_FILL_MATERIAL`
+            - 
+          * - :py:attr:`~PSI_PCB_MATERIAL`
+            - 
+          * - :py:attr:`~PSI_INCLUDE_METAL_PLANE1`
+            - 
+          * - :py:attr:`~PSI_INCLUDE_METAL_PLANE2`
+            - 
+          * - :py:attr:`~PSI_FLOAT_METAL_PLANE1`
+            - 
+          * - :py:attr:`~PSI_FLOAT_METAL_PLANE2`
+            - 
+          * - :py:attr:`~PSI_H1`
+            - 
+          * - :py:attr:`~PSI_H2`
+            - 
+          * - :py:attr:`~CPA_SIM_NAME`
+            - 
+          * - :py:attr:`~CPA_CHANNEL_SETUP`
+            - 
+          * - :py:attr:`~CPA_ESD_R_MODEL`
+            - 
+          * - :py:attr:`~CPA_USE_Q3D_SOLVER`
+            - 
+          * - :py:attr:`~CPA_NET_PROCESSING_MODE`
+            - 
+          * - :py:attr:`~CPA_NETS_TO_PROCESS`
+            - 
+          * - :py:attr:`~CPA_CHANNEL_DIE_NAME`
+            - 
+          * - :py:attr:`~CPA_CHANNEL_PIN_GROUPING_MODE`
+            - 
+          * - :py:attr:`~CPA_CHANNEL_COMPONENT_EXPOSURE_CONFIG`
+            - 
+          * - :py:attr:`~CPA_CHANNEL_VRM_SETUP`
+            - 
+          * - :py:attr:`~CPA_REPORT_EXPORT_PATH`
+            - 
+          * - :py:attr:`~CPA_RLCG_TABLE_EXPORT_PATH`
+            - 
+          * - :py:attr:`~CPA_EXTRACTION_MODE`
+            - 
+          * - :py:attr:`~CPA_CUSTOM_REFINEMENT`
+            - 
+          * - :py:attr:`~CPA_EXTRACTION_FREQUENCY`
+            - 
+          * - :py:attr:`~CPA_COMPUTE_CAPACITANCE`
+            - 
+          * - :py:attr:`~CPA_COMPUTE_DC_PARAMS`
+            - 
+          * - :py:attr:`~CPA_DC_PARAMS_COMPUTE_RL`
+            - 
+          * - :py:attr:`~CPA_DC_PARAMS_COMPUTE_CG`
+            - 
+          * - :py:attr:`~CPA_AC_PARAMS_COMPUTE_RL`
+            - 
+          * - :py:attr:`~CPA_GROUND_PG_NETS_FOR_SI`
+            - 
+          * - :py:attr:`~CPA_AUTO_DETECT_SMALL_HOLES`
+            - 
+          * - :py:attr:`~CPA_SMALL_HOLE_DIAMETER`
+            - 
+          * - :py:attr:`~CPA_MODEL_TYPE`
+            - 
+          * - :py:attr:`~CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES`
+            - 
+          * - :py:attr:`~CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_ERROR`
+            - 
+          * - :py:attr:`~CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_REFINEMENT_PER_PASS`
+            - 
+          * - :py:attr:`~CPA_ADAPTIVE_REFINEMENT_RL_MAX_PASSES`
+            - 
+          * - :py:attr:`~CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_ERROR`
+            - 
+          * - :py:attr:`~CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_REFINEMENT_PER_PASS`
+            - 
+          * - :py:attr:`~CPA_MIN_PLANE_AREA_TO_MESH`
+            - 
+          * - :py:attr:`~CPA_MIN_VOID_AREA_TO_MESH`
+            - 
+          * - :py:attr:`~CPA_VERTEX_SNAP_THRESHOLD`
+            - 
+          * - :py:attr:`~CPA_TERMINAL_TYPE`
+            - 
+          * - :py:attr:`~CPA_PLOC_CONFIG`
+            - 
+          * - :py:attr:`~CPA_RETURN_PATH_NET_FOR_LOOP_PARAMS`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.siwave_core.product_properties import SIwaveProperties
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: PIN_GROUP
+   :value: 1
+
+
+.. py:attribute:: PART_NAME
+   :value: 2
+
+
+.. py:attribute:: REF_DES_NAME
+   :value: 3
+
+
+.. py:attribute:: PIN_NAME
+   :value: 4
+
+
+.. py:attribute:: INTER_COMPONENT_PIN_GROUP
+   :value: 5
+
+
+.. py:attribute:: DCIR_SIM_NAME
+   :value: 100
+
+
+.. py:attribute:: DCIR_INIT_MESH_MAX_EDGE_LEN
+   :value: 101
+
+
+.. py:attribute:: DCIR_MESH_BWS
+   :value: 102
+
+
+.. py:attribute:: DCIR_MESH_VIAS
+   :value: 103
+
+
+.. py:attribute:: DCIR_NUM_BW_FACETS
+   :value: 104
+
+
+.. py:attribute:: DCIR_NUM_VIA_FACETS
+   :value: 105
+
+
+.. py:attribute:: DCIR_ADAPTIVE_SOLVE
+   :value: 106
+
+
+.. py:attribute:: DCIR_MIN_NUM_PASSES
+   :value: 107
+
+
+.. py:attribute:: DCIR_MAX_NUM_PASSES
+   :value: 108
+
+
+.. py:attribute:: DCIR_LOCAL_REFINEMENT
+   :value: 109
+
+
+.. py:attribute:: DCIR_ENERGY_ERROR
+   :value: 110
+
+
+.. py:attribute:: DCIR_REFINE_BWS
+   :value: 111
+
+
+.. py:attribute:: DCIR_REFINE_VIAS
+   :value: 112
+
+
+.. py:attribute:: DCIR_PLOT_JV
+   :value: 113
+
+
+.. py:attribute:: DCIR_CKT_ELEM_CONTACT_R
+   :value: 114
+
+
+.. py:attribute:: DCIR_ICEPAK_TEMP_FILE_PATH
+   :value: 115
+
+
+.. py:attribute:: SOURCE_NEG_TERMINALS_TO_GROUND
+   :value: 116
+
+
+.. py:attribute:: SOURCE_POS_TERMINALS_TO_GROUND
+   :value: 117
+
+
+.. py:attribute:: DCIR_MIN_DC_PLANE_AREA_TO_MESH
+   :value: 118
+
+
+.. py:attribute:: DCIR_MIN_DC_VOID_AREA_TO_MESH
+   :value: 119
+
+
+.. py:attribute:: DCIR_COMPUTE_L
+   :value: 120
+
+
+.. py:attribute:: NUM_CPUS_TO_USE
+   :value: 200
+
+
+.. py:attribute:: USE_HPC_LICENSE
+   :value: 201
+
+
+.. py:attribute:: HPC_LICENSE_VENDOR
+   :value: 202
+
+
+.. py:attribute:: SYZ_COUPLING_COPLANE
+   :value: 300
+
+
+.. py:attribute:: SYZ_COUPLING_INTRA_PLANE
+   :value: 301
+
+
+.. py:attribute:: SYZ_COUPLING_SPLIT_PLANE
+   :value: 302
+
+
+.. py:attribute:: SYZ_COUPLING_CAVITY
+   :value: 303
+
+
+.. py:attribute:: SYZ_COUPLING_TRACE
+   :value: 304
+
+
+.. py:attribute:: SYZ_COUPLING_XTALK_THRESH
+   :value: 305
+
+
+.. py:attribute:: SY_ZMIN_VOID_MESH
+   :value: 306
+
+
+.. py:attribute:: SYZ_MESH_REFINEMENT
+   :value: 307
+
+
+.. py:attribute:: SYZ_TRACE_RETURN_CURRENT
+   :value: 308
+
+
+.. py:attribute:: SYZ_INCLUDE_SOURCE_PARASITICS
+   :value: 309
+
+
+.. py:attribute:: SYZ_USE_INF_GROUND_PLANE
+   :value: 310
+
+
+.. py:attribute:: SYZ_INF_GROUND_PLANE_DIST
+   :value: 311
+
+
+.. py:attribute:: SYZ_PERFORM_ERC
+   :value: 312
+
+
+.. py:attribute:: SYZ_EXCLUDE_NON_FUNCTIONAL_PADS
+   :value: 313
+
+
+.. py:attribute:: ICEPAK_SIM_NAME
+   :value: 400
+
+
+.. py:attribute:: ICEPAK_DC_SIM_NAME
+   :value: 401
+
+
+.. py:attribute:: ICEPAK_MESH_FIDELITY
+   :value: 402
+
+
+.. py:attribute:: ICEPAK_CAB_ABOVE_PERCENT
+   :value: 403
+
+
+.. py:attribute:: ICEPAK_CAB_BELOW_PERCENT
+   :value: 404
+
+
+.. py:attribute:: ICEPAK_CAB_HORIZ_PERCENT
+   :value: 405
+
+
+.. py:attribute:: ICEPAK_FLOW_STYLE
+   :value: 406
+
+
+.. py:attribute:: ICEPAK_FLOW_SPEED
+   :value: 407
+
+
+.. py:attribute:: ICEPAK_FLOW_DIR
+   :value: 408
+
+
+.. py:attribute:: ICEPAK_FLOW_TEMP
+   :value: 409
+
+
+.. py:attribute:: ICEPAK_COND_FLOW_SPEED_TOP
+   :value: 410
+
+
+.. py:attribute:: ICEPAK_COND_FLOW_SPEED_BOTTOM
+   :value: 411
+
+
+.. py:attribute:: ICEPAK_COND_FLOW_DIR_TOP
+   :value: 412
+
+
+.. py:attribute:: ICEPAK_COND_FLOW_DIR_BOTTOM
+   :value: 413
+
+
+.. py:attribute:: ICEPAK_COND_TEMP_TOP
+   :value: 414
+
+
+.. py:attribute:: ICEPAK_COND_TEMP_BOTTOM
+   :value: 415
+
+
+.. py:attribute:: ICEPAK_GRAV_X
+   :value: 416
+
+
+.. py:attribute:: ICEPAK_GRAV_Y
+   :value: 417
+
+
+.. py:attribute:: ICEPAK_GRAV_Z
+   :value: 418
+
+
+.. py:attribute:: ICEPAK_AMBIENT_TEMP
+   :value: 419
+
+
+.. py:attribute:: ICEPAK_COMPONENT_FILE
+   :value: 420
+
+
+.. py:attribute:: ICEPAK_BRD_OUTLINE_FIDELITY_MM
+   :value: 421
+
+
+.. py:attribute:: ICEPAK_USE_MINIMAL_COMP_DEFAULTS
+   :value: 422
+
+
+.. py:attribute:: PSI_AC_SIM_NAME
+   :value: 500
+
+
+.. py:attribute:: PSI_AC_SWEEP_STR
+   :value: 501
+
+
+.. py:attribute:: PSI_SYZ_SIM_NAME
+   :value: 502
+
+
+.. py:attribute:: PSI_SYZ_SWEEP_STR
+   :value: 503
+
+
+.. py:attribute:: PSI_SYZ_INTERPOLATING
+   :value: 504
+
+
+.. py:attribute:: PSI_SYZ_FAST_SWP
+   :value: 505
+
+
+.. py:attribute:: PSI_SYZ_ADAPTIVE_SAMPLING
+   :value: 506
+
+
+.. py:attribute:: PSI_SYZ_ENFORCE_DC
+   :value: 507
+
+
+.. py:attribute:: PSI_SYZ_PORT_TYPE
+   :value: 508
+
+
+.. py:attribute:: PSI_DISTRIBUTED
+   :value: 509
+
+
+.. py:attribute:: PSI_NUM_CPUS
+   :value: 510
+
+
+.. py:attribute:: PSI_USE_HPC
+   :value: 511
+
+
+.. py:attribute:: PSI_HPC_LICENSE_TYPE
+   :value: 512
+
+
+.. py:attribute:: PSI_SIM_SERVER_NAME
+   :value: 513
+
+
+.. py:attribute:: PSI_SIM_SERVER_PORT
+   :value: 514
+
+
+.. py:attribute:: PSI_SIMULATION_PREFERENCE
+   :value: 515
+
+
+.. py:attribute:: PSI_MODEL_TYPE
+   :value: 516
+
+
+.. py:attribute:: PSI_ENHANCED_BW_MODELING
+   :value: 517
+
+
+.. py:attribute:: PSI_SURFACE_ROUGHNESS_MODEL
+   :value: 518
+
+
+.. py:attribute:: PSI_RMS_ROUGHNESS
+   :value: 519
+
+
+.. py:attribute:: PSI_TEMP_WORKING_DIR
+   :value: 520
+
+
+.. py:attribute:: PSI_IGNORE_DUMMY_NETS
+   :value: 521
+
+
+.. py:attribute:: PSI_PERFORM_ERC
+   :value: 522
+
+
+.. py:attribute:: PSI_EXCLUDE_NONFUNCTIONAL_PADS
+   :value: 523
+
+
+.. py:attribute:: PSI_AUTO_NET_SELECT
+   :value: 524
+
+
+.. py:attribute:: PSI_IMPROVED_LOW_FREQ_RESIST
+   :value: 525
+
+
+.. py:attribute:: PSI_SMALL_HOLE_SIZE
+   :value: 526
+
+
+.. py:attribute:: PSI_SIGNAL_NET_ERROR_TOL
+   :value: 527
+
+
+.. py:attribute:: PSI_CONDUCTOR_MODELING
+   :value: 528
+
+
+.. py:attribute:: PSI_IMPROVED_METAL_LOSS
+   :value: 529
+
+
+.. py:attribute:: PSI_IMPROVED_DIELECTRIC_FILL
+   :value: 530
+
+
+.. py:attribute:: PSI_TOP_FILL_MATERIAL
+   :value: 531
+
+
+.. py:attribute:: PSI_BOTTOM_FILL_MATERIAL
+   :value: 532
+
+
+.. py:attribute:: PSI_PCB_MATERIAL
+   :value: 533
+
+
+.. py:attribute:: PSI_INCLUDE_METAL_PLANE1
+   :value: 534
+
+
+.. py:attribute:: PSI_INCLUDE_METAL_PLANE2
+   :value: 535
+
+
+.. py:attribute:: PSI_FLOAT_METAL_PLANE1
+   :value: 536
+
+
+.. py:attribute:: PSI_FLOAT_METAL_PLANE2
+   :value: 537
+
+
+.. py:attribute:: PSI_H1
+   :value: 538
+
+
+.. py:attribute:: PSI_H2
+   :value: 539
+
+
+.. py:attribute:: CPA_SIM_NAME
+   :value: 600
+
+
+.. py:attribute:: CPA_CHANNEL_SETUP
+   :value: 601
+
+
+.. py:attribute:: CPA_ESD_R_MODEL
+   :value: 602
+
+
+.. py:attribute:: CPA_USE_Q3D_SOLVER
+   :value: 603
+
+
+.. py:attribute:: CPA_NET_PROCESSING_MODE
+   :value: 604
+
+
+.. py:attribute:: CPA_NETS_TO_PROCESS
+   :value: 605
+
+
+.. py:attribute:: CPA_CHANNEL_DIE_NAME
+   :value: 610
+
+
+.. py:attribute:: CPA_CHANNEL_PIN_GROUPING_MODE
+   :value: 611
+
+
+.. py:attribute:: CPA_CHANNEL_COMPONENT_EXPOSURE_CONFIG
+   :value: 612
+
+
+.. py:attribute:: CPA_CHANNEL_VRM_SETUP
+   :value: 613
+
+
+.. py:attribute:: CPA_REPORT_EXPORT_PATH
+   :value: 614
+
+
+.. py:attribute:: CPA_RLCG_TABLE_EXPORT_PATH
+   :value: 615
+
+
+.. py:attribute:: CPA_EXTRACTION_MODE
+   :value: 616
+
+
+.. py:attribute:: CPA_CUSTOM_REFINEMENT
+   :value: 617
+
+
+.. py:attribute:: CPA_EXTRACTION_FREQUENCY
+   :value: 618
+
+
+.. py:attribute:: CPA_COMPUTE_CAPACITANCE
+   :value: 619
+
+
+.. py:attribute:: CPA_COMPUTE_DC_PARAMS
+   :value: 620
+
+
+.. py:attribute:: CPA_DC_PARAMS_COMPUTE_RL
+   :value: 621
+
+
+.. py:attribute:: CPA_DC_PARAMS_COMPUTE_CG
+   :value: 622
+
+
+.. py:attribute:: CPA_AC_PARAMS_COMPUTE_RL
+   :value: 623
+
+
+.. py:attribute:: CPA_GROUND_PG_NETS_FOR_SI
+   :value: 624
+
+
+.. py:attribute:: CPA_AUTO_DETECT_SMALL_HOLES
+   :value: 625
+
+
+.. py:attribute:: CPA_SMALL_HOLE_DIAMETER
+   :value: 626
+
+
+.. py:attribute:: CPA_MODEL_TYPE
+   :value: 627
+
+
+.. py:attribute:: CPA_ADAPTIVE_REFINEMENT_CG_MAX_PASSES
+   :value: 628
+
+
+.. py:attribute:: CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_ERROR
+   :value: 629
+
+
+.. py:attribute:: CPA_ADAPTIVE_REFINEMENT_CG_PERCENT_REFINEMENT_PER_PASS
+   :value: 630
+
+
+.. py:attribute:: CPA_ADAPTIVE_REFINEMENT_RL_MAX_PASSES
+   :value: 631
+
+
+.. py:attribute:: CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_ERROR
+   :value: 632
+
+
+.. py:attribute:: CPA_ADAPTIVE_REFINEMENT_RL_PERCENT_REFINEMENT_PER_PASS
+   :value: 633
+
+
+.. py:attribute:: CPA_MIN_PLANE_AREA_TO_MESH
+   :value: 634
+
+
+.. py:attribute:: CPA_MIN_VOID_AREA_TO_MESH
+   :value: 635
+
+
+.. py:attribute:: CPA_VERTEX_SNAP_THRESHOLD
+   :value: 636
+
+
+.. py:attribute:: CPA_TERMINAL_TYPE
+   :value: 640
+
+
+.. py:attribute:: CPA_PLOC_CONFIG
+   :value: 641
+
+
+.. py:attribute:: CPA_RETURN_PATH_NET_FOR_LOOP_PARAMS
+   :value: 642
+
+
+
+
+
+

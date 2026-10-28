@@ -1,0 +1,90 @@
+
+
+
+
+
+
+The ``primitive.py`` module
+===========================
+
+.. py:module:: pyedb.grpc.database.primitive.primitive
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: primitive
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.primitive.Primitive`
+            - Manages EDB functionalities for a primitives.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~layer_type_mapping`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Primitive</autoapi/pyedb/grpc/database/primitive/primitive/Primitive>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: layer_type_mapping
+
+
+

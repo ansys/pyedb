@@ -1,0 +1,47 @@
+
+
+
+
+
+
+:class:`FAdaptTypeMapper`
+=========================
+
+.. toctree::
+   :hidden:
+
+    GRPC</autoapi/pyedb/generic/constants/FAdaptTypeMapper.GRPC>
+    DOTNET</autoapi/pyedb/generic/constants/FAdaptTypeMapper.DOTNET>
+
+
+.. py:class:: pyedb.generic.constants.FAdaptTypeMapper
+
+   Bases: :py:obj:`CommonMapper`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import FAdaptTypeMapper
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.generic.constants.FAdaptTypeMapper.GRPC
+    pyedb.generic.constants.FAdaptTypeMapper.DOTNET
+
+
+
+

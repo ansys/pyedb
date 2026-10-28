@@ -1,0 +1,150 @@
+
+
+
+
+
+
+:class:`CfgMultiFrequencyAdaptiveSolution`
+==========================================
+
+.. toctree::
+   :hidden:
+
+    CfgAdaptFrequency</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency>
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgMultiFrequencyAdaptiveSolution
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_adaptive_frequency`
+            - Append one adaptive frequency point to this multi-frequency solution.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~adapt_frequencies`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup.CfgHFSSSetup import CfgMultiFrequencyAdaptiveSolution
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: adapt_frequencies
+   :type:  list[CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_adaptive_frequency(frequency: Union[float, str], max_passes: int, max_delta: Union[float, str])
+
+   
+   Append one adaptive frequency point to this multi-frequency solution.
+
+
+   :Parameters:
+
+       **frequency** : :class:`python:str` or :class:`python:float`
+           Adaptive frequency, e.g. ``"5GHz"`` or ``5e9``.
+
+       **max_passes** : :class:`python:int`
+           Maximum number of adaptive passes for this frequency.
+
+       **max_delta** : :class:`python:str` or :class:`python:float`
+           Convergence criterion (maximum delta-S), e.g. ``0.02``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> sol = hfss.multi_frequency_adaptive_solution
+   >>> sol.add_adaptive_frequency("5GHz", max_passes=20, max_delta=0.02)
+   >>> sol.add_adaptive_frequency("10GHz", max_passes=20, max_delta=0.02)
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.configuration.cfg_setup.CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency
+
+
+
+

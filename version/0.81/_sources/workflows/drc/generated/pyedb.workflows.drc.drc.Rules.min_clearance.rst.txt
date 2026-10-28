@@ -1,0 +1,6 @@
+min\_clearance
+==============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: Rules.min_clearance
