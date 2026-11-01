@@ -49,6 +49,11 @@ geometry = [
 graphics = [
     "matplotlib>=3.5.0"
 ]
+viewer = [
+    "PySide6>=6.6,<7",
+    "PyOpenGL>=3.1.7,<4",
+    "mapbox-earcut>=1.0.1,<3",
+]
 analysis = [
     "pandas>=1.1.0",
     "scikit-rf"

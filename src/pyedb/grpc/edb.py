@@ -1412,6 +1412,69 @@ class Edb(EdbInit):
         self._layout = Layout(self, self.active_cell.layout)
         return self._layout
 
+    def view_layout(
+        self,
+        layers=None,
+        nets=None,
+        arc_segments=32,
+        block=None,
+        color_by_net=True,
+        *,
+        plot_components=True,
+        annotate_component_names=True,
+        plot_components_on_both_side=True,
+    ):
+        """Open a PySide6/OpenGL 2D layout viewer using a detached snapshot.
+
+        Parameters
+        ----------
+        layers, nets : str or list[str], optional
+            Layer and network names to capture. Defaults to all conductor layers
+            and all networks.
+        arc_segments : int, optional
+            Number of segments per arc. Default is 32.
+        block : bool, optional
+            Run the Qt event loop. Defaults to True when creating QApplication,
+            or False when an application already exists.
+        color_by_net : bool, optional
+            Start with PyEDB's network palette. Colors and opacity can be changed
+            without rebuilding or uploading geometry. Default is True.
+        plot_components : bool, optional
+            Display the same component bounding boxes used by ``nets.plot``.
+            Default is True.
+        annotate_component_names : bool, optional
+            Display component reference names when readable. Default is True.
+        plot_components_on_both_side : bool, optional
+            Display components on all visible placement layers. Default is True.
+            Set False to restrict components to the current view side.
+
+        Returns
+        -------
+        pyedb.viewer.qt.window.LayoutWindow
+            Viewer window. Keep a reference when using non-blocking mode.
+
+        Notes
+        -----
+        Requires ``pip install pyedb[viewer]`` and an OpenGL 3.3-capable desktop.
+        Displays SDF traces/arcs, per-layer pads and circular drills, and stencil
+        zones, component envelopes and reference names. 3D bodies, arbitrary text
+        and bondwires are not displayed. The window does not close or save
+        the EDB session. Call this method on the main GUI thread.
+        """
+        from pyedb.viewer import launch_viewer
+
+        return launch_viewer(
+            self,
+            layers=layers,
+            nets=nets,
+            arc_segments=arc_segments,
+            block=block,
+            color_by_net=color_by_net,
+            plot_components=plot_components,
+            annotate_component_names=annotate_component_names,
+            plot_components_on_both_side=plot_components_on_both_side,
+        )
+
     @property
     def active_layout(self) -> Layout:
         """Active layout access.
