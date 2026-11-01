@@ -150,11 +150,35 @@ def scene_network_names(scene):
     return (None, *names)
 
 
+def _write_pad_packets(items, net_ids, packets):
+    """Fill validated pads in bulk, keeping the scalar packet's float residuals."""
+    packets[:, :4] = split_coordinates([item.center for item in items])
+    bounds = np.asarray([item.bounds for item in items], dtype=np.float64)
+    packets[:, 12:16] = split_coordinates(bounds[:, :2])
+    packets[:, 16:20] = split_coordinates(bounds[:, 2:])
+    dimensions = np.asarray([(*item.size, item.rotation) for item in items], dtype=np.float64)
+    packets[:, 20:23] = dimensions
+    packets[:, 24] = [2 if item.shape == "circle" else 3 for item in items]
+    packets[:, 25] = [
+        -int(item.shape == "circle" and math.dist(item.center, item.hole_center) + item.size[0] / 2 <= item.hole_radius)
+        for item in items
+    ]
+    packets[:, 27] = [net_ids.get(item.net, 0) for item in items]
+    radii = np.asarray([(item.corner_radius, item.hole_radius) for item in items], dtype=np.float64)
+    packets[:, 28:30] = radii
+    packets[:, 31] = [int(item.shape == "bullet") for item in items]
+    packets[:, 32:36] = split_coordinates([item.hole_center for item in items])
+    packets[:, 36:38] = dimensions[:, :2] - packets[:, 20:22]
+    packets[:, 38] = radii[:, 1] - packets[:, 29]
+
+
 def _prepare_sdf(scene, progress=None):
     nets = scene_network_names(scene)
     net_ids = {net: index for index, net in enumerate(nets)}
-    packets, batches, pin_batches = [], [], []
+    batches, pin_batches = [], []
     total = len(scene.traces) + len(scene.joins) + len(scene.pads) + len(scene.components)
+    instances = np.zeros((total, SDF_STRIDE), dtype=np.float32)
+    packet_count = 0
     if progress is not None:
         progress("Preparing traces and pads", 0, total)
     by_layer = {}
@@ -180,18 +204,23 @@ def _prepare_sdf(scene, progress=None):
                 SdfBatch(
                     layer,
                     union_bounds(bounds),
-                    len(packets),
+                    packet_count,
                     len(chunk),
                     any(getattr(item, "hole_radius", 0) > 0 for item in chunk),
                     category,
                 )
             )
-            for item in chunk:
+            for index, item in enumerate(chunk):
                 if getattr(item, "component", None):
-                    pin_batches.append(PinBatch(item, len(packets)))
-                packets.append(_sdf_packet(item, net_ids.get(item.net, 0)))
+                    pin_batches.append(PinBatch(item, packet_count + index))
+            if category == "pad":
+                _write_pad_packets(chunk, net_ids, instances[packet_count : packet_count + len(chunk)])
+            else:
+                for index, item in enumerate(chunk):
+                    instances[packet_count + index] = _sdf_packet(item, net_ids.get(item.net, 0))
+            packet_count += len(chunk)
             if progress is not None:
-                progress("Preparing traces and pads", len(packets), total)
+                progress("Preparing traces and pads", packet_count, total)
     # Custom pins need only their existing copper mesh and ownership metadata.
     # No auxiliary contour geometry is generated for pin borders.
     for polygon in scene.polygons:
@@ -200,11 +229,11 @@ def _prepare_sdf(scene, progress=None):
         pin_batches.append(PinBatch(polygon, None, 0))
     component_batches = []
     for component in sorted(scene.components, key=lambda component: component.layer):
-        component_batches.append(ComponentBatch(component, len(packets)))
-        packets.append(_sdf_packet(component, 0))
+        component_batches.append(ComponentBatch(component, packet_count))
+        instances[packet_count] = _sdf_packet(component, 0)
+        packet_count += 1
     if progress is not None:
         progress("Preparing traces and pads", total, total)
-    instances = np.ascontiguousarray(packets, dtype=np.float32).reshape(-1, SDF_STRIDE)
     return instances, tuple(batches), nets, tuple(component_batches), tuple(pin_batches)
 
 

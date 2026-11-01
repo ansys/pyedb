@@ -85,7 +85,6 @@ def launch_viewer(
     exact_component_bounds=False,
     chord_error=0.01,
     progressive=True,
-    on_demand=True,
 ):
     """Open an interactive OpenGL layout window.
 
@@ -93,8 +92,7 @@ def launch_viewer(
     ----------
     edb : pyedb.grpc.edb.Edb, optional
         Existing gRPC session. Its lifetime remains controlled by the caller.
-        Keep it open while an on-demand window is active. Capture runs in one
-        background worker with progress in the viewer canvas.
+        Capture runs in one background worker with progress in the viewer canvas.
     scene : LayoutScene, optional
         Detached scene to display instead of reading an EDB session.
     layers, nets : str or list[str], optional
@@ -106,11 +104,8 @@ def launch_viewer(
         Maximum chord sagitta in millimeters. Default is 0.01 mm. Segment
         counts adapt to radius and total sweep, with at most 45 degrees per chord.
     progressive : bool, optional
-        Display copper while pads and components load. Default is True.
-    on_demand : bool, optional
-        Load the first included stackup layer initially and other layers when
-        enabled. Default is True. Keep ``edb`` open until the window closes,
-        including with ``block=False``. Set False for a detached, full capture.
+        Display the current layer first, then remaining copper, pads and
+        components. Default is True. One progress indicator remains until complete.
     analytic_traces : bool, optional
         Preserve analytic traces for precision at deep zoom. Default is False:
         read source path contours to reduce remote geometry-property requests.
@@ -161,22 +156,9 @@ def launch_viewer(
                 preview=preview,
             )
 
+        options["loader"] = load
         options["title"] = Path(str(getattr(edb, "edbpath", None) or "EDB layout")).stem
-        if on_demand:
-            from pyedb.viewer.adapters.layers import LayerSceneSource
-
-            options["layer_source"] = LayerSceneSource(
-                edb,
-                layers=layers,
-                nets=nets,
-                arc_segments=arc_segments,
-                chord_error=chord_error,
-                analytic_traces=analytic_traces,
-                exact_component_bounds=exact_component_bounds,
-                progressive=progressive,
-            )
-        else:
-            options["loader"] = SourceCapture(load, progressive=progressive)
+        options["loader"] = SourceCapture(load, progressive=progressive)
     return show_scene(
         scene,
         block=block,

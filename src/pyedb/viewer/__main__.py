@@ -38,7 +38,6 @@ def main(argv=None):
     precision.add_argument("--chord-error", type=float, default=0.01, help="Maximum chord error in mm (default: 0.01)")
     parser.add_argument("--analytic-traces", action="store_true", help="Preserve analytic traces for deep zoom")
     parser.add_argument("--exact-component-bounds", action="store_true", help="Read exact source component envelopes")
-    parser.add_argument("--eager", action="store_true", help="Capture all included layers before completing loading")
     parser.add_argument(
         "--no-progressive", action="store_true", help="Wait for complete geometry before displaying copper"
     )
@@ -76,7 +75,6 @@ def main(argv=None):
             exact_component_bounds=args.exact_component_bounds,
             chord_error=args.chord_error,
             progressive=not args.no_progressive,
-            on_demand=not args.eager,
         )
     finally:
         edb.close()

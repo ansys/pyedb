@@ -73,7 +73,6 @@ def show_scene(
     plot_components_on_both_side=True,
     *,
     loader=None,
-    layer_source=None,
     title="EDB layout",
 ):
     """Create a native window, reusing the host application's event loop if present."""
@@ -89,7 +88,6 @@ def show_scene(
         annotate_component_names=annotate_component_names,
         plot_components_on_both_side=plot_components_on_both_side,
         loader=loader,
-        layer_source=layer_source,
     )
     # Keep QApplication alive for the lifetime of non-blocking standalone windows.
     window._application = application
@@ -97,20 +95,12 @@ def show_scene(
     window.show()
     if block:
         application.exec()
-        # Explicit QApplication.quit() must also drain an active source read
-        # before the CLI closes its database in finally.
-        window.close()
-        if window._capturing:
-            loop = QEventLoop()
-            window.closed.connect(loop.quit)
-            loop.exec()
-    elif (loader is not None or layer_source is not None) and window._capturing:
+    elif loader is not None and window._capturing:
         # Preserve the caller-owned session lifetime for nonblocking launches:
         # return after capture, while this same window stays visible throughout.
         loop = QEventLoop()
         window.scene_ready.connect(loop.quit)
         window.scene_failed.connect(loop.quit)
-        window.closed.connect(loop.quit)
         loop.exec()
     if window._capture_error is not None:
         raise window._capture_error

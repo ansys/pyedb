@@ -21,9 +21,8 @@ class PadInstances:
     stateful IOInterceptor between concurrent calls.
     """
 
-    def __init__(self, edb, instances, window=16, *, fetched=None):
+    def __init__(self, edb, instances, window=16):
         self.edb, self.instances, self.window = edb, instances, window
-        self.fetched = set() if fetched is None else fetched
         self.prefetched = 0
         self.disabled = False
 
@@ -80,7 +79,6 @@ class PadInstances:
                 channel.close()
 
     def _prefetch(self, stub, batch):
-        batch = [item for item in batch if item.core.id not in self.fetched]
         pending = []
         try:
             for item in batch:
@@ -110,4 +108,3 @@ class PadInstances:
             for request, method, response in responses:
                 cache.add("ansys.api.edb.v1.PadstackInstanceService", method, request, response)
             self.prefetched += len(batch)
-            self.fetched.update(item.core.id for item in batch)

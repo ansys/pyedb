@@ -7,7 +7,11 @@ import sys
 
 from ansys.api.edb.v1.edb_messages_pb2 import EDBObjMessage
 from ansys.api.edb.v1.polygon_data_pb2 import PolygonDataMessage
+from ansys.edb.core.primitive.padstack_instance import PadstackInstance as CorePadstackInstance
+from ansys.edb.core.primitive.path import Path as CorePath
+from ansys.edb.core.primitive.polygon import Polygon as CorePolygon
 from ansys.edb.core.primitive.primitive import Primitive as CorePrimitive
+from ansys.edb.core.primitive.rectangle import Rectangle as CoreRectangle
 from ansys.edb.core.session import StubAccessor, StubType
 from ansys.edb.core.utility.io_manager import get_cache
 from ansys.edb.core.utility.value import Value as CoreValue
@@ -73,6 +77,41 @@ def prefetched_polygon(message):
         entry.response.any.Unpack(polygon)
         return polygon
     return None
+
+
+def primitive_polygon_message(core):
+    """Read the same typed SDK getter without constructing point/value models.
+
+    The SDK interceptor and current session still handle transport, property
+    prefetch and expressions. Unsupported primitive types use the normal API.
+    """
+    if isinstance(core, CorePath):
+        kind = StubType.path
+    elif isinstance(core, CorePolygon):
+        kind = StubType.polygon
+    elif isinstance(core, CoreRectangle):
+        kind = StubType.rectangle
+    else:
+        return None
+    message = StubAccessor(kind).__get__().GetPolygonData(core.msg)
+    return message if isinstance(message, PolygonDataMessage) else None
+
+
+def padstack_span(core, layer_names):
+    """Resolve span handles against this capture's stackup, without layer casts."""
+    if not isinstance(core, CorePadstackInstance) or not layer_names:
+        return None
+    message = StubAccessor(StubType.padstack_instance).__get__().GetLayerRange(core.msg)
+    first, last = layer_names.get(message.top_layer.id), layer_names.get(message.bottom_layer.id)
+    return (first, last) if first is not None and last is not None else None
+
+
+def padstack_pose(core):
+    """Evaluate the SDK pose response directly, including parameter expressions."""
+    if not isinstance(core, CorePadstackInstance):
+        return None
+    message = StubAccessor(StubType.padstack_instance).__get__().GetPositionAndRotation(core.msg)
+    return _number(message.position.x), _number(message.position.y), _number(message.rotation)
 
 
 class VoidReader:

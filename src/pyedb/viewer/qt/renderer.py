@@ -49,14 +49,12 @@ class Renderer:
         self.upload_count = 0
         self.draw_calls = 0
         self.layer_batches = {}
-        self.layer_renderers = {}
-        self._label_batches = ()
         self._stencil_checked = False
         self.sdf = SdfCoverage()
         self.labels = ComponentLabels()
         self.grid = GridRenderer()
 
-    def initialize(self, *, overlays=True):
+    def initialize(self):
         """Create resources only with this widget's context current."""
         shader_dir = Path(__file__).with_name("shaders")
         self.program = compileProgram(
@@ -90,9 +88,8 @@ class Renderer:
         GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self.ebo)
         GL.glBindVertexArray(0)
         self.sdf.initialize()
-        if overlays:
-            self.labels.initialize()
-            self.grid.initialize()
+        self.labels.initialize()
+        self.grid.initialize()
 
     def upload(self, prepared):
         """Upload once per snapshot, never on camera or visibility changes."""
@@ -135,8 +132,7 @@ class Renderer:
         for batch in prepared.batches:
             self.layer_batches.setdefault(batch.layer, []).append(batch)
         self.sdf.upload(prepared)
-        if self.labels.program:
-            self.labels.upload(prepared.component_batches)
+        self.labels.upload(prepared.component_batches)
         self.upload_count += 1
 
     def _upload_mesh_buffer(self, target, buffer, values, capacity_name, previous):
@@ -151,24 +147,6 @@ class Renderer:
             if values.nbytes:
                 GL.glBufferSubData(target, 0, values.nbytes, values)
             setattr(self, capacity_name, capacity)
-
-    def upload_layer(self, name, prepared):
-        """Replace one layer's buffers without touching other resident layers."""
-        renderer = self.layer_renderers.get(name)
-        if renderer is None:
-            renderer = Renderer()
-            self.layer_renderers[name] = renderer
-            renderer.initialize(overlays=False)
-        renderer.upload(prepared)
-        # Reference placement must consider every visible layer together to
-        # prevent collisions. Only this small overlay buffer is rebuilt.
-        label_batches = tuple(
-            batch for part in self.layer_renderers.values() for batch in part.prepared.component_batches
-        )
-        if label_batches != self._label_batches:
-            self.labels.upload(label_batches)
-            self._label_batches = label_batches
-        self.upload_count += 1
 
     def _indexed(self, start, count):
         GL.glDrawElements(GL.GL_TRIANGLES, count, GL.GL_UNSIGNED_INT, c_void_p(start * 4))
@@ -250,31 +228,27 @@ class Renderer:
         self.sdf.drawn_pin_count = 0
         if show_grid:
             self.grid.draw(camera, pixel_ratio)
-        if self.prepared is None and not self.layer_renderers:
+        if self.prepared is None:
             return
         GL.glEnable(GL.GL_BLEND)
         GL.glBlendEquation(GL.GL_FUNC_ADD)
         GL.glBlendFuncSeparate(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA, GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA)
-        for renderer in self.layer_renderers.values():
-            renderer.draw_calls = renderer.labels.drawn_count = renderer.sdf.drawn_pin_count = 0
-        layers = scene.layers if camera.mirror else tuple(reversed(scene.layers))
+        u = self.uniforms
+        layers = scene.layers if camera.mirror else reversed(scene.layers)
         drill_layers = []
         for layer in layers:
             alpha = layer.color[3] * opacity
             if layer.name not in visible_layers or alpha <= 0:
                 continue
             drill_layers.append(layer.name)
-            renderer = self.layer_renderers.get(layer.name) if self.layer_renderers else self
-            if renderer is None:
-                continue
-            bind_camera_uniforms(renderer.program, renderer.uniforms, camera)
+            bind_camera_uniforms(self.program, u, camera)
             # Preserve ordered source-over transparency inside a conductor layer:
             # zones first, traces next, pads last. Each trace group still unions
             # its own segment coverage, so joins do not accumulate opacity.
             for category in ("zone", "trace", "pad"):
-                renderer._polygons(layer, category, camera, pixel_ratio, alpha, net, color_by_net)
+                self._polygons(layer, category, camera, pixel_ratio, alpha, net, color_by_net)
                 if category != "zone":
-                    renderer.draw_calls += renderer.sdf.draw(
+                    self.draw_calls += self.sdf.draw(
                         camera,
                         pixel_ratio,
                         [layer.name],
@@ -285,24 +259,13 @@ class Renderer:
                     )
         # Drill marks are separate from copper so a solid zone underneath a via
         # cannot fill its bore. Visibility/net selection also applies to drills.
-        renderers = (
-            tuple(self.layer_renderers[layer.name] for layer in layers if layer.name in self.layer_renderers)
-            if self.layer_renderers
-            else (self,)
-        )
-        for renderer in renderers:
-            renderer.draw_calls += renderer.sdf.draw(camera, pixel_ratio, drill_layers, DRILL_COLOR, net, drills=True)
-            if show_components and opacity > 0:
-                renderer.draw_calls += renderer.sdf.draw_components(
-                    camera, pixel_ratio, drill_layers, 1.0, net, components_on_both_sides
-                )
-        label_calls = 0
-        if show_components and opacity > 0 and annotate_component_names:
-            label_calls = self.labels.draw(camera, drill_layers, 1.0, net, components_on_both_sides)
-        if self.layer_renderers:
-            self.draw_calls = sum(renderer.draw_calls for renderer in self.layer_renderers.values())
-            self.sdf.drawn_pin_count = sum(renderer.sdf.drawn_pin_count for renderer in self.layer_renderers.values())
-        self.draw_calls += label_calls
+        self.draw_calls += self.sdf.draw(camera, pixel_ratio, drill_layers, DRILL_COLOR, net, drills=True)
+        if show_components and opacity > 0:
+            self.draw_calls += self.sdf.draw_components(
+                camera, pixel_ratio, drill_layers, 1.0, net, components_on_both_sides
+            )
+            if annotate_component_names:
+                self.draw_calls += self.labels.draw(camera, drill_layers, 1.0, net, components_on_both_sides)
         GL.glDisable(GL.GL_STENCIL_TEST)
         GL.glDisable(GL.GL_SCISSOR_TEST)
         GL.glStencilMask(0xFF)
@@ -398,10 +361,6 @@ class Renderer:
 
     def release(self):
         """Release resources explicitly while their owning context is current."""
-        for renderer in self.layer_renderers.values():
-            renderer.release()
-        self.layer_renderers.clear()
-        self._label_batches = ()
         if self.vbo or self.ebo:
             GL.glDeleteBuffers(3, [self.vbo, self.ebo, self.net_vbo])
         if self.vao or self.quad_vao:

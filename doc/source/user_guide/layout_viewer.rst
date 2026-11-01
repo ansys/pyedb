@@ -29,37 +29,19 @@ To use an existing gRPC session:
 
    edb = Edb("board.aedb", grpc=True, isreadonly=True)
    try:
-       window = edb.view_layout(block=True)
+       window = edb.view_layout()
    finally:
        edb.close()
 
-The viewer reads each requested layer without modifying or closing a caller-owned
-EDB session. Keep that session open until the viewer closes. Each new window
-reads its source again; no scene or GPU data is saved to disk.
+The viewer captures a detached snapshot without modifying or closing a
+caller-owned EDB session. Reopen the viewer to display subsequent design changes.
 
-Loading layers
---------------
-
-Initially, only the first included conductor layer in stackup order is loaded
-(usually TOP), including its copper, pads, vias and components. The same window
-shows progress throughout loading. Other layers remain marked On demand until
-their checkboxes are enabled. Show all requests every included layer.
-
-Layers load sequentially in a background worker while the existing view remains
-interactive. Loading another layer preserves the camera, network selection and
-resident geometry. Loaded layers remain in memory for this window, so hiding and
-showing them requires no new reads. Toggle a failed layer off and on to retry.
-Closing during a read hides the window and drains the active read before
-releasing the source.
-
-Current EDB servers still enumerate the complete primitive and padstack
-collections to build a layer index. Hidden layers skip detailed geometry
-extraction, arc subdivision, triangulation and GPU uploads; enumeration itself
-is not a server-side layer-filtered read.
-
-For a detached full capture, use ``edb.view_layout(on_demand=False)`` or
-``python -m pyedb.viewer path/to/board.aedb --eager``. A detached window can outlive
-its source session after capture completes.
+All included layers are read on every open. The full viewer window appears
+first and reports loading progress in its canvas. With ``progressive=True``
+(the default), copper appears before pads and components finish loading;
+the progress indicator disappears only after the complete layout is prepared,
+uploaded and drawn. Changing layer visibility after loading requires no EDB
+reads or geometry uploads. No scene or GPU data is saved to disk.
 
 Display and navigation
 ----------------------
@@ -92,11 +74,11 @@ Application integration
 -----------------------
 
 ``edb.view_layout()`` runs the event loop when it creates ``QApplication``.
-With an existing application, it returns after the initial layer has been
+With an existing application, it returns after all source geometry has been
 captured, without starting another application event loop. Call it on the GUI
-thread and retain the returned window. With on-demand loading, keep the EDB
-session open until ``window.closed`` is emitted. Standalone ``block=False``
-callers must run or integrate the Qt event loop themselves.
+thread and retain the returned window. The snapshot can then outlive its EDB
+session. Standalone ``block=False`` callers must run or integrate the Qt event
+loop themselves to continue preparing and displaying the snapshot.
 
 Component display options use the same names as ``edb.nets.plot()``:
 

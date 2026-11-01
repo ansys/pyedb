@@ -63,6 +63,108 @@ def test_prefetched_geometry_checks_object_identity_and_reuses_rings(monkeypatch
     reader._fallback.assert_called_once()
 
 
+@pytest.mark.parametrize(
+    "core_type, kind",
+    [
+        (grpc_stream.CorePath, grpc_stream.StubType.path),
+        (grpc_stream.CorePolygon, grpc_stream.StubType.polygon),
+        (grpc_stream.CoreRectangle, grpc_stream.StubType.rectangle),
+    ],
+)
+def test_root_contours_use_typed_getter_without_point_or_value_models(monkeypatch, core_type, kind):
+    from pyedb.viewer.adapters.grpc import _contour
+
+    request = EDBObjMessage(id=11)
+    core = object.__new__(core_type)
+    monkeypatch.setattr(core_type, "msg", property(lambda self: request))
+    getter = Mock(return_value=square())
+    routed = []
+
+    def accessor(stub_type):
+        routed.append(stub_type)
+        return SimpleNamespace(__get__=lambda: SimpleNamespace(GetPolygonData=getter))
+
+    monkeypatch.setattr(grpc_stream, "StubAccessor", accessor)
+    primitive = SimpleNamespace(core=core, points=Mock(side_effect=AssertionError("No point wrappers needed")))
+    assert _contour(primitive, 8, 0.01) == grpc_stream.contour_from_message(square(), 8, 0.01)
+    assert routed == [kind]
+    getter.assert_called_once_with(request)
+    primitive.points.assert_not_called()
+
+
+def test_unknown_core_type_preserves_points_fallback_without_rpc(monkeypatch):
+    from pyedb.viewer.adapters.grpc import _contour
+
+    accessor = Mock(side_effect=AssertionError("Unsupported types must keep their original getter"))
+    monkeypatch.setattr(grpc_stream, "StubAccessor", accessor)
+    primitive = SimpleNamespace(core=object(), points=Mock(return_value=([0, 0.001, 0], [0, 0, 0.001])))
+    assert _contour(primitive, 8, 0.01) == ((0, 0), (1, 0), (0, 1))
+    primitive.points.assert_called_once_with(arc_segments=8, chord_error=0.00001)
+
+
+def test_pad_metadata_uses_snapshot_layer_ids_and_raw_pose_values(monkeypatch):
+    from ansys.api.edb.v1.padstack_instance_pb2 import (
+        PadstackInstLayerRangeMessage,
+        PadstackInstPositionAndRotationMessage,
+    )
+
+    from pyedb.viewer.adapters.grpc import _padstack_layers, _placement
+
+    request = EDBObjMessage(id=11)
+    core = object.__new__(grpc_stream.CorePadstackInstance)
+    monkeypatch.setattr(grpc_stream.CorePadstackInstance, "msg", property(lambda self: request))
+    span = PadstackInstLayerRangeMessage(top_layer=EDBObjMessage(id=101), bottom_layer=EDBObjMessage(id=103))
+    pose = PadstackInstPositionAndRotationMessage()
+    pose.position.x.text = "0.001"
+    pose.position.y.constant.real = 0.002
+    pose.rotation.constant.real = 0
+    stub = SimpleNamespace(GetLayerRange=Mock(return_value=span), GetPositionAndRotation=Mock(return_value=pose))
+    monkeypatch.setattr(grpc_stream, "StubAccessor", lambda kind: SimpleNamespace(__get__=lambda: stub))
+    instance = SimpleNamespace(core=core, component=None)
+    names = {101: "FRONT", 102: "INNER", 103: "BACK"}
+    layers = ("FRONT", "INNER", "BACK")
+    assert _padstack_layers(instance, {"INNER", "BACK"}, layers, False, names) == ["INNER", "BACK"]
+    assert _placement(instance, {})[0]((0, 0)) == (1, 2)
+    stub.GetLayerRange.assert_called_once_with(request)
+    stub.GetPositionAndRotation.assert_called_once_with(request)
+    assert grpc_stream.padstack_span(core, {101: "FRONT"}) is None
+
+
+def test_bulk_pad_packets_match_scalar_precision_shapes_drills_and_networks():
+    import numpy as np
+
+    from pyedb.viewer.mesh import SDF_STRIDE, _sdf_packet, _write_pad_packets
+    from pyedb.viewer.scene import ScenePad
+
+    rng = np.random.default_rng(42)
+    items = []
+    for index in range(513):
+        shape = ("circle", "rectangle", "oval", "bullet")[index % 4]
+        center = tuple(rng.uniform(-1e8, 1e8, 2))
+        size = tuple(rng.uniform(0.00001, 20, 2))
+        if shape == "circle":
+            size = (size[0],) * 2
+        items.append(
+            ScenePad(
+                index,
+                "TOP",
+                None if index % 2 else "GND",
+                center,
+                size,
+                shape,
+                rotation=float(rng.uniform(-10, 10)),
+                corner_radius=min(size) / 4,
+                hole_radius=float(rng.uniform(0, 20)),
+                hole_center=(center[0] + 0.001, center[1]),
+            )
+        )
+    net_ids = {None: 0, "GND": 345}
+    expected = np.asarray([_sdf_packet(item, net_ids[item.net]) for item in items])
+    actual = np.zeros((len(items), SDF_STRIDE), dtype=np.float32)
+    _write_pad_packets(items, net_ids, actual)
+    assert actual.tobytes() == expected.tobytes()
+
+
 def test_failed_contour_drains_stream_before_database_can_close(monkeypatch):
     consumed = []
 
@@ -121,8 +223,6 @@ def test_prefetch_submits_bounded_reads_before_waiting_and_inserts_on_capture_th
     assert not iterator.disabled
     assert cache.add.call_count == count * 2
     assert {call.args[1] for call in cache.add.call_args_list} == {"GetLayerMap", "GetHoleOverrides"}
-    iterator._prefetch(SimpleNamespace(GetLayerMap=Method("map"), GetHoleOverrides=Method("override")), batch)
-    assert len(submissions) == count * 2, "Loading another layer must reuse already fetched instance attributes"
 
 
 def test_writable_sessions_never_open_extra_prefetch_channel(monkeypatch):
