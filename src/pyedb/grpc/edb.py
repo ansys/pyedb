@@ -1416,13 +1416,17 @@ class Edb(EdbInit):
         self,
         layers=None,
         nets=None,
-        arc_segments=32,
+        arc_segments=None,
         block=None,
         color_by_net=True,
         *,
         plot_components=True,
         annotate_component_names=True,
         plot_components_on_both_side=True,
+        analytic_traces=False,
+        exact_component_bounds=False,
+        chord_error=0.01,
+        progressive=True,
     ):
         """Open a PySide6/OpenGL 2D layout viewer using a detached snapshot.
 
@@ -1432,7 +1436,19 @@ class Edb(EdbInit):
             Layer and network names to capture. Defaults to all conductor layers
             and all networks.
         arc_segments : int, optional
-            Number of segments per arc. Default is 32.
+            Select fixed subdivisions per arc. Defaults to adaptive chords.
+            An explicit count overrides ``chord_error``.
+        chord_error : float, optional
+            Maximum chord sagitta in millimeters. Defaults to 0.01 mm, with
+            subdivisions chosen from each arc's radius and sweep.
+        progressive : bool, optional
+            Display copper first while remaining geometry loads. Default is True.
+        analytic_traces : bool, optional
+            Preserve analytic traces at deep zoom. Default is False to read
+            source contours with fewer remote geometry-property requests.
+        exact_component_bounds : bool, optional
+            Read exact source component envelopes. Default is False to use
+            captured pads and estimated envelopes for copper-free footprints.
         block : bool, optional
             Run the Qt event loop. Defaults to True when creating QApplication,
             or False when an application already exists.
@@ -1440,7 +1456,8 @@ class Edb(EdbInit):
             Start with PyEDB's network palette. Colors and opacity can be changed
             without rebuilding or uploading geometry. Default is True.
         plot_components : bool, optional
-            Display the same component bounding boxes used by ``nets.plot``.
+            Display component envelopes derived from captured pads, falling
+            back to source bounding boxes when no pad geometry is available.
             Default is True.
         annotate_component_names : bool, optional
             Display component reference names when readable. Default is True.
@@ -1473,6 +1490,10 @@ class Edb(EdbInit):
             plot_components=plot_components,
             annotate_component_names=annotate_component_names,
             plot_components_on_both_side=plot_components_on_both_side,
+            analytic_traces=analytic_traces,
+            exact_component_bounds=exact_component_bounds,
+            chord_error=chord_error,
+            progressive=progressive,
         )
 
     @property

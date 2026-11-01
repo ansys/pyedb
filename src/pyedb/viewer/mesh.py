@@ -22,12 +22,12 @@
 
 """Prepare exterior/hole coverage and split-coordinate GPU data, independent of Qt."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import math
 
 import numpy as np
 
-from pyedb.viewer.scene import Bounds, SceneComponent, ScenePad, ScenePolygon, SceneTrace, union_bounds
+from pyedb.viewer.scene import Bounds, LayoutScene, SceneComponent, ScenePad, ScenePolygon, SceneTrace, union_bounds
 
 # Ten vec4 attributes, all per-instance. Coordinates retain their low parts.
 SDF_STRIDE = 40
@@ -37,9 +37,11 @@ SDF_CHUNK_SIZE = 256
 def split_coordinates(values):
     """Pack double coordinates as [x_high, y_high, x_low, y_low] float32 vertices."""
     values = np.asarray(values, dtype=np.float64)
-    high = values.astype(np.float32)
-    low = (values - high.astype(np.float64)).astype(np.float32)
-    return np.ascontiguousarray(np.concatenate((high, low), axis=-1), dtype=np.float32)
+    width = values.shape[-1]
+    split = np.empty((*values.shape[:-1], width * 2), dtype=np.float32)
+    split[..., :width] = values
+    np.subtract(values, split[..., :width], out=split[..., width:])
+    return split
 
 
 @dataclass(frozen=True)
@@ -64,6 +66,8 @@ class PreparedScene:
     nets: tuple
     component_batches: tuple = ()
     pin_batches: tuple = ()
+    vertex_nets: np.ndarray | None = None
+    mesh_parent_id: int = 0
 
 
 @dataclass(frozen=True)
@@ -146,10 +150,13 @@ def scene_network_names(scene):
     return (None, *names)
 
 
-def _prepare_sdf(scene):
+def _prepare_sdf(scene, progress=None):
     nets = scene_network_names(scene)
     net_ids = {net: index for index, net in enumerate(nets)}
     packets, batches, pin_batches = [], [], []
+    total = len(scene.traces) + len(scene.joins) + len(scene.pads) + len(scene.components)
+    if progress is not None:
+        progress("Preparing traces and pads", 0, total)
     by_layer = {}
     for collection, category in ((scene.traces, "trace"), (scene.joins, "trace"), (scene.pads, "pad")):
         for item in collection:
@@ -183,6 +190,8 @@ def _prepare_sdf(scene):
                 if getattr(item, "component", None):
                     pin_batches.append(PinBatch(item, len(packets)))
                 packets.append(_sdf_packet(item, net_ids.get(item.net, 0)))
+            if progress is not None:
+                progress("Preparing traces and pads", len(packets), total)
     # Custom pins need only their existing copper mesh and ownership metadata.
     # No auxiliary contour geometry is generated for pin borders.
     for polygon in scene.polygons:
@@ -193,24 +202,78 @@ def _prepare_sdf(scene):
     for component in sorted(scene.components, key=lambda component: component.layer):
         component_batches.append(ComponentBatch(component, len(packets)))
         packets.append(_sdf_packet(component, 0))
+    if progress is not None:
+        progress("Preparing traces and pads", total, total)
     instances = np.ascontiguousarray(packets, dtype=np.float32).reshape(-1, SDF_STRIDE)
     return instances, tuple(batches), nets, tuple(component_batches), tuple(pin_batches)
 
 
-def prepare_scene(scene):
+def prepare_scene(scene, *, progress=None, polygon_mesh=None):
     """Triangulate each ring independently; holes are subtracted with GPU stencil.
 
     Hole coverage is a union, even for overlapping holes. It must never be
     submitted as ordinary filled geometry.
     """
+    if polygon_mesh is not None:
+        previous, mesh = polygon_mesh
+        if (
+            len(previous.polygons) <= len(scene.polygons)
+            and all(a is b for a, b in zip(previous.polygons, scene.polygons))
+            and mesh.nets == scene_network_names(scene)
+            and mesh.vertex_nets is not None
+        ):
+            vertices, indices, batches, vertex_nets = mesh.vertices, mesh.indices, mesh.batches, mesh.vertex_nets
+            additions = scene.polygons[len(previous.polygons) :]
+            if additions:
+                extra = prepare_scene(LayoutScene(scene.layers, additions, net_names=mesh.nets[1:]))
+                if len(vertices) + len(extra.vertices) > np.iinfo(np.uint32).max:
+                    raise ValueError("Layout exceeds the uint32 vertex index limit.")
+                indices = np.concatenate((indices, extra.indices + np.uint32(len(vertices))))
+                vertices = np.concatenate((vertices, extra.vertices))
+                vertex_nets = np.concatenate((vertex_nets, extra.vertex_nets))
+                batches = batches + tuple(
+                    replace(batch, index_start=batch.index_start + len(mesh.indices)) for batch in extra.batches
+                )
+            total = len(scene.traces) + len(scene.joins) + len(scene.pads) + len(scene.components) + 1
+
+            def update(stage, current, count):
+                progress("Rendering layout", current, total)
+
+            instances, sdf_batches, nets, component_batches, pin_batches = _prepare_sdf(
+                scene, update if progress is not None else None
+            )
+            prepared = PreparedScene(
+                vertices,
+                indices,
+                batches,
+                instances,
+                sdf_batches,
+                nets,
+                component_batches,
+                pin_batches,
+                vertex_nets,
+                id(mesh),
+            )
+            if progress is not None:
+                progress("Rendering layout", total, total)
+            return prepared
     if scene.polygons:
         try:
             import mapbox_earcut
         except ImportError as exc:
             raise ImportError("Triangulation requires: pip install 'pyedb[viewer]'.") from exc
-    vertices, indices, batches = [], [], []
-    vertex_count = index_count = 0
+    vertices, indices, batches, vertex_nets = [], [], [], []
+    net_ids = {net: index for index, net in enumerate(scene_network_names(scene))}
+    polygon_groups = {}
     for polygon in scene.polygons:
+        polygon_groups.setdefault((polygon.layer, polygon.category), []).append(polygon)
+    vertex_count = index_count = 0
+    completed_rings = 0
+    total_rings = sum(1 + len(polygon.holes) for polygon in scene.polygons)
+    total_items = total_rings + len(scene.traces) + len(scene.joins) + len(scene.pads) + len(scene.components) + 1
+    if progress is not None:
+        progress("Rendering layout", 0, total_items)
+    for polygon in (polygon for group in polygon_groups.values() for polygon in group):
         start = index_count
         counts = []
         for ring in (polygon.exterior, *polygon.holes):
@@ -223,10 +286,14 @@ def prepare_scene(scene):
             if vertex_count + len(ring) > np.iinfo(np.uint32).max:
                 raise ValueError("Layout exceeds the uint32 vertex index limit.")
             vertices.append(split_coordinates(coordinates))
+            vertex_nets.append(np.full(len(ring), net_ids.get(polygon.net, 0), dtype=np.uint32))
             indices.append(triangles + np.uint32(vertex_count))
             vertex_count += len(ring)
             index_count += len(triangles)
             counts.append(len(triangles))
+            completed_rings += 1
+            if progress is not None and (completed_rings % 64 == 0 or completed_rings == total_rings):
+                progress("Rendering layout", completed_rings, total_items)
         batches.append(
             MeshBatch(
                 polygon.object_id,
@@ -239,8 +306,14 @@ def prepare_scene(scene):
                 polygon.category,
             )
         )
-    instances, sdf_batches, nets, component_batches, pin_batches = _prepare_sdf(scene)
-    return PreparedScene(
+
+    def sdf_progress(stage, current, total):
+        progress("Rendering layout", total_rings + current, total_items)
+
+    instances, sdf_batches, nets, component_batches, pin_batches = _prepare_sdf(
+        scene, sdf_progress if progress is not None else None
+    )
+    prepared = PreparedScene(
         np.concatenate(vertices) if vertices else np.empty((0, 4), dtype=np.float32),
         np.concatenate(indices) if indices else np.empty(0, dtype=np.uint32),
         tuple(batches),
@@ -249,4 +322,8 @@ def prepare_scene(scene):
         nets,
         component_batches,
         pin_batches,
+        np.concatenate(vertex_nets) if vertex_nets else np.empty(0, dtype=np.uint32),
     )
+    if progress is not None:
+        progress("Rendering layout", total_items, total_items)
+    return prepared

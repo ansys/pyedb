@@ -23,6 +23,7 @@
 """Immutable layout snapshots, independent of EDB, Qt and OpenGL. Coordinates are millimeters."""
 
 from dataclasses import dataclass
+from functools import cached_property
 import math
 
 Point = tuple[float, float]
@@ -96,7 +97,7 @@ class ScenePolygon:
         if self.component is not None and self.category == "zone":
             object.__setattr__(self, "category", "pad")
 
-    @property
+    @cached_property
     def bounds(self) -> Bounds:
         x, y = zip(*self.exterior)
         return min(x), min(y), max(x), max(y)
@@ -161,7 +162,7 @@ class SceneTrace:
         elif self.sweep:
             raise ValueError("An arc sweep requires a center.")
 
-    @property
+    @cached_property
     def bounds(self) -> Bounds:
         radius = self.width / 2
         if self.center is None:
@@ -229,7 +230,7 @@ class ScenePad:
             raise ValueError("A circular pad requires equal width and height.")
         _validate_pin_owner(self)
 
-    @property
+    @cached_property
     def bounds(self) -> Bounds:
         c, s = abs(math.cos(self.rotation)), abs(math.sin(self.rotation))
         x, y = self.center
@@ -256,7 +257,7 @@ class SceneJoin:
         if len(self.points) not in (3, 4):
             raise ValueError("A join requires three or four points.")
 
-    @property
+    @cached_property
     def bounds(self) -> Bounds:
         x, y = zip(*self.points)
         return min(x), min(y), max(x), max(y)
@@ -334,7 +335,7 @@ class LayoutScene:
 
         return chain(self.polygons, self.traces, self.pads, self.joins)
 
-    @property
+    @cached_property
     def bounds(self) -> Bounds | None:
         bounds = [item.bounds for item in self.geometry]
         bounds.extend(component.bounds for component in self.components)

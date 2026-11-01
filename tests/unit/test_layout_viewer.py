@@ -185,6 +185,47 @@ def test_grpc_adapter_records_failed_geometry_and_rejects_bad_inputs():
         scene_from_edb(edb)
 
 
+def test_extraction_progress_counts_filtered_and_void_primitives():
+    events = []
+    edb = _edb([_primitive(), _primitive(2, "BOTTOM"), _primitive(3, is_void=True)])
+    scene = scene_from_edb(edb, layers="TOP", progress=lambda *event: events.append(event))
+    assert len(scene.polygons) == 1
+    assert ("Reading polygons", 3, 3) in events
+    assert events[0] == ("Reading polygons", 0, 0)
+    assert {stage for stage, _, _ in events} == {"Reading polygons"}
+
+
+def test_progressive_extraction_prioritizes_visible_layer_and_preserves_layer_order():
+    bottom_first = _primitive(1, "BOTTOM")
+    top = _primitive(2, "TOP")
+    bottom_second = _primitive(3, "BOTTOM")
+    previews = []
+    complete = scene_from_edb(_edb([bottom_first, top, bottom_second]), preview=previews.append)
+    assert len(previews) == 2
+    assert [polygon.object_id for polygon in previews[0].polygons] == [2]
+    assert [polygon.object_id for polygon in previews[1].polygons] == [2, 1, 3]
+    assert complete.polygons == previews[-1].polygons
+    assert previews[0].layers == complete.layers
+
+
+def test_preparation_progress_preserves_gpu_buffers_and_completes_each_stage():
+    from pyedb.viewer.demo import demo_scene
+
+    scene = demo_scene()
+    events = []
+    prepared = prepare_scene(scene, progress=lambda *event: events.append(event))
+    reference = prepare_scene(scene)
+    for name in ("vertices", "indices", "instances"):
+        np.testing.assert_array_equal(getattr(prepared, name), getattr(reference, name))
+    for stage in ("Rendering layout",):
+        completed = [(current, total) for name, current, total in events if name == stage]
+        assert completed[0][0] == 0
+        assert completed[-1][0] == completed[-1][1]
+        assert all(a[0] <= b[0] for a, b in zip(completed, completed[1:]))
+    assert events[-1][0] == "Rendering layout"
+    assert events[-1][1] == events[-1][2]
+
+
 def test_adapter_preserves_path_fallback_circle_coverage_and_skip_diagnostics():
     path = _primitive(type="path", end_cap1="unsupported", end_cap2="round", core=SimpleNamespace(center_line=None))
     circle = _primitive(2, type="circle", get_parameters=lambda: (0.003, 0.004, 0.001))
@@ -242,12 +283,16 @@ def test_edb_view_layout_delegates_without_opening_a_session(monkeypatch):
         edb,
         layers="TOP",
         nets=None,
-        arc_segments=32,
+        arc_segments=None,
         block=False,
         color_by_net=True,
         plot_components=True,
         annotate_component_names=True,
         plot_components_on_both_side=True,
+        analytic_traces=False,
+        exact_component_bounds=False,
+        chord_error=0.01,
+        progressive=True,
     )
     launch.reset_mock()
     Edb.view_layout(edb, block=False, color_by_net=True)
@@ -326,6 +371,79 @@ def test_adapter_retains_analytic_paths_caps_and_sharp_joins():
     curved.points.assert_not_called()
 
 
+def test_path_segments_reuse_source_metadata():
+    reads = {"layer_name": 0, "net_name": 0}
+
+    class CountedPath(SimpleNamespace):
+        def __getattribute__(self, name):
+            if name in reads:
+                reads[name] += 1
+            return super().__getattribute__(name)
+
+    path = CountedPath(
+        **vars(
+            _primitive(
+                type="path",
+                width=0.001,
+                end_cap1="round",
+                end_cap2="round",
+                corner_style="round",
+                core=SimpleNamespace(
+                    center_line=SimpleNamespace(
+                        arc_data=[_arc((i * 0.001, 0), ((i + 1) * 0.001, 0)) for i in range(20)]
+                    )
+                ),
+            )
+        )
+    )
+    scene = scene_from_edb(_edb([path]))
+    assert len(scene.traces) == 20
+    assert reads == {"layer_name": 1, "net_name": 1}
+
+
+@pytest.mark.parametrize("height", [0.0002, -0.0002])
+def test_grpc_contour_tessellation_evaluates_values_before_interpolating(monkeypatch, height):
+    from ansys.edb.core.utility.value import Value as CoreValue
+
+    from pyedb.grpc.database.primitive.primitive import Primitive
+    from pyedb.misc.utilities import compute_arc_points
+
+    points = [
+        SimpleNamespace(is_arc=False, x=CoreValue(0.0), y=CoreValue(0.0)),
+        SimpleNamespace(is_arc=True, arc_height=CoreValue(height)),
+        SimpleNamespace(is_arc=False, x=CoreValue(0.001), y=CoreValue(0.0)),
+    ]
+
+    def interpolate(start, end, sagitta, count):
+        assert all(type(value) is float for value in (*start, *end, sagitta))
+        return compute_arc_points(start, end, sagitta, count)
+
+    monkeypatch.setattr("pyedb.grpc.database.primitive.primitive.compute_arc_points", interpolate)
+    x, y = Primitive._get_points_for_plot(None, points, 32)
+    expected_x, expected_y = compute_arc_points([0.0, 0.0], [0.001, 0.0], height, 32)
+    assert x == pytest.approx([0.0, *expected_x, 0.001])
+    assert y == pytest.approx([0.0, *expected_y, 0.0])
+
+
+def test_grpc_polygon_data_is_read_once():
+    from pyedb.grpc.database.primitive.primitive import Primitive
+
+    class Source:
+        reads = 0
+
+        @property
+        def polygon_data(self):
+            self.reads += 1
+            return self
+
+    source = Source()
+    primitive = Primitive(None, SimpleNamespace(cast=lambda: source))
+    assert primitive.polygon_data.core is source
+    assert source.reads == 1
+    primitive.core = SimpleNamespace(cast=lambda: SimpleNamespace())
+    assert primitive.polygon_data is None
+
+
 def _pad(shape="circle", parameters=(0.002,), **kwargs):
     values = dict(shape=shape, parameters_values=parameters, offset_x=0, offset_y=0, rotation=0)
     values.update(kwargs)
@@ -373,6 +491,18 @@ def test_adapter_extracts_per_layer_via_pads_offset_rotation_drill_and_filters()
     assert not scene_from_edb(edb, layers=[]).pads
     via.position = (99, 99)
     assert top.center == pytest.approx((10, 21))
+
+
+def test_padstack_span_uses_snapshot_stackup_without_reenumerating_signal_layers():
+    via = _via(
+        core=SimpleNamespace(get_layer_range=lambda: (SimpleNamespace(name="BOTTOM"), SimpleNamespace(name="TOP")))
+    )
+    del via.layer_range_names
+    edb = _edb([])
+    edb.padstacks = SimpleNamespace(instances={via.id: via})
+    scene = scene_from_edb(edb)
+    assert [pad.layer for pad in scene.pads] == ["TOP", "BOTTOM"]
+    assert len(scene_from_edb(edb, layers="BOTTOM").pads) == 1
 
 
 def test_via_default_pad_blind_span_hole_override_and_missing_geometry_diagnostics():
@@ -505,6 +635,204 @@ def test_component_pad_offsets_follow_mirrored_component_basis():
     assert scene.pads[0].center == (9, 20)
     assert scene.pads[0].hole_center == (10, 20)
     assert scene.pads[1].rotation == pytest.approx(math.pi)
+
+
+def test_fast_component_envelopes_reuse_all_owned_pads_even_when_not_layout_pins():
+    class OwnedComponent(SimpleNamespace):
+        @property
+        def bounding_box(self):
+            raise AssertionError("Must not build a board layout instance for captured pad envelopes")
+
+    component = OwnedComponent(
+        id=100,
+        name="U1",
+        placement_layer="TOP",
+        is_enabled=True,
+        core=SimpleNamespace(transform=SimpleNamespace(is_null=True)),
+    )
+    via = _via(component=component, is_pin=False)
+    edb = _edb([])
+    edb.padstacks = SimpleNamespace(instances={via.id: via})
+    edb.components = SimpleNamespace(instances={"U1": component})
+    scene = scene_from_edb(edb)
+    assert len(scene.components) == 1
+    assert scene.components[0].bounds == pytest.approx((9, 18, 11, 22))
+    assert scene.components[0].nets == ("GND",)
+
+
+def test_fast_component_envelopes_estimate_copper_free_footprints_without_layout_instance():
+    class Component(SimpleNamespace):
+        @property
+        def bounding_box(self):
+            raise AssertionError("Fast display must not request a board layout instance")
+
+    component = Component(
+        id=100,
+        name="U1",
+        placement_layer="TOP",
+        is_enabled=True,
+        core=SimpleNamespace(members=[SimpleNamespace(edb_uid=9), SimpleNamespace(edb_uid=10)]),
+    )
+    definition = SimpleNamespace(
+        pad_by_layer={"Default": _pad("no_shape")}, hole_diameter=0, hole_offset_x=0, hole_offset_y=0
+    )
+    first = _via(9, definition=definition, position=(0.01, 0.02))
+    second = _via(10, definition=definition, position=(0.012, 0.02))
+    edb = _edb([])
+    edb.padstacks = SimpleNamespace(instances={9: first, 10: second})
+    edb.components = SimpleNamespace(instances={"U1": component})
+    scene = scene_from_edb(edb)
+    assert len(scene.components) == 1
+    assert scene.components[0].bounds == pytest.approx((9.8, 19.8, 12.2, 20.2))
+    assert any("estimated" in message for message in scene.diagnostics)
+
+
+def test_fast_path_contours_avoid_analytic_remote_properties():
+    path = _primitive(type="path", has_voids=False)
+    scene = scene_from_edb(_edb([path]), analytic_traces=False)
+    assert not scene.traces
+    assert len(scene.polygons) == 1
+    assert scene.polygons[0].category == "trace"
+    path.points.assert_called_once_with(arc_segments=8, chord_error=0.00001)
+
+
+@pytest.mark.parametrize("radius", [0.02, 0.2, 2.0, 20.0])
+@pytest.mark.parametrize("sweep", [0.01, math.pi / 2, math.pi, math.tau * 0.9])
+@pytest.mark.parametrize("direction", [-1, 1])
+def test_adaptive_chords_bound_error_for_radius_and_total_sweep(radius, sweep, direction):
+    from pyedb.misc.utilities import arc_segment_count, compute_arc_points
+
+    error = 0.01
+    count = arc_segment_count(radius, sweep, error)
+    assert radius * (1 - math.cos(sweep / (2 * count))) <= error + 1e-12
+    assert sweep / count <= math.pi / 4 + 1e-12
+    start, end = (radius, 0), (radius * math.cos(sweep), radius * math.sin(sweep))
+    sagitta = radius * (1 - math.cos(sweep / 2)) * direction
+    x, y = compute_arc_points(start, end, sagitta, chord_error=error)
+    assert len(x) == len(y) == count - 1
+    assert all(math.isfinite(value) for value in (*x, *y))
+
+
+def test_adaptive_chords_grow_with_radius_and_angle_without_oversampling_flat_arcs():
+    from pyedb.misc.utilities import arc_segment_count
+
+    assert arc_segment_count(10, math.pi, 0.01) > arc_segment_count(0.1, math.pi, 0.01)
+    assert arc_segment_count(10, math.pi, 0.01) > arc_segment_count(10, 0.1, 0.01)
+    assert arc_segment_count(1000, 0.0001, 0.01) == 1
+    assert arc_segment_count(0.02, math.tau, 0.01) >= 8
+    with pytest.raises(ValueError, match="segment limit"):
+        arc_segment_count(1e15, math.tau, 1e-12)
+
+
+@pytest.mark.parametrize("error", [0, -1, float("nan"), float("inf"), True])
+def test_adaptive_chord_error_validation(error):
+    with pytest.raises(ValueError, match="chord_error"):
+        scene_from_edb(_edb([]), chord_error=error)
+
+
+def test_pad_positions_reuse_one_component_transform_and_one_pose_read():
+    from pyedb.viewer.adapters.grpc import _placement
+
+    transform = SimpleNamespace(
+        is_null=False,
+        transform_point=Mock(side_effect=lambda point: _point(0.01 - point.y.value, 0.02 + point.x.value)),
+    )
+    component = SimpleNamespace(id=7, core=SimpleNamespace(transform=transform))
+    first = SimpleNamespace(
+        core=SimpleNamespace(get_position_and_rotation=Mock(return_value=(0.001, 0.002, 0))), component=component
+    )
+    second = SimpleNamespace(
+        core=SimpleNamespace(get_position_and_rotation=Mock(return_value=(0.003, 0.004, 0))), component=component
+    )
+    cache = {}
+    world, vector, scale = _placement(first, cache)
+    assert world((0, 0)) == pytest.approx((8, 21))
+    assert vector((1, 0)) == pytest.approx((0, 1))
+    assert scale == pytest.approx(1)
+    assert _placement(second, cache)[0]((0, 0)) == pytest.approx((6, 23))
+    assert transform.transform_point.call_count == 3
+    first.core.get_position_and_rotation.assert_called_once()
+    second.core.get_position_and_rotation.assert_called_once()
+
+
+def test_progressive_preparation_reuses_unchanged_mesh_but_adds_pads():
+    polygon = ScenePolygon(1, "TOP", "GND", rectangle())
+    preview = LayoutScene((SceneLayer("TOP", (1, 0, 0, 1)),), (polygon,), net_names=("GND",))
+    complete = LayoutScene(
+        preview.layers, preview.polygons, pads=(ScenePad(2, "TOP", "GND", (5, 5), (1, 1)),), net_names=preview.net_names
+    )
+    mesh = prepare_scene(preview)
+    prepared = prepare_scene(complete, polygon_mesh=(preview, mesh))
+    assert prepared.vertices is mesh.vertices
+    assert prepared.indices is mesh.indices
+    assert prepared.vertex_nets is mesh.vertex_nets
+    assert len(prepared.instances) == 1
+
+
+def test_progressive_preparation_appends_new_polygons_with_correct_indices_and_network_ids():
+    layers = (SceneLayer("TOP", (1, 0, 0, 1)),)
+    polygon = ScenePolygon(1, "TOP", "GND", rectangle())
+    preview = LayoutScene(layers, (polygon,), net_names=("GND", "PWR"))
+    extra = ScenePolygon(2, "TOP", "PWR", rectangle(20, 0, 25, 5), category="pad")
+    complete = LayoutScene(layers, (polygon, extra), net_names=preview.net_names)
+    mesh = prepare_scene(preview)
+    appended = prepare_scene(complete, polygon_mesh=(preview, mesh))
+    reference = prepare_scene(complete)
+    for name in ("vertices", "indices", "vertex_nets"):
+        np.testing.assert_array_equal(getattr(appended, name), getattr(reference, name))
+    assert appended.mesh_parent_id == id(mesh)
+    assert appended.batches[1].index_start == len(mesh.indices)
+    assert (appended.vertex_nets[len(mesh.vertices) :] == 2).all()
+
+
+def test_each_viewer_capture_reads_the_current_source_and_releases_it():
+    from pyedb.viewer.capture import SourceCapture
+    from pyedb.viewer.demo import demo_scene
+
+    first_scene, second_scene = demo_scene(), LayoutScene((), (), "Changed source")
+    load = Mock(side_effect=[first_scene, second_scene])
+    progress = Mock()
+    first, second = SourceCapture(load), SourceCapture(load)
+    preview = Mock()
+    first.set_preview(preview)
+    assert first(progress) is first_scene
+    first.release_source()
+    assert first.loader is first.preview is None
+    assert second(progress) is second_scene
+    assert load.call_count == 2
+    load.assert_any_call(progress, preview=preview)
+
+
+def test_exact_component_envelopes_remain_available():
+    component = _component(core=SimpleNamespace(transform=SimpleNamespace(is_null=True)))
+    via = _via(component=component)
+    edb = _edb([])
+    edb.padstacks = SimpleNamespace(instances={via.id: via})
+    edb.components = SimpleNamespace(instances={"U1": component})
+    exact = scene_from_edb(edb, exact_component_bounds=True)
+    assert exact.components[0].bounds == (1, 2, 4, 6)
+
+
+def test_primitives_without_voids_do_not_enumerate_an_empty_remote_collection():
+    class SolidPath(SimpleNamespace):
+        @property
+        def voids(self):
+            raise AssertionError("No remote void collection is needed")
+
+    values = vars(
+        _primitive(
+            type="path",
+            has_voids=False,
+            width=0.001,
+            end_cap1="round",
+            end_cap2="round",
+            corner_style="round",
+            core=SimpleNamespace(center_line=SimpleNamespace(arc_data=[_arc((0, 0), (0.001, 0))])),
+        )
+    )
+    del values["voids"]
+    scene = scene_from_edb(_edb([SolidPath(**values)]))
+    assert len(scene.traces) == 1
 
 
 def test_unassigned_sdf_geometry_retains_zero_net_material():
@@ -658,7 +986,8 @@ def test_invalid_polygon_pad_retains_drill_and_continues_to_next_layer():
     via.definition.pad_by_layer["TOP"] = _pad(
         "polygon",
         polygon_data=SimpleNamespace(
-            without_arcs=lambda **kwargs: SimpleNamespace(points=[_point(0, 0), _point(1, 1)])
+            without_arcs=lambda **kwargs: SimpleNamespace(points=[_point(0, 0), _point(1, 1)]),
+            points=[SimpleNamespace(is_arc=False, x=0.0, y=0.0), SimpleNamespace(is_arc=False, x=1.0, y=1.0)],
         ),
     )
     edb = _edb([])

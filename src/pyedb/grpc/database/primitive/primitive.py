@@ -35,7 +35,7 @@ from ansys.edb.core.primitive.circle import Circle as CoreCircle
 
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
-from pyedb.grpc.database.utility.value import Value
+from pyedb.grpc.database.utility.value import Value, value_as_float
 from pyedb.misc.utilities import compute_arc_points
 
 layer_type_mapping = {
@@ -107,8 +107,15 @@ class Primitive:
         :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
 
         """
-        primitive = self.core.cast()
-        return PolygonData(self._pedb, primitive.polygon_data) if hasattr(primitive, "polygon_data") else None
+        try:
+            data = self.core.polygon_data
+        except AttributeError:
+            primitive = self.core.cast()
+            try:
+                data = primitive.polygon_data
+            except AttributeError:
+                return None
+        return PolygonData(self._pedb, data)
 
     @polygon_data.setter
     def polygon_data(self, value):
@@ -322,7 +329,7 @@ class Primitive:
                     area -= void_pd.area()
         return area
 
-    def _get_points_for_plot(self, my_net_points, num) -> tuple[list[float], list[float]]:
+    def _get_points_for_plot(self, my_net_points, num, *, chord_error=None) -> tuple[list[float], list[float]]:
         """
         Get the points to be plotted.
         """
@@ -331,16 +338,21 @@ class Primitive:
         y = []
         for i, point in enumerate(my_net_points):
             if not point.is_arc:
-                x.append(Value(point.x))
-                y.append(Value(point.y))
+                x.append(value_as_float(point.x))
+                y.append(value_as_float(point.y))
             else:
-                arc_h = Value(point.arc_height)
-                p1 = [Value(my_net_points[i - 1].x), Value(my_net_points[i - 1].y)]
+                # Tessellation consumes evaluated coordinates. Keeping Value
+                # subclasses here wraps every intermediate arithmetic result.
+                arc_h = value_as_float(point.arc_height)
+                p1 = [value_as_float(my_net_points[i - 1].x), value_as_float(my_net_points[i - 1].y)]
                 if i + 1 < len(my_net_points):
-                    p2 = [Value(my_net_points[i + 1].x), Value(my_net_points[i + 1].y)]
+                    p2 = [value_as_float(my_net_points[i + 1].x), value_as_float(my_net_points[i + 1].y)]
                 else:
-                    p2 = [Value(my_net_points[0].x), Value(my_net_points[0].y)]
-                x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num)
+                    p2 = [value_as_float(my_net_points[0].x), value_as_float(my_net_points[0].y)]
+                if chord_error is None:
+                    x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num)
+                else:
+                    x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num, chord_error=chord_error)
                 x.extend(x_arc)
                 y.extend(y_arc)
         # fmt: on
@@ -807,20 +819,23 @@ class Primitive:
             )
         return self.add_void(void_poly)
 
-    def points(self, arc_segments=6) -> tuple[list[float], list[float]] | None:
+    def points(self, arc_segments=6, *, chord_error=None) -> tuple[list[float], list[float]] | None:
         """Return the list of points with arcs converted to segments.
 
         Parameters
         ----------
         arc_segments : int, optional
             Number of facets to convert an arc. The default is ``6``.
+        chord_error : float, optional
+            Maximum arc chord error in meters. When set, subdivisions depend
+            on radius and sweep instead of a fixed point count.
 
         Returns
         -------
         tuple[list[float], list[float]] or None
             Tuple of ``(x, y)`` coordinate lists, or ``None`` if no points are found.
         """
-        xt, yt = self._get_points_for_plot(self.polygon_data.core.points, arc_segments)
+        xt, yt = self._get_points_for_plot(self.polygon_data.core.points, arc_segments, chord_error=chord_error)
         if not xt:
             return None
         x, y = GeometryOperators.orient_polygon(xt, yt, clockwise=True)

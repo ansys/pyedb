@@ -33,6 +33,266 @@ pytestmark = [
 ]
 
 
+def test_loading_progress_keeps_event_loop_live_and_propagates_errors():
+    import threading
+
+    from PySide6.QtCore import QTimer
+    from PySide6.QtWidgets import QApplication, QDialog
+
+    from pyedb.viewer.demo import demo_scene
+    from pyedb.viewer.qt.app import show_scene
+    from pyedb.viewer.qt.loading import LoadingPanel
+    from pyedb.viewer.qt.window import LayoutWindow
+
+    app = QApplication.instance() or QApplication([])
+    heartbeat = threading.Event()
+    timer = QTimer()
+    timer.setInterval(10)
+    observed = []
+
+    def observe():
+        windows = [w for w in app.topLevelWidgets() if isinstance(w, LayoutWindow) and w.isVisible()]
+        if windows and windows[0].canvas.loading.isVisible():
+            observed.append((windows[0], windows[0].canvas.loading))
+            heartbeat.set()
+
+    timer.timeout.connect(observe)
+    timer.start()
+    scene = demo_scene()
+
+    def loader(progress):
+        assert threading.current_thread() is not threading.main_thread()
+        progress("Reading pads and vias", 40, 100)
+        assert heartbeat.wait(2), "The GUI event loop stopped during extraction"
+        return scene
+
+    try:
+        window = show_scene(loader=loader, block=False)
+        assert window.canvas.scene is scene
+        assert observed and all(w is window and panel is window.canvas.loading for w, panel in observed)
+        assert not any(isinstance(w, QDialog) and w.isVisible() for w in app.topLevelWidgets())
+        assert window.layer_list.count() == len(scene.layers)
+        assert window.network_panel.names
+        window.canvas.grabFramebuffer()
+        window.close()
+
+        def broken(progress):
+            raise RuntimeError("Source unavailable")
+
+        with pytest.raises(RuntimeError, match="Source unavailable"):
+            show_scene(loader=broken, block=False)
+        panel = LoadingPanel()
+        panel.set_progress("Reading pads and vias", 40, 100)
+        assert panel.bar.value() == 40
+        assert panel.percent.text() == "40%"
+        panel.set_progress("Discovering geometry", 0, 0)
+        assert panel.bar.minimum() == panel.bar.maximum() == 0
+        assert panel.percent.text() == ""
+        panel.close()
+    finally:
+        timer.stop()
+        app.processEvents()
+
+
+def test_standalone_extraction_keeps_default_blocking_lifecycle():
+    import subprocess
+    import sys
+    import textwrap
+
+    code = textwrap.dedent("""
+        from types import SimpleNamespace
+        from PySide6.QtCore import QTimer, QMetaObject, QObject, Slot, Qt
+        from PySide6.QtWidgets import QApplication
+        import pyedb.viewer as viewer
+        from pyedb.viewer.demo import demo_scene
+        from pyedb.viewer.qt.window import LayoutWindow
+
+        ticks = []
+        def finish():
+            ticks.append(any(isinstance(w, LayoutWindow) and w.isVisible()
+                             for w in QApplication.topLevelWidgets()))
+            QApplication.instance().quit()
+        class Stopper(QObject):
+            @Slot()
+            def schedule(self):
+                QTimer.singleShot(200, finish)
+        stopper = Stopper()
+        def capture(*args, **kwargs):
+            QMetaObject.invokeMethod(stopper, 'schedule', Qt.ConnectionType.QueuedConnection)
+            return demo_scene()
+        viewer.scene_from_edb = capture
+        window = viewer.launch_viewer(SimpleNamespace())
+        assert ticks == [True], 'Standalone event loop returned before its timer'
+        assert window.canvas.error is None
+        window.close()
+    """)
+    completed = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=20)
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+
+
+def test_solid_polygon_network_colors_share_one_draw_across_interleaved_source_layers():
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon
+    from pyedb.viewer.colors import net_color
+    from pyedb.viewer.mesh import prepare_scene
+    from pyedb.viewer.qt.canvas import LayoutView
+
+    def rect(left, right):
+        return ((left, -2), (right, -2), (right, 2), (left, 2))
+
+    scene = LayoutScene(
+        (SceneLayer("TOP", (1, 1, 1, 1)), SceneLayer("BOTTOM", (1, 1, 1, 1))),
+        (
+            ScenePolygon(1, "TOP", "A", rect(-8, -2)),
+            ScenePolygon(2, "BOTTOM", "C", rect(-1, 1)),
+            ScenePolygon(3, "TOP", "B", rect(2, 8)),
+        ),
+    )
+    app = QApplication.instance() or QApplication([])
+    view = LayoutView(scene)
+    view.show_grid = view.show_components = False
+    view.opacity = 1
+    view.resize(640, 480)
+    view.set_prepared(prepare_scene(scene))
+    view.show()
+    try:
+        QTest.qWait(100)
+        frame = view.grabFramebuffer()
+        for position, net_id in ((-5, 1), (5, 2)):
+            x, y = view.camera.world_to_screen(position, 0)
+            pixel = frame.pixelColor(round(x * view.devicePixelRatioF()), round(y * view.devicePixelRatioF()))
+            assert (pixel.red(), pixel.green(), pixel.blue()) == pytest.approx(
+                tuple(round(c * 255) for c in net_color(net_id)), abs=1
+            )
+        assert view.renderer.draw_calls == 1
+        assert view.error is None
+    finally:
+        view.cleanup()
+        view.close()
+        app.processEvents()
+
+
+def test_progressive_loading_displays_copper_before_completion_and_preserves_view():
+    import threading
+    from types import SimpleNamespace
+
+    from PySide6.QtCore import QTimer
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.viewer import LayoutScene, SceneLayer, ScenePad, ScenePolygon
+    from pyedb.viewer.capture import SourceCapture
+    from pyedb.viewer.qt.app import show_scene
+    from pyedb.viewer.qt.window import LayoutWindow
+
+    app = QApplication.instance() or QApplication([])
+    layers = (SceneLayer("TOP", (1, 0, 0, 1)),)
+    polygon = ScenePolygon(1, "TOP", "GND", ((0, 0), (5, 0), (5, 5), (0, 5)))
+    copper = LayoutScene(layers, (polygon,), net_names=("GND",))
+    complete = LayoutScene(layers, (polygon,), pads=(ScenePad(2, "TOP", "GND", (1, 1), (1, 1)),), net_names=("GND",))
+    resume = threading.Event()
+    observed = []
+
+    def read(progress, preview=None):
+        preview(copper)
+        progress("Reading pads and vias", 1, 2)
+        assert resume.wait(3), "Copper was not displayed while capture was still running"
+        preview(copper)  # A later copper wave must preserve the user's camera.
+        return complete
+
+    def observe():
+        for widget in app.topLevelWidgets():
+            if (
+                isinstance(widget, LayoutWindow)
+                and widget.isVisible()
+                and widget._has_preview
+                and widget.canvas.renderer.prepared is not None
+                and not widget.canvas._pending_upload
+                and not observed
+            ):
+                canvas = widget.canvas
+                canvas.camera.zoom_at(100, 100, 2)
+                observed.append(
+                    (widget, canvas.loading, canvas.camera.center_x, canvas.camera.center_y, canvas.camera.scale)
+                )
+                assert not canvas._loading_complete
+                resume.set()
+
+    timer = QTimer()
+    timer.setInterval(10)
+    timer.timeout.connect(observe)
+    timer.start()
+    window = None
+    try:
+        loader = SourceCapture(read)
+        window = show_scene(loader=loader, block=False)
+        QTest.qWait(100)
+        window.canvas.grabFramebuffer()
+        assert observed[0][:2] == (window, window.canvas.loading)
+        assert (window.canvas.camera.center_x, window.canvas.camera.center_y, window.canvas.camera.scale) == observed[
+            0
+        ][2:]
+        assert window.canvas._loading_complete
+        assert window.canvas.loading.isHidden()
+        assert window.canvas.renderer.prepared.vertices is window._preparation.preview_prepared.vertices
+    finally:
+        resume.set()
+        timer.stop()
+        if window is not None:
+            window.close()
+        app.processEvents()
+
+
+def test_progressive_mesh_append_uploads_only_new_tail_data(monkeypatch):
+    from unittest.mock import Mock
+
+    from OpenGL import GL
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon
+    from pyedb.viewer.mesh import prepare_scene
+    from pyedb.viewer.qt.canvas import LayoutView
+
+    layers = (SceneLayer("TOP", (1, 0, 0, 1)),)
+    first = ScenePolygon(1, "TOP", "A", ((0, 0), (2, 0), (2, 2), (0, 2)))
+    second = ScenePolygon(2, "TOP", "B", ((3, 0), (5, 0), (5, 2), (3, 2)))
+    preview = LayoutScene(layers, (first,), net_names=("A", "B"))
+    complete = LayoutScene(layers, (first, second), net_names=preview.net_names)
+    base = prepare_scene(preview)
+    appended = prepare_scene(complete, polygon_mesh=(preview, base))
+    app = QApplication.instance() or QApplication([])
+    view = LayoutView(preview)
+    view.show_grid = view.show_components = False
+    view.resize(640, 480)
+    view.set_prepared(base)
+    view.show()
+    try:
+        QTest.qWait(100)
+        view.grabFramebuffer()
+        allocation = Mock(wraps=GL.glBufferData)
+        updates = Mock(wraps=GL.glBufferSubData)
+        monkeypatch.setattr(GL, "glBufferData", allocation)
+        monkeypatch.setattr(GL, "glBufferSubData", updates)
+        view.scene = complete
+        view.fit_all()
+        view.set_prepared(appended)
+        view.grabFramebuffer()
+        assert not any(call.args[1] > 0 for call in allocation.call_args_list)
+        assert {call.args[1] for call in updates.call_args_list} == {
+            base.vertices.nbytes,
+            base.indices.nbytes,
+            base.vertex_nets.nbytes,
+        }
+        assert view.error is None
+    finally:
+        view.cleanup()
+        view.close()
+        app.processEvents()
+
+
 @pytest.mark.parametrize("offset, span", [(0.0, 20.0), (1e9, 0.001)])
 def test_stencil_hole_union_and_resident_geometry(offset, span):
     pytest.importorskip("PySide6")

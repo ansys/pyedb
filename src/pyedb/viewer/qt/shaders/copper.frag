@@ -23,9 +23,17 @@
 #version 330 core
 
 uniform vec4 color;
+uniform bool color_by_net;
+uniform bool rectangle_pass;
+uniform sampler1D net_palette;
+flat in uint net_id;
 out vec4 fragment_color;
 
 void main() {
     // Display-space straight alpha. No second gamma conversion at Qt composition.
     fragment_color = color;
+    if (color_by_net && !rectangle_pass && net_id > 0u) {
+        int index = int((net_id - 1u) % uint(textureSize(net_palette, 0)));
+        fragment_color.rgb = texelFetch(net_palette, index, 0).rgb;
+    }
 }

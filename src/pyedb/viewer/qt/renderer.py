@@ -43,6 +43,8 @@ from pyedb.viewer.qt.grid import GridRenderer
 class Renderer:
     def __init__(self):
         self.program = self.vao = self.quad_vao = self.vbo = self.ebo = 0
+        self.net_vbo = 0
+        self.vertex_palette = False
         self.prepared = None
         self.upload_count = 0
         self.draw_calls = 0
@@ -62,14 +64,27 @@ class Renderer:
         )
         self.uniforms = {
             name: GL.glGetUniformLocation(self.program, name)
-            for name in ("camera_split", "viewport", "scale", "mirror_x", "rectangle_pass", "rectangle", "color")
+            for name in (
+                "camera_split",
+                "viewport",
+                "scale",
+                "mirror_x",
+                "rectangle_pass",
+                "rectangle",
+                "color",
+                "color_by_net",
+                "net_palette",
+            )
         }
         self.vao, self.quad_vao = (int(v) for v in GL.glGenVertexArrays(2))
-        self.vbo, self.ebo = (int(v) for v in GL.glGenBuffers(2))
+        self.vbo, self.ebo, self.net_vbo = (int(v) for v in GL.glGenBuffers(3))
         GL.glBindVertexArray(self.vao)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
         GL.glEnableVertexAttribArray(0)
         GL.glVertexAttribPointer(0, 4, GL.GL_FLOAT, False, 16, c_void_p(0))
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.net_vbo)
+        GL.glEnableVertexAttribArray(1)
+        GL.glVertexAttribIPointer(1, 1, GL.GL_UNSIGNED_INT, 4, c_void_p(0))
         GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self.ebo)
         GL.glBindVertexArray(0)
         self.sdf.initialize()
@@ -79,10 +94,38 @@ class Renderer:
     def upload(self, prepared):
         """Upload once per snapshot, never on camera or visibility changes."""
         GL.glBindVertexArray(self.vao)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, prepared.vertices.nbytes, prepared.vertices, GL.GL_STATIC_DRAW)
-        GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self.ebo)
-        GL.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, prepared.indices.nbytes, prepared.indices, GL.GL_STATIC_DRAW)
+        same_mesh = self.prepared is not None and all(
+            getattr(prepared, name) is getattr(self.prepared, name) for name in ("vertices", "indices", "vertex_nets")
+        )
+        parent_mesh = self.prepared if prepared.mesh_parent_id == id(self.prepared) else None
+        if not same_mesh:
+            self._upload_mesh_buffer(
+                GL.GL_ARRAY_BUFFER,
+                self.vbo,
+                prepared.vertices,
+                "_vertex_capacity",
+                None if parent_mesh is None else parent_mesh.vertices,
+            )
+            self._upload_mesh_buffer(
+                GL.GL_ELEMENT_ARRAY_BUFFER,
+                self.ebo,
+                prepared.indices,
+                "_index_capacity",
+                None if parent_mesh is None else parent_mesh.indices,
+            )
+            self.vertex_palette = prepared.vertex_nets is not None
+            if self.vertex_palette:
+                self._upload_mesh_buffer(
+                    GL.GL_ARRAY_BUFFER,
+                    self.net_vbo,
+                    prepared.vertex_nets,
+                    "_net_capacity",
+                    None if parent_mesh is None else parent_mesh.vertex_nets,
+                )
+                GL.glEnableVertexAttribArray(1)
+            else:
+                GL.glDisableVertexAttribArray(1)
+                GL.glVertexAttribI1ui(1, 0)
         GL.glBindVertexArray(0)
         self.prepared = prepared
         self.layer_batches = {}
@@ -91,6 +134,19 @@ class Renderer:
         self.sdf.upload(prepared)
         self.labels.upload(prepared.component_batches)
         self.upload_count += 1
+
+    def _upload_mesh_buffer(self, target, buffer, values, capacity_name, previous):
+        GL.glBindBuffer(target, buffer)
+        if previous is not None and values.nbytes <= getattr(self, capacity_name, 0):
+            tail = values[len(previous) :]
+            if tail.nbytes:
+                GL.glBufferSubData(target, previous.nbytes, tail.nbytes, tail)
+        else:
+            capacity = values.nbytes + 65536
+            GL.glBufferData(target, capacity, None, GL.GL_STATIC_DRAW)
+            if values.nbytes:
+                GL.glBufferSubData(target, 0, values.nbytes, values)
+            setattr(self, capacity_name, capacity)
 
     def _indexed(self, start, count):
         GL.glDrawElements(GL.GL_TRIANGLES, count, GL.GL_UNSIGNED_INT, c_void_p(start * 4))
@@ -219,6 +275,12 @@ class Renderer:
 
     def _polygons(self, layer, category, camera, pixel_ratio, alpha, net, color_by_net):
         GL.glUseProgram(self.program)
+        palette = color_by_net and self.vertex_palette
+        GL.glUniform1i(self.uniforms["color_by_net"], palette)
+        GL.glUniform1i(self.uniforms["net_palette"], 1)
+        GL.glActiveTexture(GL.GL_TEXTURE1)
+        GL.glBindTexture(GL.GL_TEXTURE_1D, self.sdf.palette)
+        GL.glActiveTexture(GL.GL_TEXTURE0)
         material = (*layer.color[:3], alpha)
         GL.glUniform4f(self.uniforms["color"], *material)
         solid_start = solid_count = 0
@@ -227,6 +289,8 @@ class Renderer:
                 continue
             rgb = net_color(self.sdf.net_ids.get(batch.net, 0)) if color_by_net else None
             batch_color = (*(rgb or layer.color[:3]), alpha)
+            if palette and not batch.hole_count:
+                batch_color = (*layer.color[:3], alpha)
             if batch_color != material:
                 if solid_count:
                     self._solid(solid_start, solid_count)
@@ -298,7 +362,7 @@ class Renderer:
     def release(self):
         """Release resources explicitly while their owning context is current."""
         if self.vbo or self.ebo:
-            GL.glDeleteBuffers(2, [self.vbo, self.ebo])
+            GL.glDeleteBuffers(3, [self.vbo, self.ebo, self.net_vbo])
         if self.vao or self.quad_vao:
             GL.glDeleteVertexArrays(2, [self.vao, self.quad_vao])
         if self.program:
@@ -307,5 +371,6 @@ class Renderer:
         self.labels.release()
         self.grid.release()
         self.program = self.vao = self.quad_vao = self.vbo = self.ebo = 0
+        self.net_vbo = 0
         self.prepared = None
         self._stencil_checked = False

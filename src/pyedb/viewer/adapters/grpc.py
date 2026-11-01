@@ -25,7 +25,18 @@
 from collections import Counter
 import math
 
-from pyedb.viewer.scene import LayoutScene, SceneComponent, SceneJoin, SceneLayer, ScenePad, ScenePolygon, SceneTrace
+from pyedb.misc.utilities import arc_segment_count
+from pyedb.viewer.progress import progress_items
+from pyedb.viewer.scene import (
+    LayoutScene,
+    SceneComponent,
+    SceneJoin,
+    SceneLayer,
+    ScenePad,
+    ScenePolygon,
+    SceneTrace,
+    union_bounds,
+)
 
 
 def _names(value):
@@ -63,8 +74,11 @@ def _component_sides(edb, diagnostics):
     return sides
 
 
-def _contour(primitive, arc_segments):
-    coordinates = primitive.points(arc_segments=arc_segments)
+def _contour(primitive, arc_segments, chord_error=None):
+    if chord_error is None:
+        coordinates = primitive.points(arc_segments=arc_segments)
+    else:
+        coordinates = primitive.points(arc_segments=arc_segments, chord_error=chord_error / 1000)
     if coordinates is None:
         raise ValueError("No polygon boundary available.")
     x, y = coordinates
@@ -74,7 +88,10 @@ def _contour(primitive, arc_segments):
 
 
 def _number(value):
-    return float(value.value if hasattr(value, "value") else value)
+    try:
+        return float(value.value)
+    except AttributeError:
+        return float(value)
 
 
 def _xy(point):
@@ -92,16 +109,22 @@ def _tangent(trace, end=False):
     return (x / length, y / length) if length else (1, 0)
 
 
-def _trace_geometry(primitive):
+def _trace_geometry(primitive, layer, net):
     """Preserve source lines/arcs and add only constant-size join geometry."""
     arcs = primitive.core.center_line.arc_data
     if not arcs:
         raise ValueError("Empty path center line.")
-    caps = primitive.end_cap1, primitive.end_cap2
+    get_caps = getattr(primitive.core, "get_end_cap_style", None)
+    caps = (
+        tuple(cap.name.lower() for cap in get_caps())
+        if callable(get_caps)
+        else (primitive.end_cap1, primitive.end_cap2)
+    )
     if any(cap not in {"flat", "round", "extended"} for cap in caps):
         raise ValueError(f"Unsupported path caps: {caps}.")
     round_join = primitive.corner_style == "round"
     width = float(primitive.width) * 1000
+    object_id = primitive.id
     traces, joins = [], []
     for index, arc in enumerate(arcs):
         start, end = _xy(arc.start), _xy(arc.end)
@@ -117,9 +140,9 @@ def _trace_geometry(primitive):
                 sweep = math.tau if arc.is_ccw() else -math.tau
         traces.append(
             SceneTrace(
-                primitive.id,
-                primitive.layer_name,
-                primitive.net_name,
+                object_id,
+                layer,
+                net,
                 start,
                 end,
                 width,
@@ -148,7 +171,7 @@ def _trace_geometry(primitive):
             if divisor < 1e-8:
                 raise ValueError("Nearly reversing sharp path corner requires source boundary coverage.")
             tip = (x - (ty + uy) * r / divisor, y + (tx + ux) * r / divisor)
-            joins.append(SceneJoin(primitive.id, primitive.layer_name, primitive.net_name, (before.end, p, tip, q)))
+            joins.append(SceneJoin(object_id, layer, net, (before.end, p, tip, q)))
     return traces, joins
 
 
@@ -157,11 +180,17 @@ def _rotate(point, angle):
     return c * point[0] - s * point[1], s * point[0] + c * point[1]
 
 
-def _placement(instance, component_cache):
-    position = tuple(float(v) * 1000 for v in instance.position)
-    rotation = float(instance.rotation)
+def _placement(instance, component_cache, component=None):
+    get_position = getattr(getattr(instance, "core", None), "get_position_and_rotation", None)
+    if callable(get_position):
+        state = get_position()
+        position = tuple(_number(v) * 1000 for v in state[:2])
+        rotation = _number(state[2])
+    else:
+        position = tuple(float(v) * 1000 for v in instance.position)
+        rotation = float(instance.rotation)
     basis = ((1, 0), (0, 1))
-    component = instance.component
+    component = instance.component if component is None else component
     if component:
         key = component.id
         if key not in component_cache:
@@ -169,12 +198,21 @@ def _placement(instance, component_cache):
 
             transform = component.core.transform
             if transform.is_null:
-                component_cache[key] = basis
+                component_cache[key] = basis, (0.0, 0.0)
             else:
                 origin, x, y = [transform.transform_point(PointData(p)) for p in ((0, 0), (1, 0), (0, 1))]
                 ox, oy = _number(origin.x), _number(origin.y)
-                component_cache[key] = ((_number(x.x) - ox, _number(x.y) - oy), (_number(y.x) - ox, _number(y.y) - oy))
-        basis = component_cache[key]
+                component_cache[key] = (
+                    ((_number(x.x) - ox, _number(x.y) - oy), (_number(y.x) - ox, _number(y.y) - oy)),
+                    (ox * 1000, oy * 1000),
+                )
+        basis, origin = component_cache[key]
+        if callable(get_position):
+            px, py = position
+            position = (
+                origin[0] + basis[0][0] * px + basis[1][0] * py,
+                origin[1] + basis[0][1] * px + basis[1][1] * py,
+            )
 
     def vector(point):
         x, y = _rotate(point, rotation)
@@ -188,13 +226,20 @@ def _placement(instance, component_cache):
     return world, vector, scale
 
 
-def _pad_template(pad, arc_segments):
+def _pad_template(pad, arc_segments, chord_error=None):
     shape = pad.shape
     if shape in {"no_shape", "geometry", "no_geometry"}:
         return None
     offset = (float(pad.offset_x) * 1000, float(pad.offset_y) * 1000)
     rotation = float(pad.rotation)
     if shape == "polygon":
+        if chord_error is not None:
+            from pyedb.grpc.database.primitive.primitive import Primitive
+
+            x, y = Primitive._get_points_for_plot(
+                None, pad.polygon_data.points, arc_segments, chord_error=chord_error / 1000
+            )
+            return shape, tuple((px * 1000, py * 1000) for px, py in zip(x, y)), offset, rotation
         polygon = pad.polygon_data.without_arcs(max_arc_angle=math.tau / arc_segments, max_points=arc_segments)
         return shape, tuple(_xy(p) for p in polygon.points), offset, rotation
     values = tuple(float(v) * 1000 for v in (pad.parameters_values or ()))
@@ -203,18 +248,19 @@ def _pad_template(pad, arc_segments):
     return shape, values, offset, rotation
 
 
-def _mapped_layers(instance, edb, definition, layers, cache):
+def _mapped_layers(instance, edb, definition, layers, cache, layout_layers=None, name=None):
     """Resolve explicit definition-to-layout mappings, including permuted names."""
     layer_map = getattr(instance, "layer_map", None)
     if layer_map is None or layer_map.is_null:
         return {layer: layer for layer in layers}
-    key = (instance.padstack_definition, layer_map.msg.SerializeToString(), tuple(layers))
+    key = (name or instance.padstack_definition, layer_map.msg.SerializeToString(), tuple(layers))
     if key not in cache:
         data = definition.core.data
         names = dict(zip(data.layer_ids, data.layer_names))
         mapped = {}
         for layer in layers:
-            ids = layer_map.get_mapping_backward(edb.stackup.layers[layer].id)
+            source_layers = edb.stackup.layers if layout_layers is None else layout_layers
+            ids = layer_map.get_mapping_backward(source_layers[layer].id)
             candidates = [names[layer_id] for layer_id in ids if layer_id in names]
             if len(candidates) > 1:
                 raise ValueError(f"Ambiguous padstack layer mapping on {layer}.")
@@ -223,11 +269,11 @@ def _mapped_layers(instance, edb, definition, layers, cache):
     return cache[key]
 
 
-def _pin_owner(instance, sides, cache):
+def _pin_owner(instance, sides, cache, component=None):
     """Keep component-pin ownership separate from the physical copper pad layer."""
     if not getattr(instance, "is_pin", False):
         return {}
-    component = instance.component
+    component = instance.component if component is None else component
     if not component:
         return {}
     if component.id not in cache:
@@ -244,7 +290,19 @@ def _pin_owner(instance, sides, cache):
 def _padstack_layers(instance, selected_layers, conductors, extended_ranges):
     """Include conducting layers within the instance's physical span."""
     instance_layers = None
-    if extended_ranges:
+    core = getattr(instance, "core", None)
+    get_range = getattr(core, "get_layer_range", None)
+    if callable(get_range):
+        # layer_range_names rebuilds the entire signal-layer collection for
+        # every instance. The snapshot already owns that ordered collection.
+        layer_range = get_range()
+        if not layer_range:
+            return []
+        first, last = (layer.name for layer in layer_range)
+        if first in conductors and last in conductors:
+            start, stop = sorted((conductors.index(first), conductors.index(last)))
+            instance_layers = conductors[start : stop + 1]
+    elif extended_ranges:
         first, last = getattr(instance, "start_layer", None), getattr(instance, "stop_layer", None)
         if first in conductors and last in conductors:
             start, stop = sorted((conductors.index(first), conductors.index(last)))
@@ -254,9 +312,9 @@ def _padstack_layers(instance, selected_layers, conductors, extended_ranges):
     return [name for name in instance_layers if name in selected_layers]
 
 
-def _padstack_definition(instance, definitions, diagnostics):
+def _padstack_definition(instance, definitions, diagnostics, name=None):
     """Cache pad and drill data shared by instances of a definition."""
-    name = instance.padstack_definition
+    name = name or instance.padstack_definition
     if name not in definitions:
         definition = instance.definition
         diameter = definition.hole_diameter
@@ -271,17 +329,27 @@ def _padstack_definition(instance, definitions, diagnostics):
     return definitions[name]
 
 
-def _cached_pad_template(name, definition_layer, by_layer, templates, arc_segments):
+def _cached_pad_template(name, definition_layer, by_layer, templates, arc_segments, chord_error=None):
     """Cache each definition layer's geometry, including absent copper."""
-    key = (name, definition_layer)
+    key = (name, definition_layer, chord_error)
     if key not in templates:
         pad = by_layer.get(definition_layer, by_layer.get("Default"))
-        templates[key] = None if pad is None else _pad_template(pad, arc_segments)
+        templates[key] = None if pad is None else _pad_template(pad, arc_segments, chord_error)
     return templates[key]
 
 
 def _append_padstack_geometry(
-    instance, layer, net, template, placement, hole_radius, hole_center, arc_segments, pin_owner, geometry
+    instance,
+    layer,
+    net,
+    template,
+    placement,
+    hole_radius,
+    hole_center,
+    arc_segments,
+    pin_owner,
+    geometry,
+    chord_error=None,
 ):
     """Place a layer's copper and retain independent drill coverage."""
     world, vector, scale = placement
@@ -305,13 +373,16 @@ def _append_padstack_geometry(
         ring = tuple(world(tuple(a + b for a, b in zip(_rotate(p, rotation), offset))) for p in dimensions)
         holes = ()
         if hole_radius > 0:
+            segments = (
+                arc_segments if chord_error is None else arc_segment_count(hole_radius * scale, math.tau, chord_error)
+            )
             holes = (
                 tuple(
                     (
-                        hole_center[0] + hole_radius * scale * math.cos(i * math.tau / arc_segments),
-                        hole_center[1] + hole_radius * scale * math.sin(i * math.tau / arc_segments),
+                        hole_center[0] + hole_radius * scale * math.cos(i * math.tau / segments),
+                        hole_center[1] + hole_radius * scale * math.sin(i * math.tau / segments),
                     )
-                    for i in range(arc_segments)
+                    for i in range(segments)
                 ),
             )
             pads.append(
@@ -349,17 +420,31 @@ def _append_padstack_geometry(
     )
 
 
-def _padstacks(edb, selected_layers, selected_nets, arc_segments, diagnostics):
+def _padstacks(
+    edb,
+    selected_layers,
+    selected_nets,
+    arc_segments,
+    diagnostics,
+    progress=None,
+    component_geometry=None,
+    chord_error=None,
+):
+    from pyedb.viewer.adapters.grpc_prefetch import PadInstances
+
     pads, polygons = [], []
     definitions, templates, component_cache, mapping_cache = {}, {}, {}, {}
     pin_components = {}
     sides = _component_sides(edb, diagnostics)
     conductors = _conductor_names(edb)
     extended_ranges = bool(set(conductors).difference(edb.stackup.signal_layers))
+    layout_layers = edb.stackup.layers
     manager = getattr(edb, "padstacks", None)
     if manager is None:
         return pads, polygons
-    for instance in manager.instances.values():
+    for instance in progress_items(
+        lambda: PadInstances(edb, manager.instances.values()), progress, "Reading pads and vias"
+    ):
         try:
             net = instance.net_name
             if selected_nets is not None and net not in selected_nets:
@@ -368,21 +453,27 @@ def _padstacks(edb, selected_layers, selected_nets, arc_segments, diagnostics):
             if not layers:
                 continue
             name = instance.padstack_definition
-            definition, by_layer, hole_radius, hole_offset = _padstack_definition(instance, definitions, diagnostics)
-            mapped = _mapped_layers(instance, edb, definition, layers, mapping_cache)
+            definition, by_layer, hole_radius, hole_offset = _padstack_definition(
+                instance, definitions, diagnostics, name
+            )
+            mapped = _mapped_layers(instance, edb, definition, layers, mapping_cache, layout_layers, name)
             enabled, diameter = instance.get_hole_overrides()
             if enabled:
                 hole_radius = _number(diameter) * 500
-            placement = _placement(instance, component_cache)
+            component = instance.component
+            placement = _placement(instance, component_cache, component)
             try:
-                pin_owner = _pin_owner(instance, sides, pin_components)
+                pin_owner = _pin_owner(instance, sides, pin_components, component)
             except Exception as exc:
                 diagnostics.append(f"Padstack {instance.id}: component pin metadata unavailable ({exc}).")
                 pin_owner = {}
             hole_center = placement[0](hole_offset)
+            pad_start, polygon_start = len(pads), len(polygons)
             for layer in layers:
                 try:
-                    template = _cached_pad_template(name, mapped[layer], by_layer, templates, arc_segments)
+                    scale_bound = math.ceil(placement[2] * 1e9) / 1e9
+                    local_error = None if chord_error is None else chord_error / scale_bound
+                    template = _cached_pad_template(name, mapped[layer], by_layer, templates, arc_segments, local_error)
                     _append_padstack_geometry(
                         instance,
                         layer,
@@ -394,16 +485,32 @@ def _padstacks(edb, selected_layers, selected_nets, arc_segments, diagnostics):
                         arc_segments,
                         pin_owner,
                         (pads, polygons),
+                        chord_error,
                     )
                 except Exception as exc:
                     diagnostics.append(f"Padstack {instance.id}, layer {layer}: {exc}")
+            if component_geometry is not None:
+                bounds = union_bounds([item.bounds for item in (*pads[pad_start:], *polygons[polygon_start:])])
+                approximate = bounds is None
+                if approximate:
+                    x, y = placement[0]((0, 0))
+                    bounds = (x, y, x, y)
+                instance_geometry = {"bounds": bounds, "nets": {net} if net else set(), "approximate": approximate}
+                component_geometry.setdefault("instances", {})[instance.id] = instance_geometry
+                if component:
+                    record = component_geometry.setdefault(
+                        component.id, {"bounds": bounds, "nets": set(), "approximate": False}
+                    )
+                    record["bounds"] = union_bounds([record["bounds"], bounds])
+                    record["nets"].update(instance_geometry["nets"])
+                    record["approximate"] |= approximate
         except Exception as exc:
             diagnostics.append(f"Padstack {instance.id}: {exc}")
     return pads, polygons
 
 
-def _components(edb, selected_layers, selected_nets, diagnostics):
-    """Capture exactly the component envelopes/names used by CommonNets.plot."""
+def _components(edb, selected_layers, selected_nets, diagnostics, progress=None, component_geometry=None):
+    """Reuse captured pad envelopes, falling back to source bounds when needed."""
     manager = getattr(edb, "components", None)
     if manager is None:
         return ()
@@ -412,20 +519,46 @@ def _components(edb, selected_layers, selected_nets, diagnostics):
         return ()
     net_filter = set(edb.nets.nets) if selected_nets is None else selected_nets
     result = []
-    for reference, component in manager.instances.items():
+    approximate_count = 0
+    for reference, component in progress_items(lambda: manager.instances.items(), progress, "Reading components"):
         try:
             if not component.is_enabled:
                 continue
             layer = component.placement_layer
             if layer not in selected_layers or layer not in sides:
                 continue
-            nets = tuple(component.nets)
+            captured = (component_geometry or {}).get(component.id) if selected_nets is None else None
+            if captured is None and selected_nets is None and component_geometry:
+                # Some component pads are not marked as layout pins and their
+                # instance.component getter is null. Membership still identifies
+                # them, without constructing a full-board layout instance.
+                by_id = component_geometry.get("instances", {})
+                members = getattr(getattr(component, "core", None), "members", ())
+                records = [by_id[member.edb_uid] for member in members if member.edb_uid in by_id]
+                if records:
+                    captured = {
+                        "bounds": union_bounds([record["bounds"] for record in records]),
+                        "nets": set().union(*(record["nets"] for record in records)),
+                        "approximate": any(record["approximate"] for record in records),
+                    }
+            nets = tuple(sorted(captured["nets"])) if captured is not None else tuple(component.nets)
             if (selected_nets is not None or net_filter) and not net_filter.intersection(nets):
                 continue
-            bounds = tuple(float(v) * 1000 for v in component.bounding_box)
+            bounds = (
+                captured["bounds"] if captured is not None else tuple(float(v) * 1000 for v in component.bounding_box)
+            )
+            if captured is not None and captured.get("approximate", False):
+                # Copper-free SMT pins still locate the footprint. A modest
+                # display margin avoids a full-board layout-instance build.
+                x0, y0, x1, y1 = bounds
+                margin = max(max(x1 - x0, y1 - y0) * 0.1, 0.05)
+                bounds = x0 - margin, y0 - margin, x1 + margin, y1 + margin
+                approximate_count += 1
             result.append(SceneComponent(component.id, component.name, layer, nets, bounds, sides[layer]))
         except Exception as exc:
             diagnostics.append(f"Component {reference}: {exc}")
+    if approximate_count:
+        diagnostics.append(f"{approximate_count} component envelopes estimated from pin positions for fast display.")
     return tuple(result)
 
 
@@ -445,12 +578,27 @@ def _scene_filters(edb, layers, nets):
     return selected_layers, selected_nets
 
 
-def _selected_primitives(edb, selected_layers, selected_nets, skipped):
+def _selected_primitives(edb, selected_layers, selected_nets, skipped, progress=None, priority_layer=None):
     """Filter source primitives and count unsupported copper geometry."""
-    for primitive in edb.layout.primitives:
-        if primitive.is_void:
+
+    def load():
+        source = edb.layout.primitives
+        if priority_layer is None:
+            return [(primitive, None, None) for primitive in source]
+        records = []
+        for primitive in source:
+            void = primitive.is_void
+            records.append((primitive, None if void else primitive.layer_name, void))
+        records.sort(key=lambda item: item[1] != priority_layer)
+        return records
+
+    for primitive, layer_name, void in progress_items(load, progress, "Reading polygons"):
+        if void is None:
+            void = primitive.is_void
+        if void:
             continue
-        layer_name = primitive.layer_name
+        if layer_name is None:
+            layer_name = primitive.layer_name
         if layer_name not in selected_layers:
             continue
         net_name = primitive.net_name
@@ -466,23 +614,44 @@ def _selected_primitives(edb, selected_layers, selected_nets, skipped):
         yield primitive, primitive_type, layer_name, net_name
 
 
-def _primitives(edb, selected_layers, selected_nets, arc_segments, diagnostics):
+def _primitives(
+    edb,
+    selected_layers,
+    selected_nets,
+    arc_segments,
+    diagnostics,
+    progress=None,
+    analytic_traces=True,
+    chord_error=None,
+    on_preview=None,
+    priority_layer=None,
+):
     """Capture analytic geometry with source contours as a fallback."""
+    from pyedb.viewer.adapters.grpc_stream import VoidReader
+
     polygons, traces, joins, pads = [], [], [], []
+    read_voids = VoidReader(_contour, arc_segments, chord_error)
     skipped = Counter()
+    published = False
     for primitive, primitive_type, layer_name, net_name in _selected_primitives(
-        edb, selected_layers, selected_nets, skipped
+        edb, selected_layers, selected_nets, skipped, progress, priority_layer
     ):
+        if on_preview is not None and not published and layer_name != priority_layer:
+            on_preview(polygons, traces, joins, pads)
+            published = True
         try:
-            if primitive_type == "path" and not primitive.voids:
+            has_voids = getattr(primitive, "has_voids", None)
+            voids = primitive.voids if has_voids is None else None
+            has_voids = bool(voids) if has_voids is None else has_voids
+            if primitive_type == "path" and not has_voids and analytic_traces:
                 try:
-                    path_traces, path_joins = _trace_geometry(primitive)
+                    path_traces, path_joins = _trace_geometry(primitive, layer_name, net_name)
                     traces.extend(path_traces)
                     joins.extend(path_joins)
                     continue
                 except Exception as exc:
                     diagnostics.append(f"Path {primitive.id}: using source boundary coverage ({exc}).")
-            if primitive_type == "circle" and not primitive.voids:
+            if primitive_type == "circle" and not has_voids:
                 x, y, radius = (float(v) * 1000 for v in primitive.get_parameters())
                 pads.append(ScenePad(primitive.id, layer_name, net_name, (x, y), (radius * 2,) * 2))
                 continue
@@ -491,8 +660,14 @@ def _primitives(edb, selected_layers, selected_nets, arc_segments, diagnostics):
                     object_id=primitive.id,
                     layer=layer_name,
                     net=net_name,
-                    exterior=_contour(primitive, arc_segments),
-                    holes=tuple(_contour(void, arc_segments) for void in primitive.voids),
+                    exterior=_contour(primitive, arc_segments, chord_error),
+                    holes=(
+                        tuple(_contour(void, arc_segments, chord_error) for void in voids)
+                        if voids is not None
+                        else tuple(read_voids(primitive))
+                        if has_voids
+                        else ()
+                    ),
                     category="trace" if primitive_type == "path" else "pad" if primitive_type == "circle" else "zone",
                 )
             )
@@ -502,12 +677,38 @@ def _primitives(edb, selected_layers, selected_nets, arc_segments, diagnostics):
     return polygons, traces, joins, pads
 
 
-def scene_from_edb(edb, layers=None, nets=None, arc_segments=32):
+def scene_from_edb(
+    edb,
+    layers=None,
+    nets=None,
+    arc_segments=None,
+    *,
+    progress=None,
+    analytic_traces=True,
+    exact_component_bounds=False,
+    chord_error=0.01,
+    preview=None,
+):
     """Capture analytic traces, per-layer pads and zone contours in millimeters."""
     if not edb.grpc:
         raise ValueError("The interactive layout viewer currently supports only the gRPC backend.")
-    if isinstance(arc_segments, bool) or not isinstance(arc_segments, int) or arc_segments < 3:
+    if arc_segments is not None and (
+        isinstance(arc_segments, bool) or not isinstance(arc_segments, int) or arc_segments < 3
+    ):
         raise ValueError("arc_segments must be an integer of at least three.")
+    if arc_segments is None:
+        if (
+            isinstance(chord_error, bool)
+            or not isinstance(chord_error, (int, float))
+            or not math.isfinite(chord_error)
+            or chord_error <= 0
+        ):
+            raise ValueError("chord_error must be a positive finite number in millimeters.")
+        arc_segments = 8  # Only a fallback count; adaptive chords determine the actual tessellation.
+    else:
+        chord_error = None
+    if progress is not None:
+        progress("Reading polygons", 0, 0)
     selected_layers, selected_nets = _scene_filters(edb, layers, nets)
     scene_layers = []
     for name, layer in edb.stackup.layers.items():
@@ -515,22 +716,55 @@ def scene_from_edb(edb, layers=None, nets=None, arc_segments=32):
             color = tuple(float(v) / 255.0 for v in layer.color[:3])
             scene_layers.append(SceneLayer(name, (*color, 1.0)))
     diagnostics = []
-    polygons, traces, joins, pads = _primitives(edb, selected_layers, selected_nets, arc_segments, diagnostics)
-    via_pads, via_polygons = _padstacks(edb, selected_layers, selected_nets, arc_segments, diagnostics)
+    net_names = tuple(edb.nets.nets)
+    title = edb.active_cell.name
+
+    def publish(polygons, traces, joins, pads):
+        if preview is not None and (polygons or traces or pads):
+            preview(
+                LayoutScene(
+                    tuple(scene_layers),
+                    tuple(polygons),
+                    title,
+                    traces=tuple(traces),
+                    pads=tuple(pads),
+                    joins=tuple(joins),
+                    net_names=net_names,
+                )
+            )
+
+    priority_layer = scene_layers[0].name if preview is not None and scene_layers else None
+    polygons, traces, joins, pads = _primitives(
+        edb,
+        selected_layers,
+        selected_nets,
+        arc_segments,
+        diagnostics,
+        progress,
+        analytic_traces,
+        chord_error,
+        publish if priority_layer is not None else None,
+        priority_layer,
+    )
+    publish(polygons, traces, joins, pads)
+    component_geometry = None if exact_component_bounds else {}
+    via_pads, via_polygons = _padstacks(
+        edb, selected_layers, selected_nets, arc_segments, diagnostics, progress, component_geometry, chord_error
+    )
     pads.extend(via_pads)
     polygons.extend(via_polygons)
-    components = _components(edb, selected_layers, selected_nets, diagnostics)
+    components = _components(edb, selected_layers, selected_nets, diagnostics, progress, component_geometry)
     diagnostics.append(
         "GPU copper and component envelopes/references; arbitrary text, 3D bodies and bondwires are not displayed."
     )
     return LayoutScene(
         tuple(scene_layers),
         tuple(polygons),
-        edb.active_cell.name,
+        title,
         tuple(diagnostics),
         traces=tuple(traces),
         pads=tuple(pads),
         joins=tuple(joins),
-        net_names=tuple(edb.nets.nets),
+        net_names=net_names,
         components=components,
     )

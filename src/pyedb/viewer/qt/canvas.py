@@ -22,12 +22,13 @@
 
 """Embeddable, on-demand OpenGL canvas with cursor-anchored navigation."""
 
-from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtCore import Qt, QTimer, Signal, Slot
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QLabel
 
 from pyedb.viewer.camera import Camera
+from pyedb.viewer.qt.loading import LoadingPanel
 from pyedb.viewer.qt.renderer import Renderer
 from pyedb.viewer.qt.theme import COLORS
 
@@ -74,11 +75,14 @@ class LayoutView(QOpenGLWidget):
         self._drag_position = None
         self._drag_button = Qt.MouseButton.NoButton
         self._fitted = False
+        self._loading_complete = True
         self.setMouseTracking(True)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setAccessibleName("PCB layout canvas")
         self.setToolTip("Left/middle/right drag: pan · Wheel: zoom · F: fit · Arrow keys: pan · +/-: zoom")
-        self.message = QLabel("Preparing layout…", self)
+        self.loading = LoadingPanel(self)
+        self.loading.hide()
+        self.message = QLabel(self)
         self.message.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.message.setWordWrap(True)
         self.message.setStyleSheet(
@@ -86,10 +90,22 @@ class LayoutView(QOpenGLWidget):
             "border-radius: 12px; padding: 20px;"
         )
         self.message.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.message.hide()
 
-    def set_prepared(self, prepared):
+    @Slot(str, int, int)
+    def set_progress(self, stage, current, total):
+        if not self.error:
+            if stage == "Rendering layout" and total:
+                total += 1  # The first upload/draw completes the display stage.
+            self.loading.set_progress(stage, current, total)
+
+    def set_prepared(self, prepared, *, final=True):
         self._prepared = prepared
+        self._loading_complete = final
         self._pending_upload = True
+        if not final:
+            self.loading.set_compact()
+            self._position_loading()
         if not self.error:
             self.message.setVisible(not bool(prepared.batches or len(prepared.instances)))
             self.message.setText("No geometry matches this layout selection.")
@@ -97,6 +113,7 @@ class LayoutView(QOpenGLWidget):
 
     def fail(self, error):
         self.error = str(error)
+        self.loading.hide()
         self.message.setText(f"Layout viewer unavailable\n\n{self.error}")
         self.message.show()
         self.rendering_failed.emit(self.error)
@@ -134,6 +151,8 @@ class LayoutView(QOpenGLWidget):
                 annotate_component_names=self.annotate_component_names,
                 show_grid=self.show_grid,
             )
+            if self.renderer.prepared is not None and self._loading_complete:
+                self.loading.hide()
         except Exception as exc:
             self.fail(exc)
 
@@ -148,10 +167,23 @@ class LayoutView(QOpenGLWidget):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.message.setGeometry(20, max(20, self.height() // 2 - 55), max(1, self.width() - 40), 110)
+        self._position_loading()
+
+    def _position_loading(self):
+        width = min(380, max(1, self.width() - 32))
+        height = self.loading.sizeHint().height()
+        y = 16 if self.loading.compact else max(16, (self.height() - height) // 2)
+        self.loading.setGeometry((self.width() - width) // 2, y, width, height)
 
     def showEvent(self, event):
         super().showEvent(event)
         QTimer.singleShot(100, self._check_context)
+        QTimer.singleShot(150, self._show_loading)
+
+    def _show_loading(self):
+        if self.isVisible() and (self._prepared is None or not self._loading_complete) and not self.error:
+            self.loading.show()
+            self.loading.raise_()
 
     def _check_context(self):
         if self.isVisible() and not self.isValid() and not self.error:

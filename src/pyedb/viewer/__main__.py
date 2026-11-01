@@ -33,7 +33,14 @@ def main(argv=None):
     parser.add_argument("--version", help="EDB server version, for example 2026.1")
     parser.add_argument("--layer", action="append", help="Include this layer (repeatable)")
     parser.add_argument("--net", action="append", help="Include this net (repeatable)")
-    parser.add_argument("--arc-segments", type=int, default=32)
+    precision = parser.add_mutually_exclusive_group()
+    precision.add_argument("--arc-segments", type=int, help="Use a fixed subdivision count instead of adaptive chords")
+    precision.add_argument("--chord-error", type=float, default=0.01, help="Maximum chord error in mm (default: 0.01)")
+    parser.add_argument("--analytic-traces", action="store_true", help="Preserve analytic traces for deep zoom")
+    parser.add_argument("--exact-component-bounds", action="store_true", help="Read exact source component envelopes")
+    parser.add_argument(
+        "--no-progressive", action="store_true", help="Wait for complete geometry before displaying copper"
+    )
     colors = parser.add_mutually_exclusive_group()
     colors.add_argument(
         "--color-by-net",
@@ -60,7 +67,14 @@ def main(argv=None):
     edb = Edb(edbpath=str(args.path.resolve()), grpc=True, isreadonly=True, version=args.version)
     try:
         edb.view_layout(
-            layers=args.layer, nets=args.net, arc_segments=args.arc_segments, color_by_net=args.color_by_net
+            layers=args.layer,
+            nets=args.net,
+            arc_segments=args.arc_segments,
+            color_by_net=args.color_by_net,
+            analytic_traces=args.analytic_traces,
+            exact_component_bounds=args.exact_component_bounds,
+            chord_error=args.chord_error,
+            progressive=not args.no_progressive,
         )
     finally:
         edb.close()

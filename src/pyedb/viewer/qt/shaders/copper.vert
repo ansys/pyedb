@@ -23,6 +23,8 @@
 #version 330 core
 
 layout(location = 0) in vec4 position_split;
+layout(location = 1) in uint vertex_net;
+flat out uint net_id;
 uniform vec4 camera_split;
 uniform vec2 viewport;
 uniform float scale;
@@ -40,6 +42,7 @@ vec2 subtract_pair(vec2 a, vec2 b) {
 }
 
 void main() {
+    net_id = rectangle_pass ? 0u : vertex_net;
     vec2 screen;
     if (rectangle_pass) {
         vec2 corners[4] = vec2[4](vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1));

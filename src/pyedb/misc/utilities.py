@@ -26,8 +26,28 @@ import math
 import time
 
 
+def arc_segment_count(radius, sweep, chord_error, max_angle=math.pi / 4, max_segments=65536):
+    """Return the chord count required by radius, sweep and maximum sagitta error.
+
+    Radius and error use the same units; angles are radians. A maximum angle
+    keeps small circular contours valid even when their radius is subpixel.
+    """
+    if not all(math.isfinite(v) for v in (radius, sweep, chord_error, max_angle)):
+        raise ValueError("Arc tessellation inputs must be finite.")
+    if radius <= 0 or chord_error <= 0 or not 0 < max_angle <= math.pi:
+        raise ValueError("Arc radius, chord error and maximum angle must be positive.")
+    ratio = min(chord_error / radius, 2.0)
+    step = 4 * math.asin(math.sqrt(ratio / 2))
+    if step == 0:
+        raise ValueError("Arc chord error is too small for the radius.")
+    if abs(sweep) > max_segments * min(step, max_angle):
+        raise ValueError("Arc tessellation exceeds the segment limit; increase chord_error.")
+    count = max(1, math.ceil(abs(sweep) / min(step, max_angle)))
+    return count
+
+
 def compute_arc_points(
-    p1: list[float], p2: list[float], h: float, n: int = 6, tol: float = 1e-12
+    p1: list[float], p2: list[float], h: float, n: int = 6, tol: float = 1e-12, *, chord_error: float | None = None
 ) -> tuple[list[float], list[float]]:
     """Get the points of the arc.
 
@@ -46,6 +66,9 @@ def compute_arc_points(
     tol : float, optional
         Geometric tolerance.
         The default is ``1e-12``.
+    chord_error : float, optional
+        Maximum chord sagitta in the same units as the coordinates. When set,
+        choose the count from radius and total sweep instead of ``n``.
 
     Returns
     -------
@@ -100,6 +123,9 @@ def compute_arc_points(
         dangle += 2 * math.pi
     if h > r and dangle < math.pi:
         dangle = 2 * math.pi - dangle
+
+    if chord_error is not None:
+        n = arc_segment_count(r, dangle, chord_error) - 1
 
     xr, yr = [], []
     for i in range(1, n + 1):

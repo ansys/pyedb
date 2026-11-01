@@ -40,6 +40,7 @@ from PySide6.QtWidgets import (
 )
 
 from pyedb.viewer.mesh import prepare_scene
+from pyedb.viewer.progress import throttle_progress
 from pyedb.viewer.qt.canvas import LayoutView
 from pyedb.viewer.qt.icons import workspace_icon
 from pyedb.viewer.qt.navigation import NavigationCapsule
@@ -49,24 +50,54 @@ from pyedb.viewer.qt.theme import COLORS, apply_viewer_theme
 
 class _PreparationSignals(QObject):
     ready = Signal(object)
-    failed = Signal(str)
+    failed = Signal(object)
+    scene_ready = Signal(object)
+    preview_ready = Signal(object, object)
+    progress = Signal(str, int, int)
 
 
 class _Prepare(QRunnable):
-    def __init__(self, scene):
+    def __init__(self, scene, loader=None):
         super().__init__()
         self.scene = scene
+        self.loader = loader
+        self.preview_scene = self.preview_prepared = None
         self.signals = _PreparationSignals()
 
     @Slot()
     def run(self):
         try:
-            self.signals.ready.emit(prepare_scene(self.scene))
+            progress = throttle_progress(self.signals.progress.emit)
+            if self.loader is not None:
+                if hasattr(self.loader, "set_preview"):
+                    self.loader.set_preview(self._preview)
+                try:
+                    self.scene = self.loader(progress)
+                finally:
+                    if hasattr(self.loader, "release_source"):
+                        self.loader.release_source()
+                progress("Rendering layout", 0, 0)
+                self.scene.bounds  # Cache derived bounds off the GUI thread.
+                self.signals.scene_ready.emit(self.scene)
+            mesh = (self.preview_scene, self.preview_prepared) if self.preview_prepared is not None else None
+            prepared = prepare_scene(self.scene, progress=progress, polygon_mesh=mesh)
+            self.signals.ready.emit(prepared)
         except Exception as exc:
-            self.signals.failed.emit(str(exc))
+            self.signals.failed.emit(exc)
+
+    def _preview(self, scene):
+        scene.bounds
+        previous = (self.preview_scene, self.preview_prepared) if self.preview_prepared is not None else None
+        prepared = prepare_scene(scene, polygon_mesh=previous)
+        self.preview_scene = scene
+        self.preview_prepared = prepared
+        self.signals.preview_ready.emit(scene, self.preview_prepared)
 
 
 class LayoutWindow(QMainWindow):
+    scene_ready = Signal(object)
+    scene_failed = Signal(object)
+
     def __init__(
         self,
         scene,
@@ -76,8 +107,13 @@ class LayoutWindow(QMainWindow):
         plot_components=True,
         annotate_component_names=True,
         plot_components_on_both_side=True,
+        loader=None,
     ):
         super().__init__(parent)
+        self._capturing = loader is not None
+        self._capture_error = None
+        self._has_preview = False
+        self._close_after_capture = False
         apply_viewer_theme(self)
         self.setWindowTitle(f"{scene.title} — PyEDB Layout Viewer")
         self.resize(1280, 800)
@@ -112,10 +148,84 @@ class LayoutWindow(QMainWindow):
         self._render_error = None
         self.canvas.position_changed.connect(self._position_changed)
         self.canvas.rendering_failed.connect(self._rendering_failed)
-        self._preparation = _Prepare(scene)
+        if self._capturing:
+            self.canvas.set_progress("Reading polygons", 0, 0)
+            self.layer_panel.empty_notice.setText("Loading layers…")
+            self.layer_panel.summary.setText("Loading layer information…")
+            self.layer_panel.setEnabled(False)
+            self.network_panel.setEnabled(False)
+        self._preparation = _Prepare(scene, loader)
         self._preparation.signals.ready.connect(self._prepared)
-        self._preparation.signals.failed.connect(self.canvas.fail)
+        self._preparation.signals.scene_ready.connect(self._scene_loaded)
+        self._preparation.signals.preview_ready.connect(self._scene_preview)
+        self._preparation.signals.failed.connect(self._load_failed)
+        self._preparation.signals.progress.connect(self.canvas.set_progress)
         QThreadPool.globalInstance().start(self._preparation)
+
+    @Slot(object)
+    def _scene_loaded(self, scene):
+        self._capturing = False
+        self._display_scene(scene, preserve_view=self._has_preview)
+        self.scene_ready.emit(scene)
+        if self._close_after_capture:
+            self.close()
+
+    @Slot(object, object)
+    def _scene_preview(self, scene, prepared):
+        if self._close_after_capture:
+            return
+        self._display_scene(scene, preserve_view=self._has_preview)
+        self._has_preview = True
+        self.canvas.set_prepared(prepared, final=False)
+
+    def _display_scene(self, scene, preserve_view=False):
+        visible = self.canvas.visible_layers
+        selected_net = self.canvas.net
+        self.canvas.scene = scene
+        self.canvas.visible_layers = (
+            visible.intersection(layer.name for layer in scene.layers)
+            if preserve_view
+            else {scene.layers[0].name}
+            if scene.layers
+            else set()
+        )
+        self.setWindowTitle(f"{scene.title} — PyEDB Layout Viewer")
+        self.project_title.setText(scene.title)
+        self._set_layer_panel(scene)
+        self._set_network_panel(scene)
+        if preserve_view:
+            self.canvas.net = None
+            for index in range(self.network_list.count()):
+                if self.network_list.item(index).data(Qt.ItemDataRole.UserRole) == selected_net:
+                    self.network_list.setCurrentRow(index)
+                    self.canvas.net = selected_net
+                    break
+        has_components = bool(scene.components) or any(getattr(item, "component", None) for item in scene.geometry)
+        sides = {component.side for component in scene.components}
+        sides.update(item.component_side for item in scene.geometry if getattr(item, "component", None))
+        self._components_separator.setVisible(has_components)
+        self.components_action.setVisible(has_components)
+        self.component_names_action.setVisible(bool(scene.components))
+        self.both_sides_action.setVisible(len(sides) > 1)
+        self.search_action.setEnabled(bool(self.network_panel.names))
+        self.navigation.has_geometry = scene.bounds is not None
+        for action in (self.fit_action, self.zoom_in_action, self.zoom_out_action):
+            action.setEnabled(self.navigation.has_geometry)
+        self.navigation.setVisible(self.navigation.has_geometry)
+        self.navigation.reposition()
+        if not preserve_view:
+            self.canvas.fit_all()
+
+    @Slot(object)
+    def _load_failed(self, error):
+        capturing = self._capturing
+        self._capturing = False
+        self.canvas.fail(error)
+        if capturing:
+            self._capture_error = error
+            self.scene_failed.emit(error)
+        if self._close_after_capture:
+            self.close()
 
     def _build_toolbar(self, scene):
         header = QToolBar("Workspace", self)
@@ -250,18 +360,7 @@ class LayoutWindow(QMainWindow):
         dock.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
         dock.setMinimumWidth(210)
         self.layers_dock = dock
-        self.layer_panel = LayerPanel(scene.layers, self.canvas.visible_layers, dock)
-        self.layer_list = self.layer_panel.layer_list
-        self.show_all_layers_button = self.layer_panel.show_all_button
-        self.hide_all_layers_button = self.layer_panel.hide_all_button
-        self.show_all_layers_button.clicked.connect(lambda: self._set_all_layers(True))
-        self.hide_all_layers_button.clicked.connect(lambda: self._set_all_layers(False))
-        self.layer_panel.close_button.clicked.connect(dock.hide)
-        self.layer_list.itemChanged.connect(self._layer_changed)
-        self.layer_panel.header.setParent(dock)
-        dock.setTitleBarWidget(self.layer_panel.header)
-        dock.setWidget(self.layer_panel)
-        self._sync_layer_buttons()
+        self._set_layer_panel(scene)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, dock)
         self.resizeDocks([dock], [258], Qt.Orientation.Horizontal)
         menu = self.menuBar().addMenu("&View")
@@ -277,7 +376,8 @@ class LayoutWindow(QMainWindow):
         has_components = bool(scene.components) or any(getattr(item, "component", None) for item in scene.geometry)
         sides = {component.side for component in scene.components}
         sides.update(item.component_side for item in scene.geometry if getattr(item, "component", None))
-        menu.addSeparator().setVisible(has_components)
+        self._components_separator = menu.addSeparator()
+        self._components_separator.setVisible(has_components)
         for attribute, title, setting in (
             ("components_action", "Components", "show_components"),
             ("component_names_action", "Component names", "annotate_component_names"),
@@ -297,12 +397,45 @@ class LayoutWindow(QMainWindow):
             setattr(self, attribute, action)
             menu.addAction(action)
 
+    def _set_layer_panel(self, scene):
+        dock = self.layers_dock
+        previous, header = dock.widget(), dock.titleBarWidget()
+        self.layer_panel = LayerPanel(scene.layers, self.canvas.visible_layers, dock)
+        self.layer_list = self.layer_panel.layer_list
+        self.show_all_layers_button = self.layer_panel.show_all_button
+        self.hide_all_layers_button = self.layer_panel.hide_all_button
+        self.show_all_layers_button.clicked.connect(lambda: self._set_all_layers(True))
+        self.hide_all_layers_button.clicked.connect(lambda: self._set_all_layers(False))
+        self.layer_panel.close_button.clicked.connect(dock.hide)
+        self.layer_list.itemChanged.connect(self._layer_changed)
+        self.layer_panel.header.setParent(dock)
+        dock.setTitleBarWidget(self.layer_panel.header)
+        dock.setWidget(self.layer_panel)
+        self._sync_layer_buttons()
+        for widget in (previous, header):
+            if widget is not None:
+                widget.deleteLater()
+
     def _build_networks(self, scene):
         dock = QDockWidget("Networks", self)
         dock.setObjectName("networksDock")
         dock.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
         dock.setMinimumWidth(210)
         self.networks_dock = dock
+        self._set_network_panel(scene)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
+        self.resizeDocks([dock], [258], Qt.Orientation.Horizontal)
+        menu = self.view_options_button.menu()
+        menu.insertAction(self.grid_action, dock.toggleViewAction())
+        self.search_action = QAction("Search networks", self)
+        self.search_action.setShortcut("Ctrl+F")
+        self.search_action.setEnabled(bool(self.network_panel.names))
+        self.search_action.triggered.connect(self._focus_network_search)
+        self.addAction(self.search_action)
+
+    def _set_network_panel(self, scene):
+        dock = self.networks_dock
+        previous, header = dock.widget(), dock.titleBarWidget()
         self.network_panel = NetworkPanel(scene, dock)
         self.network_list = self.network_panel.network_list
         self.network_list.currentRowChanged.connect(self._net_changed)
@@ -310,15 +443,9 @@ class LayoutWindow(QMainWindow):
         self.network_panel.header.setParent(dock)
         dock.setTitleBarWidget(self.network_panel.header)
         dock.setWidget(self.network_panel)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
-        self.resizeDocks([dock], [258], Qt.Orientation.Horizontal)
-        menu = self.view_options_button.menu()
-        menu.insertAction(self.grid_action, dock.toggleViewAction())
-        search_action = QAction("Search networks", self)
-        search_action.setShortcut("Ctrl+F")
-        search_action.setEnabled(bool(self.network_panel.names))
-        search_action.triggered.connect(self._focus_network_search)
-        self.addAction(search_action)
+        for widget in (previous, header):
+            if widget is not None:
+                widget.deleteLater()
 
     @Slot(object)
     def _prepared(self, prepared):
@@ -423,5 +550,10 @@ class LayoutWindow(QMainWindow):
         QMessageBox.information(self, "Layout display notes", "\n\n".join(notes))
 
     def closeEvent(self, event):
+        if self._capturing:
+            self._close_after_capture = True
+            self.hide()
+            event.ignore()
+            return
         self.canvas.cleanup()
         super().closeEvent(event)
