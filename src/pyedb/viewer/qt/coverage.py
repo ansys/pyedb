@@ -35,7 +35,8 @@ from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
 
 from pyedb.viewer.colors import COMPONENT_COLORS, NET_COLORS
-from pyedb.viewer.mesh import SDF_STRIDE, split_coordinates
+from pyedb.viewer.mesh import SDF_STRIDE
+from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
 
 def _shader_source(path):
@@ -255,13 +256,8 @@ class SdfCoverage:
             if multisampled:
                 GL.glEnable(GL.GL_MULTISAMPLE)
                 GL.glEnable(GL.GL_SAMPLE_ALPHA_TO_COVERAGE)
-            GL.glUseProgram(self.program)
             u = self.uniforms
-            GL.glUniform4fv(u["camera_split"], 1, split_coordinates([[camera.center_x, camera.center_y]])[0])
-            GL.glUniform2f(u["viewport"], camera.width, camera.height)
-            GL.glUniform1f(u["scale"], camera.scale)
-            GL.glUniform1f(u["pixel_ratio"], pixel_ratio)
-            GL.glUniform1f(u["mirror_x"], -1 if camera.mirror else 1)
+            bind_camera_uniforms(self.program, u, camera, pixel_ratio)
             GL.glUniform1i(u["selected_net"], -1 if net is None else self.net_ids.get(net, -2))
             GL.glUniform1i(u["drill_pass"], drills)
             GL.glUniform1i(u["component_pass"], component_pass)

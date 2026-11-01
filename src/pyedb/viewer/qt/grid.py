@@ -29,6 +29,7 @@ from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
 
 from pyedb.viewer.qt.coverage import _shader_source
+from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
 
 def grid_spacing(scale, pixel_ratio=1.0):
@@ -60,12 +61,8 @@ class GridRenderer:
         self.spacing = grid_spacing(camera.scale, pixel_ratio)
         GL.glDisable(GL.GL_BLEND)
         GL.glDisable(GL.GL_STENCIL_TEST)
-        GL.glUseProgram(self.program)
         u = self.uniforms
-        GL.glUniform2f(u["viewport"], camera.width, camera.height)
-        GL.glUniform1f(u["scale"], camera.scale)
-        GL.glUniform1f(u["pixel_ratio"], pixel_ratio)
-        GL.glUniform1f(u["mirror_x"], -1 if camera.mirror else 1)
+        bind_camera_uniforms(self.program, u, camera, pixel_ratio)
         GL.glUniform1f(u["spacing"], self.spacing)
         # Reduce double coordinates before narrowing to float32; kilometre-scale
         # offsets must not lose the grid phase when zoomed into micrometer detail.

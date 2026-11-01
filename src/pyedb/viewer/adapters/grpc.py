@@ -241,6 +241,114 @@ def _pin_owner(instance, sides, cache):
     return dict(owner, pin_name=instance.name) if owner is not None else {}
 
 
+def _padstack_layers(instance, selected_layers, conductors, extended_ranges):
+    """Include conducting layers within the instance's physical span."""
+    instance_layers = None
+    if extended_ranges:
+        first, last = getattr(instance, "start_layer", None), getattr(instance, "stop_layer", None)
+        if first in conductors and last in conductors:
+            start, stop = sorted((conductors.index(first), conductors.index(last)))
+            instance_layers = conductors[start : stop + 1]
+    if instance_layers is None:
+        instance_layers = instance.layer_range_names
+    return [name for name in instance_layers if name in selected_layers]
+
+
+def _padstack_definition(instance, definitions, diagnostics):
+    """Cache pad and drill data shared by instances of a definition."""
+    name = instance.padstack_definition
+    if name not in definitions:
+        definition = instance.definition
+        diameter = definition.hole_diameter
+        if diameter is None:
+            diagnostics.append(f"Padstack definition {name}: noncircular drill profile is not displayed.")
+        definitions[name] = (
+            definition,
+            definition.pad_by_layer,
+            float(diameter or 0) * 500,
+            (float(definition.hole_offset_x) * 1000, float(definition.hole_offset_y) * 1000),
+        )
+    return definitions[name]
+
+
+def _cached_pad_template(name, definition_layer, by_layer, templates, arc_segments):
+    """Cache each definition layer's geometry, including absent copper."""
+    key = (name, definition_layer)
+    if key not in templates:
+        pad = by_layer.get(definition_layer, by_layer.get("Default"))
+        templates[key] = None if pad is None else _pad_template(pad, arc_segments)
+    return templates[key]
+
+
+def _append_padstack_geometry(
+    instance, layer, net, template, placement, hole_radius, hole_center, arc_segments, pin_owner, geometry
+):
+    """Place a layer's copper and retain independent drill coverage."""
+    world, vector, scale = placement
+    pads, polygons = geometry
+    if template is None:
+        # Keep nonfunctional pads absent while retaining drill marks.
+        if hole_radius > 0:
+            pads.append(
+                ScenePad(
+                    instance.id,
+                    layer,
+                    net,
+                    hole_center,
+                    (hole_radius * 2 * scale,) * 2,
+                    hole_radius=hole_radius * scale,
+                )
+            )
+        return
+    shape, dimensions, offset, rotation = template
+    if shape == "polygon":
+        ring = tuple(world(tuple(a + b for a, b in zip(_rotate(p, rotation), offset))) for p in dimensions)
+        holes = ()
+        if hole_radius > 0:
+            holes = (
+                tuple(
+                    (
+                        hole_center[0] + hole_radius * scale * math.cos(i * math.tau / arc_segments),
+                        hole_center[1] + hole_radius * scale * math.sin(i * math.tau / arc_segments),
+                    )
+                    for i in range(arc_segments)
+                ),
+            )
+            pads.append(
+                ScenePad(
+                    instance.id,
+                    layer,
+                    net,
+                    hole_center,
+                    (hole_radius * 2 * scale,) * 2,
+                    hole_radius=hole_radius * scale,
+                )
+            )
+        polygons.append(ScenePolygon(instance.id, layer, net, ring, holes, category="pad", **pin_owner))
+        return
+    center = world(offset)
+    axis = vector(_rotate((1, 0), rotation))
+    angle = math.atan2(axis[1], axis[0])
+    size = (dimensions[0],) * 2 if shape in {"circle", "square"} else dimensions[:2]
+    corner = dimensions[2] if shape in {"oval", "bullet"} else 0
+    corner = min(corner, min(size) / 2)
+    pads.append(
+        ScenePad(
+            instance.id,
+            layer,
+            net,
+            center,
+            tuple(v * scale for v in size),
+            "rectangle" if shape == "square" else shape,
+            angle,
+            corner * scale,
+            hole_radius * scale,
+            hole_center,
+            **pin_owner,
+        )
+    )
+
+
 def _padstacks(edb, selected_layers, selected_nets, arc_segments, diagnostics):
     pads, polygons = [], []
     definitions, templates, component_cache, mapping_cache = {}, {}, {}, {}
@@ -256,111 +364,36 @@ def _padstacks(edb, selected_layers, selected_nets, arc_segments, diagnostics):
             net = instance.net_name
             if selected_nets is not None and net not in selected_nets:
                 continue
-            instance_layers = None
-            if extended_ranges:
-                first, last = getattr(instance, "start_layer", None), getattr(instance, "stop_layer", None)
-                if first in conductors and last in conductors:
-                    start, stop = sorted((conductors.index(first), conductors.index(last)))
-                    instance_layers = conductors[start : stop + 1]
-            if instance_layers is None:
-                instance_layers = instance.layer_range_names
-            layers = [name for name in instance_layers if name in selected_layers]
+            layers = _padstack_layers(instance, selected_layers, conductors, extended_ranges)
             if not layers:
                 continue
             name = instance.padstack_definition
-            if name not in definitions:
-                definition = instance.definition
-                diameter = definition.hole_diameter
-                if diameter is None:
-                    diagnostics.append(f"Padstack definition {name}: noncircular drill profile is not displayed.")
-                definitions[name] = (
-                    definition,
-                    definition.pad_by_layer,
-                    float(diameter or 0) * 500,
-                    (float(definition.hole_offset_x) * 1000, float(definition.hole_offset_y) * 1000),
-                )
-            definition, by_layer, hole_radius, hole_offset = definitions[name]
+            definition, by_layer, hole_radius, hole_offset = _padstack_definition(instance, definitions, diagnostics)
             mapped = _mapped_layers(instance, edb, definition, layers, mapping_cache)
             enabled, diameter = instance.get_hole_overrides()
             if enabled:
                 hole_radius = _number(diameter) * 500
-            world, vector, scale = _placement(instance, component_cache)
+            placement = _placement(instance, component_cache)
             try:
                 pin_owner = _pin_owner(instance, sides, pin_components)
             except Exception as exc:
                 diagnostics.append(f"Padstack {instance.id}: component pin metadata unavailable ({exc}).")
                 pin_owner = {}
-            hole_center = world(hole_offset)
+            hole_center = placement[0](hole_offset)
             for layer in layers:
                 try:
-                    definition_layer = mapped[layer]
-                    key = (name, definition_layer)
-                    if key not in templates:
-                        pad = by_layer.get(definition_layer, by_layer.get("Default"))
-                        templates[key] = None if pad is None else _pad_template(pad, arc_segments)
-                    template = templates[key]
-                    if template is None:
-                        # Keep nonfunctional pads absent while retaining drill marks.
-                        if hole_radius > 0:
-                            pads.append(
-                                ScenePad(
-                                    instance.id,
-                                    layer,
-                                    net,
-                                    hole_center,
-                                    (hole_radius * 2 * scale,) * 2,
-                                    hole_radius=hole_radius * scale,
-                                )
-                            )
-                        continue
-                    shape, dimensions, offset, rotation = template
-                    if shape == "polygon":
-                        ring = tuple(
-                            world(tuple(a + b for a, b in zip(_rotate(p, rotation), offset))) for p in dimensions
-                        )
-                        holes = ()
-                        if hole_radius > 0:
-                            holes = (
-                                tuple(
-                                    (
-                                        hole_center[0] + hole_radius * scale * math.cos(i * math.tau / arc_segments),
-                                        hole_center[1] + hole_radius * scale * math.sin(i * math.tau / arc_segments),
-                                    )
-                                    for i in range(arc_segments)
-                                ),
-                            )
-                            pads.append(
-                                ScenePad(
-                                    instance.id,
-                                    layer,
-                                    net,
-                                    hole_center,
-                                    (hole_radius * 2 * scale,) * 2,
-                                    hole_radius=hole_radius * scale,
-                                )
-                            )
-                        polygons.append(ScenePolygon(instance.id, layer, net, ring, holes, category="pad", **pin_owner))
-                        continue
-                    center = world(offset)
-                    axis = vector(_rotate((1, 0), rotation))
-                    angle = math.atan2(axis[1], axis[0])
-                    size = (dimensions[0],) * 2 if shape in {"circle", "square"} else dimensions[:2]
-                    corner = dimensions[2] if shape in {"oval", "bullet"} else 0
-                    corner = min(corner, min(size) / 2)
-                    pads.append(
-                        ScenePad(
-                            instance.id,
-                            layer,
-                            net,
-                            center,
-                            tuple(v * scale for v in size),
-                            "rectangle" if shape == "square" else shape,
-                            angle,
-                            corner * scale,
-                            hole_radius * scale,
-                            hole_center,
-                            **pin_owner,
-                        )
+                    template = _cached_pad_template(name, mapped[layer], by_layer, templates, arc_segments)
+                    _append_padstack_geometry(
+                        instance,
+                        layer,
+                        net,
+                        template,
+                        placement,
+                        hole_radius,
+                        hole_center,
+                        arc_segments,
+                        pin_owner,
+                        (pads, polygons),
                     )
                 except Exception as exc:
                     diagnostics.append(f"Padstack {instance.id}, layer {layer}: {exc}")
@@ -396,12 +429,8 @@ def _components(edb, selected_layers, selected_nets, diagnostics):
     return tuple(result)
 
 
-def scene_from_edb(edb, layers=None, nets=None, arc_segments=32):
-    """Capture analytic traces, per-layer pads and zone contours in millimeters."""
-    if not edb.grpc:
-        raise ValueError("The interactive layout viewer currently supports only the gRPC backend.")
-    if isinstance(arc_segments, bool) or not isinstance(arc_segments, int) or arc_segments < 3:
-        raise ValueError("arc_segments must be an integer of at least three.")
+def _scene_filters(edb, layers, nets):
+    """Normalize filters and reject names outside the source layout."""
     selected_layers, selected_nets = _names(layers), _names(nets)
     source_layers = edb.stackup.layers
     if selected_layers is None:
@@ -413,13 +442,11 @@ def scene_from_edb(edb, layers=None, nets=None, arc_segments=32):
         unknown = selected_nets.difference(edb.nets.nets)
         if unknown:
             raise ValueError(f"Unknown nets: {', '.join(sorted(unknown))}")
-    scene_layers = []
-    for name, layer in source_layers.items():
-        if name in selected_layers:
-            color = tuple(float(v) / 255.0 for v in layer.color[:3])
-            scene_layers.append(SceneLayer(name, (*color, 1.0)))
-    polygons, diagnostics, traces, joins, pads = [], [], [], [], []
-    skipped = Counter()
+    return selected_layers, selected_nets
+
+
+def _selected_primitives(edb, selected_layers, selected_nets, skipped):
+    """Filter source primitives and count unsupported copper geometry."""
     for primitive in edb.layout.primitives:
         if primitive.is_void:
             continue
@@ -436,6 +463,16 @@ def scene_from_edb(edb, layers=None, nets=None, arc_segments=32):
         if primitive.is_negative:
             skipped["negative primitive"] += 1
             continue
+        yield primitive, primitive_type, layer_name, net_name
+
+
+def _primitives(edb, selected_layers, selected_nets, arc_segments, diagnostics):
+    """Capture analytic geometry with source contours as a fallback."""
+    polygons, traces, joins, pads = [], [], [], []
+    skipped = Counter()
+    for primitive, primitive_type, layer_name, net_name in _selected_primitives(
+        edb, selected_layers, selected_nets, skipped
+    ):
         try:
             if primitive_type == "path" and not primitive.voids:
                 try:
@@ -462,6 +499,23 @@ def scene_from_edb(edb, layers=None, nets=None, arc_segments=32):
         except Exception as exc:
             diagnostics.append(f"Primitive {primitive.id}: {exc}")
     diagnostics.extend(f"Skipped {count} {kind} object(s)." for kind, count in sorted(skipped.items()))
+    return polygons, traces, joins, pads
+
+
+def scene_from_edb(edb, layers=None, nets=None, arc_segments=32):
+    """Capture analytic traces, per-layer pads and zone contours in millimeters."""
+    if not edb.grpc:
+        raise ValueError("The interactive layout viewer currently supports only the gRPC backend.")
+    if isinstance(arc_segments, bool) or not isinstance(arc_segments, int) or arc_segments < 3:
+        raise ValueError("arc_segments must be an integer of at least three.")
+    selected_layers, selected_nets = _scene_filters(edb, layers, nets)
+    scene_layers = []
+    for name, layer in edb.stackup.layers.items():
+        if name in selected_layers:
+            color = tuple(float(v) / 255.0 for v in layer.color[:3])
+            scene_layers.append(SceneLayer(name, (*color, 1.0)))
+    diagnostics = []
+    polygons, traces, joins, pads = _primitives(edb, selected_layers, selected_nets, arc_segments, diagnostics)
     via_pads, via_polygons = _padstacks(edb, selected_layers, selected_nets, arc_segments, diagnostics)
     pads.extend(via_pads)
     polygons.extend(via_polygons)

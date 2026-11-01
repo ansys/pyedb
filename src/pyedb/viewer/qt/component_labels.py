@@ -35,6 +35,7 @@ from PySide6.QtGui import QColor, QFont, QImage, QPainter, QPainterPath, QPen
 from pyedb.viewer.colors import COMPONENT_OUTLINE_COLOR
 from pyedb.viewer.mesh import split_coordinates
 from pyedb.viewer.qt.coverage import _shader_source
+from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
 
 class ComponentLabels:
@@ -197,12 +198,8 @@ class ComponentLabels:
         GL.glDisable(GL.GL_SCISSOR_TEST)
         GL.glEnable(GL.GL_BLEND)
         GL.glBlendFuncSeparate(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA, GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA)
-        GL.glUseProgram(self.program)
         u = self.uniforms
-        GL.glUniform4fv(u["camera_split"], 1, split_coordinates([[camera.center_x, camera.center_y]])[0])
-        GL.glUniform2f(u["viewport"], camera.width, camera.height)
-        GL.glUniform1f(u["scale"], camera.scale)
-        GL.glUniform1f(u["mirror_x"], -1 if camera.mirror else 1)
+        bind_camera_uniforms(self.program, u, camera)
         GL.glUniform1f(u["opacity"], opacity)
         GL.glUniform3f(u["label_color"], *COMPONENT_OUTLINE_COLOR)
         GL.glUniform1i(u["atlas"], 0)

@@ -28,6 +28,7 @@ from PySide6.QtCore import QEvent, QSize, Qt
 from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
 from PySide6.QtWidgets import QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QToolButton
 
+from pyedb.viewer.qt.icons import layer_icon_path
 from pyedb.viewer.qt.theme import COLORS
 
 
@@ -54,19 +55,7 @@ def navigation_icon(name):
             if name == "plus":
                 painter.drawLine(10, 4, 10, 16)
         else:
-            path = QPainterPath()
-            path.moveTo(10, 3)
-            path.lineTo(17, 7)
-            path.lineTo(10, 11)
-            path.lineTo(3, 7)
-            path.closeSubpath()
-            path.moveTo(3, 11)
-            path.lineTo(10, 15)
-            path.lineTo(17, 11)
-            path.moveTo(3, 15)
-            path.lineTo(10, 19)
-            path.lineTo(17, 15)
-            painter.drawPath(path)
+            painter.drawPath(layer_icon_path(layer_count=3))
     finally:
         painter.end()
     return QIcon(pixmap)

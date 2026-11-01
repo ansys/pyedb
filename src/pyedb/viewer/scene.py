@@ -30,6 +30,18 @@ Ring = tuple[Point, ...]
 Bounds = tuple[float, float, float, float]
 
 
+def union_bounds(bounds) -> Bounds | None:
+    """Return the enclosing rectangle for a sequence of bounds, or None if empty."""
+    if not bounds:
+        return None
+    return (
+        min(b[0] for b in bounds),
+        min(b[1] for b in bounds),
+        max(b[2] for b in bounds),
+        max(b[3] for b in bounds),
+    )
+
+
 def clean_ring(points) -> Ring:
     """Validate a contour and remove duplicate adjacent/closing vertices."""
     result = []
@@ -326,11 +338,4 @@ class LayoutScene:
     def bounds(self) -> Bounds | None:
         bounds = [item.bounds for item in self.geometry]
         bounds.extend(component.bounds for component in self.components)
-        if not bounds:
-            return None
-        return (
-            min(b[0] for b in bounds),
-            min(b[1] for b in bounds),
-            max(b[2] for b in bounds),
-            max(b[3] for b in bounds),
-        )
+        return union_bounds(bounds)

@@ -22,16 +22,19 @@
 
 """Application lifecycle, separate from EDB session ownership."""
 
+from importlib import import_module
 import threading
 
 # Import dependencies before creating QApplication, producing actionable errors.
-import mapbox_earcut  # noqa: F401
 from PySide6.QtCore import QCoreApplication, Qt, QThread
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication
 
 from pyedb.viewer.qt.canvas import layout_surface_format
 from pyedb.viewer.qt.window import LayoutWindow
+
+# Check triangulation support before creating QApplication.
+import_module("mapbox_earcut")
 
 _application = None
 

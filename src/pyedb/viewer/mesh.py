@@ -27,7 +27,7 @@ import math
 
 import numpy as np
 
-from pyedb.viewer.scene import Bounds, SceneComponent, ScenePad, ScenePolygon
+from pyedb.viewer.scene import Bounds, SceneComponent, ScenePad, ScenePolygon, SceneTrace, union_bounds
 
 # Ten vec4 attributes, all per-instance. Coordinates retain their low parts.
 SDF_STRIDE = 40
@@ -92,8 +92,6 @@ class SdfBatch:
 
 
 def _sdf_packet(item, net_id):
-    from pyedb.viewer.scene import SceneComponent, ScenePad, SceneTrace
-
     packet = np.zeros(SDF_STRIDE, dtype=np.float32)
     packet[12:20] = split_coordinates([item.bounds[:2], item.bounds[2:]]).reshape(-1)
     packet[27] = net_id
@@ -174,12 +172,7 @@ def _prepare_sdf(scene):
             batches.append(
                 SdfBatch(
                     layer,
-                    (
-                        min(b[0] for b in bounds),
-                        min(b[1] for b in bounds),
-                        max(b[2] for b in bounds),
-                        max(b[3] for b in bounds),
-                    ),
+                    union_bounds(bounds),
                     len(packets),
                     len(chunk),
                     any(getattr(item, "hole_radius", 0) > 0 for item in chunk),

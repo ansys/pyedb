@@ -34,9 +34,9 @@ from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
 
 from pyedb.viewer.colors import BACKGROUND_COLOR, DRILL_COLOR, net_color
-from pyedb.viewer.mesh import split_coordinates
 from pyedb.viewer.qt.component_labels import ComponentLabels
 from pyedb.viewer.qt.coverage import SdfCoverage, _shader_source
+from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 from pyedb.viewer.qt.grid import GridRenderer
 
 
@@ -185,11 +185,7 @@ class Renderer:
             if layer.name not in visible_layers or alpha <= 0:
                 continue
             drill_layers.append(layer.name)
-            GL.glUseProgram(self.program)
-            GL.glUniform4fv(u["camera_split"], 1, split_coordinates([[camera.center_x, camera.center_y]])[0])
-            GL.glUniform2f(u["viewport"], camera.width, camera.height)
-            GL.glUniform1f(u["scale"], camera.scale)
-            GL.glUniform1f(u["mirror_x"], -1.0 if camera.mirror else 1.0)
+            bind_camera_uniforms(self.program, u, camera)
             # Preserve ordered source-over transparency inside a conductor layer:
             # zones first, traces next, pads last. Each trace group still unions
             # its own segment coverage, so joins do not accumulate opacity.

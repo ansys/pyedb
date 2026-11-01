@@ -185,6 +185,36 @@ def test_grpc_adapter_records_failed_geometry_and_rejects_bad_inputs():
         scene_from_edb(edb)
 
 
+def test_adapter_preserves_path_fallback_circle_coverage_and_skip_diagnostics():
+    path = _primitive(type="path", end_cap1="unsupported", end_cap2="round", core=SimpleNamespace(center_line=None))
+    circle = _primitive(2, type="circle", get_parameters=lambda: (0.003, 0.004, 0.001))
+    holed_circle = _primitive(3, type="circle", voids=[_primitive(ring=rectangle(0.001, 0.001, 0.002, 0.002))])
+    scene = scene_from_edb(
+        _edb(
+            [
+                path,
+                circle,
+                holed_circle,
+                _primitive(4, is_negative=True),
+                _primitive(5, type="text"),
+                _primitive(6, type="text"),
+                _primitive(7, type="text", is_void=True),
+                _primitive(8, "BOTTOM", type="text"),
+            ]
+        ),
+        layers="TOP",
+    )
+    assert not scene.traces and not scene.joins
+    assert [polygon.category for polygon in scene.polygons] == ["trace", "pad"]
+    assert scene.polygons[0].exterior == rectangle(0, 0, 10, 20)
+    assert scene.polygons[1].holes == (rectangle(1, 1, 2, 2),)
+    assert len(scene.pads) == 1
+    assert scene.pads[0].center == (3, 4) and scene.pads[0].size == (2, 2)
+    circle.points.assert_not_called()
+    assert scene.diagnostics[0].startswith("Path 1: using source boundary coverage")
+    assert scene.diagnostics[1:3] == ("Skipped 1 negative primitive object(s).", "Skipped 2 text object(s).")
+
+
 def test_scene_import_does_not_load_optional_gui_or_triangulator():
     code = (
         "import sys; import pyedb.viewer; "
@@ -575,6 +605,70 @@ def test_pin_annotation_failure_does_not_drop_its_physical_copper():
     assert len(scene.pads) == 2
     assert all(p.component is None for p in scene.pads)
     assert any("component pin metadata unavailable" in note for note in scene.diagnostics)
+
+
+@pytest.mark.parametrize("hole_diameter", [0, 0.001])
+def test_polygon_pad_templates_are_cached_and_preserve_placement_drills_and_pin_ownership(hole_diameter):
+    polygon = SimpleNamespace(
+        without_arcs=Mock(
+            return_value=SimpleNamespace(points=[_point(x, y) for x, y in rectangle(-0.001, -0.002, 0.001, 0.002)])
+        )
+    )
+    definition = SimpleNamespace(
+        pad_by_layer={
+            "TOP": _pad("polygon", polygon_data=polygon, offset_x=0.001, offset_y=0.002, rotation=math.pi / 2)
+        },
+        hole_diameter=hole_diameter,
+        hole_offset_x=0.0005,
+        hole_offset_y=-0.0005,
+    )
+    owner = _component("U1", "TOP", id=42, core=SimpleNamespace(transform=SimpleNamespace(is_null=True)))
+    pins = [
+        _via(i, definition=definition, layer_range_names=["TOP"], rotation=0, is_pin=True, name=str(i), component=owner)
+        for i in (9, 10)
+    ]
+    edb = _edb([])
+    edb.padstacks = SimpleNamespace(instances={pin.id: pin for pin in pins})
+    scene = scene_from_edb(edb, arc_segments=12)
+    polygon.without_arcs.assert_called_once_with(max_arc_angle=math.tau / 12, max_points=12)
+    assert len(scene.polygons) == 2
+    for copper, pin in zip(scene.polygons, pins):
+        np.testing.assert_allclose(copper.exterior, ((13, 21), (13, 23), (9, 23), (9, 21)))
+        assert copper.category == "pad"
+        assert (copper.component, copper.component_layer, copper.component_side, copper.pin_name) == (
+            "U1",
+            "TOP",
+            "top",
+            pin.name,
+        )
+        if hole_diameter:
+            assert len(copper.holes) == 1 and len(copper.holes[0]) == 12
+            assert copper.holes[0][0] == pytest.approx((11, 19.5))
+        else:
+            assert not copper.holes
+    assert len(scene.pads) == (2 if hole_diameter else 0)
+    for drill in scene.pads:
+        assert drill.center == (10.5, 19.5)
+        assert drill.hole_radius == 0.5
+        assert drill.component is None
+
+
+def test_invalid_polygon_pad_retains_drill_and_continues_to_next_layer():
+    via = _via()
+    via.definition.pad_by_layer["TOP"] = _pad(
+        "polygon",
+        polygon_data=SimpleNamespace(
+            without_arcs=lambda **kwargs: SimpleNamespace(points=[_point(0, 0), _point(1, 1)])
+        ),
+    )
+    edb = _edb([])
+    edb.padstacks = SimpleNamespace(instances={via.id: via})
+    scene = scene_from_edb(edb)
+    assert not scene.polygons
+    assert [pad.layer for pad in scene.pads] == ["TOP", "BOTTOM"]
+    assert scene.pads[0].size == (1, 1) and scene.pads[0].hole_radius == 0.5
+    assert scene.pads[1].shape == "rectangle"
+    assert "Padstack 9, layer TOP: A contour requires at least three distinct points." in scene.diagnostics
 
 
 def test_pin_packets_reuse_copper_geometry_without_extra_border_instances():

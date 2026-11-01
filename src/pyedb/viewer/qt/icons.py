@@ -28,6 +28,21 @@ from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
 from pyedb.viewer.qt.theme import COLORS
 
 
+def layer_icon_path(layer_count=2):
+    """Build the shared stacked-layer outline at its original logical size."""
+    path = QPainterPath()
+    path.moveTo(10, 3)
+    path.lineTo(17, 7)
+    path.lineTo(10, 11)
+    path.lineTo(3, 7)
+    path.closeSubpath()
+    for y in range(11, 11 + 4 * (layer_count - 1), 4):
+        path.moveTo(3, y)
+        path.lineTo(10, y + 4)
+        path.lineTo(17, y)
+    return path
+
+
 def workspace_icon(name, color=None):
     pixmap = QPixmap(40, 40)
     pixmap.setDevicePixelRatio(2)
@@ -70,16 +85,7 @@ def workspace_icon(name, color=None):
             painter.drawLine(1, 7, 4, 7)
             painter.drawLine(16, 13, 19, 13)
         else:
-            path = QPainterPath()
-            path.moveTo(10, 3)
-            path.lineTo(17, 7)
-            path.lineTo(10, 11)
-            path.lineTo(3, 7)
-            path.closeSubpath()
-            path.moveTo(3, 11)
-            path.lineTo(10, 15)
-            path.lineTo(17, 11)
-            painter.drawPath(path)
+            painter.drawPath(layer_icon_path())
     finally:
         painter.end()
     return QIcon(pixmap)
