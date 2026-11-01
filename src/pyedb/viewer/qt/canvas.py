@@ -71,6 +71,8 @@ class LayoutView(QOpenGLWidget):
         self.net = None
         self.error = None
         self._prepared = None
+        self._layer_prepared = {}
+        self._pending_layers = set()
         self._pending_upload = False
         self._drag_position = None
         self._drag_button = Qt.MouseButton.NoButton
@@ -111,6 +113,33 @@ class LayoutView(QOpenGLWidget):
             self.message.setText("No geometry matches this layout selection.")
         self.update()
 
+    def begin_layer_loading(self, name=None):
+        self._loading_complete = False
+        self.loading.clock.restart()
+        if self._prepared is not None:
+            self.loading.set_compact()
+        self.loading.setAccessibleDescription(f"Loading layer {name}" if name else "Loading initial layer")
+        self.set_progress("Reading polygons", 0, 0)
+        self._position_loading()
+        self._show_loading()
+
+    def set_layer_prepared(self, name, prepared, *, final=True):
+        self._layer_prepared[name] = prepared
+        self._pending_layers.add(name)
+        self._prepared = prepared
+        self._pending_upload = True
+        self._loading_complete = final
+        if not final:
+            self.loading.set_compact()
+            self._position_loading()
+        self.message.setVisible(
+            not any(
+                part.batches or len(part.instances) or part.component_batches for part in self._layer_prepared.values()
+            )
+        )
+        self.message.setText("No geometry matches this layout selection.")
+        self.update()
+
     def fail(self, error):
         self.error = str(error)
         self.loading.hide()
@@ -123,6 +152,7 @@ class LayoutView(QOpenGLWidget):
             self.renderer.initialize()
             self.context().aboutToBeDestroyed.connect(self.cleanup)
             self._pending_upload = self._prepared is not None
+            self._pending_layers = set(self._layer_prepared)
         except Exception as exc:
             self.renderer.release()
             self.fail(exc)
@@ -135,8 +165,14 @@ class LayoutView(QOpenGLWidget):
             if not self.renderer.program:
                 self.renderer.initialize()
                 self._pending_upload = self._prepared is not None
+                self._pending_layers = set(self._layer_prepared)
             if self._pending_upload:
-                self.renderer.upload(self._prepared)
+                if self._layer_prepared:
+                    for name in self._pending_layers:
+                        self.renderer.upload_layer(name, self._layer_prepared[name])
+                    self._pending_layers.clear()
+                else:
+                    self.renderer.upload(self._prepared)
                 self._pending_upload = False
             self.renderer.draw(
                 self.scene,
@@ -151,7 +187,7 @@ class LayoutView(QOpenGLWidget):
                 annotate_component_names=self.annotate_component_names,
                 show_grid=self.show_grid,
             )
-            if self.renderer.prepared is not None and self._loading_complete:
+            if (self.renderer.prepared is not None or self.renderer.layer_renderers) and self._loading_complete:
                 self.loading.hide()
         except Exception as exc:
             self.fail(exc)

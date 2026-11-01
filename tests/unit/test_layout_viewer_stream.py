@@ -121,6 +121,8 @@ def test_prefetch_submits_bounded_reads_before_waiting_and_inserts_on_capture_th
     assert not iterator.disabled
     assert cache.add.call_count == count * 2
     assert {call.args[1] for call in cache.add.call_args_list} == {"GetLayerMap", "GetHoleOverrides"}
+    iterator._prefetch(SimpleNamespace(GetLayerMap=Method("map"), GetHoleOverrides=Method("override")), batch)
+    assert len(submissions) == count * 2, "Loading another layer must reuse already fetched instance attributes"
 
 
 def test_writable_sessions_never_open_extra_prefetch_channel(monkeypatch):

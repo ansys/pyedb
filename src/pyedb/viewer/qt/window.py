@@ -46,6 +46,7 @@ from pyedb.viewer.qt.icons import workspace_icon
 from pyedb.viewer.qt.navigation import NavigationCapsule
 from pyedb.viewer.qt.panels import ElidedLabel, LayerPanel, NetworkPanel
 from pyedb.viewer.qt.theme import COLORS, apply_viewer_theme
+from pyedb.viewer.scene import LayoutScene
 
 
 class _PreparationSignals(QObject):
@@ -94,9 +95,44 @@ class _Prepare(QRunnable):
         self.signals.preview_ready.emit(scene, self.preview_prepared)
 
 
+class _LayerSignals(QObject):
+    ready = Signal(object, object, object)
+    preview = Signal(object, object, object)
+    failed = Signal(object, object)
+    progress = Signal(str, int, int)
+
+
+class _LoadLayer(QRunnable):
+    def __init__(self, source, name):
+        super().__init__()
+        self.source, self.name = source, name
+        self.signals = _LayerSignals()
+        self.previous = None
+
+    def _preview(self, name, scene):
+        scene.bounds
+        prepared = prepare_scene(scene)
+        self.previous = scene, prepared
+        self.signals.preview.emit(name, scene, prepared)
+
+    @Slot()
+    def run(self):
+        try:
+            progress = throttle_progress(self.signals.progress.emit)
+            name, scene = self.source.load_layer(self.name, progress=progress, preview=self._preview)
+            scene.bounds
+            progress("Rendering layout", 0, 0)
+            prepared = prepare_scene(scene, progress=progress, polygon_mesh=self.previous)
+            self.signals.ready.emit(name, scene, prepared)
+        except Exception as exc:
+            self.signals.failed.emit(self.name, exc)
+
+
 class LayoutWindow(QMainWindow):
     scene_ready = Signal(object)
     scene_failed = Signal(object)
+    layer_ready = Signal(object)
+    closed = Signal()
 
     def __init__(
         self,
@@ -108,9 +144,18 @@ class LayoutWindow(QMainWindow):
         annotate_component_names=True,
         plot_components_on_both_side=True,
         loader=None,
+        layer_source=None,
     ):
         super().__init__(parent)
-        self._capturing = loader is not None
+        self._capturing = loader is not None or layer_source is not None
+        self._layer_source = layer_source
+        self._layer_scenes = {}
+        self.layer_states = {}
+        self._layer_queue = []
+        self._active_layer = None
+        self._initial_layer_done = False
+        self._source_released = False
+        self._closed = False
         self._capture_error = None
         self._has_preview = False
         self._close_after_capture = False
@@ -154,6 +199,9 @@ class LayoutWindow(QMainWindow):
             self.layer_panel.summary.setText("Loading layer information…")
             self.layer_panel.setEnabled(False)
             self.network_panel.setEnabled(False)
+        if layer_source is not None:
+            self._start_layer(None)
+            return
         self._preparation = _Prepare(scene, loader)
         self._preparation.signals.ready.connect(self._prepared)
         self._preparation.signals.scene_ready.connect(self._scene_loaded)
@@ -161,6 +209,129 @@ class LayoutWindow(QMainWindow):
         self._preparation.signals.failed.connect(self._load_failed)
         self._preparation.signals.progress.connect(self.canvas.set_progress)
         QThreadPool.globalInstance().start(self._preparation)
+
+    def _start_layer(self, name):
+        self._capturing = True
+        self._active_layer = name
+        if name is not None:
+            self.layer_states[name] = "loading"
+            self.layer_panel.set_load_state(name, "loading")
+        self.canvas.begin_layer_loading(name)
+        task = _LoadLayer(self._layer_source, name)
+        self._preparation = task
+        task.signals.ready.connect(self._layer_loaded)
+        task.signals.preview.connect(self._layer_preview)
+        task.signals.failed.connect(self._layer_failed)
+        task.signals.progress.connect(self.canvas.set_progress)
+        QThreadPool.globalInstance().start(task)
+
+    def _merge_layer_scene(self, name, scene):
+        self._layer_scenes[name] = scene
+        parts = [self._layer_scenes[layer.name] for layer in scene.layers if layer.name in self._layer_scenes]
+        combined = LayoutScene(
+            scene.layers,
+            tuple(item for part in parts for item in part.polygons),
+            scene.title,
+            tuple(note for part in parts for note in part.diagnostics),
+            tuple(item for part in parts for item in part.traces),
+            tuple(item for part in parts for item in part.pads),
+            tuple(item for part in parts for item in part.joins),
+            scene.net_names,
+            tuple(item for part in parts for item in part.components),
+        )
+        first = not self.layer_states
+        for layer in scene.layers:
+            self.layer_states.setdefault(layer.name, "unloaded")
+        if first:
+            self._display_scene(combined)
+            self.network_panel.setEnabled(True)
+        else:
+            self.canvas.scene = combined
+            self.navigation.has_geometry = combined.bounds is not None
+            self.navigation.setVisible(self.navigation.has_geometry)
+            for action in (self.fit_action, self.zoom_in_action, self.zoom_out_action):
+                action.setEnabled(self.navigation.has_geometry)
+        # Placement-layer membership, rather than eager bottom copper, controls
+        # component visibility. Keep these controls available as layers arrive.
+        for action in (self._components_separator, self.components_action, self.component_names_action):
+            action.setVisible(True)
+        self.both_sides_action.setVisible(len(scene.layers) > 1)
+        for layer, state in self.layer_states.items():
+            self.layer_panel.set_load_state(layer, state)
+        return first
+
+    @Slot(object, object, object)
+    def _layer_preview(self, name, scene, prepared):
+        if self._close_after_capture:
+            return
+        self._merge_layer_scene(name, scene)
+        self.layer_states[name] = "loading"
+        self.layer_panel.set_load_state(name, "loading")
+        self.canvas.set_layer_prepared(name, prepared, final=False)
+
+    @Slot(object, object, object)
+    def _layer_loaded(self, name, scene, prepared):
+        self._capturing = False
+        if self._close_after_capture:
+            self.close()
+            return
+        first = self._merge_layer_scene(name, scene)
+        if name is None:
+            self.canvas.set_prepared(prepared)
+        else:
+            self.layer_states[name] = "ready"
+            self.layer_panel.set_load_state(name, "ready")
+            self.canvas.set_layer_prepared(name, prepared)
+        if first or not self._initial_layer_done:
+            self.canvas.fit_all()
+        count = sum(state == "ready" for state in self.layer_states.values())
+        self._stats_summary = f"{count} {'layer' if count == 1 else 'layers'} loaded"
+        self._compact_stats = self._stats_summary
+        self._refresh_status()
+        if not self._initial_layer_done:
+            self._initial_layer_done = True
+            self.scene_ready.emit(self.canvas.scene)
+        self.layer_ready.emit(name)
+        self._next_layer()
+
+    @Slot(object, object)
+    def _layer_failed(self, name, error):
+        self._capturing = False
+        if not self._initial_layer_done:
+            self._load_failed(error)
+            self._capture_error = error
+            self.scene_failed.emit(error)
+        else:
+            self.layer_states[name] = "failed"
+            self.layer_panel.set_load_state(name, "failed", str(error))
+            self.canvas._loading_complete = True
+            self.canvas.loading.hide()
+            self.statusBar().showMessage(f"Could not load {name}. Toggle the layer to retry: {error}")
+        if self._close_after_capture:
+            self.close()
+        else:
+            self._next_layer()
+
+    def _request_layer(self, name):
+        if self._layer_source is None or self._close_after_capture or self._source_released:
+            return
+        if self.layer_states.get(name) in {"queued", "loading", "ready"}:
+            return
+        self.layer_states[name] = "queued"
+        self._layer_queue.append(name)
+        self.layer_panel.set_load_state(name, "queued")
+        self._next_layer()
+
+    def _next_layer(self):
+        if self._capturing or self._close_after_capture:
+            return
+        while self._layer_queue:
+            name = self._layer_queue.pop(0)
+            if name in self.canvas.visible_layers:
+                self._start_layer(name)
+                return
+            self.layer_states[name] = "unloaded"
+            self.layer_panel.set_load_state(name, "unloaded")
 
     @Slot(object)
     def _scene_loaded(self, scene):
@@ -436,7 +607,7 @@ class LayoutWindow(QMainWindow):
     def _set_network_panel(self, scene):
         dock = self.networks_dock
         previous, header = dock.widget(), dock.titleBarWidget()
-        self.network_panel = NetworkPanel(scene, dock)
+        self.network_panel = NetworkPanel(scene, dock, include_all_nets=self._layer_source is not None)
         self.network_list = self.network_panel.network_list
         self.network_list.currentRowChanged.connect(self._net_changed)
         self.network_panel.close_button.clicked.connect(dock.hide)
@@ -513,6 +684,7 @@ class LayoutWindow(QMainWindow):
     def _layer_changed(self, item):
         if item.checkState() == Qt.CheckState.Checked:
             self.canvas.visible_layers.add(item.text())
+            self._request_layer(item.text())
         else:
             self.canvas.visible_layers.discard(item.text())
         self._sync_layer_buttons()
@@ -528,6 +700,9 @@ class LayoutWindow(QMainWindow):
             {self.layer_list.item(index).text() for index in range(self.layer_list.count())} if visible else set()
         )
         self._sync_layer_buttons()
+        if visible:
+            for index in range(self.layer_list.count()):
+                self._request_layer(self.layer_list.item(index).text())
         self.canvas.update()
 
     def _sync_layer_buttons(self):
@@ -540,12 +715,20 @@ class LayoutWindow(QMainWindow):
 
     def _show_notes(self):
         notes = list(self.canvas.scene.diagnostics) or ["Scene supplied by caller. Coordinates are in millimeters."]
-        prepared = self.canvas.renderer.prepared
-        if prepared is not None:
+        renderer = self.canvas.renderer
+        parts = (
+            [part.prepared for part in renderer.layer_renderers.values()]
+            if renderer.layer_renderers
+            else [renderer.prepared]
+            if renderer.prepared is not None
+            else []
+        )
+        if parts:
             notes.insert(
                 0,
-                f"Geometry: {len(prepared.indices) // 3:,} triangles, {len(prepared.instances):,} GPU instances. "
-                f"Geometry uploads: {self.canvas.renderer.upload_count}.",
+                f"Geometry: {sum(len(part.indices) // 3 for part in parts):,} triangles, "
+                f"{sum(len(part.instances) for part in parts):,} GPU instances. "
+                f"Geometry uploads: {renderer.upload_count}.",
             )
         QMessageBox.information(self, "Layout display notes", "\n\n".join(notes))
 
@@ -556,4 +739,11 @@ class LayoutWindow(QMainWindow):
             event.ignore()
             return
         self.canvas.cleanup()
+        if self._layer_source is not None and not self._source_released:
+            self._layer_queue.clear()
+            self._layer_source.release_source()
+            self._source_released = True
+        if not self._closed:
+            self._closed = True
+            self.closed.emit()
         super().closeEvent(event)

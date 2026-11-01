@@ -33,6 +33,7 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QPushButton,
     QSizePolicy,
+    QStyledItemDelegate,
     QToolButton,
     QVBoxLayout,
     QWidget,
@@ -101,6 +102,15 @@ def _panel_header(parent, object_name, title_text, panel_name):
     return header, counter, close_button
 
 
+class _LayerDelegate(QStyledItemDelegate):
+    def initStyleOption(self, option, index):
+        super().initStyleOption(option, index)
+        state = index.data(Qt.ItemDataRole.UserRole + 1)
+        label = {"unloaded": "On demand", "queued": "Queued", "loading": "Loading", "failed": "Retry"}.get(state)
+        if label:
+            option.text += f"  · {label}"
+
+
 class LayerPanel(QWidget):
     """Stackup visibility controls without a search field."""
 
@@ -131,6 +141,7 @@ class LayerPanel(QWidget):
         layout.addWidget(self.eyebrow)
         self.layer_list = QListWidget(self)
         self.layer_list.setObjectName("layerList")
+        self.layer_list.setItemDelegate(_LayerDelegate(self.layer_list))
         self.layer_list.setAccessibleName("Visible layout layers")
         self.layer_list.setIconSize(QSize(14, 14))
         self.layer_list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -168,6 +179,16 @@ class LayerPanel(QWidget):
         self.empty_notice.setVisible(not layers)
         self.empty_notice.setText("No layers yet\nThis layout snapshot is empty.")
 
+    def set_load_state(self, name, state, error=None):
+        with QSignalBlocker(self.layer_list):
+            for index in range(self.layer_list.count()):
+                item = self.layer_list.item(index)
+                if item.text() == name:
+                    item.setData(Qt.ItemDataRole.UserRole + 1, state)
+                    item.setData(Qt.ItemDataRole.AccessibleDescriptionRole, state)
+                    item.setToolTip(f"{name}: {error or state}. Space to toggle; toggle again to retry a failed load.")
+                    break
+
     def sync(self, visible_layers):
         count = self.layer_list.count()
         checked = sum(self.layer_list.item(i).text() in visible_layers for i in range(count))
@@ -193,7 +214,7 @@ class LayerPanel(QWidget):
 class NetworkPanel(QWidget):
     """A searchable single-network selector, parallel to the layer panel."""
 
-    def __init__(self, scene, parent=None):
+    def __init__(self, scene, parent=None, *, include_all_nets=False):
         super().__init__(parent)
         self.setObjectName("networkPanel")
         self.header, self.counter, self.close_button = _panel_header(self, "networkHeader", "Networks", "network")
@@ -219,8 +240,12 @@ class NetworkPanel(QWidget):
         self.network_list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.network_list.setTextElideMode(Qt.TextElideMode.ElideRight)
         self.names = sorted(
-            {item.net for item in scene.geometry if item.net is not None}
-            | {net for component in scene.components for net in component.nets}
+            set(scene.net_names)
+            if include_all_nets
+            else (
+                {item.net for item in scene.geometry if item.net is not None}
+                | {net for component in scene.components for net in component.nets}
+            )
         )
         ids = {net: index for index, net in enumerate(scene_network_names(scene))}
         all_item = QListWidgetItem(workspace_icon("layers", COLORS["muted"]), "All networks")

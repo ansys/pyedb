@@ -33,6 +33,208 @@ pytestmark = [
 ]
 
 
+def test_on_demand_layers_queue_retry_and_close_without_reuploading_ready_buffers():
+    import threading
+    import time
+
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon
+    from pyedb.viewer.qt.app import show_scene
+
+    app = QApplication.instance() or QApplication([])
+    layers = tuple(SceneLayer(name, (1, 0.5, 0, 1)) for name in ("TOP", "BOTTOM", "INNER", "LAST"))
+    entered, finish = threading.Event(), threading.Event()
+
+    class Source:
+        def __init__(self):
+            self.calls = []
+            self.released = False
+            self.fail_inner = True
+
+        def load_layer(self, name=None, *, progress=None, preview=None):
+            assert threading.current_thread() is not threading.main_thread()
+            name = name or "TOP"
+            self.calls.append(name)
+            progress("Reading polygons", 0, 0)
+            if name in {"BOTTOM", "LAST"}:
+                entered.set()
+                assert finish.wait(5), "The GUI stopped processing events"
+            if name == "INNER" and self.fail_inner:
+                self.fail_inner = False
+                raise RuntimeError("Read failed")
+            polygon = ScenePolygon(len(self.calls), name, "GND", ((0, 0), (1, 0), (1, 1), (0, 1)))
+            return name, LayoutScene(layers, (polygon,), net_names=("GND", "HIDDEN_NET"))
+
+        def release_source(self):
+            self.released = True
+
+    def until(predicate):
+        deadline = time.monotonic() + 6
+        while not predicate() and time.monotonic() < deadline:
+            QTest.qWait(10)
+        assert predicate()
+
+    source = Source()
+    window = show_scene(layer_source=source, block=False)
+    try:
+        canvas = window.canvas
+        canvas.grabFramebuffer()
+        assert source.calls == ["TOP"]
+        assert "HIDDEN_NET" in window.network_panel.names
+        top_renderer = canvas.renderer.layer_renderers["TOP"]
+        top_buffer = top_renderer.vbo
+        top_uploads = top_renderer.upload_count
+        canvas.camera.pan(12, 8)
+        camera = canvas.camera.center_x, canvas.camera.center_y, canvas.camera.scale
+        window.layer_list.item(1).setCheckState(Qt.CheckState.Checked)
+        until(entered.is_set)
+        window._request_layer("BOTTOM")
+        window.layer_list.item(2).setCheckState(Qt.CheckState.Checked)
+        window.layer_list.item(2).setCheckState(Qt.CheckState.Unchecked)
+        assert window.canvas.loading.isVisible()
+        assert not source.released
+        finish.set()
+        until(lambda: window.layer_states["BOTTOM"] == "ready" and not window._capturing)
+        canvas.grabFramebuffer()
+        assert source.calls == ["TOP", "BOTTOM"]
+        assert window.layer_states["INNER"] == "unloaded"
+        assert (canvas.camera.center_x, canvas.camera.center_y, canvas.camera.scale) == camera
+        assert top_renderer.vbo == top_buffer and top_renderer.upload_count == top_uploads
+        window.layer_list.item(1).setCheckState(Qt.CheckState.Unchecked)
+        window.layer_list.item(1).setCheckState(Qt.CheckState.Checked)
+        assert source.calls == ["TOP", "BOTTOM"]
+        window.layer_list.item(2).setCheckState(Qt.CheckState.Checked)
+        until(lambda: window.layer_states["INNER"] == "failed")
+        assert canvas.error is None and not canvas.loading.isVisible()
+        window.layer_list.item(2).setCheckState(Qt.CheckState.Unchecked)
+        window.layer_list.item(2).setCheckState(Qt.CheckState.Checked)
+        until(lambda: window.layer_states["INNER"] == "ready")
+        entered.clear()
+        finish.clear()
+        window.layer_list.item(3).setCheckState(Qt.CheckState.Checked)
+        until(entered.is_set)
+        window.close()
+        assert not window.isVisible() and not source.released
+        finish.set()
+        until(lambda: source.released)
+        assert not window._layer_queue
+    finally:
+        finish.set()
+        window.close()
+        app.processEvents()
+
+
+def test_incremental_layer_buffers_match_complete_scene_pixels():
+    from dataclasses import replace
+
+    import numpy as np
+    from PySide6.QtGui import QImage
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.viewer import LayoutScene, SceneComponent, SceneLayer, ScenePad, ScenePolygon
+    from pyedb.viewer.mesh import prepare_scene
+    from pyedb.viewer.qt.canvas import LayoutView
+
+    app = QApplication.instance() or QApplication([])
+    layers = (SceneLayer("TOP", (1, 0, 0, 1)), SceneLayer("BOTTOM", (0, 0, 1, 1)))
+    ring = ((-2, -2), (2, -2), (2, 2), (-2, 2))
+    hole = ((-0.5, -0.5), (0.5, -0.5), (0.5, 0.5), (-0.5, 0.5))
+    polygons = tuple(ScenePolygon(i, layer.name, f"N{i}", ring, (hole,)) for i, layer in enumerate(layers))
+    pads = tuple(ScenePad(10, layer.name, "N0", (1, 1), (0.5, 0.5), hole_radius=0.1) for layer in layers)
+    components = (
+        SceneComponent(20, "U1", "TOP", ("N0",), (0.7, 0.7, 1.3, 1.3)),
+        SceneComponent(21, "U2", "BOTTOM", ("N0",), (0.7, 0.7, 1.3, 1.3), "bottom"),
+    )
+    scene = LayoutScene(layers, polygons, pads=pads, net_names=("N0", "N1"), components=components)
+    view = LayoutView(scene)
+    view.resize(400, 400)
+    view.visible_layers = {layer.name for layer in layers}
+    view.show_grid = False
+    try:
+        view.set_prepared(prepare_scene(scene))
+        view.show()
+        QTest.qWait(150)
+        image = view.grabFramebuffer().convertToFormat(QImage.Format.Format_RGBA8888)
+        expected = np.frombuffer(image.constBits(), dtype=np.uint8).copy()
+        view.cleanup()
+        view._pending_upload = False
+        for layer in layers:
+            part = replace(
+                scene,
+                polygons=tuple(p for p in polygons if p.layer == layer.name),
+                pads=tuple(p for p in pads if p.layer == layer.name),
+                components=tuple(component for component in components if component.layer == layer.name),
+            )
+            view.set_layer_prepared(layer.name, prepare_scene(part))
+        actual = view.grabFramebuffer().convertToFormat(image.format())
+        assert view.error is None
+        np.testing.assert_array_equal(np.frombuffer(actual.constBits(), dtype=np.uint8), expected)
+    finally:
+        view.cleanup()
+        view.close()
+        app.processEvents()
+
+
+def test_initial_layer_close_drains_source_and_initial_error_propagates():
+    import threading
+
+    from PySide6.QtCore import QTimer
+    from PySide6.QtWidgets import QApplication, QWidget
+
+    from pyedb.viewer import LayoutScene, SceneLayer
+    from pyedb.viewer.qt.app import show_scene
+    from pyedb.viewer.qt.window import LayoutWindow
+
+    app = QApplication.instance() or QApplication([])
+    # An embedded host must remain open, preventing Qt's last-window quit from
+    # masking a missing close signal in the initial capture's local event loop.
+    host = QWidget()
+    host.show()
+    finish = threading.Event()
+
+    class Source:
+        released = False
+
+        def load_layer(self, *args, **kwargs):
+            assert finish.wait(3)
+            assert not self.released
+            return "TOP", LayoutScene((SceneLayer("TOP", (1, 0, 0, 1)),), ())
+
+        def release_source(self):
+            self.released = True
+
+    source = Source()
+
+    def close_during_load():
+        for candidate in app.topLevelWidgets():
+            if isinstance(candidate, LayoutWindow) and candidate.isVisible():
+                candidate.close()
+                assert not source.released
+        finish.set()
+
+    QTimer.singleShot(50, close_during_load)
+    try:
+        window = show_scene(layer_source=source, block=False)
+        assert source.released and not window._capturing and not window.isVisible()
+
+        class Broken(Source):
+            def load_layer(self, *args, **kwargs):
+                raise RuntimeError("Initial layer unavailable")
+
+        broken = Broken()
+        with pytest.raises(RuntimeError, match="Initial layer unavailable"):
+            show_scene(layer_source=broken, block=False)
+        assert broken.released
+    finally:
+        finish.set()
+        host.close()
+        app.processEvents()
+
+
 def test_loading_progress_keeps_event_loop_live_and_propagates_errors():
     import threading
 
@@ -121,7 +323,7 @@ def test_standalone_extraction_keeps_default_blocking_lifecycle():
             QMetaObject.invokeMethod(stopper, 'schedule', Qt.ConnectionType.QueuedConnection)
             return demo_scene()
         viewer.scene_from_edb = capture
-        window = viewer.launch_viewer(SimpleNamespace())
+        window = viewer.launch_viewer(SimpleNamespace(), on_demand=False)
         assert ticks == [True], 'Standalone event loop returned before its timer'
         assert window.canvas.error is None
         window.close()

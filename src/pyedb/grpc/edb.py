@@ -1427,8 +1427,9 @@ class Edb(EdbInit):
         exact_component_bounds=False,
         chord_error=0.01,
         progressive=True,
+        on_demand=True,
     ):
-        """Open a PySide6/OpenGL 2D layout viewer using a detached snapshot.
+        """Open a PySide6/OpenGL 2D layout viewer with layers loaded on demand.
 
         Parameters
         ----------
@@ -1443,6 +1444,11 @@ class Edb(EdbInit):
             subdivisions chosen from each arc's radius and sweep.
         progressive : bool, optional
             Display copper first while remaining geometry loads. Default is True.
+        on_demand : bool, optional
+            Load the first included stackup layer initially; read others when
+            enabled. Default is True. Keep this EDB session open until the window
+            closes, including with ``block=False``. Set False for a detached
+            full capture that can outlive the EDB session.
         analytic_traces : bool, optional
             Preserve analytic traces at deep zoom. Default is False to read
             source contours with fewer remote geometry-property requests.
@@ -1494,6 +1500,7 @@ class Edb(EdbInit):
             exact_component_bounds=exact_component_bounds,
             chord_error=chord_error,
             progressive=progressive,
+            on_demand=on_demand,
         )
 
     @property

@@ -293,6 +293,7 @@ def test_edb_view_layout_delegates_without_opening_a_session(monkeypatch):
         exact_component_bounds=False,
         chord_error=0.01,
         progressive=True,
+        on_demand=True,
     )
     launch.reset_mock()
     Edb.view_layout(edb, block=False, color_by_net=True)
@@ -854,6 +855,75 @@ def _component(reference="U1", layer="TOP", nets=None, **kwargs):
     )
     values.update(kwargs)
     return SimpleNamespace(**values)
+
+
+def test_layer_source_defers_hidden_geometry_and_prefetches_only_intersecting_pads(monkeypatch):
+    from pyedb.viewer.adapters import grpc_prefetch
+    from pyedb.viewer.adapters.layers import LayerSceneSource
+
+    top, bottom = _primitive(), _primitive(2, "BOTTOM")
+    through = _via()
+    through.get_hole_overrides = Mock(return_value=(False, 0))
+    bottom_pad = _via(10, layer_range_names=["BOTTOM"], get_hole_overrides=Mock(return_value=(False, 0)))
+    edb = _edb([bottom, top])
+    edb.padstacks = SimpleNamespace(instances={9: through, 10: bottom_pad})
+    edb.components = SimpleNamespace(instances={"U1": _component(nets=["GND"])})
+    prefetched = []
+
+    def prefetch(instances):
+        prefetched.append([item.id for item in instances.instances])
+        yield from instances.instances
+
+    monkeypatch.setattr(grpc_prefetch.PadInstances, "__iter__", prefetch)
+    source = LayerSceneSource(edb)
+    assert source.layers is None
+    previews = []
+    name, first = source.load_layer(preview=lambda name, scene: previews.append(scene))
+    assert name == "TOP"
+    assert [layer.name for layer in first.layers] == ["TOP", "BOTTOM"]
+    assert {item.layer for item in first.geometry} == {"TOP"}
+    assert len(previews) == 1 and not previews[0].components
+    assert prefetched == [[9]]
+    bottom.points.assert_not_called()
+    bottom_pad.get_hole_overrides.assert_not_called()
+    assert first.components[0].reference == "U1"
+    _, second = source.load_layer("BOTTOM")
+    assert prefetched == [[9], [9, 10]]
+    bottom.points.assert_called_once()
+    assert {item.layer for item in second.geometry} == {"BOTTOM"}
+    through.get_hole_overrides.assert_called_once()
+    for layer, actual in (("TOP", first), ("BOTTOM", second)):
+        expected = scene_from_edb(edb, layers=layer, analytic_traces=False)
+        for field in ("polygons", "traces", "pads", "joins", "components", "net_names"):
+            assert getattr(actual, field) == getattr(expected, field)
+    source.release_source()
+    assert source.edb is None and not source.primitives and not source.pad_state
+    with pytest.raises(RuntimeError, match="closed"):
+        source.load_layer("TOP")
+
+
+def test_layer_source_indexes_collections_once_and_uses_stackup_order():
+    from pyedb.viewer.adapters.layers import LayerSceneSource
+
+    primitives = [_primitive(layer="FRONT"), _primitive(2, "BACK")]
+    enumerated = []
+
+    class Layout:
+        @property
+        def primitives(self):
+            enumerated.append(True)
+            return primitives
+
+    edb = _edb([])
+    edb.layout = Layout()
+    edb.stackup.layers = {"FRONT": SimpleNamespace(color=(255, 0, 0)), "BACK": SimpleNamespace(color=(0, 0, 255))}
+    edb.stackup.signal_layers = edb.stackup.layers
+    source = LayerSceneSource(edb, progressive=False)
+    preview = Mock()
+    assert source.load_layer(preview=preview)[0] == "FRONT"
+    source.load_layer("BACK", preview=preview)
+    assert enumerated == [True]
+    preview.assert_not_called()
 
 
 def test_components_match_plot_envelopes_and_capture_filters_without_double_rotation():
