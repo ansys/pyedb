@@ -32,6 +32,7 @@ from pyedb.viewer.scene import (
     SceneComponent,
     SceneJoin,
     SceneLayer,
+    SceneObjectInfo,
     ScenePad,
     ScenePolygon,
     SceneTrace,
@@ -451,6 +452,7 @@ def _padstacks(
     progress=None,
     component_geometry=None,
     chord_error=None,
+    object_info=None,
 ):
     from pyedb.viewer.adapters.grpc_prefetch import PadInstances
     from pyedb.viewer.adapters.grpc_stream import padstack_component
@@ -488,7 +490,8 @@ def _padstacks(
             net = instance.net_name
             if selected_nets is not None and net not in selected_nets:
                 continue
-            layers = _padstack_layers(instance, selected_layers, conductors, extended_ranges, layer_names)
+            span = _padstack_layers(instance, set(conductors), conductors, extended_ranges, layer_names)
+            layers = [layer for layer in span if layer in selected_layers]
             if not layers:
                 continue
             name = instance.padstack_definition
@@ -509,6 +512,21 @@ def _padstacks(
                 diagnostics.append(f"Padstack {instance.id}: component pin metadata unavailable ({exc}).")
                 pin_owner = {}
             hole_center = placement[0](hole_offset)
+            if object_info is not None:
+                try:
+                    reference = getattr(component, "name", None) if component else None
+                    object_info[object_id] = SceneObjectInfo(
+                        object_id,
+                        "pad" if component or hole_radius == 0 else "via",
+                        net,
+                        drill_diameter=hole_radius * placement[2] * 2,
+                        start_layer=span[0],
+                        stop_layer=span[-1],
+                        component=reference,
+                        pin_name=getattr(instance, "name", None) if component else None,
+                    )
+                except Exception as exc:
+                    diagnostics.append(f"Padstack {object_id}: inspection properties unavailable ({exc}).")
             pad_start, polygon_start = len(pads), len(polygons)
             for layer in layers:
                 try:
@@ -669,6 +687,7 @@ def _primitives(
     chord_error=None,
     on_preview=None,
     priority_layer=None,
+    object_info=None,
 ):
     """Capture analytic geometry with source contours as a fallback."""
     from pyedb.viewer.adapters.grpc_stream import VoidReader
@@ -684,6 +703,20 @@ def _primitives(
             on_preview(polygons, traces, joins, pads)
             published = True
         try:
+            object_id = primitive.id
+            if object_info is not None:
+                kind = "trace" if primitive_type == "path" else "pad" if primitive_type == "circle" else "zone"
+                info = SceneObjectInfo(object_id, kind, net_name)
+                if kind == "trace":
+                    from pyedb.viewer.adapters.grpc_stream import trace_dimensions
+
+                    try:
+                        dimensions = trace_dimensions(getattr(primitive, "core", None))
+                        if dimensions is not None:
+                            info = SceneObjectInfo(object_id, kind, net_name, width=dimensions[0], length=dimensions[1])
+                    except Exception as exc:
+                        diagnostics.append(f"Trace {primitive.id}: inspection properties unavailable ({exc}).")
+                object_info[object_id] = info
             has_voids = getattr(primitive, "has_voids", None)
             voids = primitive.voids if has_voids is None else None
             has_voids = bool(voids) if has_voids is None else has_voids
@@ -697,11 +730,11 @@ def _primitives(
                     diagnostics.append(f"Path {primitive.id}: using source boundary coverage ({exc}).")
             if primitive_type == "circle" and not has_voids:
                 x, y, radius = (float(v) * 1000 for v in primitive.get_parameters())
-                pads.append(ScenePad(primitive.id, layer_name, net_name, (x, y), (radius * 2,) * 2))
+                pads.append(ScenePad(object_id, layer_name, net_name, (x, y), (radius * 2,) * 2))
                 continue
             polygons.append(
                 ScenePolygon(
-                    object_id=primitive.id,
+                    object_id=object_id,
                     layer=layer_name,
                     net=net_name,
                     exterior=_contour(primitive, arc_segments, chord_error),
@@ -760,6 +793,7 @@ def scene_from_edb(
             color = tuple(float(v) / 255.0 for v in layer.color[:3])
             scene_layers.append(SceneLayer(name, (*color, 1.0)))
     diagnostics = []
+    object_info = {}
     net_names = tuple(edb.nets.nets)
     title = edb.active_cell.name
 
@@ -774,6 +808,7 @@ def scene_from_edb(
                     pads=tuple(pads),
                     joins=tuple(joins),
                     net_names=net_names,
+                    object_info=tuple(object_info.values()),
                 )
             )
 
@@ -789,11 +824,20 @@ def scene_from_edb(
         chord_error,
         publish if priority_layer is not None else None,
         priority_layer,
+        object_info,
     )
     publish(polygons, traces, joins, pads)
     component_geometry = None if exact_component_bounds else {}
     via_pads, via_polygons = _padstacks(
-        edb, selected_layers, selected_nets, arc_segments, diagnostics, progress, component_geometry, chord_error
+        edb,
+        selected_layers,
+        selected_nets,
+        arc_segments,
+        diagnostics,
+        progress,
+        component_geometry,
+        chord_error,
+        object_info,
     )
     pads.extend(via_pads)
     polygons.extend(via_polygons)
@@ -811,4 +855,5 @@ def scene_from_edb(
         joins=tuple(joins),
         net_names=net_names,
         components=components,
+        object_info=tuple(object_info.values()),
     )

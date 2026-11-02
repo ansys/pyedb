@@ -68,6 +68,8 @@ class PreparedScene:
     pin_batches: tuple = ()
     vertex_nets: np.ndarray | None = None
     mesh_parent_id: int = 0
+    picking: object = None
+    sdf_sources: np.ndarray | None = None
 
 
 @dataclass(frozen=True)
@@ -172,7 +174,7 @@ def _write_pad_packets(items, net_ids, packets):
     packets[:, 38] = radii[:, 1] - packets[:, 29]
 
 
-def _prepare_sdf(scene, progress=None):
+def _prepare_sdf(scene, progress=None, sources=None):
     nets = scene_network_names(scene)
     net_ids = {net: index for index, net in enumerate(nets)}
     batches, pin_batches = [], []
@@ -211,6 +213,8 @@ def _prepare_sdf(scene, progress=None):
                 )
             )
             for index, item in enumerate(chunk):
+                if sources is not None:
+                    sources[packet_count + index] = id(item)
                 if getattr(item, "component", None):
                     pin_batches.append(PinBatch(item, packet_count + index))
             if category == "pad":
@@ -237,12 +241,20 @@ def _prepare_sdf(scene, progress=None):
     return instances, tuple(batches), nets, tuple(component_batches), tuple(pin_batches)
 
 
+def _pickable(prepared, scene, sources):
+    from pyedb.viewer.picking import PickIndex
+
+    sources.setflags(write=False)
+    return replace(prepared, picking=PickIndex(scene), sdf_sources=sources)
+
+
 def prepare_scene(scene, *, progress=None, polygon_mesh=None):
     """Triangulate each ring independently; holes are subtracted with GPU stencil.
 
     Hole coverage is a union, even for overlapping holes. It must never be
     submitted as ordinary filled geometry.
     """
+    sources = np.zeros(len(scene.traces) + len(scene.joins) + len(scene.pads) + len(scene.components), dtype=np.uintp)
     if polygon_mesh is not None:
         previous, mesh = polygon_mesh
         if (
@@ -269,7 +281,7 @@ def prepare_scene(scene, *, progress=None, polygon_mesh=None):
                 progress("Rendering layout", current, total)
 
             instances, sdf_batches, nets, component_batches, pin_batches = _prepare_sdf(
-                scene, update if progress is not None else None
+                scene, update if progress is not None else None, sources
             )
             prepared = PreparedScene(
                 vertices,
@@ -285,7 +297,7 @@ def prepare_scene(scene, *, progress=None, polygon_mesh=None):
             )
             if progress is not None:
                 progress("Rendering layout", total, total)
-            return prepared
+            return _pickable(prepared, scene, sources)
     if scene.polygons:
         try:
             import mapbox_earcut
@@ -340,7 +352,7 @@ def prepare_scene(scene, *, progress=None, polygon_mesh=None):
         progress("Rendering layout", total_rings + current, total_items)
 
     instances, sdf_batches, nets, component_batches, pin_batches = _prepare_sdf(
-        scene, sdf_progress if progress is not None else None
+        scene, sdf_progress if progress is not None else None, sources
     )
     prepared = PreparedScene(
         np.concatenate(vertices) if vertices else np.empty((0, 4), dtype=np.float32),
@@ -355,4 +367,4 @@ def prepare_scene(scene, *, progress=None, polygon_mesh=None):
     )
     if progress is not None:
         progress("Rendering layout", total_items, total_items)
-    return prepared
+    return _pickable(prepared, scene, sources)

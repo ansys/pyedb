@@ -301,6 +301,34 @@ class SceneComponent:
 
 
 @dataclass(frozen=True)
+class SceneObjectInfo:
+    """Detached source properties shared by all rendered parts of an object.
+
+    Lengths and diameters are millimeters; trace length follows the source
+    centerline, including analytic arcs, without adding end-cap extensions.
+    """
+
+    object_id: int
+    kind: str
+    net: str | None = None
+    width: float | None = None
+    length: float | None = None
+    drill_diameter: float | None = None
+    start_layer: str | None = None
+    stop_layer: str | None = None
+    component: str | None = None
+    pin_name: str | None = None
+
+    def __post_init__(self):
+        if self.kind not in {"trace", "via", "pad", "zone"}:
+            raise ValueError("Unknown selectable object kind.")
+        for name in ("width", "length", "drill_diameter"):
+            value = getattr(self, name)
+            if value is not None and (not math.isfinite(value) or value < 0):
+                raise ValueError("Object dimensions must be nonnegative and finite.")
+
+
+@dataclass(frozen=True)
 class LayoutScene:
     """Detached snapshot; layer order is top to bottom, matching EDB stackup order."""
 
@@ -313,12 +341,13 @@ class LayoutScene:
     joins: tuple[SceneJoin, ...] = ()
     net_names: tuple[str, ...] = ()
     components: tuple[SceneComponent, ...] = ()
+    object_info: tuple[SceneObjectInfo, ...] = ()
 
     def __post_init__(self):
         object.__setattr__(self, "layers", tuple(self.layers))
         object.__setattr__(self, "polygons", tuple(self.polygons))
         object.__setattr__(self, "diagnostics", tuple(self.diagnostics))
-        for name in ("traces", "pads", "joins", "net_names", "components"):
+        for name in ("traces", "pads", "joins", "net_names", "components", "object_info"):
             object.__setattr__(self, name, tuple(getattr(self, name)))
         names = [layer.name for layer in self.layers]
         if len(names) != len(set(names)):

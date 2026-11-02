@@ -476,6 +476,11 @@ def test_adapter_extracts_per_layer_via_pads_offset_rotation_drill_and_filters()
     via = _via()
     edb = _edb([])
     edb.padstacks = SimpleNamespace(instances={via.id: via})
+    top_only = scene_from_edb(edb, layers="TOP")
+    info = next(info for info in top_only.object_info if info.object_id == via.id)
+    assert info.kind == "via"
+    assert (info.start_layer, info.stop_layer) == ("TOP", "BOTTOM")
+    assert info.drill_diameter == pytest.approx(1.0)
     scene = scene_from_edb(edb)
     assert len(scene.pads) == 2
     top, bottom = scene.pads
@@ -911,6 +916,8 @@ def test_component_pin_capture_keeps_owner_name_side_and_physical_pad_layer():
     edb = _edb([])
     edb.padstacks = SimpleNamespace(instances={9: pin})
     scene = scene_from_edb(edb)
+    info = next(info for info in scene.object_info if info.object_id == pin.id)
+    assert (info.kind, info.component, info.pin_name) == ("pad", "U1", "A1")
     assert len(scene.pads) == 2
     assert [p.layer for p in scene.pads] == ["TOP", "BOTTOM"]
     for pad in scene.pads:

@@ -22,12 +22,22 @@
 
 """Optional interactive layout viewer. Importing this module does not load Qt."""
 
-from pyedb.viewer.scene import LayoutScene, SceneComponent, SceneJoin, SceneLayer, ScenePad, ScenePolygon, SceneTrace
+from pyedb.viewer.scene import (
+    LayoutScene,
+    SceneComponent,
+    SceneJoin,
+    SceneLayer,
+    SceneObjectInfo,
+    ScenePad,
+    ScenePolygon,
+    SceneTrace,
+)
 
 __all__ = [
     "LayoutScene",
     "SceneComponent",
     "SceneLayer",
+    "SceneObjectInfo",
     "ScenePad",
     "ScenePolygon",
     "SceneTrace",

@@ -66,6 +66,7 @@ def demo_scene():
         for layer in ("TOP", "INNER1", "BOTTOM"):
             pads.append(ScenePad(70 + index, layer, "SIGNAL", (28, y), (2.8, 2.8), hole_radius=0.65))
     traces.append(SceneTrace(90, "TOP", "DATA", (-12, 0), (0, 12), 1.2, (0, 0), -math.pi / 2))
+    pads.append(ScenePad(110, "TOP", "DATA", (-33, 20), (2.2, 4), "rectangle", component="J1", pin_name="1"))
     return LayoutScene(
         layers,
         tuple(polygons),

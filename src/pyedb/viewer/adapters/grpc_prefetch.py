@@ -30,6 +30,15 @@ class PadInstances:
         return len(self.instances)
 
     def _open(self):
+        # The 2025.x native server can corrupt its heap even on concurrent
+        # read-only GetLayerMap/GetHoleOverrides (reproduced on LPDDR4 layouts).
+        # A failed native process cannot be repaired by retrying a getter.
+        try:
+            year = int(str(getattr(self.edb, "version", "")).split(".")[0])
+        except (TypeError, ValueError):
+            return None
+        if year < 2026:
+            return None
         session = core_session.MOD.current_session
         if (
             not getattr(self.edb, "isreadonly", False)

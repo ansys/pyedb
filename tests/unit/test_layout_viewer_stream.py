@@ -285,8 +285,27 @@ def test_prefetch_submits_bounded_reads_before_waiting_and_inserts_on_capture_th
 def test_writable_sessions_never_open_extra_prefetch_channel(monkeypatch):
     create = Mock()
     monkeypatch.setattr(grpc_prefetch.core_session, "create_channel", create)
-    assert grpc_prefetch.PadInstances(SimpleNamespace(isreadonly=False), [])._open() is None
+    assert grpc_prefetch.PadInstances(SimpleNamespace(isreadonly=False, version="2026.1"), [])._open() is None
     create.assert_not_called()
+
+
+@pytest.mark.parametrize("version", ["2025.2", "2024.1", "", None])
+def test_old_or_unknown_servers_never_open_concurrent_getter_channel(monkeypatch, version):
+    create = Mock()
+    monkeypatch.setattr(grpc_prefetch.core_session, "create_channel", create)
+    assert grpc_prefetch.PadInstances(SimpleNamespace(isreadonly=True, version=version), [])._open() is None
+    create.assert_not_called()
+
+
+def test_supported_local_server_keeps_prefetch_transport(monkeypatch):
+    session = SimpleNamespace(shared_memory=False, ip_address="localhost", transport_mode="insecure", port_num=50055)
+    monkeypatch.setattr(grpc_prefetch.core_session.MOD, "current_session", session)
+    monkeypatch.setattr(grpc_prefetch, "get_cache", lambda: object())
+    create = Mock(return_value=object())
+    monkeypatch.setattr(grpc_prefetch.core_session, "create_channel", create)
+    reader = grpc_prefetch.PadInstances(SimpleNamespace(isreadonly=True, version="2026.1"), [])
+    assert reader._open() is create.return_value
+    create.assert_called_once_with(transport_mode="insecure", host="localhost", port=50055)
 
 
 def test_primitive_prefetch_discards_only_known_unused_metadata():

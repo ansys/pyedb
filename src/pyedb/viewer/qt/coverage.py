@@ -153,6 +153,8 @@ class SdfCoverage:
         GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA8, width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, None)
         GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST)
         GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST)
+        GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE)
+        GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE)
         GL.glBindFramebuffer(GL.GL_DRAW_FRAMEBUFFER, self.resolve_fbo)
         GL.glFramebufferTexture2D(GL.GL_DRAW_FRAMEBUFFER, GL.GL_COLOR_ATTACHMENT0, GL.GL_TEXTURE_2D, self.texture, 0)
         GL.glDrawBuffer(GL.GL_COLOR_ATTACHMENT0)
@@ -206,6 +208,30 @@ class SdfCoverage:
                     instance_ranges=ranges,
                 )
         return calls
+
+    def mark_ranges(self, camera, pixel_ratio, ranges, multisampled):
+        """Mark selected resident instances in the currently bound mask target."""
+        GL.glDisable(GL.GL_STENCIL_TEST)
+        GL.glDisable(GL.GL_SCISSOR_TEST)
+        GL.glDisable(GL.GL_BLEND)
+        if multisampled:
+            GL.glEnable(GL.GL_SAMPLE_ALPHA_TO_COVERAGE)
+        u = self.uniforms
+        bind_camera_uniforms(self.program, u, camera, pixel_ratio)
+        for name, value in (
+            ("selected_net", -1),
+            ("drill_pass", 0),
+            ("component_pass", 0),
+            ("multisampled", multisampled),
+            ("color_by_net", 0),
+        ):
+            GL.glUniform1i(u[name], value)
+        GL.glUniform4f(u["layer_color"], 1, 1, 1, 1)
+        GL.glBindVertexArray(self.vao)
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
+        for start, count in ranges:
+            self._attributes(start)
+            GL.glDrawArraysInstanced(GL.GL_TRIANGLE_STRIP, 0, 4, count)
 
     def draw(
         self,

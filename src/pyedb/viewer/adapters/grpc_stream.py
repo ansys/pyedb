@@ -3,6 +3,7 @@
 
 """Read void geometry from streamed protobufs without building unused models."""
 
+import math
 import sys
 
 from ansys.api.edb.v1.edb_messages_pb2 import EDBObjMessage
@@ -100,6 +101,49 @@ def primitive_polygon_message(core):
         return None
     message = StubAccessor(kind).__get__().GetPolygonData(core.msg)
     return message if isinstance(message, PolygonDataMessage) else None
+
+
+def centerline_length(message):
+    """Return native centerline length in mm, evaluating circular arcs exactly."""
+    if message.coords:
+        if len(message.coords) % 2:
+            raise ValueError("Invalid centerline coordinate count.")
+        values = iter(message.coords)
+        points = list(zip(values, values))
+    else:
+        points = [(_number(point.x), _number(point.y)) for point in message.points]
+    if len(points) < 2:
+        return 0.0
+    if message.closed and points[-1] != points[0]:
+        points.append(points[0])
+    length, index = 0.0, 1
+    while index < len(points):
+        end = points[index]
+        start = points[index - 1]
+        if end[1] == sys.float_info.max:
+            if index + 1 >= len(points):
+                raise ValueError("An arc requires an endpoint.")
+            height = abs(end[0])
+            chord = math.dist(start, points[index + 1])
+            if height == 0:
+                length += chord
+            else:
+                radius = chord * chord / (8 * height) + height / 2
+                length += radius * 4 * math.atan2(2 * height, chord)
+            index += 2
+        else:
+            length += math.dist(start, end)
+            index += 1
+    return length * 1000
+
+
+def trace_dimensions(core):
+    """Get exact width and source centerline length through the current SDK."""
+    if not isinstance(core, CorePath):
+        return None
+    stub = StubAccessor(StubType.path).__get__()
+    width = _number(stub.GetWidth(core.msg).width) * 1000
+    return width, centerline_length(stub.GetCenterLine(core.msg))
 
 
 def padstack_span(core, layer_names):

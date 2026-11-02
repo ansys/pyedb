@@ -30,6 +30,7 @@ from ctypes import c_void_p
 import math
 from pathlib import Path
 
+import numpy as np
 from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
 
@@ -38,6 +39,8 @@ from pyedb.viewer.qt.component_labels import ComponentLabels
 from pyedb.viewer.qt.coverage import SdfCoverage, _shader_source
 from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 from pyedb.viewer.qt.grid import GridRenderer
+from pyedb.viewer.qt.selection import SelectionOverlay
+from pyedb.viewer.scene import ScenePolygon
 
 
 class Renderer:
@@ -53,6 +56,9 @@ class Renderer:
         self.sdf = SdfCoverage()
         self.labels = ComponentLabels()
         self.grid = GridRenderer()
+        self.overlay = SelectionOverlay()
+        self._overlay_ranges = {}
+        self._polygon_objects = {}
 
     def initialize(self):
         """Create resources only with this widget's context current."""
@@ -90,6 +96,7 @@ class Renderer:
         self.sdf.initialize()
         self.labels.initialize()
         self.grid.initialize()
+        self.overlay.initialize()
 
     def upload(self, prepared):
         """Upload once per snapshot, never on camera or visibility changes."""
@@ -129,8 +136,11 @@ class Renderer:
         GL.glBindVertexArray(0)
         self.prepared = prepared
         self.layer_batches = {}
+        self._overlay_ranges.clear()
+        self._polygon_objects = {}
         for batch in prepared.batches:
             self.layer_batches.setdefault(batch.layer, []).append(batch)
+            self._polygon_objects.setdefault((batch.object_id, batch.layer, batch.category), []).append(batch)
         self.sdf.upload(prepared)
         self.labels.upload(prepared.component_batches)
         self.upload_count += 1
@@ -165,6 +175,8 @@ class Renderer:
         components_on_both_sides=True,
         annotate_component_names=True,
         show_grid=True,
+        selection=None,
+        hover=None,
     ):
         """Draw in bottom-to-top layer order, preserving each object's hole ownership."""
         try:
@@ -181,6 +193,19 @@ class Renderer:
                 annotate_component_names,
                 show_grid,
             )
+            if opacity > 0 and self.prepared is not None:
+                for hit, hovering in ((selection, False), (hover, True)):
+                    if hit is not None and not (hovering and selection is not None and hit.key == selection.key):
+                        polygons, ranges = self._object_ranges(hit, visible_layers, net)
+                        self.overlay.draw(
+                            self,
+                            camera,
+                            pixel_ratio,
+                            polygons,
+                            ranges,
+                            hovering=hovering,
+                            patterned=hit.object.info.kind in {"trace", "zone"},
+                        )
         finally:
             GL.glDisable(GL.GL_STENCIL_TEST)
             GL.glDisable(GL.GL_SCISSOR_TEST)
@@ -188,6 +213,35 @@ class Renderer:
             GL.glColorMask(True, True, True, True)
             GL.glBindVertexArray(0)
             GL.glUseProgram(0)
+
+    def _object_ranges(self, hit, visible_layers, net):
+        key = hit.key, frozenset(visible_layers), net
+        if key not in self._overlay_ranges:
+            polygons, identities = [], []
+            for item in hit.object.items:
+                if item.layer not in visible_layers or (net is not None and item.net != net):
+                    continue
+                if isinstance(item, ScenePolygon):
+                    polygons.extend(self._polygon_objects.get((item.object_id, item.layer, item.category), ()))
+                else:
+                    identities.append(id(item))
+            sources = getattr(self.prepared, "sdf_sources", None)
+            indices = (
+                np.flatnonzero(np.isin(sources, identities))
+                if identities and sources is not None
+                else np.empty(0, dtype=int)
+            )
+            if len(indices):
+                starts = np.r_[0, np.flatnonzero(np.diff(indices) > 1) + 1]
+                ends = np.r_[starts[1:], len(indices)]
+                ranges = [(int(indices[start]), int(end - start)) for start, end in zip(starts, ends)]
+            else:
+                ranges = []
+            # Only the current hover and selection need cached range views.
+            if len(self._overlay_ranges) >= 4:
+                self._overlay_ranges.clear()
+            self._overlay_ranges[key] = polygons, ranges
+        return self._overlay_ranges[key]
 
     def _draw_frame(
         self,
@@ -370,6 +424,9 @@ class Renderer:
         self.sdf.release()
         self.labels.release()
         self.grid.release()
+        self.overlay.release()
+        self._overlay_ranges.clear()
+        self._polygon_objects.clear()
         self.program = self.vao = self.quad_vao = self.vbo = self.ebo = 0
         self.net_vbo = 0
         self.prepared = None

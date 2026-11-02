@@ -59,7 +59,14 @@ def workspace_icon(name, color=None):
         )
     )
     try:
-        if name == "search":
+        if name == "pick":
+            path = QPainterPath()
+            path.moveTo(4, 2)
+            for x, y in ((4, 15), (8, 11), (11, 17), (14, 15), (11, 10), (17, 9)):
+                path.lineTo(x, y)
+            path.closeSubpath()
+            painter.drawPath(path)
+        elif name == "search":
             painter.drawEllipse(QRectF(3, 3, 10, 10))
             painter.drawLine(12, 12, 17, 17)
         elif name == "close":

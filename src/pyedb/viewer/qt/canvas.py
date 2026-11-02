@@ -22,12 +22,14 @@
 
 """Embeddable, on-demand OpenGL canvas with cursor-anchored navigation."""
 
-from PySide6.QtCore import Qt, QTimer, Signal, Slot
+from PySide6.QtCore import QLineF, Qt, QTimer, Signal, Slot
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QLabel
 
 from pyedb.viewer.camera import Camera
+from pyedb.viewer.picking import PickHit
+from pyedb.viewer.qt.inspector import ObjectInspector
 from pyedb.viewer.qt.loading import LoadingPanel
 from pyedb.viewer.qt.renderer import Renderer
 from pyedb.viewer.qt.theme import COLORS
@@ -74,12 +76,23 @@ class LayoutView(QOpenGLWidget):
         self._pending_upload = False
         self._drag_position = None
         self._drag_button = Qt.MouseButton.NoButton
+        self._press_position = None
+        self._dragging = False
+        self.pick_enabled = True
+        self.selection = self.hover = None
+        self._selection_anchor = None
+        self._pick_index = None
+        self._hover_position = None
+        self._hover_timer = QTimer(self)
+        self._hover_timer.setSingleShot(True)
+        self._hover_timer.setInterval(24)
+        self._hover_timer.timeout.connect(self._pick_hover)
         self._fitted = False
         self._loading_complete = True
         self.setMouseTracking(True)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setAccessibleName("PCB layout canvas")
-        self.setToolTip("Left/middle/right drag: pan · Wheel: zoom · F: fit · Arrow keys: pan · +/-: zoom")
+        self.setToolTip("Click: inspect · Drag: pan · Wheel: zoom · Esc: clear · P: pick tool · F: fit")
         self.loading = LoadingPanel(self)
         self.loading.hide()
         self.message = QLabel(self)
@@ -91,6 +104,8 @@ class LayoutView(QOpenGLWidget):
         )
         self.message.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.message.hide()
+        self.inspector = ObjectInspector(self)
+        self.inspector.cleared.connect(self.clear_selection)
 
     @Slot(str, int, int)
     def set_progress(self, stage, current, total):
@@ -100,6 +115,16 @@ class LayoutView(QOpenGLWidget):
             self.loading.set_progress(stage, current, total)
 
     def set_prepared(self, prepared, *, final=True):
+        self._pick_index = getattr(prepared, "picking", None)
+        self.hover = None
+        if self.selection is not None:
+            obj = self._pick_index.by_key.get(self.selection.key) if self._pick_index is not None else None
+            if obj is not None:
+                item = next((item for item in obj.items if item.layer == self.selection.layer), obj.items[0])
+                self.selection = PickHit(obj, item, 0)
+                self.inspector.set_hit(self.selection)
+            else:
+                self.clear_selection()
         self._prepared = prepared
         self._loading_complete = final
         self._pending_upload = True
@@ -138,6 +163,14 @@ class LayoutView(QOpenGLWidget):
             if self._pending_upload:
                 self.renderer.upload(self._prepared)
                 self._pending_upload = False
+            if self.selection is not None and not self._hit_visible(self.selection):
+                self.clear_selection()
+            elif self.selection is not None and self.selection.layer not in self.visible_layers:
+                item = next(item for item in self.selection.object.items if item.layer in self.visible_layers)
+                self.selection = PickHit(self.selection.object, item, 0)
+                self.inspector.set_hit(self.selection)
+            if self.hover is not None and not self._hit_visible(self.hover):
+                self.hover = None
             self.renderer.draw(
                 self.scene,
                 self.camera,
@@ -150,7 +183,10 @@ class LayoutView(QOpenGLWidget):
                 components_on_both_sides=self.components_on_both_sides,
                 annotate_component_names=self.annotate_component_names,
                 show_grid=self.show_grid,
+                selection=self.selection,
+                hover=self.hover,
             )
+            self._position_inspector()
             if self.renderer.prepared is not None and self._loading_complete:
                 self.loading.hide()
         except Exception as exc:
@@ -168,6 +204,8 @@ class LayoutView(QOpenGLWidget):
         super().resizeEvent(event)
         self.message.setGeometry(20, max(20, self.height() // 2 - 55), max(1, self.width() - 40), 110)
         self._position_loading()
+        if hasattr(self, "inspector"):
+            self._position_inspector()
 
     def _position_loading(self):
         width = min(380, max(1, self.width() - 32))
@@ -199,6 +237,7 @@ class LayoutView(QOpenGLWidget):
         self.update()
 
     def wheelEvent(self, event):
+        self._clear_hover()
         steps = event.angleDelta().y() / 120.0
         if not steps:
             steps = event.pixelDelta().y() / 40.0
@@ -211,8 +250,12 @@ class LayoutView(QOpenGLWidget):
         if event.button() in (Qt.MouseButton.LeftButton, Qt.MouseButton.MiddleButton, Qt.MouseButton.RightButton):
             if self._drag_position is None:
                 self._drag_position = event.position()
+                self._press_position = event.position()
                 self._drag_button = event.button()
-            self.setCursor(Qt.CursorShape.ClosedHandCursor)
+                self._dragging = event.button() != Qt.MouseButton.LeftButton or not self.pick_enabled
+            self._clear_hover()
+            if self._dragging:
+                self.setCursor(Qt.CursorShape.ClosedHandCursor)
             event.accept()
         else:
             super().mousePressEvent(event)
@@ -220,12 +263,20 @@ class LayoutView(QOpenGLWidget):
     def mouseMoveEvent(self, event):
         dragging = self._drag_position is not None and bool(event.buttons() & self._drag_button)
         if dragging:
-            delta = event.position() - self._drag_position
-            self.camera.pan(delta.x(), delta.y())
-            self._drag_position = event.position()
-            self.update()
+            if not self._dragging and QLineF(self._press_position, event.position()).length() > 4:
+                self._dragging = True
+                self.setCursor(Qt.CursorShape.ClosedHandCursor)
+            if self._dragging:
+                delta = event.position() - self._drag_position
+                self.camera.pan(delta.x(), delta.y())
+                self._drag_position = event.position()
+                self.update()
         elif self._drag_position is not None:
             self._end_pan()
+        elif self.pick_enabled:
+            self._hover_position = event.position()
+            if not self._hover_timer.isActive():
+                self._hover_timer.start()
         self.position_changed.emit(*self.camera.screen_to_world(event.position().x(), event.position().y()))
         if dragging:
             event.accept()
@@ -234,7 +285,10 @@ class LayoutView(QOpenGLWidget):
 
     def mouseReleaseEvent(self, event):
         if event.button() == self._drag_button:
+            click = self.pick_enabled and event.button() == Qt.MouseButton.LeftButton and not self._dragging
             self._end_pan()
+            if click:
+                self.pick_at(event.position().x(), event.position().y())
             event.accept()
             return
         super().mouseReleaseEvent(event)
@@ -242,7 +296,12 @@ class LayoutView(QOpenGLWidget):
     def _end_pan(self):
         self._drag_position = None
         self._drag_button = Qt.MouseButton.NoButton
-        self.unsetCursor()
+        self._press_position = None
+        self._dragging = False
+        if self.pick_enabled:
+            self.unsetCursor()
+        else:
+            self.setCursor(Qt.CursorShape.OpenHandCursor)
 
     def focusOutEvent(self, event):
         self._end_pan()
@@ -253,6 +312,11 @@ class LayoutView(QOpenGLWidget):
         super().hideEvent(event)
 
     def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:
+            self.clear_selection()
+            self._clear_hover()
+            event.accept()
+            return
         pans = {Qt.Key.Key_Left: (60, 0), Qt.Key.Key_Right: (-60, 0), Qt.Key.Key_Up: (0, 60), Qt.Key.Key_Down: (0, -60)}
         if event.key() in pans:
             self.camera.pan(*pans[event.key()])
@@ -267,6 +331,88 @@ class LayoutView(QOpenGLWidget):
             super().keyPressEvent(event)
             return
         event.accept()
+
+    def _hit_visible(self, hit):
+        return self.opacity > 0 and any(
+            item.layer in self.visible_layers and (self.net is None or item.net == self.net)
+            for item in hit.object.items
+        )
+
+    def _hit(self, x, y):
+        if self._pick_index is None or not self.pick_enabled:
+            return None
+        return self._pick_index.pick(
+            self.camera.screen_to_world(x, y),
+            self.camera.scale,
+            self.visible_layers,
+            net=self.net,
+            opacity=self.opacity,
+            mirror=self.camera.mirror,
+        )
+
+    def pick_at(self, x, y):
+        """Pick in logical canvas pixels; no EDB access or geometry upload."""
+        self._clear_hover()
+        self.selection = self._hit(x, y)
+        if self.selection is None:
+            self.clear_selection()
+        else:
+            self._selection_anchor = self.camera.screen_to_world(x, y)
+            self.inspector.set_hit(self.selection)
+            self._position_inspector()
+        self.update()
+        return self.selection
+
+    def clear_selection(self):
+        self.selection = None
+        self._selection_anchor = None
+        self.inspector.hide()
+        self.update()
+
+    def _clear_hover(self):
+        self._hover_timer.stop()
+        self.hover = None
+        self.update()
+
+    def _pick_hover(self):
+        if self._hover_position is not None and self._drag_position is None and self.underMouse():
+            position = self._hover_position
+            hit = self._hit(position.x(), position.y())
+            if (None if hit is None else (hit.key, hit.layer)) != (
+                None if self.hover is None else (self.hover.key, self.hover.layer)
+            ):
+                self.hover = hit
+                self.update()
+            self.setCursor(Qt.CursorShape.PointingHandCursor if hit is not None else Qt.CursorShape.ArrowCursor)
+
+    def _position_inspector(self):
+        if self.selection is None or self._selection_anchor is None:
+            self.inspector.hide()
+            return
+        x, y = self.camera.world_to_screen(*self._selection_anchor)
+        if not (0 <= x <= self.width() and 0 <= y <= self.height()):
+            self.inspector.hide()
+            return
+        self.inspector.fit_canvas(self.width(), self.height())
+        x += 16
+        y += 16
+        if x + self.inspector.width() > self.width() - 12:
+            x -= self.inspector.width() + 32
+        self.inspector.move(
+            int(max(12, min(x, self.width() - self.inspector.width() - 12))),
+            int(max(12, min(y, self.height() - self.inspector.height() - 12))),
+        )
+        self.inspector.show()
+        self.inspector.raise_()
+
+    def set_pick_enabled(self, enabled):
+        self.pick_enabled = enabled
+        self._clear_hover()
+        self._end_pan()
+
+    def leaveEvent(self, event):
+        self._clear_hover()
+        super().leaveEvent(event)
 
     def cleanup(self):
         if self.context() is None or not self.renderer.program:

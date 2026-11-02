@@ -64,6 +64,41 @@ visible. Opacity defaults to 75%. Use ``color_by_net=False`` or
   layer names need not be ``TOP`` or ``BOTTOM``.
 * Use the info button to inspect scene details and unsupported geometry.
 
+Picking and object properties
+-----------------------------
+
+Pick is enabled by default. Click a visible trace, via, pad or zone to inspect
+it. Use the Pick button or ``P`` on the canvas to switch between picking and
+pan-only navigation. A movement of more than four logical pixels starts a drag,
+so clicking does not move the board. Middle/right drag always pans.
+
+Hover uses a mint outline. Selected traces and zones use a white outline and a
+screen-space dot pattern; pads and vias use a white outline, following Pomelo's
+interaction style. Only visible layers and the active network filter participate
+in picking. Filled zone holes are excluded. Click empty space, press ``Esc`` or
+use the card's close button to clear selection.
+
+The nonmodal card stays inside the canvas and follows the picked position while
+panning and zooming. Narrow canvases use stacked, scrollable properties. Values
+can be selected and copied. The card reports:
+
+* Trace: signal (network) name, source width and centerline length. Length is for
+  the picked EDB path, includes analytic circular arcs and excludes end-cap
+  extensions; it is not a copper perimeter or a whole-network total.
+* Via: network, copper diameter on the picked layer, circular drill diameter and
+  the physical start/end layer span, even when only one layer is displayed.
+* Pad: network, owning component reference and component pin name/number.
+* Zone: network and picked layer.
+
+The properties and spatial index belong to the detached snapshot. Picking never
+queries EDB and still works after the source session closes. Highlighting uses
+the resident geometry; it does not rebuild or upload the board's geometry.
+
+EDB 2025.x and earlier use sequential pad/via getters because concurrent
+read-only property requests can crash those native servers. Supported newer
+local sessions retain bounded prefetch. This compatibility fallback can increase
+load time on older servers; it does not affect picking after capture.
+
 Within each layer, copper is composited in Zone, Trace, then Pad order. Reducing
 opacity reveals objects underneath. Pins retain their copper fill without
 additional borders. Gray drill marks remain visible on layers without copper pads.
