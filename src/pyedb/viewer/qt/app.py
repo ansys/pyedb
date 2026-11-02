@@ -71,6 +71,7 @@ def show_scene(
     plot_components=True,
     annotate_component_names=True,
     plot_components_on_both_side=True,
+    plot_outlines=True,
     *,
     loader=None,
     title="EDB layout",
@@ -87,6 +88,7 @@ def show_scene(
         plot_components=plot_components,
         annotate_component_names=annotate_component_names,
         plot_components_on_both_side=plot_components_on_both_side,
+        plot_outlines=plot_outlines,
         loader=loader,
     )
     # Keep QApplication alive for the lifetime of non-blocking standalone windows.

@@ -3,6 +3,7 @@
 
 """Native click/inspector tests and resident-mask highlight pixel checks."""
 
+import gc
 import os
 import time
 
@@ -14,6 +15,13 @@ pytestmark = [
     pytest.mark.no_licence,
     pytest.mark.skipif(os.environ.get("PYEDB_VIEWER_GL_TESTS") != "1", reason="Requires desktop OpenGL"),
 ]
+
+
+@pytest.fixture(autouse=True)
+def _collect_gl_garbage():
+    # Free cyclic Qt/GL garbage between tests, not mid-way through another test's native window creation.
+    yield
+    gc.collect()
 
 
 def _pixels(view):
@@ -35,7 +43,7 @@ def test_click_highlight_properties_clear_and_no_geometry_uploads():
     app = QApplication.instance() or QApplication([])
     scene = demo_scene()
     view = LayoutView(scene)
-    view.show_grid = view.show_components = False
+    view.show_grid = view.show_components = view.show_outlines = False
     view.opacity = 1
     view.resize(800, 600)
     view.set_prepared(prepare_scene(scene))
@@ -115,7 +123,7 @@ def test_electric_hover_and_raspberry_selection_use_resident_geometry():
     scene = demo_scene()
     view = LayoutView(scene)
     view.resize(800, 600)
-    view.show_grid = view.show_components = False
+    view.show_grid = view.show_components = view.show_outlines = False
     view.opacity = 1
     view.set_prepared(prepare_scene(scene))
     view.show()

@@ -35,6 +35,8 @@ COMPONENT_COLORS = {"top": COMPONENT_OUTLINE_COLOR, "bottom": COMPONENT_OUTLINE_
 HOVER_COLOR = (0 / 255, 87 / 255, 255 / 255)  # #0057FF
 SELECTION_COLOR = (255 / 255, 0 / 255, 110 / 255)  # #FF006E
 HIGHLIGHT_KEYLINE_COLOR = (17 / 255, 24 / 255, 39 / 255)  # #111827
+# Thin shape outlines share the near-black keyline.
+OUTLINE_COLOR = HIGHLIGHT_KEYLINE_COLOR
 
 
 def net_color(net_id):

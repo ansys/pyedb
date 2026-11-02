@@ -66,6 +66,7 @@ class LayoutView(QOpenGLWidget):
         self.opacity = 0.75
         self.color_by_net = True
         self.show_grid = True
+        self.show_outlines = True
         self.show_components = True
         self.annotate_component_names = True
         self.components_on_both_sides = True
@@ -185,6 +186,7 @@ class LayoutView(QOpenGLWidget):
                 show_grid=self.show_grid,
                 selection=self.selection,
                 hover=self.hover,
+                show_outlines=self.show_outlines,
             )
             self._position_inspector()
             if self.renderer.prepared is not None and self._loading_complete:

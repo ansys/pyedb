@@ -34,7 +34,7 @@ import numpy as np
 from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
 
-from pyedb.viewer.colors import COMPONENT_COLORS, NET_COLORS
+from pyedb.viewer.colors import COMPONENT_COLORS, NET_COLORS, OUTLINE_COLOR
 from pyedb.viewer.mesh import SDF_STRIDE
 from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
@@ -91,6 +91,9 @@ class SdfCoverage:
         }
         self.cover_color = GL.glGetUniformLocation(self.cover_program, "color")
         self.cover_texture = GL.glGetUniformLocation(self.cover_program, "strokes")
+        self.cover_outline = GL.glGetUniformLocation(self.cover_program, "outline")
+        self.cover_outline_color = GL.glGetUniformLocation(self.cover_program, "outline_color")
+        self.cover_pixel_ratio = GL.glGetUniformLocation(self.cover_program, "pixel_ratio")
         self.vao, self.cover_vao = (int(v) for v in GL.glGenVertexArrays(2))
         self.vbo = int(GL.glGenBuffers(1))
         GL.glBindVertexArray(self.vao)
@@ -252,8 +255,12 @@ class SdfCoverage:
         component_pass=False,
         instance_ranges=None,
         category=None,
+        outline=False,
     ):
-        """Mark the layer union, then shade each covered sample exactly once."""
+        """Mark the layer union, then shade each covered sample exactly once.
+
+        With ``outline``, the cover pass inks the union's inner edge one logical pixel wide.
+        """
         ranges = [] if instance_ranges is None else instance_ranges
         for layer in layers:
             for batch in self.layer_batches.get(layer, ()):
@@ -314,6 +321,9 @@ class SdfCoverage:
             GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_ZERO)
             GL.glUseProgram(self.cover_program)
             GL.glUniform4f(self.cover_color, *color)
+            GL.glUniform1i(self.cover_outline, outline)
+            GL.glUniform3f(self.cover_outline_color, *OUTLINE_COLOR)
+            GL.glUniform1f(self.cover_pixel_ratio, pixel_ratio)
             GL.glActiveTexture(GL.GL_TEXTURE0)
             GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
             GL.glUniform1i(self.cover_texture, 0)

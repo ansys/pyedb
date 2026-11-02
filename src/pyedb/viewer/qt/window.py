@@ -125,6 +125,7 @@ class LayoutWindow(QMainWindow):
         plot_components=True,
         annotate_component_names=True,
         plot_components_on_both_side=True,
+        plot_outlines=True,
         loader=None,
     ):
         super().__init__(parent)
@@ -142,6 +143,7 @@ class LayoutWindow(QMainWindow):
         self.canvas.show_components = plot_components
         self.canvas.annotate_component_names = annotate_component_names
         self.canvas.components_on_both_sides = plot_components_on_both_side
+        self.canvas.show_outlines = plot_outlines
         self.setCentralWidget(self.canvas)
         self._build_toolbar(scene)
         self._build_layers(scene)
@@ -405,6 +407,11 @@ class LayoutWindow(QMainWindow):
         self.grid_action.setChecked(self.canvas.show_grid)
         self.grid_action.toggled.connect(lambda checked: self._display_option("show_grid", checked))
         menu.addAction(self.grid_action)
+        self.outlines_action = QAction("Outlines", self)
+        self.outlines_action.setCheckable(True)
+        self.outlines_action.setChecked(self.canvas.show_outlines)
+        self.outlines_action.toggled.connect(lambda checked: self._display_option("show_outlines", checked))
+        menu.addAction(self.outlines_action)
         menu.addAction(self.mirror_action)
         has_components = bool(scene.components) or any(getattr(item, "component", None) for item in scene.geometry)
         sides = {component.side for component in scene.components}

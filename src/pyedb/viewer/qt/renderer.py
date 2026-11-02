@@ -34,7 +34,7 @@ import numpy as np
 from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
 
-from pyedb.viewer.colors import BACKGROUND_COLOR, DRILL_COLOR, net_color
+from pyedb.viewer.colors import BACKGROUND_COLOR, DRILL_COLOR, OUTLINE_COLOR, net_color
 from pyedb.viewer.qt.component_labels import ComponentLabels
 from pyedb.viewer.qt.coverage import SdfCoverage, _shader_source
 from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
@@ -45,7 +45,7 @@ from pyedb.viewer.scene import ScenePolygon
 
 class Renderer:
     def __init__(self):
-        self.program = self.vao = self.quad_vao = self.vbo = self.ebo = 0
+        self.program = self.outline_program = self.vao = self.quad_vao = self.vbo = self.ebo = 0
         self.net_vbo = 0
         self.vertex_palette = False
         self.prepared = None
@@ -80,6 +80,25 @@ class Renderer:
                 "color",
                 "color_by_net",
                 "net_palette",
+            )
+        }
+        # Polygon boundaries reuse the resident copper vertices; no extra geometry is uploaded.
+        self.outline_program = compileProgram(
+            compileShader(_shader_source(shader_dir / "copper.vert"), GL.GL_VERTEX_SHADER),
+            compileShader(_shader_source(shader_dir / "outline.geom"), GL.GL_GEOMETRY_SHADER),
+            compileShader(_shader_source(shader_dir / "outline.frag"), GL.GL_FRAGMENT_SHADER),
+            validate=False,
+        )
+        self.outline_uniforms = {
+            name: GL.glGetUniformLocation(self.outline_program, name)
+            for name in (
+                "camera_split",
+                "viewport",
+                "scale",
+                "mirror_x",
+                "rectangle_pass",
+                "line_width",
+                "outline_color",
             )
         }
         self.vao, self.quad_vao = (int(v) for v in GL.glGenVertexArrays(2))
@@ -177,6 +196,7 @@ class Renderer:
         show_grid=True,
         selection=None,
         hover=None,
+        show_outlines=True,
     ):
         """Draw in bottom-to-top layer order, preserving each object's hole ownership."""
         try:
@@ -192,6 +212,7 @@ class Renderer:
                 components_on_both_sides,
                 annotate_component_names,
                 show_grid,
+                show_outlines,
             )
             if opacity > 0 and self.prepared is not None:
                 for hit, hovering in ((selection, False), (hover, True)):
@@ -256,6 +277,7 @@ class Renderer:
         components_on_both_sides,
         annotate_component_names,
         show_grid,
+        show_outlines=True,
     ):
         # Qt creates its framebuffer after initializeGL. Query the actual FBO
         # attachment here; GL_STENCIL_BITS is not available in core profiles.
@@ -300,7 +322,7 @@ class Renderer:
             # zones first, traces next, pads last. Each trace group still unions
             # its own segment coverage, so joins do not accumulate opacity.
             for category in ("zone", "trace", "pad"):
-                self._polygons(layer, category, camera, pixel_ratio, alpha, net, color_by_net)
+                self._polygons(layer, category, camera, pixel_ratio, alpha, net, color_by_net, show_outlines)
                 if category != "zone":
                     self.draw_calls += self.sdf.draw(
                         camera,
@@ -310,10 +332,13 @@ class Renderer:
                         net,
                         color_by_net=color_by_net,
                         category=category,
+                        outline=show_outlines,
                     )
         # Drill marks are separate from copper so a solid zone underneath a via
         # cannot fill its bore. Visibility/net selection also applies to drills.
-        self.draw_calls += self.sdf.draw(camera, pixel_ratio, drill_layers, DRILL_COLOR, net, drills=True)
+        self.draw_calls += self.sdf.draw(
+            camera, pixel_ratio, drill_layers, DRILL_COLOR, net, drills=True, outline=show_outlines
+        )
         if show_components and opacity > 0:
             self.draw_calls += self.sdf.draw_components(
                 camera, pixel_ratio, drill_layers, 1.0, net, components_on_both_sides
@@ -327,7 +352,7 @@ class Renderer:
         GL.glBindVertexArray(0)
         GL.glUseProgram(0)
 
-    def _polygons(self, layer, category, camera, pixel_ratio, alpha, net, color_by_net):
+    def _polygons(self, layer, category, camera, pixel_ratio, alpha, net, color_by_net, show_outlines=False):
         GL.glUseProgram(self.program)
         palette = color_by_net and self.vertex_palette
         GL.glUniform1i(self.uniforms["color_by_net"], palette)
@@ -338,9 +363,12 @@ class Renderer:
         material = (*layer.color[:3], alpha)
         GL.glUniform4f(self.uniforms["color"], *material)
         solid_start = solid_count = 0
+        rings = [] if show_outlines else None
         for batch in self.layer_batches.get(layer.name, ()):
             if batch.category != category or (net is not None and batch.net != net) or not camera.visible(batch.bounds):
                 continue
+            if rings is not None:
+                rings.append(batch)
             rgb = net_color(self.sdf.net_ids.get(batch.net, 0)) if color_by_net else None
             batch_color = (*(rgb or layer.color[:3]), alpha)
             if palette and not batch.hole_count:
@@ -365,6 +393,33 @@ class Renderer:
             self._batch(batch, camera, pixel_ratio)
         if solid_count:
             self._solid(solid_start, solid_count)
+        if rings:
+            self._outlines(rings, camera)
+
+    def _outlines(self, batches, camera):
+        """Stroke every visible polygon ring one logical pixel wide, after all fills."""
+        firsts, counts = [], []
+        for batch in batches:
+            first = batch.vertex_start
+            for size in batch.ring_sizes:
+                firsts.append(first)
+                counts.append(size)
+                first += size
+        if not firsts:
+            return
+        u = self.outline_uniforms
+        bind_camera_uniforms(self.outline_program, u, camera)
+        GL.glUniform1i(u["rectangle_pass"], 0)
+        GL.glUniform1f(u["line_width"], 1.0)
+        GL.glUniform3f(u["outline_color"], *OUTLINE_COLOR)
+        GL.glDisable(GL.GL_STENCIL_TEST)
+        GL.glDisable(GL.GL_SCISSOR_TEST)
+        GL.glBindVertexArray(self.vao)
+        GL.glMultiDrawArrays(
+            GL.GL_LINE_LOOP, np.asarray(firsts, dtype=np.int32), np.asarray(counts, dtype=np.int32), len(firsts)
+        )
+        self.draw_calls += 1
+        GL.glUseProgram(self.program)
 
     def _solid(self, start, count):
         GL.glBindVertexArray(self.vao)
@@ -421,13 +476,15 @@ class Renderer:
             GL.glDeleteVertexArrays(2, [self.vao, self.quad_vao])
         if self.program:
             GL.glDeleteProgram(self.program)
+        if self.outline_program:
+            GL.glDeleteProgram(self.outline_program)
         self.sdf.release()
         self.labels.release()
         self.grid.release()
         self.overlay.release()
         self._overlay_ranges.clear()
         self._polygon_objects.clear()
-        self.program = self.vao = self.quad_vao = self.vbo = self.ebo = 0
+        self.program = self.outline_program = self.vao = self.quad_vao = self.vbo = self.ebo = 0
         self.net_vbo = 0
         self.prepared = None
         self._stencil_checked = False

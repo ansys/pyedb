@@ -54,6 +54,9 @@ class MeshBatch:
     outer_count: int
     hole_count: int
     category: str = "zone"
+    # Consecutive boundary rings (exterior first) starting at ``vertex_start``.
+    vertex_start: int = 0
+    ring_sizes: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -285,7 +288,12 @@ def _reuse_polygon_buffers(scene, previous, mesh):
         vertices = np.concatenate((vertices, extra.vertices))
         vertex_nets = np.concatenate((vertex_nets, extra.vertex_nets))
         batches = batches + tuple(
-            replace(batch, index_start=batch.index_start + len(mesh.indices)) for batch in extra.batches
+            replace(
+                batch,
+                index_start=batch.index_start + len(mesh.indices),
+                vertex_start=batch.vertex_start + len(mesh.vertices),
+            )
+            for batch in extra.batches
         )
     return vertices, indices, batches, vertex_nets
 
@@ -306,7 +314,7 @@ def _prepare_polygon_buffers(scene, progress, total_rings, total_items):
     if progress is not None:
         progress("Rendering layout", 0, total_items)
     for polygon in (polygon for group in polygon_groups.values() for polygon in group):
-        start = index_count
+        start, vertex_start = index_count, vertex_count
         counts = []
         for ring in (polygon.exterior, *polygon.holes):
             coordinates = np.asarray(ring, dtype=np.float64)
@@ -336,6 +344,8 @@ def _prepare_polygon_buffers(scene, progress, total_rings, total_items):
                 counts[0],
                 sum(counts[1:]),
                 polygon.category,
+                vertex_start,
+                tuple(len(ring) for ring in (polygon.exterior, *polygon.holes)),
             )
         )
 

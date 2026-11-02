@@ -341,6 +341,7 @@ def test_edb_view_layout_delegates_without_opening_a_session(monkeypatch):
         plot_components=True,
         annotate_component_names=True,
         plot_components_on_both_side=True,
+        plot_outlines=True,
         analytic_traces=False,
         exact_component_bounds=False,
         chord_error=0.002,
@@ -356,10 +357,12 @@ def test_edb_view_layout_delegates_without_opening_a_session(monkeypatch):
         plot_components=False,
         annotate_component_names=False,
         plot_components_on_both_side=False,
+        plot_outlines=False,
     )
     assert launch.call_args.kwargs["plot_components"] is False
     assert launch.call_args.kwargs["annotate_component_names"] is False
     assert launch.call_args.kwargs["plot_components_on_both_side"] is False
+    assert launch.call_args.kwargs["plot_outlines"] is False
     assert launch.call_args.kwargs["color_by_net"] is False
 
 

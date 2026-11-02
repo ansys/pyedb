@@ -91,6 +91,7 @@ def launch_viewer(
     plot_components=True,
     annotate_component_names=True,
     plot_components_on_both_side=True,
+    plot_outlines=True,
     analytic_traces=False,
     exact_component_bounds=False,
     chord_error=0.002,
@@ -135,6 +136,9 @@ def launch_viewer(
     plot_components_on_both_side : bool, optional
         Show components on all visible placement layers. Default is True.
         Set False to restrict them to the current view side.
+    plot_outlines : bool, optional
+        Draw a thin near-black outline, one screen pixel wide, around every
+        shape. Default is True. It can also be toggled from the View menu.
 
     Returns
     -------
@@ -176,5 +180,6 @@ def launch_viewer(
         plot_components=plot_components,
         annotate_component_names=annotate_component_names,
         plot_components_on_both_side=plot_components_on_both_side,
+        plot_outlines=plot_outlines,
         **options,
     )

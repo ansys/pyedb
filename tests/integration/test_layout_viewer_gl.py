@@ -22,6 +22,7 @@
 
 """Opt-in real OpenGL pixel tests: set PYEDB_VIEWER_GL_TESTS=1 on a desktop."""
 
+import gc
 import os
 
 import pytest
@@ -31,6 +32,13 @@ pytestmark = [
     pytest.mark.no_licence,
     pytest.mark.skipif(os.environ.get("PYEDB_VIEWER_GL_TESTS") != "1", reason="Requires an OpenGL 3.3 desktop"),
 ]
+
+
+@pytest.fixture(autouse=True)
+def _collect_gl_garbage():
+    # Free cyclic Qt/GL garbage between tests, not mid-way through another test's native window creation.
+    yield
+    gc.collect()
 
 
 def test_mesh_preparation_overlaps_source_reads_and_finishes_before_final_snapshot(monkeypatch):
@@ -234,7 +242,7 @@ def test_solid_polygon_network_colors_share_one_draw_across_interleaved_source_l
     )
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
-    view.show_grid = view.show_components = False
+    view.show_grid = view.show_components = view.show_outlines = False
     view.opacity = 1
     view.resize(640, 480)
     view.set_prepared(prepare_scene(scene))
@@ -347,7 +355,7 @@ def test_progressive_mesh_append_uploads_only_new_tail_data(monkeypatch):
     appended = prepare_scene(complete, polygon_mesh=(preview, base))
     app = QApplication.instance() or QApplication([])
     view = LayoutView(preview)
-    view.show_grid = view.show_components = False
+    view.show_grid = view.show_components = view.show_outlines = False
     view.resize(640, 480)
     view.set_prepared(base)
     view.show()
@@ -403,7 +411,7 @@ def test_stencil_hole_union_and_resident_geometry(offset, span):
     )
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
-    view.show_grid = False  # Exact geometry fixtures exclude the decorative grid.
+    view.show_grid = view.show_outlines = False  # Exact geometry fixtures exclude the decorative grid.
     view.visible_layers = {layer.name for layer in scene.layers}
     view.color_by_net = False  # This fixture verifies exact source-layer colors.
     view.components_on_both_sides = False  # Exercise current-face filtering explicitly.
@@ -481,7 +489,7 @@ def test_drill_only_layer_remains_visible_without_other_geometry_or_net_matches(
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
     view.resize(400, 400)
-    view.show_grid = False
+    view.show_grid = view.show_outlines = False
     view.color_by_net = color_by_net
     view.set_prepared(prepare_scene(scene))
     view.show()
@@ -602,7 +610,7 @@ def test_mouse_drag_pans_canvas_and_keeps_geometry_resident(button_name, mirror)
     )
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
-    view.show_grid = False  # Exact geometry fixtures exclude the decorative grid.
+    view.show_grid = view.show_outlines = False  # Exact geometry fixtures exclude the decorative grid.
     view.visible_layers = {layer.name for layer in scene.layers}
     view.color_by_net = False  # This fixture verifies exact source-layer colors.
     view.components_on_both_sides = False  # Exercise current-face filtering explicitly.
@@ -676,7 +684,7 @@ def test_instanced_sdf_caps_arcs_vias_union_filters_and_residency(offset, unit, 
     scene = LayoutScene(layers, (plane,), traces=tuple(traces), pads=pads)
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
-    view.show_grid = False  # Exact geometry fixtures exclude the decorative grid.
+    view.show_grid = view.show_outlines = False  # Exact geometry fixtures exclude the decorative grid.
     view.visible_layers = {layer.name for layer in scene.layers}
     view.color_by_net = False  # This fixture verifies exact source-layer colors.
     view.components_on_both_sides = False  # Exercise current-face filtering explicitly.
@@ -794,7 +802,7 @@ def test_analytic_arc_minor_major_full_sweeps_and_solid_miter_join(sweep):
     )
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
-    view.show_grid = False  # Exact geometry fixtures exclude the decorative grid.
+    view.show_grid = view.show_outlines = False  # Exact geometry fixtures exclude the decorative grid.
     view.visible_layers = {layer.name for layer in scene.layers}
     view.color_by_net = False  # This fixture verifies exact source-layer colors.
     view.components_on_both_sides = False  # Exercise current-face filtering explicitly.
@@ -848,7 +856,7 @@ def test_component_envelopes_labels_side_net_filters_and_residency(monkeypatch):
     )
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
-    view.show_grid = False  # Exact geometry fixtures exclude the decorative grid.
+    view.show_grid = view.show_outlines = False  # Exact geometry fixtures exclude the decorative grid.
     view.visible_layers = {layer.name for layer in scene.layers}
     view.color_by_net = False  # This fixture verifies exact source-layer colors.
     view.components_on_both_sides = False  # Exercise current-face filtering explicitly.
@@ -932,14 +940,20 @@ def test_component_envelopes_labels_side_net_filters_and_residency(monkeypatch):
         view.components_on_both_sides = True
         view.camera.fit(scene.bounds)
         frame = view.grabFramebuffer()
-        # Both faces use opaque copper-brown ink, matching component outlines.
+        # Both faces use copper-brown ink, matching component outlines. On 1x displays the
+        # 2x-baked label atlas is minified, so thin glyph cores blend with the white canvas:
+        # require the copper hue at a strong coverage rather than exactly opaque ink.
+        copper = (184, 115, 51)
         for x in (-4, 4):
             crop = patch(frame, x, 0, 45, 28)
             ink = min(
                 (crop.pixelColor(px, py) for px in range(crop.width()) for py in range(crop.height())),
                 key=lambda color: color.red() + color.green() + color.blue(),
             )
-            assert (ink.red(), ink.green(), ink.blue()) == pytest.approx((184, 115, 51), abs=3)
+            rgb = ink.red(), ink.green(), ink.blue()
+            coverage = [(255 - c) / (255 - t) for c, t in zip(rgb, copper)]
+            assert min(coverage) >= 0.75, rgb
+            assert max(coverage) - min(coverage) <= 0.06, rgb  # Same blend ratio per channel: copper hue.
         assert view.error is None, view.error
         assert not view.message.isVisible()
     finally:
@@ -982,7 +996,7 @@ def test_component_pins_keep_copper_fill_without_extra_borders(monkeypatch):
     )
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
-    view.show_grid = False  # Exact geometry fixtures exclude the decorative grid.
+    view.show_grid = view.show_outlines = False  # Exact geometry fixtures exclude the decorative grid.
     view.visible_layers = {layer.name for layer in scene.layers}
     view.color_by_net = False  # This fixture verifies exact source-layer colors.
     view.components_on_both_sides = False  # Exercise current-face filtering explicitly.
@@ -1074,7 +1088,7 @@ def test_custom_pin_voids_use_copper_stencil_without_extra_outlines():
     scene = LayoutScene((SceneLayer("TOP", (1, 0, 0, 1)),), (pin,))
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
-    view.show_grid = False  # Exact geometry fixtures exclude the decorative grid.
+    view.show_grid = view.show_outlines = False  # Exact geometry fixtures exclude the decorative grid.
     view.visible_layers = {layer.name for layer in scene.layers}
     view.color_by_net = False  # This fixture verifies exact source-layer colors.
     view.components_on_both_sides = False  # Exercise current-face filtering explicitly.
@@ -1231,7 +1245,7 @@ def test_both_sides_prioritize_current_face_when_reference_labels_overlap():
     )
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
-    view.show_grid = False  # Exact geometry fixtures exclude the decorative grid.
+    view.show_grid = view.show_outlines = False  # Exact geometry fixtures exclude the decorative grid.
     view.visible_layers = {layer.name for layer in scene.layers}
     view.resize(640, 480)
     view.set_prepared(prepare_scene(scene))
@@ -1345,7 +1359,7 @@ def test_white_canvas_and_same_layer_zone_trace_pad_transparency(monkeypatch):
     )
     app = QApplication.instance() or QApplication([])
     view = LayoutView(scene)
-    view.show_grid = False  # Exact geometry fixtures exclude the decorative grid.
+    view.show_grid = view.show_outlines = False  # Exact geometry fixtures exclude the decorative grid.
     view.resize(640, 480)
     view.set_prepared(prepare_scene(scene))
     view.show()
@@ -1380,6 +1394,70 @@ def test_white_canvas_and_same_layer_zone_trace_pad_transparency(monkeypatch):
         assert view.renderer.upload_count == 1
         upload.assert_not_called()
         sub_upload.assert_not_called()
+        assert view.error is None, view.error
+    finally:
+        view.cleanup()
+        view.close()
+        app.processEvents()
+
+
+def test_outlines_draw_near_black_edges_for_polygons_traces_and_pads_and_toggle_off(monkeypatch):
+    from unittest.mock import Mock
+
+    from OpenGL import GL
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.viewer import LayoutScene, SceneLayer, ScenePad, ScenePolygon, SceneTrace
+    from pyedb.viewer.mesh import prepare_scene
+    from pyedb.viewer.qt.canvas import LayoutView
+
+    scene = LayoutScene(
+        (SceneLayer("copper", (0.9, 0.6, 0.2, 1)),),
+        (ScenePolygon(1, "copper", "zone", ((-10, -2), (-4, -2), (-4, 4), (-10, 4))),),
+        traces=(SceneTrace(2, "copper", "trace", (0, -1), (6, -1), 2),),
+        pads=(ScenePad(3, "copper", "pad", (3, 3), (2, 2)),),
+        net_names=("zone", "trace", "pad"),
+    )
+    app = QApplication.instance() or QApplication([])
+    view = LayoutView(scene)
+    view.show_grid = False
+    view.color_by_net = False
+    view.resize(640, 480)
+    view.set_prepared(prepare_scene(scene))
+    view.show()
+    try:
+        QTest.qWait(60)
+        view.grabFramebuffer()
+        upload = Mock(wraps=GL.glBufferData)
+        monkeypatch.setattr(GL, "glBufferData", upload)
+        ratio = view.devicePixelRatioF()
+        width, height = round(view.width() * ratio), round(view.height() * ratio)
+
+        def darkest(image, x0, x1, y):
+            # Scan across a vertical edge (clamped to the frame) and return the darkest device-pixel sum.
+            (ax, py), (bx, _) = view.camera.world_to_screen(x0, y), view.camera.world_to_screen(x1, y)
+            row = min(height - 1, max(0, round(py * ratio)))
+            left = max(0, round(min(ax, bx) * ratio))
+            right = min(width, round(max(ax, bx) * ratio) + 1)
+            assert left < right, (x0, x1, y)
+            return min(sum(image.pixelColor(x, row).getRgb()[:3]) for x in range(left, right))
+
+        # Zone left edge, trace start cap and pad left edge; each scan also covers fill and canvas.
+        edges = ((-10.6, -9.4, 1), (-1.6, 0.6, -1), (1.4, 2.6, 3))
+        assert view.show_outlines is True
+        frame = view.grabFramebuffer()
+        fx, fy = view.camera.world_to_screen(-7, 1)
+        fill = sum(frame.pixelColor(round(fx * ratio), round(fy * ratio)).getRgb()[:3])
+        assert fill < 3 * 255 - 30  # Sampled inside the zone, not on the white canvas.
+        for edge in edges:
+            # A 1 px near-black stroke is far darker than both copper fill and white canvas.
+            assert darkest(frame, *edge) < 0.75 * fill, edge
+        view.show_outlines = False
+        frame = view.grabFramebuffer()
+        for edge in edges:
+            assert darkest(frame, *edge) >= fill - 6, edge
+        upload.assert_not_called()
         assert view.error is None, view.error
     finally:
         view.cleanup()
@@ -1519,7 +1597,7 @@ def test_shader_grid_is_world_anchored_and_uses_no_navigation_uploads(monkeypatc
         view.camera.mirror = True
         zoomed = rgb(view.grabFramebuffer(), 0, 0.7)
         assert zoomed[0] < 230 and zoomed[2] > zoomed[0] + 10
-        view.show_grid = False
+        view.show_grid = view.show_outlines = False
         assert rgb(view.grabFramebuffer(), 0, 0.7) == (255, 255, 255)
         assert view.renderer.upload_count == 1
         upload.assert_not_called()
@@ -1545,7 +1623,7 @@ def test_component_frame_uses_reference_copper_color_without_white_halo():
         (SceneLayer("metal", (1, 0, 0, 1)),), (), components=(SceneComponent(1, "U1", "metal", (), (-4, -2, 4, 2)),)
     )
     view = LayoutView(scene)
-    view.show_grid = False
+    view.show_grid = view.show_outlines = False
     surface = view.format()
     surface.setSamples(0)
     view.setFormat(surface)
