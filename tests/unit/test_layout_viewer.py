@@ -291,7 +291,7 @@ def test_edb_view_layout_delegates_without_opening_a_session(monkeypatch):
         plot_components_on_both_side=True,
         analytic_traces=False,
         exact_component_bounds=False,
-        chord_error=0.01,
+        chord_error=0.002,
         progressive=True,
     )
     launch.reset_mock()
@@ -698,7 +698,7 @@ def test_fast_path_contours_avoid_analytic_remote_properties():
     assert not scene.traces
     assert len(scene.polygons) == 1
     assert scene.polygons[0].category == "trace"
-    path.points.assert_called_once_with(arc_segments=8, chord_error=0.00001)
+    path.points.assert_called_once_with(arc_segments=8, chord_error=0.000002)
 
 
 @pytest.mark.parametrize("radius", [0.02, 0.2, 2.0, 20.0])
@@ -710,7 +710,7 @@ def test_adaptive_chords_bound_error_for_radius_and_total_sweep(radius, sweep, d
     error = 0.01
     count = arc_segment_count(radius, sweep, error)
     assert radius * (1 - math.cos(sweep / (2 * count))) <= error + 1e-12
-    assert sweep / count <= math.pi / 4 + 1e-12
+    assert sweep / count <= math.pi / 18 + 1e-12
     start, end = (radius, 0), (radius * math.cos(sweep), radius * math.sin(sweep))
     sagitta = radius * (1 - math.cos(sweep / 2)) * direction
     x, y = compute_arc_points(start, end, sagitta, chord_error=error)
@@ -724,7 +724,9 @@ def test_adaptive_chords_grow_with_radius_and_angle_without_oversampling_flat_ar
     assert arc_segment_count(10, math.pi, 0.01) > arc_segment_count(0.1, math.pi, 0.01)
     assert arc_segment_count(10, math.pi, 0.01) > arc_segment_count(10, 0.1, 0.01)
     assert arc_segment_count(1000, 0.0001, 0.01) == 1
-    assert arc_segment_count(0.02, math.tau, 0.01) >= 8
+    assert arc_segment_count(0.02, math.tau, 0.01) >= 36
+    assert arc_segment_count(0.02, math.pi, 0.002) >= 18
+    assert arc_segment_count(0.02, math.pi / 2, 0.002) >= 9
     with pytest.raises(ValueError, match="segment limit"):
         arc_segment_count(1e15, math.tau, 1e-12)
 

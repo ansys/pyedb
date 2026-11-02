@@ -763,7 +763,7 @@ def scene_from_edb(
     progress=None,
     analytic_traces=True,
     exact_component_bounds=False,
-    chord_error=0.01,
+    chord_error=0.002,
     preview=None,
 ):
     """Capture analytic traces, per-layer pads and zone contours in millimeters."""

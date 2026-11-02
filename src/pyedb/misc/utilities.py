@@ -26,11 +26,12 @@ import math
 import time
 
 
-def arc_segment_count(radius, sweep, chord_error, max_angle=math.pi / 4, max_segments=65536):
+def arc_segment_count(radius, sweep, chord_error, max_angle=math.pi / 18, max_segments=65536):
     """Return the chord count required by radius, sweep and maximum sagitta error.
 
     Radius and error use the same units; angles are radians. A maximum angle
-    keeps small circular contours valid even when their radius is subpixel.
+    of 10 degrees keeps small round features smooth when zoomed in, even when
+    the sagitta tolerance alone would allow a much coarser approximation.
     """
     if not all(math.isfinite(v) for v in (radius, sweep, chord_error, max_angle)):
         raise ValueError("Arc tessellation inputs must be finite.")

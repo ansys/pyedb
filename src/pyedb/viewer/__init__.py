@@ -56,7 +56,7 @@ def scene_from_edb(
     progress=None,
     analytic_traces=True,
     exact_component_bounds=False,
-    chord_error=0.01,
+    chord_error=0.002,
     preview=None,
 ):
     """Capture detached millimeter-based geometry.
@@ -93,7 +93,7 @@ def launch_viewer(
     plot_components_on_both_side=True,
     analytic_traces=False,
     exact_component_bounds=False,
-    chord_error=0.01,
+    chord_error=0.002,
     progressive=True,
 ):
     """Open an interactive OpenGL layout window.
@@ -111,8 +111,8 @@ def launch_viewer(
         Select fixed subdivisions per EDB arc. By default use adaptive chords.
         Providing this parameter overrides ``chord_error``.
     chord_error : float, optional
-        Maximum chord sagitta in millimeters. Default is 0.01 mm. Segment
-        counts adapt to radius and total sweep, with at most 45 degrees per chord.
+        Maximum chord sagitta in millimeters. Default is 0.002 mm. Segment
+        counts adapt to radius and total sweep, with at most 10 degrees per chord.
     progressive : bool, optional
         Display the current layer first, then remaining copper, pads and
         components. Default is True. One progress indicator remains until complete.

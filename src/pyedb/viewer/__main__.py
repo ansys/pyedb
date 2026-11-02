@@ -35,7 +35,9 @@ def main(argv=None):
     parser.add_argument("--net", action="append", help="Include this net (repeatable)")
     precision = parser.add_mutually_exclusive_group()
     precision.add_argument("--arc-segments", type=int, help="Use a fixed subdivision count instead of adaptive chords")
-    precision.add_argument("--chord-error", type=float, default=0.01, help="Maximum chord error in mm (default: 0.01)")
+    precision.add_argument(
+        "--chord-error", type=float, default=0.002, help="Maximum chord error in mm (default: 0.002)"
+    )
     parser.add_argument("--analytic-traces", action="store_true", help="Preserve analytic traces for deep zoom")
     parser.add_argument("--exact-component-bounds", action="store_true", help="Read exact source component envelopes")
     parser.add_argument(

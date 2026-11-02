@@ -1425,7 +1425,7 @@ class Edb(EdbInit):
         plot_components_on_both_side=True,
         analytic_traces=False,
         exact_component_bounds=False,
-        chord_error=0.01,
+        chord_error=0.002,
         progressive=True,
     ):
         """Open a PySide6/OpenGL 2D layout viewer using a detached snapshot.
@@ -1439,8 +1439,8 @@ class Edb(EdbInit):
             Select fixed subdivisions per arc. Defaults to adaptive chords.
             An explicit count overrides ``chord_error``.
         chord_error : float, optional
-            Maximum chord sagitta in millimeters. Defaults to 0.01 mm, with
-            subdivisions chosen from each arc's radius and sweep.
+            Maximum chord sagitta in millimeters. Defaults to 0.002 mm, with
+            subdivisions chosen from radius and sweep and at most 10 degrees per chord.
         progressive : bool, optional
             Display copper first while remaining geometry loads. Default is True.
         analytic_traces : bool, optional

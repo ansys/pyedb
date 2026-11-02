@@ -134,7 +134,10 @@ An OpenGL 3.3 context with stencil support is required. The viewer supports the
 gRPC backend and reports extraction or rendering failures in the interface.
 3D component bodies, arbitrary source text, bondwires, slotted drills, and
 backdrill profiles are not currently displayed. Contour arcs use adaptive
-subdivision with a default maximum chord error of 0.01 mm, based on radius and
-sweep. Set ``chord_error`` / ``--chord-error`` to adjust this tolerance, or provide
+subdivision with a default maximum chord error of 0.002 mm, based on radius and
+sweep, with at most 10 degrees per segment. Thus a small semicircle uses at
+least 18 segments and a full circle at least 36; larger radii receive more
+segments when the sagitta bound requires them. Set ``chord_error`` /
+``--chord-error`` to adjust this tolerance, or provide
 ``arc_segments`` / ``--arc-segments`` for a fixed count. Enable
 ``analytic_traces=True`` / ``--analytic-traces`` to retain analytic trace arcs.
