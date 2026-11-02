@@ -2,9 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 import math
-import sys
 
-from ansys.api.edb.v1.polygon_data_pb2 import PolygonDataMessage
 import pytest
 
 from pyedb.viewer import LayoutScene, SceneLayer, SceneObjectInfo, ScenePad, ScenePolygon, SceneTrace
@@ -130,17 +128,20 @@ def test_spatial_index_limits_candidates_and_shares_via_layer_entries():
     assert len(shared.by_key["via", 4].items) == 2
 
 
+def _centerline(points, closed=False):
+    from types import SimpleNamespace
+
+    from ansys.edb.core.geometry.point_data import PointData
+
+    return SimpleNamespace(points=[PointData(point) for point in points], is_closed=closed)
+
+
 def test_centerline_length_uses_analytic_arc_not_contour_perimeter():
-    message = PolygonDataMessage(closed=False)
     h = 0.001 * (1 - math.sqrt(0.5))
-    for x, y in ((0.001, 0), (h, sys.float_info.max), (0, 0.001), (0, 0.003)):
-        point = message.points.add()
-        point.x.constant.real, point.y.constant.real = x, y
-    assert centerline_length(message) == pytest.approx(math.pi / 2 + 2)
-    message.points[1].x.constant.real = -h
-    assert centerline_length(message) == pytest.approx(math.pi / 2 + 2)
-    message = PolygonDataMessage(coords=[0, 0, 0.003, 0.004], closed=False)
-    assert centerline_length(message) == 5
+    assert centerline_length(_centerline([(0.001, 0), h, (0, 0.001), (0, 0.003)])) == pytest.approx(math.pi / 2 + 2)
+    assert centerline_length(_centerline([(0.001, 0), -h, (0, 0.001), (0, 0.003)])) == pytest.approx(math.pi / 2 + 2)
+    assert centerline_length(_centerline([(0, 0), (0.003, 0.004)])) == pytest.approx(5)
+    assert centerline_length(_centerline([(0, 0), (0.003, 0)], closed=True)) == pytest.approx(6)
 
 
 def test_nonround_via_reports_actual_pad_size_instead_of_invented_diameter():
@@ -178,23 +179,14 @@ def test_arc_flat_cap_and_metadata_fallback_keep_centerline_semantics():
         assert index.by_key["trace", 1].info.length == pytest.approx(math.pi / 2)
 
 
-def test_trace_dimensions_extract_raw_width_and_analytic_centerline(monkeypatch):
+def test_trace_dimensions_extract_width_and_analytic_centerline():
     from types import SimpleNamespace
-    from unittest.mock import Mock
 
-    from ansys.api.edb.v1.edb_messages_pb2 import EDBObjMessage
-    from ansys.api.edb.v1.path_pb2 import WidthMessage
+    from ansys.edb.core.utility.value import Value as CoreValue
 
     from pyedb.viewer.adapters import grpc_stream
 
-    core = object.__new__(grpc_stream.CorePath)
-    request = EDBObjMessage(id=11)
-    monkeypatch.setattr(grpc_stream.CorePath, "msg", property(lambda self: request))
-    width = WidthMessage()
-    width.width.constant.real = 0.00025
-    line = PolygonDataMessage(coords=[0, 0, 0.003, 0.004], closed=False)
-    stub = SimpleNamespace(GetWidth=Mock(return_value=width), GetCenterLine=Mock(return_value=line))
-    monkeypatch.setattr(grpc_stream, "StubAccessor", lambda kind: SimpleNamespace(__get__=lambda: stub))
-    assert grpc_stream.trace_dimensions(core) == (0.25, 5.0)
-    stub.GetWidth.assert_called_once_with(request)
-    stub.GetCenterLine.assert_called_once_with(request)
+    path = SimpleNamespace(width=CoreValue(0.00025), center_line=_centerline([(0, 0), (0.003, 0.004)]))
+    width, length = grpc_stream.trace_dimensions(path)
+    assert width == pytest.approx(0.25)
+    assert length == pytest.approx(5.0)

@@ -279,7 +279,7 @@ def test_preparation_progress_preserves_gpu_buffers_and_completes_each_stage():
 
 def test_adapter_preserves_path_fallback_circle_coverage_and_skip_diagnostics():
     path = _primitive(type="path", end_cap1="unsupported", end_cap2="round", center_line=None)
-    circle = _primitive(2, type="circle", get_parameters=lambda: (0.003, 0.004, 0.001))
+    circle = _primitive(2, type="circle", get_parameters=lambda: tuple(map(_value, (0.003, 0.004, 0.001))))
     holed_circle = _primitive(3, type="circle", voids=[_primitive(ring=rectangle(0.001, 0.001, 0.002, 0.002))])
     scene = scene_from_edb(
         _edb(
@@ -303,8 +303,9 @@ def test_adapter_preserves_path_fallback_circle_coverage_and_skip_diagnostics():
     assert len(scene.pads) == 1
     assert scene.pads[0].center == (3, 4) and scene.pads[0].size == (2, 2)
     assert circle.polygon_data.reads == 0
-    assert scene.diagnostics[0].startswith("Path 1: using source boundary coverage")
-    assert scene.diagnostics[1:3] == ("Skipped 1 negative primitive object(s).", "Skipped 2 text object(s).")
+    assert scene.diagnostics[0].startswith("Trace 1: inspection properties unavailable")
+    assert scene.diagnostics[1].startswith("Path 1: using source boundary coverage")
+    assert scene.diagnostics[2:4] == ("Skipped 1 negative primitive object(s).", "Skipped 2 text object(s).")
 
 
 def test_scene_import_does_not_load_optional_gui_or_triangulator():
@@ -362,8 +363,13 @@ def test_edb_view_layout_delegates_without_opening_a_session(monkeypatch):
     assert launch.call_args.kwargs["color_by_net"] is False
 
 
+def _value(value):
+    """Fake a core ``Value`` exposing ``double``."""
+    return SimpleNamespace(double=value)
+
+
 def _point(x, y):
-    return SimpleNamespace(x=x, y=y)
+    return SimpleNamespace(x=_value(x), y=_value(y))
 
 
 def _arc(start, end, center=None, ccw=True):
@@ -379,7 +385,7 @@ def _arc(start, end, center=None, ccw=True):
 def test_adapter_retains_analytic_paths_caps_and_sharp_joins():
     path = _primitive(
         type="path",
-        width=0.001,
+        width=_value(0.001),
         end_cap1="flat",
         end_cap2="extended",
         corner_style="sharp",
@@ -393,7 +399,7 @@ def test_adapter_retains_analytic_paths_caps_and_sharp_joins():
     curved = _primitive(
         2,
         type="path",
-        width=0.0005,
+        width=_value(0.0005),
         end_cap1="round",
         end_cap2="round",
         corner_style="round",
@@ -431,7 +437,7 @@ def test_path_segments_reuse_source_metadata():
         **vars(
             _primitive(
                 type="path",
-                width=0.001,
+                width=_value(0.001),
                 end_cap1="round",
                 end_cap2="round",
                 corner_style="round",
@@ -542,7 +548,7 @@ def test_adapter_extracts_per_layer_via_pads_offset_rotation_drill_and_filters()
     assert top.center == pytest.approx((10, 21))
 
 
-def test_padstack_span_uses_snapshot_stackup_without_reenumerating_signal_layers():
+def test_padstack_span_uses_core_layer_range_without_reenumerating_signal_layers():
     via = _via(
         core=SimpleNamespace(get_layer_range=lambda: (SimpleNamespace(name="BOTTOM"), SimpleNamespace(name="TOP")))
     )
@@ -557,7 +563,7 @@ def test_padstack_span_uses_snapshot_stackup_without_reenumerating_signal_layers
 def test_via_default_pad_blind_span_hole_override_and_missing_geometry_diagnostics():
     via = _via(
         layer_range_names=["TOP"],
-        get_hole_overrides=lambda: (True, 0.0004),
+        get_hole_overrides=lambda: (True, _value(0.0004)),
         definition=SimpleNamespace(
             pad_by_layer={"Default": _pad()}, hole_diameter=0.001, hole_offset_x=0, hole_offset_y=0
         ),
@@ -790,10 +796,12 @@ def test_pad_positions_reuse_one_component_transform_and_one_pose_read():
     )
     component = SimpleNamespace(id=7, core=SimpleNamespace(transform=transform))
     first = SimpleNamespace(
-        core=SimpleNamespace(get_position_and_rotation=Mock(return_value=(0.001, 0.002, 0))), component=component
+        core=SimpleNamespace(get_position_and_rotation=Mock(return_value=tuple(map(_value, (0.001, 0.002, 0))))),
+        component=component,
     )
     second = SimpleNamespace(
-        core=SimpleNamespace(get_position_and_rotation=Mock(return_value=(0.003, 0.004, 0))), component=component
+        core=SimpleNamespace(get_position_and_rotation=Mock(return_value=tuple(map(_value, (0.003, 0.004, 0))))),
+        component=component,
     )
     cache = {}
     world, vector, scale = _placement(first, cache)
@@ -874,7 +882,7 @@ def test_primitives_without_voids_do_not_enumerate_an_empty_remote_collection():
         _primitive(
             type="path",
             has_voids=False,
-            width=0.001,
+            width=_value(0.001),
             end_cap1="round",
             end_cap2="round",
             corner_style="round",

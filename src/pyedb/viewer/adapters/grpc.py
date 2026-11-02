@@ -76,23 +76,13 @@ def _component_sides(edb, diagnostics):
 
 
 def _contour(primitive, arc_segments, chord_error=None):
-    from pyedb.viewer.adapters.grpc_stream import contour_from_message, contour_from_points, primitive_polygon_message
+    from pyedb.viewer.adapters.grpc_stream import contour_from_points
 
-    message = primitive_polygon_message(primitive)
-    if message is not None:
-        return contour_from_message(message, arc_segments, chord_error)
     return contour_from_points(primitive.polygon_data.points, arc_segments, chord_error)
 
 
-def _number(value):
-    try:
-        return float(value.value)
-    except AttributeError:
-        return float(value)
-
-
 def _xy(point):
-    return _number(point.x) * 1000, _number(point.y) * 1000
+    return point.x.double * 1000, point.y.double * 1000
 
 
 def _tangent(trace, end=False):
@@ -115,7 +105,7 @@ def _trace_geometry(primitive, layer, net):
     if any(cap not in {"flat", "round", "extended"} for cap in caps):
         raise ValueError(f"Unsupported path caps: {caps}.")
     round_join = primitive.corner_style.name.lower() == "round"
-    width = _number(primitive.width) * 1000
+    width = primitive.width.double * 1000
     object_id = primitive.id
     traces, joins = [], []
     for index, arc in enumerate(arcs):
@@ -173,15 +163,11 @@ def _rotate(point, angle):
 
 
 def _placement(instance, component_cache, component=None):
-    from pyedb.viewer.adapters.grpc_stream import padstack_pose
-
     get_position = getattr(getattr(instance, "core", None), "get_position_and_rotation", None)
     if callable(get_position):
-        state = padstack_pose(instance.core)
-        if state is None:
-            state = get_position()
-        position = tuple(_number(v) * 1000 for v in state[:2])
-        rotation = _number(state[2])
+        state = tuple(value.double for value in get_position())
+        position = tuple(v * 1000 for v in state[:2])
+        rotation = state[2]
     else:
         position = tuple(float(v) * 1000 for v in instance.position)
         rotation = float(instance.rotation)
@@ -202,9 +188,9 @@ def _placement(instance, component_cache, component=None):
                 if points is None:
                     points = [transform.transform_point(PointData(p)) for p in ((0, 0), (1, 0), (0, 1))]
                 origin, x, y = points
-                ox, oy = _number(origin.x), _number(origin.y)
+                ox, oy = origin.x.double, origin.y.double
                 component_cache[key] = (
-                    ((_number(x.x) - ox, _number(x.y) - oy), (_number(y.x) - ox, _number(y.y) - oy)),
+                    ((x.x.double - ox, x.y.double - oy), (y.x.double - ox, y.y.double - oy)),
                     (ox * 1000, oy * 1000),
                 )
         basis, origin = component_cache[key]
@@ -288,23 +274,16 @@ def _pin_owner(instance, sides, cache, component=None):
     return dict(owner, pin_name=instance.name) if owner is not None else {}
 
 
-def _padstack_layers(instance, selected_layers, conductors, extended_ranges, layer_names=None):
+def _padstack_layers(instance, selected_layers, conductors, extended_ranges):
     """Include conducting layers within the instance's physical span."""
     instance_layers = None
     core = getattr(instance, "core", None)
     get_range = getattr(core, "get_layer_range", None)
     if callable(get_range):
-        # layer_range_names rebuilds the entire signal-layer collection for
-        # every instance. The snapshot already owns that ordered collection.
-        from pyedb.viewer.adapters.grpc_stream import padstack_span
-
-        span = padstack_span(core, layer_names)
-        if span is None:
-            layer_range = get_range()
-            if not layer_range:
-                return []
-            span = tuple(layer.name for layer in layer_range)
-        first, last = span
+        layer_range = get_range()
+        if not layer_range:
+            return []
+        first, last = (layer.name for layer in layer_range)
         if first in conductors and last in conductors:
             start, stop = sorted((conductors.index(first), conductors.index(last)))
             instance_layers = conductors[start : stop + 1]
@@ -452,6 +431,16 @@ def _readonly_components(edb):
     )
 
 
+def _padstack_component(instance, components):
+    """Reuse a capture's component wrapper; ``False`` means the instance has no component."""
+    component = getattr(getattr(instance, "core", None), "component", None)
+    if components is None or component is None:
+        return None
+    if component.is_null:
+        return False
+    return components.get(component.id)
+
+
 def _padstack_object_info(instance, object_id, component, net, hole_radius, placement, span, object_info, diagnostics):
     """Capture optional inspector properties without discarding valid geometry."""
     if object_info is not None:
@@ -501,9 +490,6 @@ def _padstacks(
     chord_error=None,
     object_info=None,
 ):
-    from pyedb.viewer.adapters.grpc_prefetch import PadInstances
-    from pyedb.viewer.adapters.grpc_stream import padstack_component
-
     pads, polygons = [], []
     definitions, templates, component_cache, mapping_cache = {}, {}, {}, {}
     pin_components = {}
@@ -511,24 +497,17 @@ def _padstacks(
     conductors = _conductor_names(edb)
     extended_ranges = bool(set(conductors).difference(edb.stackup.signal_layers))
     layout_layers = edb.stackup.layers
-    layer_names = {
-        layer.core.id: name
-        for name, layer in layout_layers.items()
-        if getattr(getattr(layer, "core", None), "id", None)
-    }
     manager = getattr(edb, "padstacks", None)
     if manager is None:
         return pads, polygons
     component_objects = _readonly_components(edb)
-    for instance in progress_items(
-        lambda: PadInstances(edb, manager.instances.values()), progress, "Reading pads and vias"
-    ):
+    for instance in progress_items(lambda: manager.instances.values(), progress, "Reading pads and vias"):
         try:
             object_id = instance.id
             net = instance.net_name
             if selected_nets is not None and net not in selected_nets:
                 continue
-            span = _padstack_layers(instance, set(conductors), conductors, extended_ranges, layer_names)
+            span = _padstack_layers(instance, set(conductors), conductors, extended_ranges)
             layers = [layer for layer in span if layer in selected_layers]
             if not layers:
                 continue
@@ -539,8 +518,8 @@ def _padstacks(
             mapped = _mapped_layers(instance, edb, definition, layers, mapping_cache, layout_layers, name)
             enabled, diameter = instance.get_hole_overrides()
             if enabled:
-                hole_radius = _number(diameter) * 500
-            component = padstack_component(getattr(instance, "core", None), component_objects)
+                hole_radius = diameter.double * 500
+            component = _padstack_component(instance, component_objects)
             if component is None:
                 component = instance.component
             placement = _placement(instance, component_cache, component)
@@ -652,9 +631,7 @@ def _selected_primitives(edb, selected_layers, selected_nets, skipped, progress=
     """Filter source primitives and count unsupported copper geometry."""
 
     def load():
-        from pyedb.viewer.adapters.grpc_primitives import PrimitiveReader
-
-        source = PrimitiveReader(edb).read()
+        source = [primitive for primitive in edb.layout.core.primitives if not primitive.net.is_null]
         if priority_layer is None:
             return [(primitive, None, None) for primitive in source]
         records = []
@@ -700,10 +677,7 @@ def _primitives(
     object_info=None,
 ):
     """Capture analytic geometry with source contours as a fallback."""
-    from pyedb.viewer.adapters.grpc_stream import VoidReader
-
     polygons, traces, joins, pads = [], [], [], []
-    read_voids = VoidReader(_contour, arc_segments, chord_error)
     skipped = Counter()
     published = False
     for primitive, primitive_type, layer_name, net_name in _selected_primitives(
@@ -721,9 +695,8 @@ def _primitives(
                     from pyedb.viewer.adapters.grpc_stream import trace_dimensions
 
                     try:
-                        dimensions = trace_dimensions(primitive)
-                        if dimensions is not None:
-                            info = SceneObjectInfo(object_id, kind, net_name, width=dimensions[0], length=dimensions[1])
+                        width, length = trace_dimensions(primitive)
+                        info = SceneObjectInfo(object_id, kind, net_name, width=width, length=length)
                     except Exception as exc:
                         diagnostics.append(f"Trace {primitive.id}: inspection properties unavailable ({exc}).")
                 object_info[object_id] = info
@@ -739,7 +712,7 @@ def _primitives(
                 except Exception as exc:
                     diagnostics.append(f"Path {primitive.id}: using source boundary coverage ({exc}).")
             if primitive_type == "circle" and not has_voids:
-                x, y, radius = (_number(v) * 1000 for v in primitive.get_parameters())
+                x, y, radius = (v.double * 1000 for v in primitive.get_parameters())
                 pads.append(ScenePad(object_id, layer_name, net_name, (x, y), (radius * 2,) * 2))
                 continue
             polygons.append(
@@ -749,9 +722,10 @@ def _primitives(
                     net=net_name,
                     exterior=_contour(primitive, arc_segments, chord_error),
                     holes=(
-                        tuple(_contour(void, arc_segments, chord_error) for void in voids)
-                        if voids is not None
-                        else tuple(read_voids(primitive))
+                        tuple(
+                            _contour(void, arc_segments, chord_error)
+                            for void in (primitive.voids if voids is None else voids)
+                        )
                         if has_voids
                         else ()
                     ),

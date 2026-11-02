@@ -1,23 +1,12 @@
 # Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 
-"""Read void geometry from streamed protobufs without building unused models."""
+"""Geometry helpers working on public ``ansys.edb.core`` objects."""
 
 import math
-import sys
 
-from ansys.api.edb.v1.edb_messages_pb2 import EDBObjMessage
-from ansys.api.edb.v1.polygon_data_pb2 import PolygonDataMessage
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
-from ansys.edb.core.primitive.padstack_instance import PadstackInstance as CorePadstackInstance
-from ansys.edb.core.primitive.path import Path as CorePath
-from ansys.edb.core.primitive.polygon import Polygon as CorePolygon
-from ansys.edb.core.primitive.primitive import Primitive as CorePrimitive
-from ansys.edb.core.primitive.rectangle import Rectangle as CoreRectangle
-from ansys.edb.core.session import StubAccessor, StubType
-from ansys.edb.core.utility.io_manager import get_cache
 from ansys.edb.core.utility.transform import Transform as CoreTransform
-from ansys.edb.core.utility.value import Value as CoreValue
 import grpc
 
 from pyedb.generic.geometry_operators import GeometryOperators
@@ -25,16 +14,21 @@ from pyedb.grpc.database.utility.value import value_as_float
 from pyedb.misc.utilities import compute_arc_points
 
 
-def _number(message):
-    if not message.text and not message.constant.imag:
-        return float(message.constant.real)
-    return value_as_float(CoreValue(message))
-
-
 def _value(value):
     if isinstance(value, (int, float)):
         return float(value)
     return value_as_float(value)
+
+
+def _decode(points):
+    """Return ``(x, y, arc_height)`` tuples; arc markers have ``x``/``y`` set to ``None``."""
+    decoded = []
+    for point in points:
+        if point.is_arc:
+            decoded.append((None, None, _value(point.arc_height)))
+        else:
+            decoded.append((_value(point.x), _value(point.y), None))
+    return decoded
 
 
 def _tessellate(points, arc_segments, chord_error):
@@ -58,95 +52,26 @@ def _tessellate(points, arc_segments, chord_error):
     return tuple((px * 1000, py * 1000) for px, py in zip(x, y))
 
 
-def contour_from_message(message, arc_segments, chord_error=None):
-    """Decode only numerical coordinates, preserving winding and arc semantics."""
-    if message.coords:
-        if len(message.coords) % 2:
-            raise ValueError("Boundary X and Y arrays have different lengths.")
-        iterator = iter(message.coords)
-        points = [
-            (float(x), float(y), float(x) if y == sys.float_info.max else None) for x, y in zip(iterator, iterator)
-        ]
-    else:
-        points = []
-        for point in message.points:
-            x, y = _number(point.x), _number(point.y)
-            points.append((x, y, x if not point.y.text and y == sys.float_info.max else None))
-    return _tessellate(points, arc_segments, chord_error)
-
-
 def contour_from_points(points, arc_segments, chord_error=None):
     """Tessellate core ``PointData`` items, including arc-height markers."""
-    decoded = []
-    for point in points:
-        if point.is_arc:
-            decoded.append((None, None, _value(point.arc_height)))
-        else:
-            decoded.append((_value(point.x), _value(point.y), None))
-    return _tessellate(decoded, arc_segments, chord_error)
+    return _tessellate(_decode(points), arc_segments, chord_error)
 
 
-def prefetched_polygon(message):
-    """Use only a geometry response explicitly belonging to this object."""
-    # Geometry is normally the last response. Last-to-first also matches SDK
-    # cache insertion semantics when a response for the same target repeats.
-    for entry in reversed(message.cache.cache):
-        if entry.rpc_method_name != "GetPolygonData":
-            continue
-        if not entry.request.any.Is(EDBObjMessage.DESCRIPTOR) or not entry.response.any.Is(
-            PolygonDataMessage.DESCRIPTOR
-        ):
-            continue
-        target = EDBObjMessage()
-        entry.request.any.Unpack(target)
-        if target.id != message.id:
-            continue
-        polygon = PolygonDataMessage()
-        entry.response.any.Unpack(polygon)
-        return polygon
-    return None
-
-
-def primitive_polygon_message(core):
-    """Read the same typed SDK getter without constructing point/value models.
-
-    The SDK interceptor and current session still handle transport, property
-    prefetch and expressions. Unsupported primitive types use the normal API.
-    """
-    if isinstance(core, CorePath):
-        kind = StubType.path
-    elif isinstance(core, CorePolygon):
-        kind = StubType.polygon
-    elif isinstance(core, CoreRectangle):
-        kind = StubType.rectangle
-    else:
-        return None
-    message = StubAccessor(kind).__get__().GetPolygonData(core.msg)
-    return message if isinstance(message, PolygonDataMessage) else None
-
-
-def centerline_length(message):
-    """Return native centerline length in mm, evaluating circular arcs exactly."""
-    if message.coords:
-        if len(message.coords) % 2:
-            raise ValueError("Invalid centerline coordinate count.")
-        values = iter(message.coords)
-        points = list(zip(values, values))
-    else:
-        points = [(_number(point.x), _number(point.y)) for point in message.points]
+def centerline_length(polygon_data):
+    """Return a core centerline's length in mm, evaluating circular arcs exactly."""
+    points = _decode(polygon_data.points)
     if len(points) < 2:
         return 0.0
-    if message.closed and points[-1] != points[0]:
+    if polygon_data.is_closed and points[-1] != points[0]:
         points.append(points[0])
     length, index = 0.0, 1
     while index < len(points):
-        end = points[index]
-        start = points[index - 1]
-        if end[1] == sys.float_info.max:
+        start, end = points[index - 1], points[index]
+        if end[2] is not None:
             if index + 1 >= len(points):
                 raise ValueError("An arc requires an endpoint.")
-            height = abs(end[0])
-            chord = math.dist(start, points[index + 1])
+            height = abs(end[2])
+            chord = math.dist(start[:2], points[index + 1][:2])
             if height == 0:
                 length += chord
             else:
@@ -154,45 +79,14 @@ def centerline_length(message):
                 length += radius * 4 * math.atan2(2 * height, chord)
             index += 2
         else:
-            length += math.dist(start, end)
+            length += math.dist(start[:2], end[:2])
             index += 1
     return length * 1000
 
 
-def trace_dimensions(core):
-    """Get exact width and source centerline length through the current SDK."""
-    if not isinstance(core, CorePath):
-        return None
-    stub = StubAccessor(StubType.path).__get__()
-    width = _number(stub.GetWidth(core.msg).width) * 1000
-    return width, centerline_length(stub.GetCenterLine(core.msg))
-
-
-def padstack_span(core, layer_names):
-    """Resolve span handles against this capture's stackup, without layer casts."""
-    if not isinstance(core, CorePadstackInstance) or not layer_names:
-        return None
-    message = StubAccessor(StubType.padstack_instance).__get__().GetLayerRange(core.msg)
-    first, last = layer_names.get(message.top_layer.id), layer_names.get(message.bottom_layer.id)
-    return (first, last) if first is not None and last is not None else None
-
-
-def padstack_pose(core):
-    """Evaluate the SDK pose response directly, including parameter expressions."""
-    if not isinstance(core, CorePadstackInstance):
-        return None
-    message = StubAccessor(StubType.padstack_instance).__get__().GetPositionAndRotation(core.msg)
-    return _number(message.position.x), _number(message.position.y), _number(message.rotation)
-
-
-def padstack_component(core, components):
-    """Reuse a current capture's component wrappers by exact server handle."""
-    if not isinstance(core, CorePadstackInstance) or components is None:
-        return None
-    message = StubAccessor(StubType.connectable).__get__().GetComponent(core.msg)
-    if message.id == 0:
-        return False
-    return components.get(message.id)
+def trace_dimensions(path):
+    """Return a core path's width and centerline length in mm."""
+    return path.width.double * 1000, centerline_length(path.center_line)
 
 
 def transform_basis_points(transform):
@@ -210,60 +104,3 @@ def transform_basis_points(transform):
         raise
     # Preserve the point-based fallback for an SDK returning a closed ring.
     return points if len(points) == 3 else None
-
-
-class VoidReader:
-    """Keep one capture's immutable rings; fall back for unsupported encodings."""
-
-    def __init__(self, contour, arc_segments, chord_error):
-        self.contour = contour
-        self.arc_segments, self.chord_error = arc_segments, chord_error
-        self.rings = {}
-        self.prefetched = self.cache_hits = self.fallbacks = 0
-
-    def __call__(self, primitive):
-        if not isinstance(primitive, CorePrimitive) or get_cache() is None:
-            return (self.contour(item, self.arc_segments, self.chord_error) for item in primitive.voids)
-        return self._stream(primitive)
-
-    def _fallback(self, primitive, message):
-        return self.contour(CorePrimitive(message).cast(), self.arc_segments, self.chord_error)
-
-    def _ring(self, primitive, message):
-        if message.id in self.rings:
-            self.cache_hits += 1
-            return self.rings[message.id]
-        polygon = prefetched_polygon(message)
-        if polygon is not None:
-            self.prefetched += 1
-        else:
-            request = EDBObjMessage(id=message.id)
-            cached = get_cache().hijack_request("ansys.api.edb.v1.PolygonService", "GetPolygonData", request)
-            if cached is not None and isinstance(cached.result(), PolygonDataMessage):
-                polygon = cached.result()
-                self.cache_hits += 1
-        if polygon is not None:
-            ring = contour_from_message(polygon, self.arc_segments, self.chord_error)
-        else:
-            self.fallbacks += 1
-            ring = self._fallback(primitive, message)
-        self.rings[message.id] = ring
-        return ring
-
-    def _stream(self, primitive):
-        stub = StubAccessor(StubType.primitive).__get__()
-        stream = stub.StreamVoids(primitive.msg)
-        try:
-            for batch in stream:
-                for message in batch.items:
-                    yield self._ring(primitive, message)
-        finally:
-            # Some older servers cannot close a database while a cancelled
-            # stream is still serializing. Drain even after a bad contour.
-            failing = sys.exc_info()[0] is not None
-            try:
-                for _ in stream:
-                    pass
-            except Exception:
-                if not failing:
-                    raise
