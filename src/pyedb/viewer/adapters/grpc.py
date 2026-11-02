@@ -25,6 +25,8 @@
 from collections import Counter
 import math
 
+from ansys.edb.core.database import ProductIdType
+
 from pyedb.misc.utilities import arc_segment_count
 from pyedb.viewer.progress import progress_items
 from pyedb.viewer.scene import (
@@ -455,6 +457,7 @@ def _padstack_object_info(instance, object_id, component, net, hole_radius, plac
                 stop_layer=span[-1],
                 component=reference,
                 pin_name=getattr(instance, "name", None) if component else None,
+                name=None if component else getattr(instance, "name", None),
             )
         except Exception as exc:
             diagnostics.append(f"Padstack {object_id}: inspection properties unavailable ({exc}).")
@@ -663,6 +666,21 @@ def _selected_primitives(edb, selected_layers, selected_nets, skipped, progress=
         yield primitive, primitive_type, layer_name, net_name
 
 
+_PRIMITIVE_NAME_PREFIX = {"path": "line", "rectangle": "rect", "polygon": "poly", "bondwire": "bwr"}
+
+
+def _primitive_name(primitive):
+    """Return the AEDT display name, falling back to its default ``<type>_<uid>`` without writing it back."""
+    try:
+        name = primitive.get_product_property(ProductIdType.DESIGNER, 1).strip("'")
+    except Exception:
+        name = ""
+    if not name:
+        kind = primitive.primitive_type.name.lower()
+        name = f"{_PRIMITIVE_NAME_PREFIX.get(kind, kind)}_{primitive.id}"
+    return name
+
+
 def _primitives(
     edb,
     selected_layers,
@@ -690,13 +708,14 @@ def _primitives(
             object_id = primitive.id
             if object_info is not None:
                 kind = "trace" if primitive_type == "path" else "pad" if primitive_type == "circle" else "zone"
-                info = SceneObjectInfo(object_id, kind, net_name)
+                name = _primitive_name(primitive)
+                info = SceneObjectInfo(object_id, kind, net_name, name=name)
                 if kind == "trace":
                     from pyedb.viewer.adapters.grpc_stream import trace_dimensions
 
                     try:
                         width, length = trace_dimensions(primitive)
-                        info = SceneObjectInfo(object_id, kind, net_name, width=width, length=length)
+                        info = SceneObjectInfo(object_id, kind, net_name, width=width, length=length, name=name)
                     except Exception as exc:
                         diagnostics.append(f"Trace {primitive.id}: inspection properties unavailable ({exc}).")
                 object_info[object_id] = info

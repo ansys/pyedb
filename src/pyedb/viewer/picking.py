@@ -314,6 +314,8 @@ def inspector_rows(hit):
     info, item = hit.object.info, hit.item
     mm = lambda value: "—" if value is None else f"{value:.4f} mm"
     rows = [("Signal" if info.kind == "trace" else "Net", info.net or "Unassigned")]
+    if info.name or (info.kind in {"via", "trace", "zone", "pad"} and not info.pin_name):
+        rows.insert(0, ("Name", info.name or "—"))
     if info.kind == "trace":
         rows += [("Width", mm(info.width)), ("Length", mm(info.length))]
     elif info.kind == "via":

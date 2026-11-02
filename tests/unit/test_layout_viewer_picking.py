@@ -42,8 +42,8 @@ def picking_scene():
             ScenePad(5, "TOP", "PAD_NET", (-3, -2), (1.4, 0.8), "rectangle", component="U1", pin_name="A7"),
         ),
         object_info=(
-            SceneObjectInfo(3, "trace", "DATA_SIGNAL", width=0.8, length=4),
-            SceneObjectInfo(4, "via", "VIA_NET", drill_diameter=0.4, start_layer="TOP", stop_layer="BOTTOM"),
+            SceneObjectInfo(3, "trace", "DATA_SIGNAL", width=0.8, length=4, name="line_1"),
+            SceneObjectInfo(4, "via", "VIA_NET", drill_diameter=0.4, start_layer="TOP", stop_layer="BOTTOM", name="V1"),
             SceneObjectInfo(5, "pad", "PAD_NET", component="U1", pin_name="A7"),
         ),
     )
@@ -68,6 +68,7 @@ def test_zone_voids_visibility_and_physical_via_span():
     hit = index.pick((3, -2), 100, {"BOTTOM"})
     assert hit.key == ("via", 4) and hit.layer == "BOTTOM"
     rows = dict(inspector_rows(hit))
+    assert rows["Name"] == "V1"
     assert rows["From layer"] == "TOP" and rows["To layer"] == "BOTTOM"
     assert rows["Drill diameter"] == "0.4000 mm"
     assert rows["Via diameter"] == "0.8000 mm"
@@ -76,6 +77,7 @@ def test_zone_voids_visibility_and_physical_via_span():
 def test_inspector_reports_trace_and_pin_properties_from_source():
     index = PickIndex(picking_scene())
     assert dict(inspector_rows(index.pick((0, 2), 100, {"TOP"}))) == {
+        "Name": "line_1",
         "Signal": "DATA_SIGNAL",
         "Width": "0.8000 mm",
         "Length": "4.0000 mm",

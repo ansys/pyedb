@@ -146,3 +146,23 @@ def test_numeric_conversion_does_not_evaluate_constants():
     assert value_as_float(RecordedValue(0.25)) == 0.25
     with pytest.raises(TypeError):
         value_as_float(CoreValue(complex(0.25, 1)))
+
+
+@pytest.mark.parametrize(
+    "kind, prop, expected",
+    [
+        ("PATH", "'Trace_A'", "Trace_A"),
+        ("PATH", "", "line_42"),
+        ("POLYGON", None, "poly_42"),
+        ("RECTANGLE", "''", "rect_42"),
+        ("CIRCLE", RuntimeError("no property"), "circle_42"),
+    ],
+)
+def test_primitive_name_uses_aedt_name_with_default_fallback(kind, prop, expected):
+    from pyedb.viewer.adapters.grpc import _primitive_name
+
+    getter = Mock(side_effect=prop) if isinstance(prop, Exception) else Mock(return_value=prop)
+    if prop is None:
+        getter = Mock(side_effect=AttributeError("unset"))
+    primitive = SimpleNamespace(get_product_property=getter, primitive_type=SimpleNamespace(name=kind), id=42)
+    assert _primitive_name(primitive) == expected

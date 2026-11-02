@@ -318,6 +318,7 @@ class SceneObjectInfo:
     stop_layer: str | None = None
     component: str | None = None
     pin_name: str | None = None
+    name: str | None = None
 
     def __post_init__(self):
         if self.kind not in {"trace", "via", "pad", "zone"}:
