@@ -16,7 +16,7 @@ import pytest
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import value_as_float
-from pyedb.viewer.adapters import grpc_prefetch, grpc_stream
+from pyedb.viewer.adapters import grpc_prefetch, grpc_primitives, grpc_stream
 
 pytestmark = [pytest.mark.unit, pytest.mark.grpc, pytest.mark.no_licence]
 
@@ -61,6 +61,44 @@ def test_prefetched_geometry_checks_object_identity_and_reuses_rings(monkeypatch
     monkeypatch.setattr(grpc_stream, "get_cache", lambda: SimpleNamespace(hijack_request=lambda *args: None))
     assert reader._ring(SimpleNamespace(), EDBObjMessage(id=8)) == result
     reader._fallback.assert_called_once()
+
+
+def test_prefetched_geometry_uses_latest_matching_response():
+    message = prefetched(7, square())
+    latest = PolygonDataMessage(coords=[0, 0, 0.002, 0, 0.002, 0.002, 0, 0.002])
+    message.cache.cache.extend(prefetched(7, latest).cache.cache)
+    # A later entry for a different object must still be ignored.
+    message.cache.cache.extend(prefetched(7, square(), request_id=99).cache.cache)
+    assert grpc_stream.prefetched_polygon(message) == latest
+
+
+def test_component_basis_uses_one_polygon_call_and_preserves_point_fallback(monkeypatch):
+    from ansys.edb.core.geometry.point_data import PointData
+
+    transform = object.__new__(grpc_stream.CoreTransform)
+    points = [PointData((1, 2)), PointData((1, 1)), PointData((0, 2))]
+    calls = []
+
+    def apply(self, triangle):
+        calls.append([(point.x.value, point.y.value) for point in triangle.points])
+        return SimpleNamespace(points=points)
+
+    monkeypatch.setattr(grpc_stream.CoreTransform, "transform_polygon", apply)
+    assert grpc_stream.transform_basis_points(transform) is points
+    assert calls == [[(0, 0), (1, 0), (0, 1)]]
+    assert grpc_stream.transform_basis_points(object()) is None
+    points.append(PointData((1, 2)))
+    assert grpc_stream.transform_basis_points(transform) is None
+
+
+def test_component_basis_keeps_legacy_path_when_batch_rpc_is_unsupported(monkeypatch):
+    class Unsupported(grpc_stream.grpc.RpcError):
+        def code(self):
+            return grpc_stream.grpc.StatusCode.UNIMPLEMENTED
+
+    transform = object.__new__(grpc_stream.CoreTransform)
+    monkeypatch.setattr(grpc_stream.CoreTransform, "transform_polygon", Mock(side_effect=Unsupported()))
+    assert grpc_stream.transform_basis_points(transform) is None
 
 
 @pytest.mark.parametrize(
@@ -128,6 +166,25 @@ def test_pad_metadata_uses_snapshot_layer_ids_and_raw_pose_values(monkeypatch):
     stub.GetLayerRange.assert_called_once_with(request)
     stub.GetPositionAndRotation.assert_called_once_with(request)
     assert grpc_stream.padstack_span(core, {101: "FRONT"}) is None
+
+
+def test_pad_component_reuses_only_exact_current_session_handles(monkeypatch):
+    request = EDBObjMessage(id=11)
+    core = object.__new__(grpc_stream.CorePadstackInstance)
+    monkeypatch.setattr(grpc_stream.CorePadstackInstance, "msg", property(lambda self: request))
+    response = EDBObjMessage(id=101)
+    getter = Mock(return_value=response)
+    monkeypatch.setattr(
+        grpc_stream, "StubAccessor", lambda kind: SimpleNamespace(__get__=lambda: SimpleNamespace(GetComponent=getter))
+    )
+    component = object()
+    assert grpc_stream.padstack_component(core, {101: component}) is component
+    assert grpc_stream.padstack_component(core, {102: component}) is None
+    response.id = 0
+    assert grpc_stream.padstack_component(core, {}) is False
+    getter.reset_mock()
+    assert grpc_stream.padstack_component(core, None) is None
+    getter.assert_not_called()
 
 
 def test_bulk_pad_packets_match_scalar_precision_shapes_drills_and_networks():
@@ -230,6 +287,77 @@ def test_writable_sessions_never_open_extra_prefetch_channel(monkeypatch):
     monkeypatch.setattr(grpc_prefetch.core_session, "create_channel", create)
     assert grpc_prefetch.PadInstances(SimpleNamespace(isreadonly=False), [])._open() is None
     create.assert_not_called()
+
+
+def test_primitive_prefetch_discards_only_known_unused_metadata():
+    message = prefetched(1, square())
+    message.cache.cache.add(service_name="ansys.api.edb.v1.PrimitiveService", rpc_method_name="GetHfssProp")
+    message.cache.cache.add(service_name="ansys.api.edb.v1.ConnectableService", rpc_method_name="GetComponent")
+    message.cache.cache.add(service_name="ansys.api.edb.v1.FutureService", rpc_method_name="GetHfssProp")
+    message.cache.cache.add(service_name="ansys.api.edb.v1.PathService", rpc_method_name="GetData")
+    assert grpc_primitives._discard_unused_prefetch(message) == 2
+    assert [(item.service_name, item.rpc_method_name) for item in message.cache.cache] == [
+        ("ansys.api.edb.v1.PolygonService", "GetPolygonData"),
+        ("ansys.api.edb.v1.FutureService", "GetHfssProp"),
+        ("ansys.api.edb.v1.PathService", "GetData"),
+    ]
+    assert grpc_stream.prefetched_polygon(message) == square()
+
+
+@pytest.mark.parametrize("fail", [False, True])
+def test_primitive_reader_uses_sdk_factory_and_drains_stream_on_failure(monkeypatch, fail):
+    consumed = []
+    core = object.__new__(grpc_primitives.CoreLayout)
+    monkeypatch.setattr(grpc_primitives.CoreLayout, "msg", property(lambda self: EDBObjMessage(id=99)))
+
+    def stream(request):
+        assert request.target.id == 99
+        assert request.type == grpc_primitives.LayoutObjType.PRIMITIVE.value
+        for number in range(3):
+            consumed.append(number)
+            message = EDBObjMessage(id=number + 1)
+            message.cache.cache.add(service_name="ansys.api.edb.v1.PrimitiveService", rpc_method_name="GetOwner")
+            yield EDBObjCollectionMessage(items=[message])
+
+    def create(message, kind):
+        assert not message.cache.cache
+        if fail:
+            raise ValueError("Invalid primitive")
+        return message.id
+
+    monkeypatch.setattr(grpc_primitives.core_session.MOD, "current_session", SimpleNamespace(shared_memory=False))
+    monkeypatch.setattr(grpc_primitives, "get_cache", lambda: object())
+    monkeypatch.setattr(
+        grpc_primitives,
+        "StubAccessor",
+        lambda kind: SimpleNamespace(__get__=lambda: SimpleNamespace(StreamItems=stream)),
+    )
+    monkeypatch.setattr(grpc_primitives, "create_lyt_obj", create)
+    layout = SimpleNamespace(core=core, _wrap_primitive=lambda value: None if value == 2 else value)
+    reader = grpc_primitives.PrimitiveReader(SimpleNamespace(isreadonly=True, layout=layout))
+    if fail:
+        with pytest.raises(ValueError, match="Invalid primitive"):
+            reader.read()
+    else:
+        assert reader.read() == [1, 3]
+        assert reader.discarded == 3
+    assert consumed == [0, 1, 2]
+
+
+@pytest.mark.parametrize(
+    "writable, shared_memory, caching", [(True, False, True), (False, True, True), (False, False, False)]
+)
+def test_primitive_reader_keeps_normal_api_for_other_session_modes(monkeypatch, writable, shared_memory, caching):
+    core = object.__new__(grpc_primitives.CoreLayout)
+    source = [object()]
+    monkeypatch.setattr(
+        grpc_primitives.core_session.MOD, "current_session", SimpleNamespace(shared_memory=shared_memory)
+    )
+    monkeypatch.setattr(grpc_primitives, "get_cache", lambda: object() if caching else None)
+    reader = grpc_primitives.PrimitiveReader(
+        SimpleNamespace(isreadonly=not writable, layout=SimpleNamespace(core=core, primitives=source))
+    )
+    assert reader.read() is source
 
 
 def test_prefetch_failure_falls_back_without_inserting_partial_responses(monkeypatch):

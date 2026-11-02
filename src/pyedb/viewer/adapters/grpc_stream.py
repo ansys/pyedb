@@ -7,6 +7,7 @@ import sys
 
 from ansys.api.edb.v1.edb_messages_pb2 import EDBObjMessage
 from ansys.api.edb.v1.polygon_data_pb2 import PolygonDataMessage
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from ansys.edb.core.primitive.padstack_instance import PadstackInstance as CorePadstackInstance
 from ansys.edb.core.primitive.path import Path as CorePath
 from ansys.edb.core.primitive.polygon import Polygon as CorePolygon
@@ -14,7 +15,9 @@ from ansys.edb.core.primitive.primitive import Primitive as CorePrimitive
 from ansys.edb.core.primitive.rectangle import Rectangle as CoreRectangle
 from ansys.edb.core.session import StubAccessor, StubType
 from ansys.edb.core.utility.io_manager import get_cache
+from ansys.edb.core.utility.transform import Transform as CoreTransform
 from ansys.edb.core.utility.value import Value as CoreValue
+import grpc
 
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.primitive.primitive import Primitive
@@ -62,7 +65,9 @@ def contour_from_message(message, arc_segments, chord_error=None):
 
 def prefetched_polygon(message):
     """Use only a geometry response explicitly belonging to this object."""
-    for entry in message.cache.cache:
+    # Geometry is normally the last response. Last-to-first also matches SDK
+    # cache insertion semantics when a response for the same target repeats.
+    for entry in reversed(message.cache.cache):
         if entry.rpc_method_name != "GetPolygonData":
             continue
         if not entry.request.any.Is(EDBObjMessage.DESCRIPTOR) or not entry.response.any.Is(
@@ -112,6 +117,33 @@ def padstack_pose(core):
         return None
     message = StubAccessor(StubType.padstack_instance).__get__().GetPositionAndRotation(core.msg)
     return _number(message.position.x), _number(message.position.y), _number(message.rotation)
+
+
+def padstack_component(core, components):
+    """Reuse a current capture's component wrappers by exact server handle."""
+    if not isinstance(core, CorePadstackInstance) or components is None:
+        return None
+    message = StubAccessor(StubType.connectable).__get__().GetComponent(core.msg)
+    if message.id == 0:
+        return False
+    return components.get(message.id)
+
+
+def transform_basis_points(transform):
+    """Transform an affine basis in one native call instead of three RPCs."""
+    if not isinstance(transform, CoreTransform):
+        return None
+    triangle = CorePolygonData(points=[(0, 0), (1, 0), (0, 1)])
+    try:
+        points = transform.transform_polygon(triangle).points
+    except NotImplementedError:
+        return None
+    except grpc.RpcError as error:
+        if error.code() == grpc.StatusCode.UNIMPLEMENTED:
+            return None
+        raise
+    # Preserve the point-based fallback for an SDK returning a closed ring.
+    return points if len(points) == 3 else None
 
 
 class VoidReader:

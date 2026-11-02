@@ -209,7 +209,12 @@ def _placement(instance, component_cache, component=None):
             if transform.is_null:
                 component_cache[key] = basis, (0.0, 0.0)
             else:
-                origin, x, y = [transform.transform_point(PointData(p)) for p in ((0, 0), (1, 0), (0, 1))]
+                from pyedb.viewer.adapters.grpc_stream import transform_basis_points
+
+                points = transform_basis_points(transform)
+                if points is None:
+                    points = [transform.transform_point(PointData(p)) for p in ((0, 0), (1, 0), (0, 1))]
+                origin, x, y = points
                 ox, oy = _number(origin.x), _number(origin.y)
                 component_cache[key] = (
                     ((_number(x.x) - ox, _number(x.y) - oy), (_number(y.x) - ox, _number(y.y) - oy)),
@@ -448,6 +453,7 @@ def _padstacks(
     chord_error=None,
 ):
     from pyedb.viewer.adapters.grpc_prefetch import PadInstances
+    from pyedb.viewer.adapters.grpc_stream import padstack_component
 
     pads, polygons = [], []
     definitions, templates, component_cache, mapping_cache = {}, {}, {}, {}
@@ -464,6 +470,16 @@ def _padstacks(
     manager = getattr(edb, "padstacks", None)
     if manager is None:
         return pads, polygons
+    component_manager = getattr(edb, "components", None)
+    component_objects = (
+        {
+            component.core.id: component
+            for component in component_manager.instances.values()
+            if getattr(getattr(component, "core", None), "id", None)
+        }
+        if component_manager is not None and getattr(edb, "isreadonly", False)
+        else None
+    )
     for instance in progress_items(
         lambda: PadInstances(edb, manager.instances.values()), progress, "Reading pads and vias"
     ):
@@ -483,7 +499,9 @@ def _padstacks(
             enabled, diameter = instance.get_hole_overrides()
             if enabled:
                 hole_radius = _number(diameter) * 500
-            component = instance.component
+            component = padstack_component(getattr(instance, "core", None), component_objects)
+            if component is None:
+                component = instance.component
             placement = _placement(instance, component_cache, component)
             try:
                 pin_owner = _pin_owner(instance, sides, pin_components, component)
@@ -606,7 +624,9 @@ def _selected_primitives(edb, selected_layers, selected_nets, skipped, progress=
     """Filter source primitives and count unsupported copper geometry."""
 
     def load():
-        source = edb.layout.primitives
+        from pyedb.viewer.adapters.grpc_primitives import PrimitiveReader
+
+        source = PrimitiveReader(edb).read()
         if priority_layer is None:
             return [(primitive, None, None) for primitive in source]
         records = []
