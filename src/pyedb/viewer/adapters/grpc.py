@@ -443,6 +443,67 @@ def _append_padstack_geometry(
     )
 
 
+def _padstack_pin_owner(instance, sides, cache, component, diagnostics):
+    """Retain padstack geometry when optional component-pin metadata is unavailable."""
+    try:
+        return _pin_owner(instance, sides, cache, component)
+    except Exception as exc:
+        diagnostics.append(f"Padstack {instance.id}: component pin metadata unavailable ({exc}).")
+        return {}
+
+
+def _readonly_components(edb):
+    """Index existing component wrappers for read-only padstack capture."""
+    component_manager = getattr(edb, "components", None)
+    return (
+        {
+            component.core.id: component
+            for component in component_manager.instances.values()
+            if getattr(getattr(component, "core", None), "id", None)
+        }
+        if component_manager is not None and getattr(edb, "isreadonly", False)
+        else None
+    )
+
+
+def _padstack_object_info(instance, object_id, component, net, hole_radius, placement, span, object_info, diagnostics):
+    """Capture optional inspector properties without discarding valid geometry."""
+    if object_info is not None:
+        try:
+            reference = getattr(component, "name", None) if component else None
+            object_info[object_id] = SceneObjectInfo(
+                object_id,
+                "pad" if component or hole_radius == 0 else "via",
+                net,
+                drill_diameter=hole_radius * placement[2] * 2,
+                start_layer=span[0],
+                stop_layer=span[-1],
+                component=reference,
+                pin_name=getattr(instance, "name", None) if component else None,
+            )
+        except Exception as exc:
+            diagnostics.append(f"Padstack {object_id}: inspection properties unavailable ({exc}).")
+
+
+def _record_padstack_geometry(component_geometry, object_id, component, net, placement, pads, polygons):
+    """Accumulate pin envelopes for the component pass, including copper-free pins."""
+    if component_geometry is not None:
+        bounds = union_bounds([item.bounds for item in (*pads, *polygons)])
+        approximate = bounds is None
+        if approximate:
+            x, y = placement[0]((0, 0))
+            bounds = (x, y, x, y)
+        instance_geometry = {"bounds": bounds, "nets": {net} if net else set(), "approximate": approximate}
+        component_geometry.setdefault("instances", {})[object_id] = instance_geometry
+        if component:
+            record = component_geometry.setdefault(
+                component.id, {"bounds": bounds, "nets": set(), "approximate": False}
+            )
+            record["bounds"] = union_bounds([record["bounds"], bounds])
+            record["nets"].update(instance_geometry["nets"])
+            record["approximate"] |= approximate
+
+
 def _padstacks(
     edb,
     selected_layers,
@@ -472,16 +533,7 @@ def _padstacks(
     manager = getattr(edb, "padstacks", None)
     if manager is None:
         return pads, polygons
-    component_manager = getattr(edb, "components", None)
-    component_objects = (
-        {
-            component.core.id: component
-            for component in component_manager.instances.values()
-            if getattr(getattr(component, "core", None), "id", None)
-        }
-        if component_manager is not None and getattr(edb, "isreadonly", False)
-        else None
-    )
+    component_objects = _readonly_components(edb)
     for instance in progress_items(
         lambda: PadInstances(edb, manager.instances.values()), progress, "Reading pads and vias"
     ):
@@ -506,27 +558,11 @@ def _padstacks(
             if component is None:
                 component = instance.component
             placement = _placement(instance, component_cache, component)
-            try:
-                pin_owner = _pin_owner(instance, sides, pin_components, component)
-            except Exception as exc:
-                diagnostics.append(f"Padstack {instance.id}: component pin metadata unavailable ({exc}).")
-                pin_owner = {}
+            pin_owner = _padstack_pin_owner(instance, sides, pin_components, component, diagnostics)
             hole_center = placement[0](hole_offset)
-            if object_info is not None:
-                try:
-                    reference = getattr(component, "name", None) if component else None
-                    object_info[object_id] = SceneObjectInfo(
-                        object_id,
-                        "pad" if component or hole_radius == 0 else "via",
-                        net,
-                        drill_diameter=hole_radius * placement[2] * 2,
-                        start_layer=span[0],
-                        stop_layer=span[-1],
-                        component=reference,
-                        pin_name=getattr(instance, "name", None) if component else None,
-                    )
-                except Exception as exc:
-                    diagnostics.append(f"Padstack {object_id}: inspection properties unavailable ({exc}).")
+            _padstack_object_info(
+                instance, object_id, component, net, hole_radius, placement, span, object_info, diagnostics
+            )
             pad_start, polygon_start = len(pads), len(polygons)
             for layer in layers:
                 try:
@@ -549,21 +585,9 @@ def _padstacks(
                     )
                 except Exception as exc:
                     diagnostics.append(f"Padstack {instance.id}, layer {layer}: {exc}")
-            if component_geometry is not None:
-                bounds = union_bounds([item.bounds for item in (*pads[pad_start:], *polygons[polygon_start:])])
-                approximate = bounds is None
-                if approximate:
-                    x, y = placement[0]((0, 0))
-                    bounds = (x, y, x, y)
-                instance_geometry = {"bounds": bounds, "nets": {net} if net else set(), "approximate": approximate}
-                component_geometry.setdefault("instances", {})[object_id] = instance_geometry
-                if component:
-                    record = component_geometry.setdefault(
-                        component.id, {"bounds": bounds, "nets": set(), "approximate": False}
-                    )
-                    record["bounds"] = union_bounds([record["bounds"], bounds])
-                    record["nets"].update(instance_geometry["nets"])
-                    record["approximate"] |= approximate
+            _record_padstack_geometry(
+                component_geometry, object_id, component, net, placement, pads[pad_start:], polygons[polygon_start:]
+            )
         except Exception as exc:
             diagnostics.append(f"Padstack {instance.id}: {exc}")
     return pads, polygons
@@ -580,7 +604,7 @@ def _components(edb, selected_layers, selected_nets, diagnostics, progress=None,
     net_filter = set(edb.nets.nets) if selected_nets is None else selected_nets
     result = []
     approximate_count = 0
-    for reference, component in progress_items(lambda: manager.instances.items(), progress, "Reading components"):
+    for reference, component in progress_items(manager.instances.items, progress, "Reading components"):
         try:
             if not component.is_enabled:
                 continue

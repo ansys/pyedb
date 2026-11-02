@@ -170,6 +170,16 @@ class SdfCoverage:
             )
             GL.glVertexAttribDivisor(location, 1)
 
+    def _draw_ranges(self, ranges):
+        """Draw resident instance ranges with the current shader and pass state."""
+        GL.glBindVertexArray(self.vao)
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
+        for start, count in ranges:
+            # Attribute offsets select resident ranges on OpenGL 3.3,
+            # without rebuilding packets or requiring base-instance draws.
+            self._attributes(start)
+            GL.glDrawArraysInstanced(GL.GL_TRIANGLE_STRIP, 0, 4, count)
+
     def upload(self, prepared):
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, prepared.instances.nbytes, prepared.instances, GL.GL_STATIC_DRAW)
@@ -227,11 +237,7 @@ class SdfCoverage:
         ):
             GL.glUniform1i(u[name], value)
         GL.glUniform4f(u["layer_color"], 1, 1, 1, 1)
-        GL.glBindVertexArray(self.vao)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
-        for start, count in ranges:
-            self._attributes(start)
-            GL.glDrawArraysInstanced(GL.GL_TRIANGLE_STRIP, 0, 4, count)
+        self._draw_ranges(ranges)
 
     def draw(
         self,
@@ -293,13 +299,7 @@ class SdfCoverage:
             GL.glActiveTexture(GL.GL_TEXTURE1)
             GL.glBindTexture(GL.GL_TEXTURE_1D, self.palette)
             GL.glUniform1i(u["net_palette"], 1)
-            GL.glBindVertexArray(self.vao)
-            GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
-            for start, count in ranges:
-                # Attribute offsets select resident ranges on OpenGL 3.3,
-                # without rebuilding packets or requiring base-instance draws.
-                self._attributes(start)
-                GL.glDrawArraysInstanced(GL.GL_TRIANGLE_STRIP, 0, 4, count)
+            self._draw_ranges(ranges)
             GL.glDisable(GL.GL_SAMPLE_ALPHA_TO_COVERAGE)
             GL.glBindFramebuffer(GL.GL_READ_FRAMEBUFFER, self.fbo)
             GL.glReadBuffer(GL.GL_COLOR_ATTACHMENT0)

@@ -4,6 +4,7 @@
 """Bounded read-only getter prefetch, isolated from the SDK's mutable interceptors."""
 
 from itertools import islice
+import logging
 
 from ansys.api.edb.v1.edb_messages_pb2 import EDBObjMessage
 from ansys.api.edb.v1.padstack_instance_pb2_grpc import PadstackInstanceServiceStub
@@ -11,6 +12,8 @@ from ansys.edb.core import session as core_session
 from ansys.edb.core.primitive.padstack_instance import PadstackInstance as CorePadstackInstance
 from ansys.edb.core.utility.io_manager import get_cache
 import grpc
+
+logger = logging.getLogger(__name__)
 
 
 class PadInstances:
@@ -100,11 +103,11 @@ class PadInstances:
         except Exception as error:
             # Complete every submitted read before closing its channel or the
             # caller-owned database. Unsupported servers retain the old path.
-            for _, _, future in pending:
+            for request, method, future in pending:
                 try:
                     future.result()
-                except Exception:
-                    pass
+                except Exception as cleanup_error:
+                    logger.debug("Padstack %s: draining %s failed (%s).", request.id, method, cleanup_error)
             self.disabled = True
             if isinstance(error, grpc.RpcError) and error.code() in {
                 grpc.StatusCode.UNAVAILABLE,

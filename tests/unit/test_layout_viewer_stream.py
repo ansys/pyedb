@@ -11,6 +11,7 @@ from ansys.api.edb.v1.edb_messages_pb2 import EDBObjCollectionMessage, EDBObjMes
 from ansys.api.edb.v1.polygon_data_pb2 import PolygonDataMessage
 from ansys.edb.core.geometry.polygon_data import PolygonData
 from ansys.edb.core.utility.value import Value as CoreValue
+import grpc
 import pytest
 
 from pyedb.generic.geometry_operators import GeometryOperators
@@ -379,15 +380,34 @@ def test_primitive_reader_keeps_normal_api_for_other_session_modes(monkeypatch, 
     assert reader.read() is source
 
 
-def test_prefetch_failure_falls_back_without_inserting_partial_responses(monkeypatch):
+@pytest.mark.parametrize(
+    "code", [None, grpc.StatusCode.UNIMPLEMENTED, grpc.StatusCode.UNAVAILABLE, grpc.StatusCode.DEADLINE_EXCEEDED]
+)
+def test_prefetch_failure_drains_reads_without_inserting_partial_responses(monkeypatch, caplog, code):
+    class RpcFailure(grpc.RpcError):
+        def code(self):
+            return code
+
     cache = SimpleNamespace(add=Mock())
     monkeypatch.setattr(grpc_prefetch, "get_cache", lambda: cache)
-    failure = Mock(side_effect=ValueError("Unsupported"))
+    error = ValueError("Unsupported") if code is None else RpcFailure("RPC failed")
+    failure = Mock(side_effect=error)
+    completion = Mock(return_value=EDBObjMessage())
     stub = SimpleNamespace(
         GetLayerMap=SimpleNamespace(future=lambda *a, **kw: SimpleNamespace(result=failure)),
-        GetHoleOverrides=SimpleNamespace(future=lambda *a, **kw: SimpleNamespace(result=lambda: EDBObjMessage())),
+        GetHoleOverrides=SimpleNamespace(future=lambda *a, **kw: SimpleNamespace(result=completion)),
     )
     reader = grpc_prefetch.PadInstances(SimpleNamespace(), [])
-    reader._prefetch(stub, [SimpleNamespace(core=SimpleNamespace(id=1))])
+    batch = [SimpleNamespace(core=SimpleNamespace(id=1))]
+    with caplog.at_level("DEBUG", logger=grpc_prefetch.__name__):
+        if code in {grpc.StatusCode.UNAVAILABLE, grpc.StatusCode.DEADLINE_EXCEEDED}:
+            with pytest.raises(RpcFailure) as caught:
+                reader._prefetch(stub, batch)
+            assert caught.value is error
+        else:
+            reader._prefetch(stub, batch)
     assert reader.disabled
+    assert failure.call_count == 2
+    completion.assert_called_once_with()
     cache.add.assert_not_called()
+    assert "Padstack 1: draining GetLayerMap failed" in caplog.text

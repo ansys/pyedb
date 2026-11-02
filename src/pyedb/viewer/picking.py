@@ -8,7 +8,7 @@ import math
 
 import numpy as np
 
-from pyedb.viewer.scene import SceneJoin, SceneObjectInfo, ScenePad, ScenePolygon, SceneTrace, union_bounds
+from pyedb.viewer.scene import SceneJoin, SceneObjectInfo, ScenePad, SceneTrace, union_bounds
 
 
 def _segment_distance(point, start, end):
@@ -47,6 +47,64 @@ def _pad_distance(point, pad):
     corner = 0 if pad.shape == "bullet" and x < 0 else pad.corner_radius
     x, y = abs(x) - pad.size[0] / 2 + corner, abs(y) - pad.size[1] / 2 + corner
     return math.hypot(max(x, 0), max(y, 0)) + min(max(x, y), 0) - corner
+
+
+def _straight_trace_distance(point, item, radius):
+    dx, dy = item.end[0] - item.start[0], item.end[1] - item.start[1]
+    length = math.hypot(dx, dy)
+    tx, ty = (dx / length, dy / length) if length else (1, 0)
+    px, py = point[0] - item.start[0], point[1] - item.start[1]
+    along, across = px * tx + py * ty, -px * ty + py * tx
+    cap = item.end_caps[0] if along < 0 else item.end_caps[1]
+    if along < 0 or along > length:
+        end = -along if along < 0 else along - length
+        if cap == "round":
+            return math.hypot(end, across) - radius
+        return max(abs(across) - radius, end - (radius if cap == "extended" else 0))
+    return abs(across) - radius
+
+
+def _arc_cap_distance(point, endpoint, tangent, cap, radius, index):
+    px, py = point[0] - endpoint[0], point[1] - endpoint[1]
+    if cap == "round":
+        return math.hypot(px, py) - radius
+    along = (px * tangent[0] + py * tangent[1]) * (-1 if index == 0 else 1)
+    extension = radius if cap == "extended" else 0
+    qx, qy = (
+        abs(along - extension / 2) - extension / 2,
+        abs(-px * tangent[1] + py * tangent[0]) - radius,
+    )
+    return math.hypot(max(qx, 0), max(qy, 0)) + min(max(qx, qy), 0)
+
+
+def _arc_trace_distance(point, item, radius):
+    angle = math.atan2(point[1] - item.center[1], point[0] - item.center[0])
+    start = math.atan2(item.start[1] - item.center[1], item.start[0] - item.center[0])
+    direction = 1 if item.sweep > 0 else -1
+    sweep = (angle - start) * direction % math.tau
+    radial = abs(math.dist(point, item.center) - math.dist(item.start, item.center)) - radius
+    if abs(item.sweep) >= math.tau - 1e-12:
+        return radial
+    tangents = []
+    for endpoint in (item.start, item.end):
+        rx, ry = endpoint[0] - item.center[0], endpoint[1] - item.center[1]
+        length = math.hypot(rx, ry)
+        tangents.append((-ry / length * direction, rx / length * direction))
+    caps = tuple(zip((item.start, item.end), tangents, item.end_caps))
+    if sweep <= abs(item.sweep) + 1e-12:
+        window = min(abs(item.sweep) / 2, math.pi / 2)
+        for index, (endpoint, tangent, cap) in enumerate(caps):
+            in_window = sweep <= window if index == 0 else sweep >= abs(item.sweep) - window
+            if cap != "round" and in_window:
+                along = ((point[0] - endpoint[0]) * tangent[0] + (point[1] - endpoint[1]) * tangent[1]) * (
+                    -1 if index == 0 else 1
+                )
+                radial = max(radial, along - (radius if cap == "extended" else 0))
+        return radial
+    return min(
+        _arc_cap_distance(point, endpoint, tangent, cap, radius, index)
+        for index, (endpoint, tangent, cap) in enumerate(caps)
+    )
 
 
 @dataclass(frozen=True)
@@ -186,54 +244,8 @@ class PickIndex:
         if isinstance(item, SceneTrace):
             radius = max(item.width / 2, min_radius)
             if item.center is None:
-                dx, dy = item.end[0] - item.start[0], item.end[1] - item.start[1]
-                length = math.hypot(dx, dy)
-                tx, ty = (dx / length, dy / length) if length else (1, 0)
-                px, py = point[0] - item.start[0], point[1] - item.start[1]
-                along, across = px * tx + py * ty, -px * ty + py * tx
-                cap = item.end_caps[0] if along < 0 else item.end_caps[1]
-                if along < 0 or along > length:
-                    end = -along if along < 0 else along - length
-                    if cap == "round":
-                        return math.hypot(end, across) - radius
-                    return max(abs(across) - radius, end - (radius if cap == "extended" else 0))
-                return abs(across) - radius
-            angle = math.atan2(point[1] - item.center[1], point[0] - item.center[0])
-            start = math.atan2(item.start[1] - item.center[1], item.start[0] - item.center[0])
-            direction = 1 if item.sweep > 0 else -1
-            sweep = (angle - start) * direction % math.tau
-            radial = abs(math.dist(point, item.center) - math.dist(item.start, item.center)) - radius
-            if abs(item.sweep) >= math.tau - 1e-12:
-                return radial
-            tangents = []
-            for endpoint in (item.start, item.end):
-                rx, ry = endpoint[0] - item.center[0], endpoint[1] - item.center[1]
-                length = math.hypot(rx, ry)
-                tangents.append((-ry / length * direction, rx / length * direction))
-            if sweep <= abs(item.sweep) + 1e-12:
-                window = min(abs(item.sweep) / 2, math.pi / 2)
-                for index, (endpoint, tangent, cap) in enumerate(zip((item.start, item.end), tangents, item.end_caps)):
-                    in_window = sweep <= window if index == 0 else sweep >= abs(item.sweep) - window
-                    if cap != "round" and in_window:
-                        along = ((point[0] - endpoint[0]) * tangent[0] + (point[1] - endpoint[1]) * tangent[1]) * (
-                            -1 if index == 0 else 1
-                        )
-                        radial = max(radial, along - (radius if cap == "extended" else 0))
-                return radial
-            distances = []
-            for index, (endpoint, tangent, cap) in enumerate(zip((item.start, item.end), tangents, item.end_caps)):
-                px, py = point[0] - endpoint[0], point[1] - endpoint[1]
-                if cap == "round":
-                    distances.append(math.hypot(px, py) - radius)
-                else:
-                    along = (px * tangent[0] + py * tangent[1]) * (-1 if index == 0 else 1)
-                    extension = radius if cap == "extended" else 0
-                    qx, qy = (
-                        abs(along - extension / 2) - extension / 2,
-                        abs(-px * tangent[1] + py * tangent[0]) - radius,
-                    )
-                    distances.append(math.hypot(max(qx, 0), max(qy, 0)) + min(max(qx, qy), 0))
-            return min(distances)
+                return _straight_trace_distance(point, item, radius)
+            return _arc_trace_distance(point, item, radius)
         if isinstance(item, SceneJoin):
             inside, distance = _ring_test(point, item.points)
             return -distance if inside else distance

@@ -90,7 +90,7 @@ class _Prepare(QRunnable):
                         job.result()
                 self._preview_executor = None
                 progress("Rendering layout", 0, 0)
-                self.scene.bounds  # Cache derived bounds off the GUI thread.
+                _ = self.scene.bounds  # Cache derived bounds off the GUI thread.
                 self.signals.scene_ready.emit(self.scene)
             mesh = (self.preview_scene, self.preview_prepared) if self.preview_prepared is not None else None
             prepared = prepare_scene(self.scene, progress=progress, polygon_mesh=mesh)
@@ -104,7 +104,7 @@ class _Prepare(QRunnable):
         self._preview_jobs.append(self._preview_executor.submit(self._preview, scene))
 
     def _preview(self, scene):
-        scene.bounds
+        _ = scene.bounds  # Cache derived bounds off the GUI thread.
         previous = (self.preview_scene, self.preview_prepared) if self.preview_prepared is not None else None
         prepared = prepare_scene(scene, polygon_mesh=previous)
         self.preview_scene = scene
