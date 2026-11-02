@@ -309,75 +309,10 @@ def test_supported_local_server_keeps_prefetch_transport(monkeypatch):
     create.assert_called_once_with(transport_mode="insecure", host="localhost", port=50055)
 
 
-def test_primitive_prefetch_discards_only_known_unused_metadata():
-    message = prefetched(1, square())
-    message.cache.cache.add(service_name="ansys.api.edb.v1.PrimitiveService", rpc_method_name="GetHfssProp")
-    message.cache.cache.add(service_name="ansys.api.edb.v1.ConnectableService", rpc_method_name="GetComponent")
-    message.cache.cache.add(service_name="ansys.api.edb.v1.FutureService", rpc_method_name="GetHfssProp")
-    message.cache.cache.add(service_name="ansys.api.edb.v1.PathService", rpc_method_name="GetData")
-    assert grpc_primitives._discard_unused_prefetch(message) == 2
-    assert [(item.service_name, item.rpc_method_name) for item in message.cache.cache] == [
-        ("ansys.api.edb.v1.PolygonService", "GetPolygonData"),
-        ("ansys.api.edb.v1.FutureService", "GetHfssProp"),
-        ("ansys.api.edb.v1.PathService", "GetData"),
-    ]
-    assert grpc_stream.prefetched_polygon(message) == square()
-
-
-@pytest.mark.parametrize("fail", [False, True])
-def test_primitive_reader_uses_sdk_factory_and_drains_stream_on_failure(monkeypatch, fail):
-    consumed = []
-    core = object.__new__(grpc_primitives.CoreLayout)
-    monkeypatch.setattr(grpc_primitives.CoreLayout, "msg", property(lambda self: EDBObjMessage(id=99)))
-
-    def stream(request):
-        assert request.target.id == 99
-        assert request.type == grpc_primitives.LayoutObjType.PRIMITIVE.value
-        for number in range(3):
-            consumed.append(number)
-            message = EDBObjMessage(id=number + 1)
-            message.cache.cache.add(service_name="ansys.api.edb.v1.PrimitiveService", rpc_method_name="GetOwner")
-            yield EDBObjCollectionMessage(items=[message])
-
-    def create(message, kind):
-        assert not message.cache.cache
-        if fail:
-            raise ValueError("Invalid primitive")
-        return message.id
-
-    monkeypatch.setattr(grpc_primitives.core_session.MOD, "current_session", SimpleNamespace(shared_memory=False))
-    monkeypatch.setattr(grpc_primitives, "get_cache", lambda: object())
-    monkeypatch.setattr(
-        grpc_primitives,
-        "StubAccessor",
-        lambda kind: SimpleNamespace(__get__=lambda: SimpleNamespace(StreamItems=stream)),
-    )
-    monkeypatch.setattr(grpc_primitives, "create_lyt_obj", create)
-    layout = SimpleNamespace(core=core, _wrap_primitive=lambda value: None if value == 2 else value)
-    reader = grpc_primitives.PrimitiveReader(SimpleNamespace(isreadonly=True, layout=layout))
-    if fail:
-        with pytest.raises(ValueError, match="Invalid primitive"):
-            reader.read()
-    else:
-        assert reader.read() == [1, 3]
-        assert reader.discarded == 3
-    assert consumed == [0, 1, 2]
-
-
-@pytest.mark.parametrize(
-    "writable, shared_memory, caching", [(True, False, True), (False, True, True), (False, False, False)]
-)
-def test_primitive_reader_keeps_normal_api_for_other_session_modes(monkeypatch, writable, shared_memory, caching):
-    core = object.__new__(grpc_primitives.CoreLayout)
-    source = [object()]
-    monkeypatch.setattr(
-        grpc_primitives.core_session.MOD, "current_session", SimpleNamespace(shared_memory=shared_memory)
-    )
-    monkeypatch.setattr(grpc_primitives, "get_cache", lambda: object() if caching else None)
-    reader = grpc_primitives.PrimitiveReader(
-        SimpleNamespace(isreadonly=not writable, layout=SimpleNamespace(core=core, primitives=source))
-    )
-    assert reader.read() is source
+def test_primitive_reader_returns_core_layout_primitives():
+    primitives = [object(), object()]
+    layout = SimpleNamespace(core=SimpleNamespace(primitives=primitives))
+    assert grpc_primitives.PrimitiveReader(SimpleNamespace(layout=layout)).read() is primitives
 
 
 @pytest.mark.parametrize(

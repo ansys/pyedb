@@ -141,15 +141,38 @@ def _primitive(object_id=1, layer="TOP", net="GND", ring=None, **kwargs):
     return SimpleNamespace(**values)
 
 
+class _Layout:
+    """Fake pyedb layout whose core primitives are already wrapped."""
+
+    def __init__(self, primitives):
+        self.primitives = primitives
+
+    @property
+    def core(self):
+        return SimpleNamespace(primitives=self.primitives)
+
+    @staticmethod
+    def _wrap_primitive(primitive):
+        return primitive
+
+
 def _edb(primitives):
     layers = {"TOP": SimpleNamespace(color=(255, 128, 0)), "BOTTOM": SimpleNamespace(color=(0, 128, 255))}
     return SimpleNamespace(
         grpc=True,
         stackup=SimpleNamespace(layers=layers, signal_layers=layers),
-        layout=SimpleNamespace(primitives=primitives),
+        layout=_Layout(primitives),
         nets=SimpleNamespace(nets={"GND": None}),
         active_cell=SimpleNamespace(name="Board"),
     )
+
+
+def test_grpc_adapter_wraps_core_primitives_and_skips_unsupported():
+    primitive = _primitive()
+    edb = _edb([primitive, "unsupported"])
+    edb.layout._wrap_primitive = lambda value: None if value == "unsupported" else value
+    scene = scene_from_edb(edb, layers="TOP", arc_segments=20)
+    assert [polygon.object_id for polygon in scene.polygons] == [primitive.id]
 
 
 def test_grpc_adapter_converts_units_owns_holes_and_honors_filters():

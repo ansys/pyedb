@@ -674,7 +674,7 @@ def _selected_primitives(edb, selected_layers, selected_nets, skipped, progress=
         records = []
         for primitive in source:
             void = primitive.is_void
-            records.append((primitive, None if void else primitive.layer_name, void))
+            records.append((primitive, None if void else primitive.layer.name, void))
         records.sort(key=lambda item: item[1] != priority_layer)
         return records
 
@@ -684,13 +684,13 @@ def _selected_primitives(edb, selected_layers, selected_nets, skipped, progress=
         if void:
             continue
         if layer_name is None:
-            layer_name = primitive.layer_name
+            layer_name = primitive.layer.name
         if layer_name not in selected_layers:
             continue
-        net_name = primitive.net_name
+        net_name = primitive.net.name
         if selected_nets is not None and net_name not in selected_nets:
             continue
-        primitive_type = primitive.type
+        primitive_type = primitive.primitive_type.name.lower()
         if primitive_type not in {"polygon", "rectangle", "circle", "path"}:
             skipped[primitive_type] += 1
             continue
