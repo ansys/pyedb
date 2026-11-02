@@ -1,9 +1,10 @@
 Third-party shader notices
 ==========================
 
-The selection dot pattern and highlight palette in selection.frag are adapted
+The selection dot pattern in selection.frag is adapted
 from Pomelo (https://github.com/HaiwenZhang/Pomelo), with a new OpenGL mask-based
-implementation for PyEDB. Its MIT license follows:
+implementation for PyEDB. PyEDB uses its own high-contrast highlight palette and
+dark keyline for a white canvas. The upstream MIT license follows:
 
 MIT License
 

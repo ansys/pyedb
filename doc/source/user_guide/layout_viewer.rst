@@ -72,9 +72,11 @@ it. Use the Pick button or ``P`` on the canvas to switch between picking and
 pan-only navigation. A movement of more than four logical pixels starts a drag,
 so clicking does not move the board. Middle/right drag always pans.
 
-Hover uses a mint outline. Selected traces and zones use a white outline and a
-screen-space dot pattern; pads and vias use a white outline, following Pomelo's
-interaction style. Only visible layers and the active network filter participate
+Hover uses an electric-blue outline (``#0057FF``). Selection uses vivid raspberry
+(``#FF006E``), with a screen-space dot pattern for traces and zones. Both are
+reserved colors outside the network CSS4 palette. A dark keyline separates the
+highlights from similarly colored copper and the white background. The network
+palette remains unchanged. Only visible layers and the active network filter participate
 in picking. Filled zone holes are excluded. Click empty space, press ``Esc`` or
 use the card's close button to clear selection.
 

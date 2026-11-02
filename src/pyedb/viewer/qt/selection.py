@@ -1,13 +1,14 @@
 # Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 
-"""Pomelo-style white selection dots and mint hover over resident geometry."""
+"""Vivid interaction colors and screen-space patterns over resident geometry."""
 
 from pathlib import Path
 
 from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
 
+from pyedb.viewer.colors import HIGHLIGHT_KEYLINE_COLOR, HOVER_COLOR, SELECTION_COLOR
 from pyedb.viewer.qt.coverage import _shader_source
 from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
@@ -26,7 +27,15 @@ class SelectionOverlay:
         self.vao = int(GL.glGenVertexArrays(1))
         self.uniforms = {
             name: GL.glGetUniformLocation(self.program, name)
-            for name in ("mask_texture", "viewport", "pixel_ratio", "hovering", "patterned")
+            for name in (
+                "mask_texture",
+                "viewport",
+                "pixel_ratio",
+                "hovering",
+                "patterned",
+                "highlight_color",
+                "keyline_color",
+            )
         }
 
     def draw(self, renderer, camera, pixel_ratio, polygons, ranges, *, hovering, patterned):
@@ -73,6 +82,8 @@ class SelectionOverlay:
             GL.glUniform1f(self.uniforms["pixel_ratio"], pixel_ratio)
             GL.glUniform1i(self.uniforms["hovering"], hovering)
             GL.glUniform1i(self.uniforms["patterned"], patterned)
+            GL.glUniform3f(self.uniforms["highlight_color"], *(HOVER_COLOR if hovering else SELECTION_COLOR))
+            GL.glUniform3f(self.uniforms["keyline_color"], *HIGHLIGHT_KEYLINE_COLOR)
             GL.glActiveTexture(GL.GL_TEXTURE0)
             GL.glBindTexture(GL.GL_TEXTURE_2D, sdf.texture)
             GL.glUniform1i(self.uniforms["mask_texture"], 0)

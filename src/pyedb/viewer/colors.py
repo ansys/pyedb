@@ -30,6 +30,11 @@ DRILL_COLOR = (0.6, 0.6, 0.6, 1.0)
 # Component envelope color sampled from the supplied reference (#b87333).
 COMPONENT_OUTLINE_COLOR = (184 / 255, 115 / 255, 51 / 255)
 COMPONENT_COLORS = {"top": COMPONENT_OUTLINE_COLOR, "bottom": COMPONENT_OUTLINE_COLOR}
+# Reserved interaction colors, outside CSS4_COLORS. The dark keyline makes
+# these states distinguishable even over a visually similar network material.
+HOVER_COLOR = (0 / 255, 87 / 255, 255 / 255)  # #0057FF
+SELECTION_COLOR = (255 / 255, 0 / 255, 110 / 255)  # #FF006E
+HIGHLIGHT_KEYLINE_COLOR = (17 / 255, 24 / 255, 39 / 255)  # #111827
 
 
 def net_color(net_id):

@@ -60,8 +60,11 @@ def test_click_highlight_properties_clear_and_no_geometry_uploads():
         assert view.inspector.values["Length"] == "14.0000 mm"
         selected = _pixels(view)
         changed = np.any(original[:, :, :3] != selected[:, :, :3], axis=2)
-        white = np.all(selected[:, :, :3] >= 245, axis=2)
-        assert np.count_nonzero(changed & white) > 15
+        from pyedb.viewer.colors import SELECTION_COLOR
+
+        selected_color = np.asarray(SELECTION_COLOR) * 255
+        colored = np.max(np.abs(selected[:, :, :3].astype(float) - selected_color), axis=2) < 28
+        assert np.count_nonzero(changed & colored) > 15
         assert view.inspector.geometry().right() < view.width()
         assert view.inspector.geometry().bottom() < view.height()
 
@@ -100,7 +103,7 @@ def test_click_highlight_properties_clear_and_no_geometry_uploads():
         app.processEvents()
 
 
-def test_mint_hover_and_white_selection_use_resident_geometry():
+def test_electric_hover_and_raspberry_selection_use_resident_geometry():
     from PySide6.QtTest import QTest
     from PySide6.QtWidgets import QApplication
 
@@ -122,8 +125,11 @@ def test_mint_hover_and_white_selection_use_resident_geometry():
         view.hover = view._pick_index.pick((28, -14), view.camera.scale, view.visible_layers)
         hover = _pixels(view)
         changed = np.any(original[:, :, :3] != hover[:, :, :3], axis=2)
-        mint = (hover[:, :, 0] < 220) & (hover[:, :, 1] > 220) & (hover[:, :, 2] > 170)
-        assert np.count_nonzero(changed & mint) > 5
+        from pyedb.viewer.colors import HOVER_COLOR
+
+        hover_color = np.asarray(HOVER_COLOR) * 255
+        colored = np.max(np.abs(hover[:, :, :3].astype(float) - hover_color), axis=2) < 28
+        assert np.count_nonzero(changed & colored) > 5
         view.hover = None
         view.visible_layers = {"BOTTOM"}
         x, y = view.camera.world_to_screen(28, -14)

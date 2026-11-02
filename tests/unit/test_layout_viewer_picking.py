@@ -14,6 +14,17 @@ from pyedb.viewer.picking import PickIndex, inspector_rows
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
 
 
+def test_interaction_colors_are_reserved_and_visible_on_white():
+    from pyedb.viewer.colors import HIGHLIGHT_KEYLINE_COLOR, HOVER_COLOR, NET_COLORS, SELECTION_COLOR
+
+    assert HOVER_COLOR != SELECTION_COLOR
+    for color in (HOVER_COLOR, SELECTION_COLOR, HIGHLIGHT_KEYLINE_COLOR):
+        assert color not in NET_COLORS
+        linear = [v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4 for v in color]
+        luminance = sum(v * weight for v, weight in zip(linear, (0.2126, 0.7152, 0.0722)))
+        assert 1.05 / (luminance + 0.05) >= 3
+
+
 def rectangle(x0, y0, x1, y1):
     return ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
 
