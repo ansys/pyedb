@@ -21,7 +21,6 @@ from ansys.edb.core.utility.value import Value as CoreValue
 import grpc
 
 from pyedb.generic.geometry_operators import GeometryOperators
-from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import value_as_float
 from pyedb.misc.utilities import compute_arc_points
 
@@ -32,18 +31,13 @@ def _number(message):
     return value_as_float(CoreValue(message))
 
 
-def contour_from_message(message, arc_segments, chord_error=None):
-    """Decode only numerical coordinates, preserving winding and arc semantics."""
-    if message.coords:
-        if len(message.coords) % 2:
-            raise ValueError("Boundary X and Y arrays have different lengths.")
-        iterator = iter(message.coords)
-        points = [(float(x), float(y), None) for x, y in zip(iterator, iterator)]
-    else:
-        points = []
-        for point in message.points:
-            x, y = _number(point.x), _number(point.y)
-            points.append((x, y, x if not point.y.text and y == sys.float_info.max else None))
+def _value(value):
+    if isinstance(value, (int, float)):
+        return float(value)
+    return value_as_float(value)
+
+
+def _tessellate(points, arc_segments, chord_error):
     x, y = [], []
     error = None if chord_error is None else chord_error / 1000
     for index, (px, py, height) in enumerate(points):
@@ -62,6 +56,34 @@ def contour_from_message(message, arc_segments, chord_error=None):
         raise ValueError("No polygon boundary available.")
     x, y = GeometryOperators.orient_polygon(x, y, clockwise=True)
     return tuple((px * 1000, py * 1000) for px, py in zip(x, y))
+
+
+def contour_from_message(message, arc_segments, chord_error=None):
+    """Decode only numerical coordinates, preserving winding and arc semantics."""
+    if message.coords:
+        if len(message.coords) % 2:
+            raise ValueError("Boundary X and Y arrays have different lengths.")
+        iterator = iter(message.coords)
+        points = [
+            (float(x), float(y), float(x) if y == sys.float_info.max else None) for x, y in zip(iterator, iterator)
+        ]
+    else:
+        points = []
+        for point in message.points:
+            x, y = _number(point.x), _number(point.y)
+            points.append((x, y, x if not point.y.text and y == sys.float_info.max else None))
+    return _tessellate(points, arc_segments, chord_error)
+
+
+def contour_from_points(points, arc_segments, chord_error=None):
+    """Tessellate core ``PointData`` items, including arc-height markers."""
+    decoded = []
+    for point in points:
+        if point.is_arc:
+            decoded.append((None, None, _value(point.arc_height)))
+        else:
+            decoded.append((_value(point.x), _value(point.y), None))
+    return _tessellate(decoded, arc_segments, chord_error)
 
 
 def prefetched_polygon(message):
@@ -200,13 +222,12 @@ class VoidReader:
         self.prefetched = self.cache_hits = self.fallbacks = 0
 
     def __call__(self, primitive):
-        if not isinstance(getattr(primitive, "core", None), CorePrimitive) or get_cache() is None:
+        if not isinstance(primitive, CorePrimitive) or get_cache() is None:
             return (self.contour(item, self.arc_segments, self.chord_error) for item in primitive.voids)
         return self._stream(primitive)
 
     def _fallback(self, primitive, message):
-        core = CorePrimitive(message).cast()
-        return self.contour(Primitive(primitive._pedb, core), self.arc_segments, self.chord_error)
+        return self.contour(CorePrimitive(message).cast(), self.arc_segments, self.chord_error)
 
     def _ring(self, primitive, message):
         if message.id in self.rings:
@@ -231,7 +252,7 @@ class VoidReader:
 
     def _stream(self, primitive):
         stub = StubAccessor(StubType.primitive).__get__()
-        stream = stub.StreamVoids(primitive.core.msg)
+        stream = stub.StreamVoids(primitive.msg)
         try:
             for batch in stream:
                 for message in batch.items:

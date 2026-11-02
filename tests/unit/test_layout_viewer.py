@@ -125,24 +125,58 @@ def test_concave_exterior_and_holes_keep_independent_coverage():
     assert batch.net == "GND"
 
 
-def _primitive(object_id=1, layer="TOP", net="GND", ring=None, **kwargs):
-    points = rectangle(0, 0, 0.01, 0.02) if ring is None else ring
+class _PolygonData:
+    """Core ``PolygonData`` fake that counts boundary reads."""
+
+    def __init__(self, ring, error=None):
+        self.ring, self.error, self.reads = ring, error, 0
+
+    @property
+    def points(self):
+        self.reads += 1
+        if self.error is not None:
+            raise self.error
+        return [SimpleNamespace(is_arc=False, x=x, y=y) for x, y in self.ring]
+
+
+def _enum(name):
+    return SimpleNamespace(name=name.upper())
+
+
+def _primitive(
+    object_id=1,
+    layer="TOP",
+    net="GND",
+    ring=None,
+    *,
+    type="polygon",
+    contour_error=None,
+    end_cap1=None,
+    end_cap2=None,
+    corner_style=None,
+    **kwargs,
+):
+    """Fake an ``ansys.edb.core`` primitive as returned by ``layout.core.primitives``."""
     values = dict(
         id=object_id,
-        layer_name=layer,
-        net_name=net,
-        type="polygon",
+        layer=SimpleNamespace(name=layer),
+        net=SimpleNamespace(name=net, is_null=net is None),
+        primitive_type=_enum(type),
         is_void=False,
         is_negative=False,
         voids=[],
-        points=Mock(return_value=tuple(zip(*points))),
+        polygon_data=_PolygonData(rectangle(0, 0, 0.01, 0.02) if ring is None else ring, contour_error),
     )
+    if end_cap1 is not None:
+        values["get_end_cap_style"] = lambda: (_enum(end_cap1), _enum(end_cap2))
+    if corner_style is not None:
+        values["corner_style"] = _enum(corner_style)
     values.update(kwargs)
     return SimpleNamespace(**values)
 
 
 class _Layout:
-    """Fake pyedb layout whose core primitives are already wrapped."""
+    """Fake pyedb layout exposing core primitives."""
 
     def __init__(self, primitives):
         self.primitives = primitives
@@ -150,10 +184,6 @@ class _Layout:
     @property
     def core(self):
         return SimpleNamespace(primitives=self.primitives)
-
-    @staticmethod
-    def _wrap_primitive(primitive):
-        return primitive
 
 
 def _edb(primitives):
@@ -167,11 +197,9 @@ def _edb(primitives):
     )
 
 
-def test_grpc_adapter_wraps_core_primitives_and_skips_unsupported():
+def test_grpc_adapter_reads_core_primitives_and_skips_unassigned_nets():
     primitive = _primitive()
-    edb = _edb([primitive, "unsupported"])
-    edb.layout._wrap_primitive = lambda value: None if value == "unsupported" else value
-    scene = scene_from_edb(edb, layers="TOP", arc_segments=20)
+    scene = scene_from_edb(_edb([primitive, _primitive(2, net=None)]), layers="TOP", arc_segments=20)
     assert [polygon.object_id for polygon in scene.polygons] == [primitive.id]
 
 
@@ -183,16 +211,16 @@ def test_grpc_adapter_converts_units_owns_holes_and_honors_filters():
     assert [layer.name for layer in scene.layers] == ["TOP"]
     assert len(scene.polygons) == 1
     assert scene.polygons[0].bounds == (0, 0, 10, 20)
-    assert scene.polygons[0].holes == (rectangle(1, 2, 3, 4),)
-    primitive.points.assert_called_once_with(arc_segments=20)
-    hole.points.assert_called_once_with(arc_segments=20)
-    primitive.net_name = "CHANGED"
+    assert scene.polygons[0].holes == (rectangle(1, 2, 3, 4)[::-1],)
+    assert primitive.polygon_data.reads == 1
+    assert hole.polygon_data.reads == 1
+    primitive.net.name = "CHANGED"
     assert scene.polygons[0].net == "GND"
     assert not scene_from_edb(edb, layers=[]).polygons
 
 
 def test_grpc_adapter_records_failed_geometry_and_rejects_bad_inputs():
-    edb = _edb([_primitive(points=Mock(side_effect=ValueError("broken contour"))), _primitive(2, type="text")])
+    edb = _edb([_primitive(contour_error=ValueError("broken contour")), _primitive(2, type="text")])
     scene = scene_from_edb(edb)
     assert not scene.polygons
     assert any("Primitive 1: broken contour" in message for message in scene.diagnostics)
@@ -250,7 +278,7 @@ def test_preparation_progress_preserves_gpu_buffers_and_completes_each_stage():
 
 
 def test_adapter_preserves_path_fallback_circle_coverage_and_skip_diagnostics():
-    path = _primitive(type="path", end_cap1="unsupported", end_cap2="round", core=SimpleNamespace(center_line=None))
+    path = _primitive(type="path", end_cap1="unsupported", end_cap2="round", center_line=None)
     circle = _primitive(2, type="circle", get_parameters=lambda: (0.003, 0.004, 0.001))
     holed_circle = _primitive(3, type="circle", voids=[_primitive(ring=rectangle(0.001, 0.001, 0.002, 0.002))])
     scene = scene_from_edb(
@@ -270,11 +298,11 @@ def test_adapter_preserves_path_fallback_circle_coverage_and_skip_diagnostics():
     )
     assert not scene.traces and not scene.joins
     assert [polygon.category for polygon in scene.polygons] == ["trace", "pad"]
-    assert scene.polygons[0].exterior == rectangle(0, 0, 10, 20)
-    assert scene.polygons[1].holes == (rectangle(1, 1, 2, 2),)
+    assert scene.polygons[0].exterior == rectangle(0, 0, 10, 20)[::-1]
+    assert scene.polygons[1].holes == (rectangle(1, 1, 2, 2)[::-1],)
     assert len(scene.pads) == 1
     assert scene.pads[0].center == (3, 4) and scene.pads[0].size == (2, 2)
-    circle.points.assert_not_called()
+    assert circle.polygon_data.reads == 0
     assert scene.diagnostics[0].startswith("Path 1: using source boundary coverage")
     assert scene.diagnostics[1:3] == ("Skipped 1 negative primitive object(s).", "Skipped 2 text object(s).")
 
@@ -355,13 +383,11 @@ def test_adapter_retains_analytic_paths_caps_and_sharp_joins():
         end_cap1="flat",
         end_cap2="extended",
         corner_style="sharp",
-        core=SimpleNamespace(
-            center_line=SimpleNamespace(
-                arc_data=[
-                    _arc((0, 0), (0.005, 0)),
-                    _arc((0.005, 0), (0.005, 0.005)),
-                ]
-            )
+        center_line=SimpleNamespace(
+            arc_data=[
+                _arc((0, 0), (0.005, 0)),
+                _arc((0.005, 0), (0.005, 0.005)),
+            ]
         ),
     )
     curved = _primitive(
@@ -371,12 +397,10 @@ def test_adapter_retains_analytic_paths_caps_and_sharp_joins():
         end_cap1="round",
         end_cap2="round",
         corner_style="round",
-        core=SimpleNamespace(
-            center_line=SimpleNamespace(
-                arc_data=[
-                    _arc((0.005, 0), (0, 0.005), (0, 0)),
-                ]
-            )
+        center_line=SimpleNamespace(
+            arc_data=[
+                _arc((0.005, 0), (0, 0.005), (0, 0)),
+            ]
         ),
     )
     scene = scene_from_edb(_edb([path, curved]))
@@ -390,12 +414,12 @@ def test_adapter_retains_analytic_paths_caps_and_sharp_joins():
     assert scene.traces[2].center == (0, 0)
     assert scene.traces[2].sweep == pytest.approx(math.pi / 2)
     assert any((5.5, -0.5) in join.points for join in scene.joins)
-    path.points.assert_not_called()
-    curved.points.assert_not_called()
+    assert path.polygon_data.reads == 0
+    assert curved.polygon_data.reads == 0
 
 
 def test_path_segments_reuse_source_metadata():
-    reads = {"layer_name": 0, "net_name": 0}
+    reads = {"layer": 0, "net": 0}
 
     class CountedPath(SimpleNamespace):
         def __getattribute__(self, name):
@@ -411,17 +435,14 @@ def test_path_segments_reuse_source_metadata():
                 end_cap1="round",
                 end_cap2="round",
                 corner_style="round",
-                core=SimpleNamespace(
-                    center_line=SimpleNamespace(
-                        arc_data=[_arc((i * 0.001, 0), ((i + 1) * 0.001, 0)) for i in range(20)]
-                    )
-                ),
+                center_line=SimpleNamespace(arc_data=[_arc((i * 0.001, 0), ((i + 1) * 0.001, 0)) for i in range(20)]),
             )
         )
     )
     scene = scene_from_edb(_edb([path]))
     assert len(scene.traces) == 20
-    assert reads == {"layer_name": 1, "net_name": 1}
+    # One net read for the unassigned-net filter and one for its name, regardless of segment count.
+    assert reads == {"layer": 1, "net": 2}
 
 
 @pytest.mark.parametrize("height", [0.0002, -0.0002])
@@ -721,7 +742,7 @@ def test_fast_path_contours_avoid_analytic_remote_properties():
     assert not scene.traces
     assert len(scene.polygons) == 1
     assert scene.polygons[0].category == "trace"
-    path.points.assert_called_once_with(arc_segments=8, chord_error=0.000002)
+    assert path.polygon_data.reads == 1
 
 
 @pytest.mark.parametrize("radius", [0.02, 0.2, 2.0, 20.0])
@@ -857,7 +878,7 @@ def test_primitives_without_voids_do_not_enumerate_an_empty_remote_collection():
             end_cap1="round",
             end_cap2="round",
             corner_style="round",
-            core=SimpleNamespace(center_line=SimpleNamespace(arc_data=[_arc((0, 0), (0.001, 0))])),
+            center_line=SimpleNamespace(arc_data=[_arc((0, 0), (0.001, 0))]),
         )
     )
     del values["voids"]

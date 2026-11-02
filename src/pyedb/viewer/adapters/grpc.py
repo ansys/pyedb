@@ -76,21 +76,12 @@ def _component_sides(edb, diagnostics):
 
 
 def _contour(primitive, arc_segments, chord_error=None):
-    from pyedb.viewer.adapters.grpc_stream import contour_from_message, primitive_polygon_message
+    from pyedb.viewer.adapters.grpc_stream import contour_from_message, contour_from_points, primitive_polygon_message
 
-    message = primitive_polygon_message(getattr(primitive, "core", None))
+    message = primitive_polygon_message(primitive)
     if message is not None:
         return contour_from_message(message, arc_segments, chord_error)
-    if chord_error is None:
-        coordinates = primitive.points(arc_segments=arc_segments)
-    else:
-        coordinates = primitive.points(arc_segments=arc_segments, chord_error=chord_error / 1000)
-    if coordinates is None:
-        raise ValueError("No polygon boundary available.")
-    x, y = coordinates
-    if len(x) != len(y):
-        raise ValueError("Boundary X and Y arrays have different lengths.")
-    return tuple((float(px) * 1000.0, float(py) * 1000.0) for px, py in zip(x, y))
+    return contour_from_points(primitive.polygon_data.points, arc_segments, chord_error)
 
 
 def _number(value):
@@ -117,19 +108,14 @@ def _tangent(trace, end=False):
 
 def _trace_geometry(primitive, layer, net):
     """Preserve source lines/arcs and add only constant-size join geometry."""
-    arcs = primitive.core.center_line.arc_data
+    arcs = primitive.center_line.arc_data
     if not arcs:
         raise ValueError("Empty path center line.")
-    get_caps = getattr(primitive.core, "get_end_cap_style", None)
-    caps = (
-        tuple(cap.name.lower() for cap in get_caps())
-        if callable(get_caps)
-        else (primitive.end_cap1, primitive.end_cap2)
-    )
+    caps = tuple(cap.name.lower() for cap in primitive.get_end_cap_style())
     if any(cap not in {"flat", "round", "extended"} for cap in caps):
         raise ValueError(f"Unsupported path caps: {caps}.")
-    round_join = primitive.corner_style == "round"
-    width = float(primitive.width) * 1000
+    round_join = primitive.corner_style.name.lower() == "round"
+    width = _number(primitive.width) * 1000
     object_id = primitive.id
     traces, joins = [], []
     for index, arc in enumerate(arcs):
@@ -735,7 +721,7 @@ def _primitives(
                     from pyedb.viewer.adapters.grpc_stream import trace_dimensions
 
                     try:
-                        dimensions = trace_dimensions(getattr(primitive, "core", None))
+                        dimensions = trace_dimensions(primitive)
                         if dimensions is not None:
                             info = SceneObjectInfo(object_id, kind, net_name, width=dimensions[0], length=dimensions[1])
                     except Exception as exc:
@@ -753,7 +739,7 @@ def _primitives(
                 except Exception as exc:
                     diagnostics.append(f"Path {primitive.id}: using source boundary coverage ({exc}).")
             if primitive_type == "circle" and not has_voids:
-                x, y, radius = (float(v) * 1000 for v in primitive.get_parameters())
+                x, y, radius = (_number(v) * 1000 for v in primitive.get_parameters())
                 pads.append(ScenePad(object_id, layer_name, net_name, (x, y), (radius * 2,) * 2))
                 continue
             polygons.append(

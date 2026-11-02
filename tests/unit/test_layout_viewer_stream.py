@@ -124,21 +124,47 @@ def test_root_contours_use_typed_getter_without_point_or_value_models(monkeypatc
         return SimpleNamespace(__get__=lambda: SimpleNamespace(GetPolygonData=getter))
 
     monkeypatch.setattr(grpc_stream, "StubAccessor", accessor)
-    primitive = SimpleNamespace(core=core, points=Mock(side_effect=AssertionError("No point wrappers needed")))
-    assert _contour(primitive, 8, 0.01) == grpc_stream.contour_from_message(square(), 8, 0.01)
+    assert _contour(core, 8, 0.01) == grpc_stream.contour_from_message(square(), 8, 0.01)
     assert routed == [kind]
     getter.assert_called_once_with(request)
-    primitive.points.assert_not_called()
 
 
-def test_unknown_core_type_preserves_points_fallback_without_rpc(monkeypatch):
+def test_unknown_core_type_uses_polygon_data_fallback_without_typed_rpc(monkeypatch):
     from pyedb.viewer.adapters.grpc import _contour
 
     accessor = Mock(side_effect=AssertionError("Unsupported types must keep their original getter"))
     monkeypatch.setattr(grpc_stream, "StubAccessor", accessor)
-    primitive = SimpleNamespace(core=object(), points=Mock(return_value=([0, 0.001, 0], [0, 0, 0.001])))
-    assert _contour(primitive, 8, 0.01) == ((0, 0), (1, 0), (0, 1))
-    primitive.points.assert_called_once_with(arc_segments=8, chord_error=0.00001)
+    points = [
+        SimpleNamespace(is_arc=False, x=CoreValue(x), y=CoreValue(y)) for x, y in [(0, 0), (0.001, 0), (0, 0.001)]
+    ]
+    primitive = SimpleNamespace(polygon_data=SimpleNamespace(points=points))
+    assert _contour(primitive, 8, 0.01) == ((0, 1), (1, 0), (0, 0))
+
+
+@pytest.mark.parametrize("height", [-0.0002, 0.0002])
+def test_packed_coords_decode_arc_markers_like_points(height):
+    packed = PolygonDataMessage(coords=[0.0, 0.0, height, sys.float_info.max, 0.001, 0.0])
+    message = PolygonDataMessage()
+    for x, y in [(0.0, 0.0), (height, sys.float_info.max), (0.001, 0.0)]:
+        point = message.points.add()
+        point.x.constant.real, point.y.constant.real = x, y
+    contour = grpc_stream.contour_from_message(packed, 8, 0.01)
+    assert all(abs(value) <= 1 for point in contour for value in point)
+    assert contour == grpc_stream.contour_from_message(message, 8, 0.01)
+
+
+@pytest.mark.parametrize("height", [-0.0002, 0.0002])
+def test_core_point_contours_match_proto_arc_tessellation(height):
+    points = [
+        SimpleNamespace(is_arc=False, x=0.0, y=0.0),
+        SimpleNamespace(is_arc=True, arc_height=CoreValue(height)),
+        SimpleNamespace(is_arc=False, x=0.001, y=0.0),
+    ]
+    message = PolygonDataMessage(coords=[])
+    for x, y in [(0.0, 0.0), (height, sys.float_info.max), (0.001, 0.0)]:
+        point = message.points.add()
+        point.x.constant.real, point.y.constant.real = x, y
+    assert grpc_stream.contour_from_points(points, 8, 0.01) == grpc_stream.contour_from_message(message, 8, 0.01)
 
 
 def test_pad_metadata_uses_snapshot_layer_ids_and_raw_pose_values(monkeypatch):
@@ -236,7 +262,7 @@ def test_failed_contour_drains_stream_before_database_can_close(monkeypatch):
     reader = grpc_stream.VoidReader(Mock(), 8, 0.01)
     reader._ring = Mock(side_effect=ValueError("Invalid contour"))
     with pytest.raises(ValueError, match="Invalid contour"):
-        list(reader._stream(SimpleNamespace(core=SimpleNamespace(msg=EDBObjMessage(id=99)))))
+        list(reader._stream(SimpleNamespace(msg=EDBObjMessage(id=99))))
     assert consumed == [0, 1, 2]
 
 
@@ -309,10 +335,11 @@ def test_supported_local_server_keeps_prefetch_transport(monkeypatch):
     create.assert_called_once_with(transport_mode="insecure", host="localhost", port=50055)
 
 
-def test_primitive_reader_returns_core_layout_primitives():
-    primitives = [object(), object()]
-    layout = SimpleNamespace(core=SimpleNamespace(primitives=primitives))
-    assert grpc_primitives.PrimitiveReader(SimpleNamespace(layout=layout)).read() is primitives
+def test_primitive_reader_returns_core_primitives_with_nets():
+    assigned = SimpleNamespace(net=SimpleNamespace(is_null=False))
+    unassigned = SimpleNamespace(net=SimpleNamespace(is_null=True))
+    layout = SimpleNamespace(core=SimpleNamespace(primitives=[assigned, unassigned]))
+    assert grpc_primitives.PrimitiveReader(SimpleNamespace(layout=layout)).read() == [assigned]
 
 
 @pytest.mark.parametrize(
