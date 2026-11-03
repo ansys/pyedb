@@ -43,7 +43,7 @@ def _reset_rpc_session_state():
     settings.is_in_memory = False
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_rpc_session_falls_back_to_standard_rpc_when_in_memory_library_is_missing(monkeypatch):
     _reset_rpc_session_state()
     launched = {}
@@ -66,7 +66,7 @@ def test_rpc_session_falls_back_to_standard_rpc_when_in_memory_library_is_missin
     assert RpcSession.server_pid == 4321
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_edb_init_create_always_starts_rpc_session(monkeypatch):
     _reset_rpc_session_state()
     start_calls = []
@@ -94,7 +94,7 @@ def test_edb_init_create_always_starts_rpc_session(monkeypatch):
     assert start_calls == [("2026.1", 0, False)]
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_acquire_increments_open_db_count():
     _reset_rpc_session_state()
     assert RpcSession._open_db_count == 0
@@ -104,7 +104,7 @@ def test_acquire_increments_open_db_count():
     assert RpcSession._open_db_count == 2
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_release_decrements_open_db_count():
     _reset_rpc_session_state()
     RpcSession.acquire()
@@ -115,14 +115,14 @@ def test_release_decrements_open_db_count():
     assert RpcSession._open_db_count == 1
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_release_does_not_go_below_zero():
     _reset_rpc_session_state()
     RpcSession.release()
     assert RpcSession._open_db_count == 0
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_release_closes_session_when_not_owned_and_count_reaches_zero(monkeypatch):
     _reset_rpc_session_state()
 
@@ -136,7 +136,7 @@ def test_release_closes_session_when_not_owned_and_count_reaches_zero(monkeypatc
     assert RpcSession.rpc_session is not None  # server still alive
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_release_returns_false_when_dbs_still_open():
     _reset_rpc_session_state()
 
@@ -150,7 +150,7 @@ def test_release_returns_false_when_dbs_still_open():
     assert RpcSession.rpc_session is not None
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_start_sets_owns_session_true_when_no_preexisting_session(monkeypatch):
     _reset_rpc_session_state()
 
@@ -169,7 +169,7 @@ def test_start_sets_owns_session_true_when_no_preexisting_session(monkeypatch):
     assert RpcSession.rpc_session is not None
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_start_sets_owns_session_false_when_preexisting_session(monkeypatch):
     _reset_rpc_session_state()
 
@@ -195,7 +195,7 @@ def test_start_sets_owns_session_false_when_preexisting_session(monkeypatch):
     assert len(launch_called) == 0  # launch_session should NOT be called
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_close_resets_owns_session(monkeypatch):
     _reset_rpc_session_state()
     monkeypatch.setattr(rpc_session_module, "end_managing", lambda: None)
@@ -217,7 +217,7 @@ def test_close_resets_owns_session(monkeypatch):
     assert RpcSession.server_pid == 0
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_full_lifecycle_owned_session(monkeypatch):
     """Start a new session, open two DBs, close them both — server stays alive until explicit close()."""
     _reset_rpc_session_state()
@@ -259,7 +259,7 @@ def test_full_lifecycle_owned_session(monkeypatch):
     assert RpcSession.rpc_session is None
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_full_lifecycle_preexisting_session(monkeypatch):
     """Attach to preexisting session, open a DB, close it — session stays alive."""
     _reset_rpc_session_state()
@@ -294,7 +294,7 @@ def test_full_lifecycle_preexisting_session(monkeypatch):
     assert len(disconnected) == 0
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_release_does_not_restart_server_between_tests(monkeypatch):
     """Simulate two sequential test opens: release should keep server alive so start() reuses it."""
     _reset_rpc_session_state()
@@ -330,7 +330,7 @@ def test_release_does_not_restart_server_between_tests(monkeypatch):
     assert len(launch_count) == 1
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_edb_close_default_terminates_session_when_last_db(monkeypatch):
     """edb.close() with no args should shut down the server when it's the last DB."""
     _reset_rpc_session_state()
@@ -352,7 +352,7 @@ def test_edb_close_default_terminates_session_when_last_db(monkeypatch):
     assert len(close_called) == 1  # server was shut down
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_edb_close_default_does_not_terminate_when_other_dbs_open(monkeypatch):
     """edb.close() with no args should NOT shut down when other DBs are still open."""
     _reset_rpc_session_state()
@@ -374,7 +374,7 @@ def test_edb_close_default_does_not_terminate_when_other_dbs_open(monkeypatch):
     assert len(close_called) == 0  # server kept alive
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_edb_close_terminate_rpc_session_false_keeps_server(monkeypatch):
     """edb.close(terminate_rpc_session=False) should keep server alive."""
     _reset_rpc_session_state()
@@ -396,7 +396,7 @@ def test_edb_close_terminate_rpc_session_false_keeps_server(monkeypatch):
     assert len(close_called) == 0  # server kept alive
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_edb_close_terminate_rpc_session_true_forces_shutdown(monkeypatch):
     _reset_rpc_session_state()
     close_called = []

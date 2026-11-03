@@ -32,7 +32,7 @@ import pytest
 from pyedb import Edb
 from pyedb.edb_logger import EdbLogger
 from pyedb.generic.general_methods import is_linux
-from tests.conftest import GRPC, config, desktop_version
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -103,7 +103,7 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        config.use_grpc and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_edb_statistics(self):
@@ -125,16 +125,16 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        config.use_grpc and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_edb_settings(self):
         """Validate EDB general settings and utility methods."""
         edbapp = self.edb_examples.get_si_verse()
         assert type(edbapp.logger) == EdbLogger
-        assert edbapp.version == config["desktopVersion"]
+        assert edbapp.version == config.version
         assert edbapp.base_path == edbapp.ansys_em_path
-        assert edbapp.grpc == config["use_grpc"]
+        assert edbapp.grpc == config.use_grpc
         val = edbapp.value(1)
         assert val
         edbapp.add_design_variable("test", 1)
@@ -183,8 +183,8 @@ class TestEdbLifecycle:
         """Create EDB."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            version=desktop_version,
-            grpc=GRPC,
+            version=config.version,
+            grpc=config.use_grpc,
         )
         assert edb
         assert edb.active_layout
@@ -215,7 +215,7 @@ class TestEdbLifecycle:
         else:
             monkeypatch.setenv("HOME", fake_home)
 
-        edbapp_without_path = Edb(version=desktop_version, isreadonly=False, grpc=GRPC)
+        edbapp_without_path = Edb(version=config.version, isreadonly=False, grpc=config.use_grpc)
         try:
             time.sleep(2)
             # Regression guard: the fallback project must live under the scratch
@@ -230,8 +230,8 @@ class TestEdbLifecycle:
 
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            version=desktop_version,
-            grpc=GRPC,
+            version=config.version,
+            grpc=config.use_grpc,
         )
         edb.add_design_variable(variable_name="var1", variable_value=0.01)
         edb.add_design_variable(variable_name="var2", variable_value="10um")
@@ -263,8 +263,8 @@ class TestEdbLifecycle:
         """Add a variable value."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            version=desktop_version,
-            grpc=GRPC,
+            version=config.version,
+            grpc=config.use_grpc,
         )
         if edb.grpc:
             edb.add_design_variable(variable_name="ant_length", variable_value="1cm")
@@ -287,8 +287,8 @@ class TestEdbLifecycle:
         """Add a variable value via __setitem__."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            version=desktop_version,
-            grpc=GRPC,
+            version=config.version,
+            grpc=config.use_grpc,
         )
         edb.add_design_variable("ant_length", "1cm")
         if edb.grpc:
@@ -301,8 +301,8 @@ class TestEdbLifecycle:
         """Change a variable value."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            version=desktop_version,
-            grpc=GRPC,
+            version=config.version,
+            grpc=config.use_grpc,
         )
         edb.add_design_variable(variable_name="ant_length", variable_value="1cm")
         edb.add_design_variable(variable_name="my_parameter_default", variable_value="1mm")
@@ -330,8 +330,8 @@ class TestEdbLifecycle:
         """Change a variable value via __setitem__."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            version=desktop_version,
-            grpc=GRPC,
+            version=config.version,
+            grpc=config.use_grpc,
         )
         edb.add_design_variable("ant_length", "1cm")
         assert edb["ant_length"].value == 0.01
@@ -348,7 +348,7 @@ class TestEdbLifecycle:
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
         expected_deleted = [aedt_file, aedt_file + ".lock"]
 
-        edb = Edb(edbpath=edbpath, version=desktop_version, grpc=GRPC, remove_existing_aedt=True)
+        edb = Edb(edbpath=edbpath, version=config.version, grpc=config.use_grpc, remove_existing_aedt=True)
         edb.close(terminate_rpc_session=False)
 
         for f in expected_deleted:
@@ -362,7 +362,7 @@ class TestEdbLifecycle:
         mock_unlink.side_effect = Exception("Could not delete file")
 
         edbpath = os.path.join(self.local_scratch.path, "conflict_fail_test.aedb")
-        edb = Edb(edbpath=edbpath, version=desktop_version, grpc=GRPC, remove_existing_aedt=True)
+        edb = Edb(edbpath=edbpath, version=config.version, grpc=config.use_grpc, remove_existing_aedt=True)
         edb.close(terminate_rpc_session=False)
 
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
@@ -377,7 +377,7 @@ class TestEdbLifecycle:
         mock_isfile.side_effect = lambda f: f.endswith((".aedt", ".aedt.lock"))
 
         edbpath = os.path.join(self.local_scratch.path, "conflict_keep_test.aedb")
-        edb = Edb(edbpath=edbpath, version=desktop_version, grpc=GRPC)
+        edb = Edb(edbpath=edbpath, version=config.version, grpc=config.use_grpc)
         edb.close(terminate_rpc_session=False)
 
         mock_unlink.assert_not_called()
