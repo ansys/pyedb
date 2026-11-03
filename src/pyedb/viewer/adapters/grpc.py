@@ -677,7 +677,7 @@ def _primitive_name(primitive):
         name = ""
     if not name:
         kind = primitive.primitive_type.name.lower()
-        name = f"{_PRIMITIVE_NAME_PREFIX.get(kind, kind)}_{primitive.id}"
+        name = f"{_PRIMITIVE_NAME_PREFIX.get(kind, kind)}__{primitive.edb_uid}"
     return name
 
 
