@@ -10,14 +10,7 @@ from ansys.edb.core.utility.transform import Transform as CoreTransform
 import grpc
 
 from pyedb.generic.geometry_operators import GeometryOperators
-from pyedb.grpc.database.utility.value import value_as_float
 from pyedb.misc.utilities import compute_arc_points
-
-
-def _value(value):
-    if isinstance(value, (int, float)):
-        return float(value)
-    return value_as_float(value)
 
 
 def _decode(points):
@@ -25,9 +18,9 @@ def _decode(points):
     decoded = []
     for point in points:
         if point.is_arc:
-            decoded.append((None, None, _value(point.arc_height)))
+            decoded.append((None, None, point.arc_height.double))
         else:
-            decoded.append((_value(point.x), _value(point.y), None))
+            decoded.append((point.x.double, point.y.double, None))
     return decoded
 
 

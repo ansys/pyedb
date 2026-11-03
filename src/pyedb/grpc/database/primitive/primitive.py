@@ -35,7 +35,7 @@ from ansys.edb.core.primitive.circle import Circle as CoreCircle
 
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
-from pyedb.grpc.database.utility.value import Value, value_as_float
+from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.utilities import compute_arc_points
 
 layer_type_mapping = {
@@ -107,15 +107,8 @@ class Primitive:
         :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
 
         """
-        try:
-            data = self.core.polygon_data
-        except AttributeError:
-            primitive = self.core.cast()
-            try:
-                data = primitive.polygon_data
-            except AttributeError:
-                return None
-        return PolygonData(self._pedb, data)
+        primitive = self.core.cast()
+        return PolygonData(self._pedb, primitive.polygon_data) if hasattr(primitive, "polygon_data") else None
 
     @polygon_data.setter
     def polygon_data(self, value):
@@ -338,17 +331,15 @@ class Primitive:
         y = []
         for i, point in enumerate(my_net_points):
             if not point.is_arc:
-                x.append(value_as_float(point.x))
-                y.append(value_as_float(point.y))
+                x.append(Value(point.x))
+                y.append(Value(point.y))
             else:
-                # Tessellation consumes evaluated coordinates. Keeping Value
-                # subclasses here wraps every intermediate arithmetic result.
-                arc_h = value_as_float(point.arc_height)
-                p1 = [value_as_float(my_net_points[i - 1].x), value_as_float(my_net_points[i - 1].y)]
+                arc_h = Value(point.arc_height)
+                p1 = [Value(my_net_points[i - 1].x), Value(my_net_points[i - 1].y)]
                 if i + 1 < len(my_net_points):
-                    p2 = [value_as_float(my_net_points[i + 1].x), value_as_float(my_net_points[i + 1].y)]
+                    p2 = [Value(my_net_points[i + 1].x), Value(my_net_points[i + 1].y)]
                 else:
-                    p2 = [value_as_float(my_net_points[0].x), value_as_float(my_net_points[0].y)]
+                    p2 = [Value(my_net_points[0].x), Value(my_net_points[0].y)]
                 if chord_error is None:
                     x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num)
                 else:

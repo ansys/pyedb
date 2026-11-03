@@ -228,6 +228,7 @@ def _pad_template(pad, arc_segments, chord_error=None):
             x, y = Primitive._get_points_for_plot(
                 None, pad.polygon_data.points, arc_segments, chord_error=chord_error / 1000
             )
+
             return shape, tuple((px * 1000, py * 1000) for px, py in zip(x, y)), offset, rotation
         polygon = pad.polygon_data.without_arcs(max_arc_angle=math.tau / arc_segments, max_points=arc_segments)
         return shape, tuple(_xy(p) for p in polygon.points), offset, rotation

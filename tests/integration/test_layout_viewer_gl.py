@@ -30,7 +30,7 @@ import pytest
 pytestmark = [
     pytest.mark.integration,
     pytest.mark.no_licence,
-    pytest.mark.skipif(os.environ.get("PYEDB_VIEWER_GL_TESTS") != "1", reason="Requires an OpenGL 3.3 desktop"),
+    # pytest.mark.skipif(os.environ.get("PYEDB_VIEWER_GL_TESTS") != "1", reason="Requires an OpenGL 3.3 desktop"),
 ]
 
 

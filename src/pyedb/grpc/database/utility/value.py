@@ -25,23 +25,6 @@ import math
 from ansys.edb.core.utility.value import Value as CoreValue
 
 
-def value_as_float(value):
-    """Evaluate a plotting coordinate without allocating another Value wrapper."""
-    if isinstance(value, (int, float)):
-        return float(value)
-    if isinstance(value, CoreValue):
-        message = value.msg
-        if message.text:
-            try:
-                return float(message.text)
-            except ValueError:
-                return float(value.value)
-        if message.constant.imag:
-            return float(value.value)
-        return float(message.constant.real)
-    return float(Value(value))
-
-
 class Value(float, CoreValue):
     """Class defining Edb Value properties."""
 

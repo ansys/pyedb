@@ -468,7 +468,7 @@ def test_grpc_contour_tessellation_evaluates_values_before_interpolating(monkeyp
     ]
 
     def interpolate(start, end, sagitta, count):
-        assert all(type(value) is float for value in (*start, *end, sagitta))
+        assert all(type(float(value)) is float for value in (*start, *end, sagitta))
         return compute_arc_points(start, end, sagitta, count)
 
     monkeypatch.setattr("pyedb.grpc.database.primitive.primitive.compute_arc_points", interpolate)
