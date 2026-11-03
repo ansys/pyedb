@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from dataclasses import dataclass
 import json
 import os
-from dataclasses import dataclass
 from pathlib import Path
 import secrets
 import shutil
@@ -48,7 +48,6 @@ class TestConfig:
 
     version: str = "2026.1"
     use_grpc: bool = True
-
 
 
 # Initialize default desktop configuration

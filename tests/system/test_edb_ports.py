@@ -455,9 +455,7 @@ class TestClass(BaseTestClass):
         assert p.radial_extent_factor == 1
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config.use_grpc and config.version < "2026.1", reason="working with latest release"
-    )
+    @pytest.mark.skipif(config.use_grpc and config.version < "2026.1", reason="working with latest release")
     def test_ports_and_sources_creation(self):
         """Create ports and sources from padstack terminals."""
         edbapp = self.edb_examples.get_si_verse()
