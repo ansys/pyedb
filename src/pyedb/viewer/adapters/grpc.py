@@ -165,7 +165,7 @@ def _rotate(point, angle):
 
 
 def _placement(instance, component_cache, component=None):
-    get_position = getattr(getattr(instance, "core", None), "get_position_and_rotation", None)
+    get_position = getattr(instance, "get_position_and_rotation", None)
     if callable(get_position):
         state = tuple(value.double for value in get_position())
         position = tuple(v * 1000 for v in state[:2])
@@ -174,7 +174,7 @@ def _placement(instance, component_cache, component=None):
         position = tuple(float(v) * 1000 for v in instance.position)
         rotation = float(instance.rotation)
     basis = ((1, 0), (0, 1))
-    component = instance.component if component is None else component
+    component = False if component is None else component
     if component:
         key = component.id
         if key not in component_cache:
@@ -243,7 +243,7 @@ def _mapped_layers(instance, edb, definition, layers, cache, layout_layers=None,
     layer_map = getattr(instance, "layer_map", None)
     if layer_map is None or layer_map.is_null:
         return {layer: layer for layer in layers}
-    key = (name or instance.padstack_definition, layer_map.msg.SerializeToString(), tuple(layers))
+    key = (name or instance.padstack_def.name, layer_map.msg.SerializeToString(), tuple(layers))
     if key not in cache:
         data = definition.core.data
         names = dict(zip(data.layer_ids, data.layer_names))
@@ -259,11 +259,32 @@ def _mapped_layers(instance, edb, definition, layers, cache, layout_layers=None,
     return cache[key]
 
 
+def _padstack_instance_name(instance):
+    """Return the AEDT display name of a raw padstack instance, mirroring ``PadstackInstance.name``."""
+    name = getattr(instance, "name", None)
+    if name:
+        return name
+    try:
+        value = instance.get_product_property(ProductIdType.DESIGNER, 11)
+    except Exception:
+        return None
+    return str(value).strip("'") if value else None
+
+
+def _resolve_component(edb, raw_component):
+    """Wrap a raw core component, treating null or missing components as absent."""
+    if raw_component is None or getattr(raw_component, "is_null", True):
+        return False
+    from pyedb.grpc.database.hierarchy.component import Component
+
+    return Component(edb, raw_component)
+
+
 def _pin_owner(instance, sides, cache, component=None):
     """Keep component-pin ownership separate from the physical copper pad layer."""
-    if not getattr(instance, "is_pin", False):
+    if not getattr(instance, "is_layout_pin", False):
         return {}
-    component = instance.component if component is None else component
+    component = False if component is None else component
     if not component:
         return {}
     if component.id not in cache:
@@ -274,14 +295,13 @@ def _pin_owner(instance, sides, cache, component=None):
             else None
         )
     owner = cache[component.id]
-    return dict(owner, pin_name=instance.name) if owner is not None else {}
+    return dict(owner, pin_name=_padstack_instance_name(instance)) if owner is not None else {}
 
 
 def _padstack_layers(instance, selected_layers, conductors, extended_ranges):
     """Include conducting layers within the instance's physical span."""
     instance_layers = None
-    core = getattr(instance, "core", None)
-    get_range = getattr(core, "get_layer_range", None)
+    get_range = getattr(instance, "get_layer_range", None)
     if callable(get_range):
         layer_range = get_range()
         if not layer_range:
@@ -295,16 +315,16 @@ def _padstack_layers(instance, selected_layers, conductors, extended_ranges):
         if first in conductors and last in conductors:
             start, stop = sorted((conductors.index(first), conductors.index(last)))
             instance_layers = conductors[start : stop + 1]
-    if instance_layers is None:
-        instance_layers = instance.layer_range_names
-    return [name for name in instance_layers if name in selected_layers]
+    return [name for name in (instance_layers or ()) if name in selected_layers]
 
 
-def _padstack_definition(instance, definitions, diagnostics, name=None):
+def _padstack_definition(edb, instance, definitions, diagnostics, name=None):
     """Cache pad and drill data shared by instances of a definition."""
-    name = name or instance.padstack_definition
+    name = name or instance.padstack_def.name
     if name not in definitions:
-        definition = instance.definition
+        from pyedb.grpc.database.definition.padstack_def import PadstackDef
+
+        definition = PadstackDef(edb, instance.padstack_def)
         diameter = definition.hole_diameter
         if diameter is None:
             diagnostics.append(f"Padstack definition {name}: noncircular drill profile is not displayed.")
@@ -344,7 +364,7 @@ def _append_padstack_geometry(
     """Place a layer's copper and retain independent drill coverage."""
     world, vector, scale = placement
     pads, polygons = geometry
-    object_id = instance.id if object_id is None else object_id
+    object_id = instance.edb_uid if object_id is None else object_id
     if template is None:
         # Keep nonfunctional pads absent while retaining drill marks.
         if hole_radius > 0:
@@ -416,7 +436,7 @@ def _padstack_pin_owner(instance, sides, cache, component, diagnostics):
     try:
         return _pin_owner(instance, sides, cache, component)
     except Exception as exc:
-        diagnostics.append(f"Padstack {instance.id}: component pin metadata unavailable ({exc}).")
+        diagnostics.append(f"Padstack {instance.edb_uid}: component pin metadata unavailable ({exc}).")
         return {}
 
 
@@ -434,14 +454,13 @@ def _readonly_components(edb):
     )
 
 
-def _padstack_component(instance, components):
+def _padstack_component(raw_component, components):
     """Reuse a capture's component wrapper; ``False`` means the instance has no component."""
-    component = getattr(getattr(instance, "core", None), "component", None)
-    if components is None or component is None:
+    if components is None or raw_component is None:
         return None
-    if component.is_null:
+    if raw_component.is_null:
         return False
-    return components.get(component.id)
+    return components.get(raw_component.id)
 
 
 def _padstack_object_info(instance, object_id, component, net, hole_radius, placement, span, object_info, diagnostics):
@@ -449,6 +468,7 @@ def _padstack_object_info(instance, object_id, component, net, hole_radius, plac
     if object_info is not None:
         try:
             reference = getattr(component, "name", None) if component else None
+            instance_name = _padstack_instance_name(instance)
             object_info[object_id] = SceneObjectInfo(
                 object_id,
                 "pad" if component or hole_radius == 0 else "via",
@@ -457,8 +477,8 @@ def _padstack_object_info(instance, object_id, component, net, hole_radius, plac
                 start_layer=span[0],
                 stop_layer=span[-1],
                 component=reference,
-                pin_name=getattr(instance, "name", None) if component else None,
-                name=None if component else getattr(instance, "name", None),
+                pin_name=instance_name if component else None,
+                name=None if component else instance_name,
             )
         except Exception as exc:
             diagnostics.append(f"Padstack {object_id}: inspection properties unavailable ({exc}).")
@@ -501,31 +521,32 @@ def _padstacks(
     conductors = _conductor_names(edb)
     extended_ranges = bool(set(conductors).difference(edb.stackup.signal_layers))
     layout_layers = edb.stackup.layers
-    manager = getattr(edb, "padstacks", None)
-    if manager is None:
+    core_layout = getattr(getattr(edb, "layout", None), "core", None)
+    if core_layout is None:
         return pads, polygons
     component_objects = _readonly_components(edb)
-    for instance in progress_items(lambda: manager.instances.values(), progress, "Reading pads and vias"):
+    for instance in progress_items(lambda: core_layout.padstack_instances, progress, "Reading pads and vias"):
         try:
-            object_id = instance.id
-            net = instance.net_name
+            object_id = instance.edb_uid
+            net = "" if getattr(instance.net, "is_null", False) else instance.net.name
             if selected_nets is not None and net not in selected_nets:
                 continue
             span = _padstack_layers(instance, set(conductors), conductors, extended_ranges)
             layers = [layer for layer in span if layer in selected_layers]
             if not layers:
                 continue
-            name = instance.padstack_definition
+            name = instance.padstack_def.name
             definition, by_layer, hole_radius, hole_offset = _padstack_definition(
-                instance, definitions, diagnostics, name
+                edb, instance, definitions, diagnostics, name
             )
             mapped = _mapped_layers(instance, edb, definition, layers, mapping_cache, layout_layers, name)
             enabled, diameter = instance.get_hole_overrides()
             if enabled:
                 hole_radius = diameter.double * 500
-            component = _padstack_component(instance, component_objects)
+            raw_component = getattr(instance, "component", None)
+            component = _padstack_component(raw_component, component_objects)
             if component is None:
-                component = instance.component
+                component = _resolve_component(edb, raw_component)
             placement = _placement(instance, component_cache, component)
             pin_owner = _padstack_pin_owner(instance, sides, pin_components, component, diagnostics)
             hole_center = placement[0](hole_offset)
@@ -553,12 +574,12 @@ def _padstacks(
                         object_id=object_id,
                     )
                 except Exception as exc:
-                    diagnostics.append(f"Padstack {instance.id}, layer {layer}: {exc}")
+                    diagnostics.append(f"Padstack {instance.edb_uid}, layer {layer}: {exc}")
             _record_padstack_geometry(
                 component_geometry, object_id, component, net, placement, pads[pad_start:], polygons[polygon_start:]
             )
         except Exception as exc:
-            diagnostics.append(f"Padstack {instance.id}: {exc}")
+            diagnostics.append(f"Padstack {instance.edb_uid}: {exc}")
     return pads, polygons
 
 
