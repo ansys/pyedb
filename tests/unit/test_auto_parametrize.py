@@ -45,7 +45,7 @@ from tests.conftest import config
 
 pytestmark = [
     pytest.mark.unit,
-    pytest.mark.skipif(not config["use_grpc"], reason="gRPC tests only"),
+    pytest.mark.skipif(not config.use_grpc, reason="gRPC tests only"),
 ]
 
 
