@@ -81,6 +81,9 @@ def installed_versions() -> dict[str, str]:
             current_version_id = version_env_var.replace("ANSYSEM_ROOT", "")
             student = False
 
+        if len(current_version_id) != 3:
+            continue
+
         version = int(current_version_id[0:2])
         release = int(current_version_id[2])
         if version < 20:
