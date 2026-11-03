@@ -43,7 +43,6 @@ from pyedb.libraries.rf_libraries.planar_antennas import (
     RectangularPatch,
     TriangularPatch,
 )
-from tests.conftest import config, use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]

@@ -28,7 +28,7 @@ import time
 import pytest
 
 from pyedb.grpc.rpc_session import RpcSession
-from tests.conftest import GRPC
+from tests.conftest import config
 
 # Grace period (seconds) after RpcSession.close() before the next test class
 # starts a new server.  On Linux the EDB server binary (a Windows-native process
@@ -54,7 +54,7 @@ def close_rpc_session(init_scratch):
        starts a new server.
     """
     yield
-    if GRPC:
+    if config.use_grpc:
         # Defensive reset: if tests crashed and left the ref-count dirty,
         # RpcSession.close() would be skipped by the default teardown path.
         # Force it to zero so the explicit close() below always runs.

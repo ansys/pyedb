@@ -83,7 +83,7 @@ class TestClass(BaseTestClass):
         assert edbapp.components["J5"].package_def.name == "package_2"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_wirebond_definitions(self):
         edbapp = self.edb_examples.get_wirebond_jedec4_project()
         assert list(edbapp.definitions.jedec4_bondwires.keys())[0] == "Default"
@@ -93,7 +93,7 @@ class TestClass(BaseTestClass):
         assert jedec4_bw.height == 20e-6
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_jedec5_set_parameters(self):
         """Regression: Jedec5BondwireDef.set_parameters must accept height + two angles."""
         edbapp = self.edb_examples.get_wirebond_jedec4_project()
@@ -107,7 +107,7 @@ class TestClass(BaseTestClass):
         assert lead_pad_angle == 45.0
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_jedec5_height_property_preserves_angles(self):
         """Regression: setting height via property must not reset die/lead pad angles."""
         edbapp = self.edb_examples.get_wirebond_jedec4_project()
@@ -123,7 +123,7 @@ class TestClass(BaseTestClass):
         assert lead_pad_angle == 40.0  # must be preserved
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_create_and_find_jedec4_bondwire_def(self):
         """Create a Jedec4 bondwire definition, set its height, and find it by name."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -143,7 +143,7 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_create_and_find_jedec5_bondwire_def(self):
         """Create a Jedec5 bondwire definition, set all three parameters, and find it by name."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -165,7 +165,7 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_create_and_find_apd_bondwire_def(self):
         """Create an APD bondwire definition, read its parameter block, and find it by name."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -197,7 +197,7 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_jedec4_find_by_name_returns_none_for_missing(self):
         """find_by_name must return None when definition does not exist."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -205,7 +205,7 @@ class TestClass(BaseTestClass):
         assert result is None
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_jedec5_find_by_name_returns_none_for_missing(self):
         """find_by_name must return None when definition does not exist."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -213,7 +213,7 @@ class TestClass(BaseTestClass):
         assert result is None
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_apd_find_by_name_returns_none_for_missing(self):
         """find_by_name must return None when definition does not exist."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -221,7 +221,7 @@ class TestClass(BaseTestClass):
         assert result is None
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Regression test for gRPC Value owner requirement.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Regression test for gRPC Value owner requirement.")
     def test_parametric_padstack_definitions_created(self):
         """set_pad_parameters must accept project-variable strings as pad/hole sizes.
 
@@ -262,7 +262,7 @@ class TestClass(BaseTestClass):
         assert "PARAM_VIA" in edbapp.padstacks.definitions, "PARAM_VIA definition must exist after creation"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Regression test for gRPC Value owner requirement.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Regression test for gRPC Value owner requirement.")
     def test_parametric_padstack_pad_sizes_resolved(self):
         """Pad/hole sizes expressed as project variables must resolve to correct numeric values.
 
@@ -301,7 +301,7 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Regression test for gRPC net-name handling.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Regression test for gRPC net-name handling.")
     def test_parametric_padstack_place_no_ghost_nets(self):
         """padstacks.place() must assign the exact requested net — no ghost net_XXXX nets.
 

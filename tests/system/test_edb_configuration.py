@@ -509,7 +509,7 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["diff_wave_1"].horizontal_extent_factor == 6
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Random crash wait SP2 for in memory.")
+    @pytest.mark.skipif(config.use_grpc, reason="Random crash wait SP2 for in memory.")
     def test_06_s_parameters(self):
         self.edb_examples.copy_test_files_into_local_folder("TEDB/GRM32_DC0V_25degC_series.s2p")
         edbapp = self.edb_examples.get_si_verse()
@@ -916,7 +916,7 @@ class TestClassTerminals(BaseTestClass):
         "layer": "1_Top",
         "name": "terminal3",
         "impedance": 50,
-        "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
+        "boundary_type": "port" if config.use_grpc else "PortBoundary",
         "reference_terminal": "terminal3_ref",
         "terminal_type": "point",
         "net": "AVCC_1V3",
@@ -928,7 +928,7 @@ class TestClassTerminals(BaseTestClass):
         "net": "GND",
         "name": "terminal3_ref",
         "impedance": 50,
-        "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
+        "boundary_type": "port" if config.use_grpc else "PortBoundary",
         "terminal_type": "point",
     }
 
@@ -936,7 +936,7 @@ class TestClassTerminals(BaseTestClass):
         "name": "edge_terminal_1",
         "impedance": 50,
         "is_circuit_port": False,
-        "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
+        "boundary_type": "port" if config.use_grpc else "PortBoundary",
         "primitive": "path_1",
         "point_on_edge_x": 0,
         "point_on_edge_y": "1mm",
@@ -951,7 +951,7 @@ class TestClassTerminals(BaseTestClass):
         "name": "edge_terminal_2",
         "impedance": 50,
         "is_circuit_port": False,
-        "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
+        "boundary_type": "port" if config.use_grpc else "PortBoundary",
         "primitive": "path_2",
         "point_on_edge_x": "1mm",
         "point_on_edge_y": "1mm",
@@ -1158,7 +1158,7 @@ class TestClassSetups(BaseTestClass):
         "name": "terminal1",
         "impedance": 1,
         "is_circuit_port": False,
-        "boundary_type": "port" if config["use_grpc"] else "PortBoundary",
+        "boundary_type": "port" if config.use_grpc else "PortBoundary",
         "hfss_type": "Wave",
         "terminal_type": "padstack_instance",
         "padstack_instance": "U7-M7",
@@ -1276,7 +1276,7 @@ class TestClassSetups(BaseTestClass):
         assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"] and is_linux, reason="DotNet Randomly failing on Linux.")
+    @pytest.mark.skipif(not config.use_grpc and is_linux, reason="DotNet Randomly failing on Linux.")
     def test_hfss_setup_w_frequency_sweeps(self):
         data = {
             "setups": [
@@ -1331,7 +1331,7 @@ class TestClassSetups(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(is_linux and not config["use_grpc"], reason="Randomly fails on dotnet linux")
+    @pytest.mark.skipif(is_linux and not config.use_grpc, reason="Randomly fails on dotnet linux")
     def test_siwave_dc(self):
         data = {
             "setups": [
@@ -2001,7 +2001,7 @@ class TestOperations(BaseTestClass):
         assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_builder_1(self):
         # Test with solder ball coax ports
         edb_app = self.edb_examples.get_si_verse()
@@ -2043,7 +2043,7 @@ class TestOperations(BaseTestClass):
         assert pytest.approx(bbox[1][1], 5) == 0.0481
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_builder_2(self):
         #  test with circuit port and pin group
         edb_app = self.edb_examples.get_si_verse()
@@ -2080,7 +2080,7 @@ class TestOperations(BaseTestClass):
         assert edb_app.setups["Test_HFSS"].sweeps["Test_Sweep"].frequency_string[0] == "LIN 1GHz 10GHz 0.5GHz"
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_builder_3(self):
         # Test with solder ball coax ports but discovering solder balls diameters
         edb_app = self.edb_examples.get_si_verse()
@@ -2137,7 +2137,7 @@ class TestOperations(BaseTestClass):
         assert edb_app.nets.nets.get("PCIe_Gen4_RX0_P").is_power_ground  # net physically changed as pwr in EDB
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_gap_port(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
@@ -2160,7 +2160,7 @@ class TestOperations(BaseTestClass):
         assert port.pec_launch_width == "0.02mm"
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_diff_wave_port(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
@@ -2203,7 +2203,7 @@ class TestOperations(BaseTestClass):
         assert terminal2.is_port is True
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_wave_port(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
@@ -2226,7 +2226,7 @@ class TestOperations(BaseTestClass):
         assert wave_port.hfss_type == "Wave"
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_hfss_setup(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
@@ -2277,7 +2277,7 @@ class TestOperations(BaseTestClass):
         assert setup.adaptive_settings.broadband_adaptive_solution.max_passes == 30
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_siwave_ac_setup(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
@@ -2297,7 +2297,7 @@ class TestOperations(BaseTestClass):
         assert setup.frequency_sweeps.get("Test_Sweep").frequency_string == ["LIN 0GHz 35GHz 0.1GHz"]
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_siwave_dc_setup(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
@@ -2316,7 +2316,7 @@ class TestOperations(BaseTestClass):
         assert edb_setup.settings.export_dc_thermal_data is True
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_padstack_create_definition_and_place_instance(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
@@ -2353,7 +2353,7 @@ class TestOperations(BaseTestClass):
         assert padstack_def.instances[0].position == [0.001, 0.002]
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_modeler_create_primitives(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
@@ -2406,7 +2406,7 @@ class TestOperations(BaseTestClass):
         assert polygon.layer_name == "1_Top"
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_stackup(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
@@ -2520,7 +2520,7 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
         assert len(circuit_ports) == len(self.SIGNAL_NETS)
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_get_data_from_db_wave_port(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg = edb_app.configuration.create_config_builder()
@@ -2811,7 +2811,7 @@ class TestCfgBuilderGetDataFromDb(BaseTestClass):
         assert edb_app.stackup.layers["1_Top"].side_hallhuray_surface_ratio == 2.9
         edb_app.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested in dotnet")
     def test_cfg_stackup_roughness_groisse(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg = edb_app.configuration.create_config_builder()

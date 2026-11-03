@@ -37,7 +37,7 @@ pytestmark = [
     pytest.mark.unit,
     pytest.mark.no_licence,
     pytest.mark.grpc,
-    pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only"),
+    pytest.mark.skipif(not config.use_grpc, reason="gRPC backend only"),
 ]
 
 

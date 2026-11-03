@@ -144,7 +144,7 @@ class TestClass(BaseTestClass):
         assert log_parser.is_completed()
         assert not log_parser.is_aborted()
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_physical_merge(self):
         main_board = self.edb_examples.get_si_verse()
         merged_package = self.edb_examples.get_package()
@@ -154,7 +154,7 @@ class TestClass(BaseTestClass):
         assert len(main_board.modeler.primitives_by_layer["test_TOP"]) == 424  # nosec: B101
         main_board.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_run_siwave_validation_check(self):
         edbapp = self.edb_examples.get_si_verse()
         executable_suffix = "" if platform.system().lower() == "linux" else ".exe"

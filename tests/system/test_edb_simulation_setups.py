@@ -91,7 +91,7 @@ class TestClass(BaseTestClass):
         assert setup.sweep_data[0].enforce_causality
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Crash on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Crash on DotNet.")
     def test_hfss_simulation_setup(self):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
@@ -183,7 +183,7 @@ class TestClass(BaseTestClass):
         assert edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"] and is_linux, reason="Crash on DotNet and gRPC on Linux.")
+    @pytest.mark.skipif(not config.use_grpc and is_linux, reason="Crash on DotNet and gRPC on Linux.")
     def test_hfss_simulation_setups_consolidation(self):
         """Create a setup from a template and evaluate settings consolidation."""
         edbapp = self.edb_examples.get_si_verse()
@@ -485,7 +485,7 @@ class TestClass(BaseTestClass):
         assert adv_settings.eliminate_slit_per_holes == 2.0
         adv_settings.mesh_bws = 25e9
         assert adv_settings.mesh_bws == 25e9
-        if config["use_grpc"]:
+        if config.use_grpc:
             adv_settings.net_settings_options = {"VDD": ["mesh_vias", "via_diameter"]}
             assert adv_settings.net_settings_options == {"VDD": ["mesh_vias", "via_diameter"]}
         adv_settings.override_shrink_factor = 2.0
@@ -537,7 +537,7 @@ class TestClass(BaseTestClass):
         assert general.use_gold_em_solver
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="issue #1860. Missing create_q3d_setup in dotnet")
+    @pytest.mark.skipif(not config.use_grpc, reason="issue #1860. Missing create_q3d_setup in dotnet")
     def test_q3d_simulation_setups_consolidation(self):
         """Create a Q3D setup and evaluate all settings."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -651,14 +651,14 @@ class TestClass(BaseTestClass):
         assert sweep.use_q3d_for_dc
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(is_linux and not config["use_grpc"], reason="Randomly fails on linux dotnet")
+    @pytest.mark.skipif(is_linux and not config.use_grpc, reason="Randomly fails on linux dotnet")
     def test_siwave_simulation_setup_dotnet_compatibility(self):
         """Validate SIWave DCIR setup settings attribute compatibility."""
         edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")
 
         settings = setup.settings
-        if not config["use_grpc"]:
+        if not config.use_grpc:
             assert hasattr(settings, "dc_report_show_active_devices")
             assert hasattr(settings, "dc_report_config_file")
             assert hasattr(settings, "enabled")
@@ -688,7 +688,7 @@ class TestClass(BaseTestClass):
         settings.use_loop_res_for_per_pin = True
         settings.add_source_terminal_to_ground("test", 1)
 
-        if config["use_grpc"]:
+        if config.use_grpc:
             setup_2 = edbapp.simulation_setups.setups["setup_1"]
         else:
             setup_2 = setup
@@ -707,7 +707,7 @@ class TestClass(BaseTestClass):
 
         # DC settings
         dc = settings.dc
-        if not config["use_grpc"]:
+        if not config.use_grpc:
             assert hasattr(dc, "compute_inductance")
             assert hasattr(dc, "contact_radius")
             assert hasattr(dc, "dc_slider_position")
@@ -717,7 +717,7 @@ class TestClass(BaseTestClass):
         dc.dc_slider_position = 0
         dc.plot_jv = False
 
-        if config["use_grpc"]:
+        if config.use_grpc:
             setup_2 = edbapp.simulation_setups.setups["setup_1"]
         else:
             setup_2 = setup
@@ -728,7 +728,7 @@ class TestClass(BaseTestClass):
 
         # DC advanced settings
         dc_adv = settings.dc_advanced
-        if not config["use_grpc"]:
+        if not config.use_grpc:
             assert hasattr(dc_adv, "dc_min_plane_area_to_mesh")
             assert hasattr(dc_adv, "dc_min_void_area_to_mesh")
             assert hasattr(dc_adv, "energy_error")
@@ -756,7 +756,7 @@ class TestClass(BaseTestClass):
         dc_adv.refine_bondwires = True
         dc_adv.refine_vias = True
 
-        if config["use_grpc"]:
+        if config.use_grpc:
             setup_2 = edbapp.simulation_setups.setups["setup_1"]
         else:
             setup_2 = setup
@@ -781,7 +781,7 @@ class TestClass(BaseTestClass):
         general.use_custom_settings = False
         general.use_si_settings = False
 
-        if config["use_grpc"]:
+        if config.use_grpc:
             setup_2 = edbapp.simulation_setups.setups["setup_1"]
         else:
             setup_2 = setup
@@ -790,14 +790,14 @@ class TestClass(BaseTestClass):
         assert not setup_2.settings.general.use_custom_settings
         assert not setup_2.settings.general.use_si_settings
 
-        if config["use_grpc"]:
+        if config.use_grpc:
             setup_2 = edbapp.simulation_setups.setups["setup_1"]
         else:
             setup_2 = setup
         assert "pi_slider_position", "si_slider_position" in setup_2.get_configurations().items()
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_siwave_simulation_setup_bug(self):
         """Validate SIWave DCIR setup use_loop_res_for_per_pin persists after reload."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -809,7 +809,7 @@ class TestClass(BaseTestClass):
         assert not setup.settings.use_loop_res_for_per_pin
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_hfss_pi_setup_create_and_properties(self):
         """Create an HFSS PI setup and verify basic properties."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -819,7 +819,7 @@ class TestClass(BaseTestClass):
         assert "hfss_pi_1" in edbapp.simulation_setups.hfss_pi
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_hfss_pi_setup_create_with_sweep(self):
         """Create an HFSS PI setup with a frequency sweep."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -833,7 +833,7 @@ class TestClass(BaseTestClass):
         assert len(setup.sweep_data) > 0
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_create_setup_with_unknown_solver_falls_back_to_hfss(self):
         """Passing an unknown solver name to create() should fall back to HFSS."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -842,7 +842,7 @@ class TestClass(BaseTestClass):
         assert "fallback_setup" in edbapp.simulation_setups.hfss
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_create_setup_returns_none_for_duplicate_name(self):
         """create() must return None and log an error if setup already exists."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -851,42 +851,42 @@ class TestClass(BaseTestClass):
         assert result is None
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_hfss_pi_property_empty_when_no_setups(self):
         """hfss_pi property returns empty dict when no HFSS PI setups exist."""
         edbapp = self.edb_examples.create_empty_edb()
         assert edbapp.simulation_setups.hfss_pi == {}
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_q3d_property_empty_when_no_q3d_setups(self):
         """q3d property returns empty dict when no Q3D setups exist."""
         edbapp = self.edb_examples.create_empty_edb()
         assert edbapp.simulation_setups.q3d == {}
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_raptor_x_property_empty_when_no_raptor_x_setups(self):
         """raptor_x property returns empty dict when no RaptorX setups exist."""
         edbapp = self.edb_examples.create_empty_edb()
         assert edbapp.simulation_setups.raptor_x == {}
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_siwave_dcir_property_empty_when_no_setups(self):
         """siwave_dcir property returns empty dict when no DCIR setups exist."""
         edbapp = self.edb_examples.create_empty_edb()
         assert edbapp.simulation_setups.siwave_dcir == {}
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_siwave_property_empty_when_no_setups(self):
         """siwave property returns empty dict when no SIWave setups exist."""
         edbapp = self.edb_examples.create_empty_edb()
         assert edbapp.simulation_setups.siwave == {}
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_create_siwave_cpa_setup_creates_and_stores(self):
         """create_siwave_cpa_setup creates a CPA setup and stores it internally."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -895,7 +895,7 @@ class TestClass(BaseTestClass):
         assert "my_cpa_setup" in edbapp.simulation_setups._siwave_cpa_setup
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_create_siwave_cpa_setup_duplicate_returns_existing(self):
         """create_siwave_cpa_setup returns the existing setup if called with the same name."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -904,7 +904,7 @@ class TestClass(BaseTestClass):
         assert setup2 is setup1
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_create_hfss_setup_without_sweep(self):
         """create_hfss_setup with no frequency params should not add a sweep."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -913,7 +913,7 @@ class TestClass(BaseTestClass):
         assert len(setup.sweep_data) == 0
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_create_siwave_setup_without_sweep(self):
         """create_siwave_setup with no frequency params should not add a sweep."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -921,7 +921,7 @@ class TestClass(BaseTestClass):
         assert setup is not None
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_setups_property_merges_all_solver_types(self):
         """setups property should aggregate all solver setup dicts."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -932,7 +932,7 @@ class TestClass(BaseTestClass):
         assert "si_merged" in all_setups
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_create_raptor_x_setup_with_zero_start_freq(self):
         """create_raptor_x_setup with start_freq=0 should still add a sweep (not None)."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -946,7 +946,7 @@ class TestClass(BaseTestClass):
         assert len(setup.sweep_data) > 0
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet skipping")
     def test_create_q3d_setup_without_sweep(self):
         """create_q3d_setup with no frequency params should not add a sweep."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -954,7 +954,7 @@ class TestClass(BaseTestClass):
         assert setup is not None
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Adaptive solution setter write-back is gRPC-only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Adaptive solution setter write-back is gRPC-only.")
     def test_hfss_adaptive_solution_setters(self):
         """Verify all adaptive solution getter/setter pairs persist via gRPC write-back."""
         edbapp = self.edb_examples.create_empty_edb()

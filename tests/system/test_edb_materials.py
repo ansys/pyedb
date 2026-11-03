@@ -31,7 +31,7 @@ from pyedb.configuration.cfg_stackup import MaterialProperties
 # PERMEABILITY_DEFAULT_VALUE is 1 in both dotnet and grpc implementations
 PERMEABILITY_DEFAULT_VALUE = 1
 
-from tests.conftest import GRPC, config, local_path
+from tests.conftest import config, local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 from tests.system.base_test_class import BaseTestClass
@@ -348,7 +348,7 @@ class TestClass(BaseTestClass):
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Causing memory violation")
+    @pytest.mark.skipif(not config.use_grpc, reason="Causing memory violation")
     def test_material_thermal_modifier(self):
         edbapp = self.edb_examples.create_empty_edb()
         THERMAL_MODIFIER = {
@@ -379,6 +379,6 @@ class TestDielectricModel(BaseTestClass):
         assert ds_model.frequency == 1e9
         assert ds_model.loss_tangent_at_frequency == 0.02
         assert ds_model.relative_permittivity_at_frequency == 4
-        if not config["use_grpc"]:
+        if not config.use_grpc:
             assert ds_model.use_dc_relative_permittivity is False
         edbapp.close(terminate_rpc_session=False)

@@ -32,7 +32,7 @@ from pyedb.generic.settings import settings
 from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
-if config["use_grpc"]:
+if config.use_grpc:
     from pyedb.grpc.database.geometry.point_data import PointData
     from pyedb.grpc.database.geometry.polygon_data import PolygonData
 else:
@@ -113,7 +113,7 @@ class TestClass(BaseTestClass):
         assert poly.scale(factor=2)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet has not attribute design_mode")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet has not attribute design_mode")
     def test_modeler_polygon_operations_ic_mode(self):
         """Create primitives, switch to IC mode and apply polygon operations."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -591,7 +591,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and platform.system() == "Linux",
+        config.use_grpc and platform.system() == "Linux",
         reason="Known issue in ansys-edb-core layout instance server on Linux",
     )
     def test_get_primitives_by_point_layer_and_nets(self):
@@ -608,7 +608,7 @@ class TestClass(BaseTestClass):
         assert len(primitives_all) >= len(primitives)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_path_center_line(self):
         edb = self.edb_examples.create_empty_edb()
         edb.stackup.add_layer("GND", "Gap")
@@ -631,7 +631,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].core.center_line.is_closed is False
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_path_center_line_setter(self):
         """``Path.center_line`` setter must actually update the geometry.
 
@@ -663,7 +663,7 @@ class TestClass(BaseTestClass):
         assert [p for p in edb.layout.primitives if p.aedt_name == "my_trace"]
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_path_end_cap_and_corner_style_setters_case_insensitive(self):
         edb = self.edb_examples.create_empty_edb()
         edb.stackup.add_layer("GND", "Gap")
@@ -698,7 +698,7 @@ class TestClass(BaseTestClass):
         assert primitives[0].aedt_name == "line_0"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_insert_layout_instance(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -711,7 +711,7 @@ class TestClass(BaseTestClass):
         assert cell_inst.transform3d.shift.z.value == pytest.approx(edbapp.stackup.layers["1_Top"].lower_elevation)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_insert_layout_instance_place_on_bottom(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -729,7 +729,7 @@ class TestClass(BaseTestClass):
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_insert_layout_instance_placement_3d(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -744,7 +744,7 @@ class TestClass(BaseTestClass):
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
+    @pytest.mark.skipif(not config.use_grpc, reason="dotnet is missing the method to get transform3D")
     def test_insert_3d_component_placement_3d(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")[0]
         edbapp = self.edb_examples.get_si_board()
@@ -761,7 +761,7 @@ class TestClass(BaseTestClass):
         assert cell_inst_1.transform3d.shift.z.value == pytest.approx(0.003)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
+    @pytest.mark.skipif(not config.use_grpc, reason="dotnet is missing the method to get transform3D")
     def test_insert_3d_component_on_layer(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")[0]
         edbapp = self.edb_examples.get_si_board()
@@ -779,7 +779,7 @@ class TestClass(BaseTestClass):
         assert not cell_inst_2.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
+    @pytest.mark.skipif(not config.use_grpc, reason="dotnet is missing the method to get transform3D")
     def test_insert_3d_component_on_component(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/CAP_DUMMY.a3dcomp")[0]
         edbapp = self.edb_examples.get_si_verse()
@@ -790,7 +790,7 @@ class TestClass(BaseTestClass):
         assert cell_inst_1.transform3d.z_y_x_rotation.x.value == pytest.approx(-1.5707963267948968)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="PrimitiveDotNet is only available on the .NET backend")
+    @pytest.mark.skipif(condition=config.use_grpc, reason="PrimitiveDotNet is only available on the .NET backend")
     def test_primitive_dotnet_layer_name_getter_setter_low_level(self):
         from pyedb.dotnet.database.dotnet.database import CellDotNet
         from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet
@@ -815,7 +815,7 @@ class TestClass(BaseTestClass):
         assert circle.layer_name == "Bottom"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="increase test coverage for primitives in grpc")
+    @pytest.mark.skipif(not config.use_grpc, reason="increase test coverage for primitives in grpc")
     def test_primitives_for_grpc(self):
         edbapp = self.edb_examples.get_si_verse()
 
@@ -894,7 +894,7 @@ class TestClass(BaseTestClass):
         ]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only test for modeler.texts property")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only test for modeler.texts property")
     def test_modeler_texts_property(self):
         """Verify texts property returns only text primitives."""
         edbapp = self.edb_examples.get_si_verse()
@@ -905,7 +905,7 @@ class TestClass(BaseTestClass):
         assert all(t.primitive_type == "text" for t in texts)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only test for delete_primitives")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only test for delete_primitives")
     def test_modeler_delete_primitives_by_net(self):
         """delete_primitives removes all primitives on the given net."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -918,7 +918,7 @@ class TestClass(BaseTestClass):
         assert after == 0
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only test for get_primitives filter")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only test for get_primitives filter")
     def test_modeler_get_primitives_filter(self):
         """get_primitives filters by net, layer and type."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -935,7 +935,7 @@ class TestClass(BaseTestClass):
         assert len(all_net1) == 2
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only test for get_layout_statistics")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only test for get_layout_statistics")
     def test_modeler_get_layout_statistics(self):
         """get_layout_statistics returns a populated statistics object."""
         edbapp = self.edb_examples.get_si_verse()
@@ -951,7 +951,7 @@ class TestClass(BaseTestClass):
         assert any(surface > 0 for surface in stats.occupying_surface.values())
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only test for get_layout_statistics")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only test for get_layout_statistics")
     def test_modeler_get_layout_statistics_void_area(self):
         """Void area is subtracted when computing occupying surface."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -966,7 +966,7 @@ class TestClass(BaseTestClass):
         assert after == pytest.approx(3e-6, rel=1e-3)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — parametrize_trace_width")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — parametrize_trace_width")
     def test_modeler_parametrize_trace_width(self):
         """parametrize_trace_width assigns a design variable to path width."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -976,7 +976,7 @@ class TestClass(BaseTestClass):
         assert result
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — create_bondwire")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — create_bondwire")
     def test_modeler_create_bondwire(self):
         """create_bondwire creates a bondwire primitive."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1010,7 +1010,7 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — deprecated primitives_by_net wrapper")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — deprecated primitives_by_net wrapper")
     def test_modeler_deprecated_primitives_by_net(self):
         """Accessing primitives_by_net via modeler triggers FutureWarning and returns dict."""
         import warnings
@@ -1023,7 +1023,7 @@ class TestClass(BaseTestClass):
             assert len(by_net) > 0
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — deprecated primitives wrapper")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — deprecated primitives wrapper")
     def test_modeler_deprecated_primitives(self):
         """Accessing modeler.primitives triggers DeprecationWarning and returns list."""
         import warnings
@@ -1036,7 +1036,7 @@ class TestClass(BaseTestClass):
             assert len(prims) > 0
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — deprecated get_primitive wrapper")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — deprecated get_primitive wrapper")
     def test_modeler_deprecated_get_primitive(self):
         """get_primitive(id) triggers FutureWarning and returns the correct primitive."""
         import warnings
@@ -1051,7 +1051,7 @@ class TestClass(BaseTestClass):
         assert result.id == prim_id
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — deprecated get_polygon_bounding_box")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — deprecated get_polygon_bounding_box")
     def test_modeler_deprecated_get_polygon_bounding_box(self):
         """get_polygon_bounding_box via modeler triggers warning and returns 4-element list."""
         import warnings
@@ -1064,7 +1064,7 @@ class TestClass(BaseTestClass):
         assert len(bbox) == 4
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — deprecated get_polygon_points")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — deprecated get_polygon_points")
     def test_modeler_deprecated_get_polygon_points(self):
         """get_polygon_points via modeler triggers warning and returns points."""
         import warnings
@@ -1077,7 +1077,7 @@ class TestClass(BaseTestClass):
         assert pts
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — parametrize_polygon")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — parametrize_polygon")
     def test_modeler_parametrize_polygon(self):
         """parametrize_polygon assigns offset variable to intersecting polygon points, covering all branches."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1103,7 +1103,7 @@ class TestClass(BaseTestClass):
         assert result2 is True
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — create_polygon with CorePolygonData void")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — create_polygon with CorePolygonData void")
     def test_modeler_create_polygon_with_core_polygon_data_void(self):
         """create_polygon accepts a CorePolygonData as void."""
         from ansys.edb.core.geometry.point_data import PointData as CorePointData
@@ -1132,7 +1132,7 @@ class TestClass(BaseTestClass):
         assert not poly.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — create_trace with CorePolygonData")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — create_trace with CorePolygonData")
     def test_modeler_create_trace_with_core_polygon_data(self):
         """create_trace accepts CorePolygonData directly."""
         from ansys.edb.core.geometry.point_data import PointData as CorePointData
@@ -1146,7 +1146,7 @@ class TestClass(BaseTestClass):
         assert not trace.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — width as string and Value")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — width as string and Value")
     def test_modeler_create_trace_width_types(self):
         """create_trace accepts width as float or string with units.
         Width setter accepts parameterized Value."""
@@ -1174,7 +1174,7 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — _validatePoint branches")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — _validatePoint branches")
     def test_modeler_validate_point(self):
         """_validatePoint validates 2-element, 3-element, and 5-element point formats."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1188,7 +1188,7 @@ class TestClass(BaseTestClass):
         assert edbapp.modeler._validatePoint([0.0, 1.0, "bad", 0.5, 0.5]) is False
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — parametrize_trace_width with layer filter")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — parametrize_trace_width with layer filter")
     @pytest.mark.xfail(reason="Bug in source: add_design_variable fails for grpc in parametrize_trace_width.")
     def test_modeler_parametrize_trace_width_with_layer(self):
         """parametrize_trace_width with layer_name filter covers the layer branch."""
@@ -1199,7 +1199,7 @@ class TestClass(BaseTestClass):
         assert result
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — get_layout_statistics with evaluate_area")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — get_layout_statistics with evaluate_area")
     def test_modeler_get_layout_statistics_evaluate_area(self):
         """get_layout_statistics with evaluate_area=True covers area computation branch."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1208,7 +1208,7 @@ class TestClass(BaseTestClass):
         assert stats.num_nets > 0
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — defeature_polygon failure branch")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — defeature_polygon failure branch")
     def test_modeler_defeature_polygon_large_tolerance(self):
         """defeature_polygon returns False when tolerance is too large (empty result)."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1218,7 +1218,7 @@ class TestClass(BaseTestClass):
         assert result is False
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — create_pin_group by id and by name")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — create_pin_group by id and by name")
     def test_modeler_create_pin_group(self):
         """create_pin_group creates a pin group from pin ids."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1228,7 +1228,7 @@ class TestClass(BaseTestClass):
         assert pg
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — create_pin_group no pin returns False")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — create_pin_group no pin returns False")
     def test_modeler_create_pin_group_no_pins_returns_false(self):
         """create_pin_group returns False when no valid pin is found."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1237,7 +1237,7 @@ class TestClass(BaseTestClass):
         assert result is False
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — create_pin_group by aedt_name")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — create_pin_group by aedt_name")
     def test_modeler_create_pin_group_by_aedt_name(self):
         """create_pin_group using pins_by_aedt_name covers that branch."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1246,7 +1246,7 @@ class TestClass(BaseTestClass):
         assert pg
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only delete_padstack_geometries")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only delete_padstack_geometries")
     @pytest.mark.xfail(reason="Bug in source: edb_padstack attribute missing on PadstackDef in grpc backend.")
     def test_modeler_unite_polygons_delete_padstack_geometries(self):
         """unite_polygons_on_layer with delete_padstack_gemometries=True covers that branch."""
@@ -1255,7 +1255,7 @@ class TestClass(BaseTestClass):
         assert result
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — create_rectangle with width/height as variable")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — create_rectangle with width/height as variable")
     @pytest.mark.xfail(reason="Bug in source: value() called with 3 args at modeler.py:681.")
     def test_modeler_create_rectangle_with_str_variable_height(self):
         """create_rectangle with height as str variable name covers variable lookup branch."""
@@ -1273,7 +1273,7 @@ class TestClass(BaseTestClass):
         assert not rect.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — fix_circle_void with actual void circle")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — fix_circle_void with actual void circle")
     def test_modeler_fix_circle_void_with_void_circle(self):
         """fix_circle_void_for_clipping covers the is_void=True branch by creating a real circle void."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1294,7 +1294,7 @@ class TestClass(BaseTestClass):
         assert result is True
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — open_solder_mask no material triggers default")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — open_solder_mask no material triggers default")
     def test_modeler_open_solder_mask_no_material_default(self):
         """open_solder_mask creates default SolderMask material when none provided."""
         edbapp = self.edb_examples.get_si_verse_sfp()
@@ -1311,7 +1311,7 @@ class TestClass(BaseTestClass):
         assert "SM_default" in edbapp.stackup.layers
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only reference layer auto-detect bottom")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only reference layer auto-detect bottom")
     def test_modeler_open_solder_mask_auto_reference_bottom(self):
         """open_solder_mask auto-detects bottom reference layer (lines 1831 - 1834)."""
         edbapp = self.edb_examples.get_si_verse_sfp()
@@ -1330,7 +1330,7 @@ class TestClass(BaseTestClass):
         assert result is True
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only raises on missing component")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only raises on missing component")
     def test_modeler_open_solder_mask_invalid_component_raises(self):
         """open_solder_mask raises ValueError for invalid component_filter (line 1858)."""
         edbapp = self.edb_examples.get_si_verse_sfp()
@@ -1347,7 +1347,7 @@ class TestClass(BaseTestClass):
             )
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — open_solder_mask voids_opening_offset branch")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — open_solder_mask voids_opening_offset branch")
     def test_modeler_open_solder_mask_voids_with_offset(self):
         """open_solder_mask with voids_opening_offset triggers polygon expand (line 1881)."""
         edbapp = self.edb_examples.get_si_verse_sfp()
@@ -1365,7 +1365,7 @@ class TestClass(BaseTestClass):
         assert "SM_voids" in edbapp.stackup.layers
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — open_solder_mask traces_offset branch")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — open_solder_mask traces_offset branch")
     def test_modeler_open_solder_mask_traces_with_offset(self):
         """open_solder_mask with traces_offset triggers polygon expand (line 1890)."""
         edbapp = self.edb_examples.get_si_verse_sfp()
@@ -1384,7 +1384,7 @@ class TestClass(BaseTestClass):
         assert "SM_traces" in edbapp.stackup.layers
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only pins_by_aedt_name str (not list)")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only pins_by_aedt_name str (not list)")
     def test_modeler_create_pin_group_aedt_name_str(self):
         """create_pin_group accepts a single aedt_name string (covers line 1232)."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1393,7 +1393,7 @@ class TestClass(BaseTestClass):
         assert pg
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — create_pin_group with pins_by_name str (not list)")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — create_pin_group with pins_by_name str (not list)")
     def test_modeler_create_pin_group_by_name_str(self):
         """create_pin_group accepts a single pin name string (covers line 1234)."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1402,7 +1402,7 @@ class TestClass(BaseTestClass):
         assert pg
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — create_pin_group pins_by_id as int (not list)")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — create_pin_group pins_by_id as int (not list)")
     def test_modeler_create_pin_group_id_as_int(self):
         """create_pin_group with pins_by_id as int (not list) covers line 1219."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1411,7 +1411,7 @@ class TestClass(BaseTestClass):
         assert pg
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only pins_by_id and pins_by_aedt_name")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only pins_by_id and pins_by_aedt_name")
     def test_modeler_create_pin_group_combined_id_and_aedt_name(self):
         """create_pin_group merges pins from both pins_by_id and pins_by_aedt_name (covers lines 1240 - 1242)."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1424,7 +1424,7 @@ class TestClass(BaseTestClass):
         assert pg
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — add_void static method with non-Primitive void")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — add_void static method with non-Primitive void")
     def test_modeler_add_void_non_primitive(self):
         """add_void covers the else branch when void shape is not a Primitive (lines 1279 - 1280)."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1437,7 +1437,7 @@ class TestClass(BaseTestClass):
         assert result
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — deprecated primitives_by_layer wrapper return body")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — deprecated primitives_by_layer wrapper return body")
     def test_modeler_deprecated_primitives_by_layer_return(self):
         """Accessing primitives_by_layer via modeler deprecated wrapper returns the dict (line 144)."""
         import warnings
@@ -1450,7 +1450,7 @@ class TestClass(BaseTestClass):
         assert "1_Top" in by_layer
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — _validatePoint type checks on 2-element bad type")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — _validatePoint type checks on 2-element bad type")
     def test_modeler_validate_point_bad_x_type(self):
         """_validatePoint returns False for 2-element point with non-numeric X (lines 853-854)."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1461,7 +1461,7 @@ class TestClass(BaseTestClass):
         assert edbapp.modeler._validatePoint([0.0, None]) is False
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only—open_solder_mask open_top=True auto reference layer")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only—open_solder_mask open_top=True auto reference layer")
     def test_modeler_open_solder_mask_auto_reference_top(self):
         """open_solder_mask auto-detects top reference layer when reference_signal_layer is empty (line 1832)."""
         edbapp = self.edb_examples.get_si_verse_sfp()
@@ -1480,7 +1480,7 @@ class TestClass(BaseTestClass):
         assert "SM_auto_top" in edbapp.stackup.layers
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only invalid component_filter with open_top=False")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only invalid component_filter with open_top=False")
     def test_modeler_open_solder_mask_component_filter_invalid_bottom(self):
         """open_solder_mask raises ValueError when component_filter has unknown RefDes (lines 1858 - 1860)."""
         edbapp = self.edb_examples.get_si_verse_sfp()
@@ -1498,7 +1498,7 @@ class TestClass(BaseTestClass):
             )
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — open_solder_mask traces no offset")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — open_solder_mask traces no offset")
     def test_modeler_open_solder_mask_traces_no_offset(self):
         """open_solder_mask with open_traces=True and no traces_offset covers lines 1887 - 1891."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1517,7 +1517,7 @@ class TestClass(BaseTestClass):
         assert result is True
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only — open_solder_mask voids no offset")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only — open_solder_mask voids no offset")
     def test_modeler_open_solder_mask_voids_no_offset(self):
         """open_solder_mask with open_voids=True and no voids_opening_offset covers lines 1876 - 1882."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1567,7 +1567,7 @@ class TestPointData(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="gRPC only")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only")
     def test_insert_cs(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.modeler.insert_coordinate_system(name="CS1", x="1mm", y="2mm", layer="1_Top")
@@ -1578,7 +1578,7 @@ class TestPointData(BaseTestClass):
         assert cs.placement_layer == "1_Top"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="Not working with FotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not working with FotNet.")
     def test_convert_primitive_to_via(self):
         edbapp = self.edb_examples.get_si_verse_sfp()
         circ1 = edbapp.modeler.create_circle(layer_name="Top", x=0.0, y=0.0, radius=0.2e-3)
@@ -1609,7 +1609,7 @@ class TestPolygonData(BaseTestClass):
         assert poly_data
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="Only supported with gRPC.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Only supported with gRPC.")
     def test_create_arc_point_with_variable(self):
         """Arc points keep the variable expression of their arc height (issue #2600)."""
         from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
@@ -1633,7 +1633,7 @@ class TestPolygonData(BaseTestClass):
         assert "arc_h" in str(arcs[0].x)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="Only supported with gRPC.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Only supported with gRPC.")
     def test_create_point_with_variable(self):
         """Regular points keep the variable expression of their coordinates."""
         edbapp = self.edb_examples.get_si_verse()
