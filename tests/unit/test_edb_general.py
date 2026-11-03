@@ -33,7 +33,7 @@ from tests.conftest import config
 def _make_edb_init(edbpath, new_directory):
     """Build a minimal EdbInit instance with a mocked _db."""
     edb = EdbInit.__new__(EdbInit)
-    edb.version = config["desktopVersion"]
+    edb.version = config.version
     edb.logger = settings.logger
     edb.edbpath = edbpath
     edb.log_name = None
@@ -51,7 +51,7 @@ def _make_edb_init(edbpath, new_directory):
     return edb
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_save_as_updates_edbpath(tmp_path):
     """save_as() must update self.edbpath to the new location."""
     original = str(tmp_path / "original.aedb")
@@ -72,7 +72,7 @@ def test_save_as_updates_edbpath(tmp_path):
     )
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_save_as_updates_edbpath_with_pathlib(tmp_path):
     """save_as() must accept a pathlib.Path and still update self.edbpath."""
     from pathlib import Path
@@ -90,7 +90,7 @@ def test_save_as_updates_edbpath_with_pathlib(tmp_path):
     assert edb.edbpath == str(copy_dir)
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_save_as_passes_correct_path_to_db(tmp_path):
     """save_as() must forward the resolved path and version to _db.save_as."""
     original = str(tmp_path / "original.aedb")
@@ -101,12 +101,12 @@ def test_save_as_passes_correct_path_to_db(tmp_path):
     edb = _make_edb_init(original, copy_path)
     edb._wait_for_file_release = lambda file_to_release=None, **kw: True
 
-    edb.save_as(copy_path, version=config["desktopVersion"])
+    edb.save_as(copy_path, version=config.version)
 
-    assert edb._saved_paths == [(copy_path, config["desktopVersion"])]
+    assert edb._saved_paths == [(copy_path, config.version)]
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_save_as_updates_log_name(tmp_path):
     """save_as() must update self.log_name to match the new path."""
     original = str(tmp_path / "original.aedb")
@@ -124,7 +124,7 @@ def test_save_as_updates_log_name(tmp_path):
     assert edb.log_name == expected_log, f"log_name was not updated: expected {expected_log!r}, got {edb.log_name!r}"
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_save_as_updates_local_file_loggers(tmp_path, monkeypatch):
     """save_as() must rotate local file logger names to match the new AEDB path."""
     original = str(tmp_path / "original.aedb")

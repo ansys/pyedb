@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from tests.conftest import config, local_path, test_subfolder, use_grpc
+from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -276,7 +276,7 @@ class TestClass(BaseTestClass):
         assert len(component.pins) == 2
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(use_grpc, reason="DotNet module not available in gRPC mode without .NET installation")
+    @pytest.mark.skipif(config.use_grpc, reason="DotNet module not available in gRPC mode without .NET installation")
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
         from pyedb.dotnet.database.components import resistor_value_parser
@@ -389,7 +389,7 @@ class TestClass(BaseTestClass):
         assert edbapp.excitation_manager.create_port_on_pins(refdes="U1", pins=["A28"], reference_pins=["A11", "A16"])
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["desktopVersion"] < "2026.1" and config["use_grpc"], reason="Requires 2026R1")
+    @pytest.mark.skipif(config.version < "2026.1" and config.use_grpc, reason="Requires 2026R1")
     def test_replace_rlc_by_gap_boundaries(self):
         """Replace RLC component by RLC gap boundaries."""
         # TODO check how we can return same boundary_type between grpc and dotnet.
@@ -674,7 +674,7 @@ class TestClass(BaseTestClass):
         assert os.path.isfile(xml_output)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_find_by_reference_designator(self):
         """find_by_reference_designator returns the same object as instances[]."""
         edb = self.edb_examples.get_si_verse()
@@ -683,7 +683,7 @@ class TestClass(BaseTestClass):
         assert comp.name == "R1"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_get_pins_with_filters(self):
         """get_pins() with net_name and pin_name filters."""
         edb = self.edb_examples.get_si_verse()
@@ -701,7 +701,7 @@ class TestClass(BaseTestClass):
         assert len(filtered) == 1
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_get_nets_from_pin_list(self):
         """get_nets_from_pin_list() returns unique net names."""
         edb = self.edb_examples.get_si_verse()
@@ -711,7 +711,7 @@ class TestClass(BaseTestClass):
         assert len(nets) > 0
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_get_rats(self):
         """get_rats() returns a non-empty list of connection info dicts."""
         edb = self.edb_examples.get_si_verse()
@@ -724,7 +724,7 @@ class TestClass(BaseTestClass):
         assert "net_name" in rats[0]
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_get_component_net_connection_info(self):
         """get_component_net_connection_info returns correct structure."""
         edb = self.edb_examples.get_si_verse()
@@ -735,7 +735,7 @@ class TestClass(BaseTestClass):
         assert len(info["pin_name"]) == 2  # R1 has 2 pins
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_get_through_resistor_list(self):
         """get_through_resistor_list returns resistors below threshold."""
         edb = self.edb_examples.get_si_verse()
@@ -743,7 +743,7 @@ class TestClass(BaseTestClass):
         assert isinstance(result, list)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_nport_comp_definition(self):
         """nport_comp_definition returns a dict of definitions with a reference file."""
         edb = self.edb_examples.get_si_verse()
@@ -751,7 +751,7 @@ class TestClass(BaseTestClass):
         assert isinstance(result, dict)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_components_by_partname(self):
         """components_by_partname groups components correctly."""
         edb = self.edb_examples.get_si_verse()
@@ -764,7 +764,7 @@ class TestClass(BaseTestClass):
             assert len(comps) >= 1
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_create_pin_group_on_net(self):
         """create_pin_group_on_net creates a pin group for all GND pins on U6."""
         edb = self.edb_examples.get_si_verse()
@@ -774,7 +774,7 @@ class TestClass(BaseTestClass):
         assert group_name == "pg_U6_GND"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_create_pin_group(self):
         """create_pin_group creates a pin group from a list of pin names on a known net."""
         edb = self.edb_examples.get_si_verse()
@@ -791,7 +791,7 @@ class TestClass(BaseTestClass):
         assert group_name == "pg_u1_manual"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_add_port_on_rlc_component(self):
         """add_port_on_rlc_component creates a circuit port on an RLC component."""
         edb = self.edb_examples.get_si_verse()
@@ -799,7 +799,7 @@ class TestClass(BaseTestClass):
         assert result is True
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_structures_3d(self):
         """structures_3d property returns a dict (may be empty on si_verse)."""
         edb = self.edb_examples.get_si_verse()
@@ -807,7 +807,7 @@ class TestClass(BaseTestClass):
         assert isinstance(result, dict)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_export_and_import_definition(self):
         """export_definition / import_definition round-trip RLC model."""
         edb = self.edb_examples.get_si_verse()
@@ -817,7 +817,7 @@ class TestClass(BaseTestClass):
         assert edb.components.import_definition(export_path)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_get_solder_ball_height(self):
         """get_solder_ball_height returns a float for a component with solder balls."""
         edb = self.edb_examples.get_si_verse()
@@ -828,7 +828,7 @@ class TestClass(BaseTestClass):
         assert height == pytest.approx(150e-6)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_set_solder_ball_ic_component_properties_persisted(self):
         """set_solder_ball correctly persists all solder-ball and die properties for an IC component.
 
@@ -866,7 +866,7 @@ class TestClass(BaseTestClass):
 
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_get_aedt_pin_name(self):
         """get_aedt_pin_name returns a string AEDT pin name."""
         edb = self.edb_examples.get_si_verse()
@@ -876,14 +876,14 @@ class TestClass(BaseTestClass):
         assert len(name) > 0
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_disable_rlc_component(self):
         """disable_rlc_component disables an RLC component model."""
         edb = self.edb_examples.get_si_verse()
         assert edb.components.disable_rlc_component("C1")
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_create_component_no_rlc(self):
         """create() can create a non-RLC component (OTHER type)."""
         edb = self.edb_examples.get_si_verse()
@@ -893,7 +893,7 @@ class TestClass(BaseTestClass):
         assert comp.name == "NonRlcComp"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_create_component_rlc_with_part_name(self):
         """create() with component_part_name uses _get_component_definition."""
         edb = self.edb_examples.get_si_verse()
@@ -905,7 +905,7 @@ class TestClass(BaseTestClass):
         assert comp.name == "TestRlcPartName"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_get_pins_name_from_net_no_pin_list(self):
         """get_pins_name_from_net without explicit pin_list searches all components."""
         edb = self.edb_examples.get_si_verse()
@@ -914,7 +914,7 @@ class TestClass(BaseTestClass):
         assert len(names) > 0
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
     def test_grpc_delete_single_pin_rlc_deactivate(self):
         """delete_single_pin_rlc with deactivate_only=True disables components."""
         edb = self.edb_examples.get_si_verse()

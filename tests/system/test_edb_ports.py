@@ -162,7 +162,7 @@ class TestClass(BaseTestClass):
         )
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Test skipped for DotNet")
+    @pytest.mark.skipif(not config.use_grpc, reason="Test skipped for DotNet")
     def test_create_edge_port_on_polygon(self):
         """Create lumped and vertical port."""
         target_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/edge_ports.aedb")[0]
@@ -222,7 +222,7 @@ class TestClass(BaseTestClass):
         assert gap_port.is_circuit_port
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Pad-edge configuration export is gRPC-only")
+    @pytest.mark.skipif(not config.use_grpc, reason="Pad-edge configuration export is gRPC-only")
     def test_pad_edge_port_uses_layout_coordinates(self):
         """Pad-edge arcs are created, read, exported and re-applied in layout coordinates."""
         edb = self.edb_examples.get_si_verse()
@@ -289,7 +289,7 @@ class TestClass(BaseTestClass):
             target.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        config.use_grpc and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_various_ports_0(self):
@@ -403,7 +403,7 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        config.use_grpc and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_various_ports_1(self):
@@ -427,7 +427,7 @@ class TestClass(BaseTestClass):
             t = edb.modeler.create_trace(path_list=p, **kwargs)
             traces.append(t)
 
-        if config["use_grpc"]:
+        if config.use_grpc:
             assert edb.excitation_manager.create_wave_port(traces[0].id, trace_paths[0][1], "wave_port")
         else:
             assert edb.excitation_manager.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
@@ -441,7 +441,7 @@ class TestClass(BaseTestClass):
         )
 
         paths = [i[1] for i in trace_paths]
-        if config["use_grpc"]:
+        if config.use_grpc:
             p = edb.excitation_manager.create_bundle_wave_port(traces, paths, port_name="port2")
         else:
             p = edb.excitation_manager.create_bundle_wave_port(traces, paths)
@@ -456,7 +456,7 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        config.use_grpc and config.version < "2026.1", reason="working with latest release"
     )
     def test_ports_and_sources_creation(self):
         """Create ports and sources from padstack terminals."""
@@ -482,7 +482,7 @@ class TestClass(BaseTestClass):
         assert len(edbapp.ports) == 6
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_ports_property(self):
         """Verify ports property returns all excitations."""
         edbapp = self.edb_examples.get_si_verse()
@@ -493,7 +493,7 @@ class TestClass(BaseTestClass):
         assert len(ports) > 0
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_excitations_deprecated_property(self):
         """Deprecated excitations property must still return ports dict."""
         edbapp = self.edb_examples.get_si_verse()
@@ -503,7 +503,7 @@ class TestClass(BaseTestClass):
         assert isinstance(excitations, dict)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_get_ports_number(self):
         """get_ports_number returns correct count."""
         edbapp = self.edb_examples.get_si_verse()
@@ -512,7 +512,7 @@ class TestClass(BaseTestClass):
         assert n >= 1
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_pin_groups_property(self):
         """pin_groups returns a dict of pin groups."""
         edbapp = self.edb_examples.get_si_verse()
@@ -522,7 +522,7 @@ class TestClass(BaseTestClass):
         assert "MyGNDGroup" in pin_groups
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_sources_and_probes_properties(self):
         """sources and probes properties return dicts."""
         edbapp = self.edb_examples.get_si_verse()
@@ -531,7 +531,7 @@ class TestClass(BaseTestClass):
         assert isinstance(edbapp.excitation_manager.probes, dict)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_coax_port_underscore_separator(self):
         """create_coax_port with underscore separator naming convention."""
         edbapp = self.edb_examples.get_si_verse()
@@ -541,7 +541,7 @@ class TestClass(BaseTestClass):
         assert "." not in port_name or "_" in port_name
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_coax_port_duplicate_name_renamed(self):
         """Duplicate coax port name is automatically renamed."""
         edbapp = self.edb_examples.get_si_verse()
@@ -553,7 +553,7 @@ class TestClass(BaseTestClass):
         assert name2 != "fixed_name"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_coax_port_from_int_padstack_id(self):
         """create_coax_port accepts integer padstack ID."""
         edbapp = self.edb_examples.get_si_verse()
@@ -563,7 +563,7 @@ class TestClass(BaseTestClass):
         assert port_name
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_add_port_on_rlc_component_circuit_port(self):
         """Replace RLC component with circuit port."""
         edbapp = self.edb_examples.get_si_verse()
@@ -577,7 +577,7 @@ class TestClass(BaseTestClass):
             assert edbapp.excitation_manager.add_port_on_rlc_component(rlc_cmp, circuit_ports=True)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_add_port_on_rlc_component_pec(self):
         """Replace RLC component with PEC boundary."""
         edbapp = self.edb_examples.get_si_verse()
@@ -590,7 +590,7 @@ class TestClass(BaseTestClass):
             assert edbapp.excitation_manager.add_port_on_rlc_component(rlc_cmp, pec_boundary=True)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_port_on_pins_single_pin(self):
         """Create circuit port between single positive and reference pins."""
         edbapp = self.edb_examples.get_si_verse()
@@ -607,7 +607,7 @@ class TestClass(BaseTestClass):
         assert "single_pin_port" in edbapp.terminals
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_port_on_pins_pingroup(self):
         """Create circuit port using multiple pins (forces pin group creation)."""
         edbapp = self.edb_examples.get_si_verse()
@@ -623,7 +623,7 @@ class TestClass(BaseTestClass):
         assert term
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_port_on_pins_pec_boundary(self):
         """Create PEC boundary between two single pins."""
         edbapp = self.edb_examples.get_si_verse()
@@ -639,7 +639,7 @@ class TestClass(BaseTestClass):
         assert term
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_port_on_component_coax(self):
         """create_port_on_component with coax type creates solder-ball ports."""
         edbapp = self.edb_examples.get_si_verse()
@@ -652,7 +652,7 @@ class TestClass(BaseTestClass):
         assert result
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_port_on_component_no_pins_returns_false(self):
         """create_port_on_component with unknown net returns False."""
         edbapp = self.edb_examples.get_si_verse()
@@ -665,7 +665,7 @@ class TestClass(BaseTestClass):
         assert result is False
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_voltage_source_on_net_auto_negative_net(self):
         """create_voltage_source_on_net resolves negative net automatically."""
         edbapp = self.edb_examples.get_si_verse()
@@ -674,7 +674,7 @@ class TestClass(BaseTestClass):
         assert "Vsource_" in name or "1V0" in name
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_current_source_on_net_named(self):
         """create_current_source_on_net with explicit name."""
         edbapp = self.edb_examples.get_si_verse()
@@ -684,7 +684,7 @@ class TestClass(BaseTestClass):
         assert name == "MyIsource"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_circuit_port_on_net_no_negative_net(self):
         """create_circuit_port_on_net with auto-resolved negative net."""
         edbapp = self.edb_examples.get_si_verse()
@@ -693,7 +693,7 @@ class TestClass(BaseTestClass):
         assert "1V0" in result
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_resistor_on_pin_auto_name(self):
         """create_resistor_on_pin without explicit name uses auto-name."""
         edbapp = self.edb_examples.get_si_verse()
@@ -702,7 +702,7 @@ class TestClass(BaseTestClass):
         assert name
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_circuit_port_on_pin_auto_name(self):
         """create_circuit_port_on_pin without explicit name uses auto-name."""
         edbapp = self.edb_examples.get_si_verse()
@@ -711,7 +711,7 @@ class TestClass(BaseTestClass):
         assert name
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_get_point_terminal(self):
         """get_point_terminal creates a PointTerminal at a given location."""
         edbapp = self.edb_examples.get_si_verse()
@@ -722,7 +722,7 @@ class TestClass(BaseTestClass):
         assert not term.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_dc_terminal(self):
         """create_dc_terminal creates a valid DC terminal."""
         edbapp = self.edb_examples.get_si_verse()
@@ -730,7 +730,7 @@ class TestClass(BaseTestClass):
         assert result == "my_dc_terminal"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_port_exist_helper(self):
         """_port_exist returns True for existing port and False otherwise."""
         edbapp = self.edb_examples.get_si_verse()
@@ -739,7 +739,7 @@ class TestClass(BaseTestClass):
         assert edbapp.excitation_manager._port_exist("nonexistent_port") is False
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_padstack_instance_terminal(self):
         """create_padstack_instance_terminal creates terminal from padstack name."""
         edbapp = self.edb_examples.get_si_verse()
@@ -752,7 +752,7 @@ class TestClass(BaseTestClass):
         assert not term.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_point_terminal(self):
         """create_point_terminal without reference creates a standalone terminal (not a circuit port)."""
         edbapp = self.edb_examples.get_si_verse()
@@ -766,7 +766,7 @@ class TestClass(BaseTestClass):
         assert term.is_circuit_port is False
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_point_terminal_with_reference(self):
         """create_point_terminal with reference_net + reference_layer creates a linked reference terminal."""
         edbapp = self.edb_examples.get_si_verse()
@@ -787,7 +787,7 @@ class TestClass(BaseTestClass):
         assert term.core.reference_terminal.net.name == "GND"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_point_terminal_degenerate_reference_raises(self):
         """create_point_terminal raises ValueError when signal and reference positions are identical."""
         edbapp = self.edb_examples.get_si_verse()
@@ -803,7 +803,7 @@ class TestClass(BaseTestClass):
             )
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_point_terminal_with_existing_reference_terminal(self):
         """reference_terminal param links an existing terminal object without creating a new one."""
         edbapp = self.edb_examples.get_si_verse()
@@ -832,7 +832,7 @@ class TestClass(BaseTestClass):
         assert gnd_ref.is_circuit_port is True
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_point_terminal_shared_reference_across_multiple_pins(self):
         """One reference terminal can be shared across multiple signal terminals."""
         edbapp = self.edb_examples.get_si_verse()
@@ -856,7 +856,7 @@ class TestClass(BaseTestClass):
         assert len(created) == len(signal_nets)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_point_terminal_reference_terminal_overrides_reference_net(self):
         """When both reference_terminal and reference_net are supplied, reference_terminal wins."""
         edbapp = self.edb_examples.get_si_verse()
@@ -878,7 +878,7 @@ class TestClass(BaseTestClass):
         assert sig_term.core.reference_terminal.name == explicit_ref.name
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_voltage_source_on_pin_auto_name(self):
         """create_voltage_source_on_pin without explicit name uses auto-name."""
         edbapp = self.edb_examples.get_si_verse()
@@ -888,7 +888,7 @@ class TestClass(BaseTestClass):
         assert "VSource_" in name
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_current_source_on_pin_auto_name(self):
         """create_current_source_on_pin without explicit name uses auto-name."""
         edbapp = self.edb_examples.get_si_verse()
@@ -897,7 +897,7 @@ class TestClass(BaseTestClass):
         assert name
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_rlc_boundary_on_pins_all_zero(self):
         """create_rlc_boundary_on_pins with all values returns terminal."""
         edb = self.edb_examples.get_si_verse()
@@ -907,7 +907,7 @@ class TestClass(BaseTestClass):
         assert term
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_create_port_creates_gap_port(self):
         """create_port on edge terminal creates a gap port."""
         edbapp = self.edb_examples.get_si_verse()
@@ -933,7 +933,7 @@ class TestClass(BaseTestClass):
         assert result
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet deprecated, missing method.")
+    @pytest.mark.skipif(not config.use_grpc, reason="DotNet deprecated, missing method.")
     def test_coax_port_radial_extent_factor_setter(self):
         """CoaxPort.radial_extent_factor setter must work without TypeError."""
         edbapp = self.edb_examples.get_si_verse()

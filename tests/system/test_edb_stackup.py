@@ -29,7 +29,7 @@ import time
 
 import pytest
 
-from tests.conftest import GRPC, config, desktop_version
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -97,7 +97,7 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.layers["1_Top"].thickness == 4e-05
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and platform.system() == "Linux", reason="random fails on Linux.")
+    @pytest.mark.skipif(config.use_grpc and platform.system() == "Linux", reason="random fails on Linux.")
     def test_stackup_create_symmetric_stackup(self):
         """Create a symmetric stackup."""
         app_edb = self.edb_examples.create_empty_edb()
@@ -153,7 +153,7 @@ class TestClass(BaseTestClass):
                 assert angle == 0.0
                 assert loc == [0.0, 0.0, 0.00017]
             else:
-                if desktop_version > "2023.1":
+                if config.version > "2023.1":
                     (
                         res,
                         local_origin,
@@ -226,7 +226,7 @@ class TestClass(BaseTestClass):
                 assert transform.shift.y.value == -0.0005
                 assert transform.shift.z.value == 0.0
             else:
-                if desktop_version > "2023.1":
+                if config.version > "2023.1":
                     (
                         res,
                         local_origin,
@@ -325,7 +325,7 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.add_layer("new_bottom", "1_Top", "add_at_elevation", "dielectric", elevation=0.0003)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and platform.system() == "Linux", reason="Randomly crash with grpc linux")
+    @pytest.mark.skipif(config.use_grpc and platform.system() == "Linux", reason="Randomly crash with grpc linux")
     def test_stackup_properties_1(self):
         """Evaluate various stackup properties."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -349,7 +349,7 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and platform.system() == "Linux", reason="Randomly crash with grpc linux")
+    @pytest.mark.skipif(config.use_grpc and platform.system() == "Linux", reason="Randomly crash with grpc linux")
     def test_stackup_properties_2(self):
         """Evaluate various stackup properties (JSON export round-trip)."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -654,7 +654,7 @@ class TestClass(BaseTestClass):
                 assert transform.matrix[3][:3] == [0, 0, 0.00017]
                 assert transform.shift.magnitude == 0.00017
             else:
-                if desktop_version > "2023.1":
+                if config.version > "2023.1":
                     (
                         res,
                         localOrigin,
@@ -738,7 +738,7 @@ class TestClass(BaseTestClass):
                 assert transform.matrix[3][:3] == [0, 0, 0.00017]
                 assert transform.shift.magnitude == 0.00017
             else:
-                if desktop_version > "2023.1":
+                if config.version > "2023.1":
                     (
                         res,
                         localOrigin,
@@ -822,7 +822,7 @@ class TestClass(BaseTestClass):
                 assert transform.matrix[3][:3] == [0, 0, 0.00019]
                 assert transform.shift.magnitude == 0.00019
             else:
-                if desktop_version > "2023.1":
+                if config.version > "2023.1":
                     (
                         res,
                         localOrigin,
@@ -907,7 +907,7 @@ class TestClass(BaseTestClass):
                 assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, -2e-5]
                 assert round(transform.shift.magnitude, 6) == 2e-5
             else:
-                if desktop_version > "2023.1":
+                if config.version > "2023.1":
                     (
                         res,
                         localOrigin,
@@ -992,7 +992,7 @@ class TestClass(BaseTestClass):
                 assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 1e-05]
                 assert round(transform.shift.magnitude, 6) == 1e-5
             else:
-                if desktop_version > "2023.1":
+                if config.version > "2023.1":
                     (
                         res,
                         localOrigin,
@@ -1076,7 +1076,7 @@ class TestClass(BaseTestClass):
                 assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 1e-05]
                 assert round(transform.shift.magnitude, 6) == 1e-5
             else:
-                if desktop_version > "2023.1":
+                if config.version > "2023.1":
                     (
                         res,
                         localOrigin,
@@ -1161,7 +1161,7 @@ class TestClass(BaseTestClass):
                 assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 2e-05]
                 assert round(transform.shift.magnitude, 6) == 2e-5
             else:
-                if desktop_version > "2023.1":
+                if config.version > "2023.1":
                     (
                         res,
                         localOrigin,
@@ -1245,7 +1245,7 @@ class TestClass(BaseTestClass):
                 assert [round(val, 6) for val in transform.matrix[3][:3]] == [0.0, 0.0, 2e-05]
                 assert round(transform.shift.magnitude, 6) == 2e-5
             else:
-                if desktop_version > "2023.1":
+                if config.version > "2023.1":
                     (
                         res,
                         localOrigin,
@@ -1372,7 +1372,7 @@ class TestClass(BaseTestClass):
             assert layer.etch_net_class == "no_power_ground"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_get_layout_thickness(self):
         """Retrieve the total stackup thickness via the get_layout_thickness method."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1382,14 +1382,14 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.thickness == thickness
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_num_layers(self):
         """Verify num_layers property returns the correct count."""
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.stackup.num_layers == len(edbapp.stackup.layers)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_all_layers(self):
         """Verify all_layers merges stackup and non-stackup layers."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1403,7 +1403,7 @@ class TestClass(BaseTestClass):
             assert name in all_layers
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_layers_by_id(self):
         """Verify layers_by_id returns a list with [id, name] pairs."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1415,7 +1415,7 @@ class TestClass(BaseTestClass):
             assert isinstance(item[1], str)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_limits_only_metals(self):
         """Retrieve stackup limits restricted to metal layers only."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1428,7 +1428,7 @@ class TestClass(BaseTestClass):
         assert top_elevation > bot_elevation
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_export_csv(self):
         """Export stackup to CSV format."""
         edbapp = self._get_si_verse_with_retries()
@@ -1445,7 +1445,7 @@ class TestClass(BaseTestClass):
         finally:
             edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_export_unsupported_format(self):
         """Export stackup with unsupported format returns False."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1453,7 +1453,7 @@ class TestClass(BaseTestClass):
         assert result is False
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_load_dict(self):
         """Import stackup from a dict via load method."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1467,7 +1467,7 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.load(data)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_add_document_layer(self):
         """Add a user document layer to the layout."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1476,7 +1476,7 @@ class TestClass(BaseTestClass):
         assert layer is not None
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_getitem_non_stackup_layer(self):
         """Access a non-stackup layer by indexing into edb.stackup."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1485,7 +1485,7 @@ class TestClass(BaseTestClass):
         assert not outline.is_stackup_layer
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_getitem_unknown_layer_returns_none(self):
         """Accessing an unknown layer name via __getitem__ returns None."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1493,7 +1493,7 @@ class TestClass(BaseTestClass):
         assert result is None
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_mode_setter_laminate(self):
         """Mode setter round-trips through laminate mode."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1501,7 +1501,7 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.mode.lower() == "laminate"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_add_layer_existing_name_returns_false(self):
         """add_layer returns False when the layer name already exists."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1509,7 +1509,7 @@ class TestClass(BaseTestClass):
         assert result is False
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_add_layer_with_etch_factor_and_roughness(self):
         """add_layer correctly applies etch_factor and enable_roughness flags."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1520,7 +1520,7 @@ class TestClass(BaseTestClass):
         assert layer.roughness_enabled is True
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_remove_layer_updates_layers_dict(self):
         """remove_layer removes the layer from the layers dictionary."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1530,7 +1530,7 @@ class TestClass(BaseTestClass):
         assert "TempLayer" not in edbapp.stackup.layers
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_adjust_solder_dielectrics(self):
         """adjust_solder_dielectrics runs without error on a standard layout."""
         edbapp = self.edb_examples.get_si_verse()
@@ -1539,7 +1539,7 @@ class TestClass(BaseTestClass):
         assert result is True
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_export_json_with_material_in_layer(self):
         """Export stackup JSON with include_material_with_layer=True."""
         import json
@@ -1563,7 +1563,7 @@ class TestClass(BaseTestClass):
         finally:
             edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_place_in_layout(self):
         """Place current cell into another cell using 2D layer placement method."""
         edb_path, edbpath2 = self.edb_examples.copy_test_files_into_local_folder(
@@ -1584,7 +1584,7 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
             edb1.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_export_json_no_output_file(self):
         """_export_layer_stackup_to_json returns False when output_file is None."""
         edbapp = self._get_si_verse_with_retries()
@@ -1599,7 +1599,7 @@ class TestClass(BaseTestClass):
         finally:
             edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_overlapping_add_via_layer(self):
         """Add a via layer between two signal layers in an overlapping stackup."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1643,7 +1643,7 @@ class TestClass(BaseTestClass):
         finally:
             edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_overlapping_add_via_layer_via_add_layer(self):
         """Add a via layer using the generic add_layer() method with layer_type='via'."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1678,7 +1678,7 @@ class TestClass(BaseTestClass):
         finally:
             edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_overlapping_via_layer_errors(self):
         """Validate error handling for via layer operations."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1708,7 +1708,7 @@ class TestClass(BaseTestClass):
         finally:
             edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_overlapping_via_layer_is_via_layer_flag(self):
         """Verify is_via_layer property and referencing_via_layer_ids on signal layers."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -1747,7 +1747,7 @@ class TestClass(BaseTestClass):
         finally:
             edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC only.")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC only.")
     def test_stackup_overlapping_via_layer_ref_rename(self):
         """Verify that via layer reference layers can be updated after creation."""
         edbapp = self.edb_examples.create_empty_edb()

@@ -81,7 +81,7 @@ def _make_fake_session_cls(connect_raises=None):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_connect_to_existing_server_creates_session_with_no_ansys_root(monkeypatch):
     """connect_to_existing_server must pass ansys_em_root=None so no server is launched."""
     _reset_rpc_session_state()
@@ -103,7 +103,7 @@ def test_connect_to_existing_server_creates_session_with_no_ansys_root(monkeypat
     assert inst.ip_address == "localhost"
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_connect_to_existing_server_sets_rpc_session_state(monkeypatch):
     """After a successful connect, RpcSession state must reflect the attached session."""
     _reset_rpc_session_state()
@@ -132,7 +132,7 @@ def test_connect_to_existing_server_sets_rpc_session_state(monkeypatch):
     assert RpcSession.fast_grpc_mode_enabled is False
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_connect_to_existing_server_custom_ip_address(monkeypatch):
     """ip_address argument must be forwarded to the underlying _EdbSession."""
     _reset_rpc_session_state()
@@ -156,7 +156,7 @@ def test_connect_to_existing_server_custom_ip_address(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_connect_to_existing_server_reuses_session_on_same_port(monkeypatch):
     """If already connected on the requested port, the call must be a no-op and return True."""
     _reset_rpc_session_state()
@@ -185,7 +185,7 @@ def test_connect_to_existing_server_reuses_session_on_same_port(monkeypatch):
     assert not new_session_created, "Should not create a new session when already connected on the same port"
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_connect_to_existing_server_fails_when_already_on_different_port(monkeypatch):
     """If already connected on a different port, the call must return False."""
     _reset_rpc_session_state()
@@ -207,7 +207,7 @@ def test_connect_to_existing_server_fails_when_already_on_different_port(monkeyp
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_connect_to_existing_server_returns_false_on_connection_error(monkeypatch):
     """If _EdbSession.connect() raises, the method must re-raise as RuntimeError and clean up."""
     _reset_rpc_session_state()
@@ -226,7 +226,7 @@ def test_connect_to_existing_server_returns_false_on_connection_error(monkeypatc
     assert fake_mod.current_session is None, "current_session must be cleared on failure"
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_connect_to_existing_server_clears_stale_current_session(monkeypatch):
     """A stale current_session on _SESSION_MOD must be cleared before attaching."""
     _reset_rpc_session_state()
@@ -251,7 +251,7 @@ def test_connect_to_existing_server_clears_stale_current_session(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_connect_to_existing_server_never_owns_session(monkeypatch):
     """_owns_session must remain False — we did not launch the server."""
     _reset_rpc_session_state()
@@ -274,7 +274,7 @@ def test_connect_to_existing_server_never_owns_session(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_edb_init_open_on_existing_server_calls_connect_then_open(monkeypatch):
     """_open_on_existing_server must connect to the server and open the database."""
     _reset_rpc_session_state()
@@ -307,7 +307,7 @@ def test_edb_init_open_on_existing_server_calls_connect_then_open(monkeypatch):
     assert opened_paths == [("my_design.aedb", False)]
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_edb_init_open_on_existing_server_returns_none_when_connect_fails(monkeypatch):
     """When connect_to_existing_server returns False, _open_on_existing_server must return None."""
     _reset_rpc_session_state()
@@ -326,7 +326,7 @@ def test_edb_init_open_on_existing_server_returns_none_when_connect_fails(monkey
     assert result is None
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_edb_init_open_on_existing_server_acquires_ref_count(monkeypatch):
     """A successful open must call RpcSession.acquire() to track the open database."""
     _reset_rpc_session_state()
@@ -352,7 +352,7 @@ def test_edb_init_open_on_existing_server_acquires_ref_count(monkeypatch):
     assert RpcSession._open_db_count == 1
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_edb_init_open_on_existing_server_custom_ip(monkeypatch):
     """ip_address must be forwarded to connect_to_existing_server."""
     _reset_rpc_session_state()
@@ -387,7 +387,7 @@ def test_edb_init_open_on_existing_server_custom_ip(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
+@pytest.mark.skipif(not config.use_grpc, reason="Applies only for grpc.")
 def test_edb_init_stores_port_and_ip_address(monkeypatch):
     """Edb.__init__ must store port and ip_address on the instance."""
     from pyedb.grpc import edb as edb_module
