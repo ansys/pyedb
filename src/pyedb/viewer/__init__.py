@@ -170,7 +170,6 @@ def launch_viewer(
                 preview=preview,
             )
 
-        options["loader"] = load
         options["title"] = Path(str(getattr(edb, "edbpath", None) or "EDB layout")).stem
         options["loader"] = SourceCapture(load, progressive=progressive)
     return show_scene(
