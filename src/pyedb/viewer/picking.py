@@ -116,6 +116,29 @@ class PickObject:
 
 
 @dataclass(frozen=True)
+class PickedObject:
+    """Detached identity of a picked object: source properties and the picked layer.
+
+    ``info.object_id`` is the source EDB object id; no live EDB object is held.
+    """
+
+    info: SceneObjectInfo
+    layer: str
+
+    @property
+    def object_id(self):
+        return self.info.object_id
+
+    @property
+    def kind(self):
+        return self.info.kind
+
+    @property
+    def net(self):
+        return self.info.net
+
+
+@dataclass(frozen=True)
 class PickHit:
     object: PickObject
     item: object
@@ -128,6 +151,10 @@ class PickHit:
     @property
     def layer(self):
         return self.item.layer
+
+    @property
+    def picked(self):
+        return PickedObject(self.object.info, self.item.layer)
 
 
 @dataclass

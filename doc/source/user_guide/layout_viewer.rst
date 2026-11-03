@@ -127,6 +127,54 @@ Component display options use the same names as ``edb.nets.plot()``:
        plot_components_on_both_side=True,
    )
 
+Interacting from Python
+-----------------------
+
+The returned ``LayoutWindow`` reports user interaction through Qt signals and
+accepts commands from Python. Call its methods on the GUI thread. The window
+works on the detached snapshot, so these calls never query or modify EDB.
+
+.. code-block:: python
+
+   window = edb.view_layout(block=False)
+
+   def on_pick(picked):
+       print(picked.kind, picked.object_id, picked.net, picked.layer)
+
+   window.object_selected.connect(on_pick)
+   window.net_changed.connect(print)
+
+   window.select_net("GND")
+   window.set_visible_layers(["TOP", "BOTTOM"])
+   window.select_object(1234)
+   window.zoom_to_net("GND")
+
+Signals:
+
+* ``object_selected(PickedObject)`` and ``selection_cleared()`` follow the
+  picked object, whether from a click or ``select_object``.
+* ``object_hovered(PickedObject | None)`` follows the hover highlight.
+* ``net_changed(str | None)`` and ``visible_layers_changed(tuple[str, ...])``
+  follow the Networks and Layers panels. Layer names are in stackup order.
+
+A ``PickedObject`` is a detached value with ``object_id`` (the source EDB id),
+``kind`` (``trace``, ``via``, ``pad`` or ``zone``), ``net``, ``layer`` and the full
+``info`` (width, length, drill diameter, component, pin, and so on).
+
+Properties and commands:
+
+* ``selected_object``, ``selected_net`` and ``visible_layers`` return the current state.
+* ``select_net(name)`` filters the view; ``None`` shows all networks.
+* ``set_visible_layers(names)`` shows exactly those layers.
+* ``select_object(object_id, kind=None, layer=None)`` selects as if picked.
+  ``kind`` is needed only if an id exists for several kinds.
+* ``clear_selection()``, ``fit_view()``, ``zoom_to_object(object_id, kind=None)``
+  and ``zoom_to_net(name)`` control selection and camera.
+
+Unknown nets, layers or object ids raise ``ValueError``. ``select_object`` and
+``zoom_to_object`` raise ``RuntimeError`` while the layout is still loading.
+Signals fire only on real changes, so applying the current state is a no-op.
+
 Requirements and scope
 ----------------------
 

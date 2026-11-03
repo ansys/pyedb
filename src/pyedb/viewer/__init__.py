@@ -22,6 +22,7 @@
 
 """Optional interactive layout viewer. Importing this module does not load Qt."""
 
+from pyedb.viewer.picking import PickedObject
 from pyedb.viewer.scene import (
     LayoutScene,
     SceneComponent,
@@ -35,6 +36,7 @@ from pyedb.viewer.scene import (
 
 __all__ = [
     "LayoutScene",
+    "PickedObject",
     "SceneComponent",
     "SceneLayer",
     "SceneObjectInfo",
@@ -143,7 +145,8 @@ def launch_viewer(
     Returns
     -------
     pyedb.viewer.qt.window.LayoutWindow
-        Keep a reference when displaying the window without blocking.
+        Viewer window. Keep a reference when displaying the window without
+        blocking. Use its signals and methods to interact with the view.
     """
     if (edb is None) == (scene is None):
         raise ValueError("Provide exactly one of edb or scene.")

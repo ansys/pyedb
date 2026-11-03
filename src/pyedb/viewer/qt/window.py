@@ -48,6 +48,7 @@ from pyedb.viewer.qt.icons import workspace_icon
 from pyedb.viewer.qt.navigation import NavigationCapsule
 from pyedb.viewer.qt.panels import ElidedLabel, LayerPanel, NetworkPanel
 from pyedb.viewer.qt.theme import COLORS, apply_viewer_theme
+from pyedb.viewer.scene import union_bounds
 
 
 class _PreparationSignals(QObject):
@@ -113,8 +114,20 @@ class _Prepare(QRunnable):
 
 
 class LayoutWindow(QMainWindow):
+    """Layout viewer window.
+
+    Signals report user interaction to application code; the public methods drive
+    the view. Call methods on the GUI thread. Picked objects are detached
+    ``PickedObject`` values and never query EDB.
+    """
+
     scene_ready = Signal(object)
     scene_failed = Signal(object)
+    object_selected = Signal(object)
+    selection_cleared = Signal()
+    object_hovered = Signal(object)
+    net_changed = Signal(object)
+    visible_layers_changed = Signal(object)
 
     def __init__(
         self,
@@ -168,6 +181,8 @@ class LayoutWindow(QMainWindow):
         self._render_error = None
         self.canvas.position_changed.connect(self._position_changed)
         self.canvas.rendering_failed.connect(self._rendering_failed)
+        self.canvas.selection_changed.connect(self._selection_changed)
+        self.canvas.hover_changed.connect(self.object_hovered)
         if self._capturing:
             self.canvas.set_progress("Reading polygons", 0, 0)
             self.layer_panel.empty_notice.setText("Loading layers…")
@@ -534,8 +549,11 @@ class LayoutWindow(QMainWindow):
 
     def _net_changed(self, index):
         item = self.network_list.item(index)
+        previous = self.canvas.net
         self.canvas.net = item.data(Qt.ItemDataRole.UserRole) if item is not None else None
         self.canvas.update()
+        if self.canvas.net != previous:
+            self.net_changed.emit(self.canvas.net)
 
     def _color_changed(self, index):
         self.canvas.color_by_net = self.color_mode.itemData(index)
@@ -551,24 +569,91 @@ class LayoutWindow(QMainWindow):
         self.canvas.update()
 
     def _layer_changed(self, item):
+        previous = self.visible_layers
         if item.checkState() == Qt.CheckState.Checked:
             self.canvas.visible_layers.add(item.text())
         else:
             self.canvas.visible_layers.discard(item.text())
         self._sync_layer_buttons()
         self.canvas.update()
+        if self.visible_layers != previous:
+            self.visible_layers_changed.emit(self.visible_layers)
 
     def _set_all_layers(self, visible):
         """Change the full layer selection atomically, with one canvas update."""
-        state = Qt.CheckState.Checked if visible else Qt.CheckState.Unchecked
+        self._apply_visible_layers({layer.name for layer in self.canvas.scene.layers} if visible else set())
+
+    def _apply_visible_layers(self, names):
+        previous = self.visible_layers
         with QSignalBlocker(self.layer_list):
             for index in range(self.layer_list.count()):
-                self.layer_list.item(index).setCheckState(state)
-        self.canvas.visible_layers = (
-            {self.layer_list.item(index).text() for index in range(self.layer_list.count())} if visible else set()
-        )
+                item = self.layer_list.item(index)
+                item.setCheckState(Qt.CheckState.Checked if item.text() in names else Qt.CheckState.Unchecked)
+        self.canvas.visible_layers = set(names)
         self._sync_layer_buttons()
         self.canvas.update()
+        if self.visible_layers != previous:
+            self.visible_layers_changed.emit(self.visible_layers)
+
+    @Slot(object)
+    def _selection_changed(self, picked):
+        if picked is None:
+            self.selection_cleared.emit()
+        else:
+            self.object_selected.emit(picked)
+
+    @property
+    def selected_object(self):
+        """The selected ``PickedObject``, or None."""
+        return None if self.canvas.selection is None else self.canvas.selection.picked
+
+    @property
+    def selected_net(self):
+        """The net filter name, or None when all networks are shown."""
+        return self.canvas.net
+
+    @property
+    def visible_layers(self):
+        """Visible layer names in stackup order."""
+        return tuple(layer.name for layer in self.canvas.scene.layers if layer.name in self.canvas.visible_layers)
+
+    def select_net(self, name):
+        """Filter the view to a net; ``None`` shows all networks."""
+        for row in range(self.network_list.count()):
+            item = self.network_list.item(row)
+            if item.data(Qt.ItemDataRole.UserRole) == name:
+                if item.isHidden():
+                    self.network_panel.search.clear()
+                self.network_list.setCurrentRow(row)
+                return
+        raise ValueError(f"Unknown net {name!r}.")
+
+    def set_visible_layers(self, names):
+        """Show exactly the named layers."""
+        names = {names} if isinstance(names, str) else set(names)
+        unknown = names - {layer.name for layer in self.canvas.scene.layers}
+        if unknown:
+            raise ValueError(f"Unknown layers: {sorted(unknown)}.")
+        self._apply_visible_layers(names)
+
+    def select_object(self, object_id, kind=None, layer=None):
+        """Select a trace, via, pad or zone by source object id. Returns its ``PickedObject``."""
+        return self.canvas.select_object(object_id, kind, layer)
+
+    def clear_selection(self):
+        self.canvas.clear_selection()
+
+    def fit_view(self):
+        self.canvas.fit_all()
+
+    def zoom_to_object(self, object_id, kind=None):
+        self.canvas.zoom_to_bounds(self.canvas.find_object(object_id, kind).bounds)
+
+    def zoom_to_net(self, name):
+        bounds = union_bounds([item.bounds for item in self.canvas.scene.geometry if item.net == name])
+        if bounds is None:
+            raise ValueError(f"Unknown net {name!r}.")
+        self.canvas.zoom_to_bounds(bounds)
 
     def _sync_layer_buttons(self):
         self.layer_panel.sync(self.canvas.visible_layers)

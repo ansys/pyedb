@@ -55,6 +55,8 @@ class LayoutView(QOpenGLWidget):
 
     position_changed = Signal(float, float)
     rendering_failed = Signal(str)
+    selection_changed = Signal(object)
+    hover_changed = Signal(object)
 
     def __init__(self, scene, parent=None):
         super().__init__(parent)
@@ -81,6 +83,7 @@ class LayoutView(QOpenGLWidget):
         self._dragging = False
         self.pick_enabled = True
         self.selection = self.hover = None
+        self._notified_selection = self._notified_hover = None
         self._selection_anchor = None
         self._pick_index = None
         self._hover_position = None
@@ -118,6 +121,7 @@ class LayoutView(QOpenGLWidget):
     def set_prepared(self, prepared, *, final=True):
         self._pick_index = getattr(prepared, "picking", None)
         self.hover = None
+        self._notify_hover()
         if self.selection is not None:
             obj = self._pick_index.by_key.get(self.selection.key) if self._pick_index is not None else None
             if obj is not None:
@@ -126,6 +130,7 @@ class LayoutView(QOpenGLWidget):
                 self.inspector.set_hit(self.selection)
             else:
                 self.clear_selection()
+        self._notify_selection()
         self._prepared = prepared
         self._loading_complete = final
         self._pending_upload = True
@@ -232,6 +237,15 @@ class LayoutView(QOpenGLWidget):
     def fit_all(self):
         self.camera.resize(self.width(), self.height())
         self.camera.fit(self.scene.bounds, padding=self.fit_padding)
+        self.update()
+
+    def zoom_to_bounds(self, bounds):
+        """Fit world bounds with a margin, so tiny objects are not zoomed to the limit."""
+        x0, y0, x1, y1 = bounds
+        margin = max(0.25 * max(x1 - x0, y1 - y0), 0.05)
+        self.camera.resize(self.width(), self.height())
+        self.camera.fit((x0 - margin, y0 - margin, x1 + margin, y1 + margin), padding=self.fit_padding)
+        self._position_inspector()
         self.update()
 
     def zoom(self, factor):
@@ -363,6 +377,7 @@ class LayoutView(QOpenGLWidget):
             self.inspector.set_hit(self.selection)
             self._position_inspector()
         self.update()
+        self._notify_selection()
         return self.selection
 
     def clear_selection(self):
@@ -370,11 +385,57 @@ class LayoutView(QOpenGLWidget):
         self._selection_anchor = None
         self.inspector.hide()
         self.update()
+        self._notify_selection()
+
+    def find_object(self, object_id, kind=None):
+        """Return the picking object for a source object id, or raise ``ValueError``."""
+        if self._pick_index is None:
+            raise RuntimeError("The layout is still loading; objects can be selected once it is displayed.")
+        by_key = self._pick_index.by_key
+        kinds = (kind,) if kind is not None else ("trace", "via", "pad", "zone")
+        matches = [by_key[(k, object_id)] for k in kinds if (k, object_id) in by_key]
+        if not matches:
+            raise ValueError(f"Unknown object id {object_id!r}" + (f" of kind {kind!r}." if kind else "."))
+        if len(matches) > 1:
+            raise ValueError(f"Object id {object_id!r} is ambiguous; specify kind.")
+        return matches[0]
+
+    def select_object(self, object_id, kind=None, layer=None):
+        """Select an object as if it had been picked. Returns the ``PickedObject``."""
+        obj = self.find_object(object_id, kind)
+        if layer is None:
+            item = next((item for item in obj.items if item.layer in self.visible_layers), obj.items[0])
+        else:
+            item = next((item for item in obj.items if item.layer == layer), None)
+            if item is None:
+                raise ValueError(f"Object {object_id!r} has no geometry on layer {layer!r}.")
+        self._clear_hover()
+        self.selection = PickHit(obj, item, 0.0)
+        x0, y0, x1, y1 = item.bounds
+        self._selection_anchor = ((x0 + x1) / 2, (y0 + y1) / 2)
+        self.inspector.set_hit(self.selection)
+        self._position_inspector()
+        self.update()
+        self._notify_selection()
+        return self.selection.picked
+
+    def _notify_selection(self):
+        picked = None if self.selection is None else self.selection.picked
+        if picked != self._notified_selection:
+            self._notified_selection = picked
+            self.selection_changed.emit(picked)
+
+    def _notify_hover(self):
+        picked = None if self.hover is None else self.hover.picked
+        if picked != self._notified_hover:
+            self._notified_hover = picked
+            self.hover_changed.emit(picked)
 
     def _clear_hover(self):
         self._hover_timer.stop()
         self.hover = None
         self.update()
+        self._notify_hover()
 
     def _pick_hover(self):
         if self._hover_position is not None and self._drag_position is None and self.underMouse():
@@ -385,6 +446,7 @@ class LayoutView(QOpenGLWidget):
             ):
                 self.hover = hit
                 self.update()
+                self._notify_hover()
             self.setCursor(Qt.CursorShape.PointingHandCursor if hit is not None else Qt.CursorShape.ArrowCursor)
 
     def _position_inspector(self):
