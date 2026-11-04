@@ -110,7 +110,7 @@ class ObjectInspector(QFrame):
             elif name == "Via diameter":
                 value.setToolTip("Copper pad diameter on the picked layer.")
             elif name == "Drill diameter":
-                value.setToolTip("Circular drill diameter.")
+                value.setToolTip("Drill diameter; for slotted drills, the larger slot dimension.")
             value.setAccessibleName(name)
             label.setBuddy(value)
             self.rows.addWidget(label, row * 2 if stacked else row, 0, alignment=Qt.AlignmentFlag.AlignTop)

@@ -15,11 +15,14 @@ Install and launch
    python -m pyedb.viewer --demo
    python -m pyedb.viewer path/to/board.aedb
    python -m pyedb.viewer path/to/board.aedb --layer TOP --color-by-layer
+   python -m pyedb.viewer path/to/board.aedb --version 2026.1 --net GND --net VCC
 
 The demo generates its geometry in code and requires no sample files, EDB server,
 or license. Opening an AEDB requires a supported
 gRPC EDB installation and license. The command-line viewer opens the database
-read-only and closes its session on exit.
+read-only and closes its session on exit. ``--layer`` and ``--net`` can be
+repeated to restrict the capture, ``--version`` selects the EDB server version and
+``--exact-component-bounds`` reads exact component envelopes from EDB.
 
 To use an existing gRPC session:
 
@@ -59,9 +62,10 @@ visible. Opacity defaults to 75%. Use ``color_by_net=False`` or
 * Search and select a net in the right Networks panel; ``Ctrl+F`` focuses its search.
   Searching preserves the active filter. Select All networks to reset it.
 * Use Color and Opacity at the top to change colors and transparency.
-* Use View to toggle the grid, component envelopes, reference names, and
-  components on both sides. Components follow their actual placement layers;
-  layer names need not be ``TOP`` or ``BOTTOM``.
+* Use View to toggle the Layers panel, the grid, shape outlines, the flipped
+  (bottom) view, component envelopes, reference names, and components on both
+  sides. Components follow their actual placement layers; layer names need not
+  be ``TOP`` or ``BOTTOM``.
 * Use the info button to inspect scene details and unsupported geometry.
 
 Picking and object properties
@@ -84,26 +88,28 @@ The nonmodal card stays inside the canvas and follows the picked position while
 panning and zooming. Narrow canvases use stacked, scrollable properties. Values
 can be selected and copied. The card reports:
 
-* Trace: signal (network) name, source width and centerline length. Length is for
+* Trace: name, signal (network) name, source width and centerline length. Length is for
   the picked EDB path, includes analytic circular arcs and excludes end-cap
   extensions; it is not a copper perimeter or a whole-network total.
-* Via: network, copper diameter on the picked layer, circular drill diameter and
-  the physical start/end layer span, even when only one layer is displayed.
+* Via: name, network, copper diameter on the picked layer (or pad size for
+  noncircular pads), drill diameter and the physical start/end layer span, even
+  when only one layer is displayed. For slotted (rectangle, oval or bullet) drills
+  the drill diameter is the larger slot dimension.
 * Pad: network, owning component reference and component pin name/number.
-* Zone: network and picked layer.
+* Zone: name and network.
+
+Every card also reports the picked layer.
 
 The properties and spatial index belong to the detached snapshot. Picking never
 queries EDB and still works after the source session closes. Highlighting uses
 the resident geometry; it does not rebuild or upload the board's geometry.
 
-EDB 2025.x and earlier use sequential pad/via getters because concurrent
-read-only property requests can crash those native servers. Supported newer
-local sessions retain bounded prefetch. This compatibility fallback can increase
-load time on older servers; it does not affect picking after capture.
-
 Within each layer, copper is composited in Zone, Trace, then Pad order. Reducing
-opacity reveals objects underneath. Pins retain their copper fill without
-additional borders. Gray drill marks remain visible on layers without copper pads.
+opacity reveals objects underneath. By default every shape receives a thin
+near-black outline, one screen pixel wide; use ``plot_outlines=False`` or View >
+Outlines to hide it. Gray drill marks remain visible on layers without copper pads.
+Rectangle, oval and bullet (slotted) drills are cut out of the copper with their
+true shape.
 Component references use the same color as their outlines
 and appear when there is enough room to read them.
 
@@ -117,7 +123,10 @@ thread and retain the returned window. The snapshot can then outlive its EDB
 session. Standalone ``block=False`` callers must run or integrate the Qt event
 loop themselves to continue preparing and displaying the snapshot.
 
-Component display options use the same names as ``edb.nets.plot()``:
+Component display options use the same names as ``edb.nets.plot()``. Unlike
+``edb.nets.plot()``, ``plot_components_on_both_side`` defaults to ``True``.
+``plot_outlines`` controls shape outlines, and ``exact_component_bounds=True``
+reads exact component envelopes instead of estimating them from pads:
 
 .. code-block:: python
 
@@ -182,8 +191,10 @@ Requirements and scope
 
 An OpenGL 3.3 context with stencil support is required. The viewer supports the
 gRPC backend and reports extraction or rendering failures in the interface.
-3D component bodies, arbitrary source text, bondwires, slotted drills, and
-backdrill profiles are not currently displayed. Contour arcs use adaptive
+3D component bodies, arbitrary source text, bondwires, polygonal drill profiles,
+and backdrill profiles are not currently displayed. Thermal-relief pads
+(round45/round90/square45/square90) are drawn as plain outlines without spokes.
+Contour arcs use adaptive
 subdivision with a default maximum chord error of 0.002 mm, based on radius and
 sweep, with at most 10 degrees per segment. Thus a small semicircle uses at
 least 18 segments and a full circle at least 36; larger radii receive more
