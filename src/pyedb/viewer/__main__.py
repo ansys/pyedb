@@ -34,6 +34,9 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("path", nargs="?", type=Path, help="Existing .aedb directory")
     parser.add_argument("--demo", action="store_true", help="Show a synthetic board without an EDB session")
     parser.add_argument("--version", help="EDB server version, for example 2026.1")
+    parser.add_argument(
+        "--theme", choices=("light", "dark"), default="light", help="Workspace and canvas theme (default: light)"
+    )
     parser.add_argument("--layer", action="append", help="Include this layer (repeatable)")
     parser.add_argument("--net", action="append", help="Include this net (repeatable)")
     precision = parser.add_mutually_exclusive_group()
@@ -63,7 +66,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     if args.demo:
         from pyedb.viewer.demo import demo_scene
 
-        launch_viewer(scene=demo_scene(), color_by_net=args.color_by_net)
+        launch_viewer(scene=demo_scene(), color_by_net=args.color_by_net, theme=args.theme)
         return
     if not args.path.is_dir() or args.path.suffix.lower() != ".aedb":
         parser.error("path must be an existing .aedb directory.")
@@ -80,6 +83,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             exact_component_bounds=args.exact_component_bounds,
             chord_error=args.chord_error,
             progressive=not args.no_progressive,
+            theme=args.theme,
         )
     finally:
         edb.close()

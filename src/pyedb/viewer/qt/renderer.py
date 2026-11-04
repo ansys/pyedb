@@ -38,7 +38,7 @@ import numpy as np
 from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
 
-from pyedb.viewer.colors import BACKGROUND_COLOR, DRILL_COLOR, OUTLINE_COLOR, net_color
+from pyedb.viewer.colors import CANVAS_PALETTES, DRILL_COLOR, CanvasPalette, net_color
 from pyedb.viewer.qt.component_labels import ComponentLabels
 from pyedb.viewer.qt.coverage import SdfCoverage, _shader_source
 from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
@@ -69,6 +69,7 @@ class Renderer:
         self.overlay = SelectionOverlay()
         self._overlay_ranges = {}
         self._polygon_objects = {}
+        self.palette = CANVAS_PALETTES["light"]
 
     def initialize(self) -> None:
         """Create resources only with this widget's context current."""
@@ -209,8 +210,10 @@ class Renderer:
         selection: PickHit | None = None,
         hover: PickHit | None = None,
         show_outlines: bool = True,
+        palette: CanvasPalette | None = None,
     ) -> None:
         """Draw in bottom-to-top layer order, preserving each object's hole ownership."""
+        self.palette = palette or CANVAS_PALETTES["light"]
         try:
             self._draw_frame(
                 scene,
@@ -311,13 +314,13 @@ class Renderer:
         GL.glColorMask(True, True, True, True)
         GL.glStencilMask(0xFF)
         GL.glClearStencil(0)
-        GL.glClearColor(*BACKGROUND_COLOR)
+        GL.glClearColor(*self.palette.background)
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT)
         self.draw_calls = 0
         self.labels.drawn_count = 0
         self.sdf.drawn_pin_count = 0
         if show_grid:
-            self.grid.draw(camera, pixel_ratio)
+            self.grid.draw(camera, pixel_ratio, self.palette)
         if self.prepared is None:
             return
         GL.glEnable(GL.GL_BLEND)
@@ -347,11 +350,19 @@ class Renderer:
                         color_by_net=color_by_net,
                         category=category,
                         outline=show_outlines,
+                        outline_color=self.palette.outline,
                     )
         # Drill marks are separate from copper so a solid zone underneath a via
         # cannot fill its bore. Visibility/net selection also applies to drills.
         self.draw_calls += self.sdf.draw(
-            camera, pixel_ratio, drill_layers, DRILL_COLOR, net, drills=True, outline=show_outlines
+            camera,
+            pixel_ratio,
+            drill_layers,
+            DRILL_COLOR,
+            net,
+            drills=True,
+            outline=show_outlines,
+            outline_color=self.palette.outline,
         )
         if show_components and opacity > 0:
             self.draw_calls += self.sdf.draw_components(
@@ -435,7 +446,7 @@ class Renderer:
         bind_camera_uniforms(self.outline_program, u, camera)
         GL.glUniform1i(u["rectangle_pass"], 0)
         GL.glUniform1f(u["line_width"], 1.0)
-        GL.glUniform3f(u["outline_color"], *OUTLINE_COLOR)
+        GL.glUniform3f(u["outline_color"], *self.palette.outline)
         GL.glDisable(GL.GL_STENCIL_TEST)
         GL.glDisable(GL.GL_SCISSOR_TEST)
         GL.glBindVertexArray(self.vao)

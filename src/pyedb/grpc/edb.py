@@ -1428,6 +1428,7 @@ class Edb(EdbInit):
         exact_component_bounds=False,
         chord_error=0.002,
         progressive=True,
+        theme="light",
     ):
         """Open a PySide6/OpenGL 2D layout viewer using a detached snapshot.
 
@@ -1468,6 +1469,9 @@ class Edb(EdbInit):
         plot_outlines : bool, optional
             Draw a thin near-black outline, one screen pixel wide, around every
             shape. Default is True. It can also be toggled from the View menu.
+        theme : str, optional
+            Workspace and canvas theme, ``"light"`` (default) or ``"dark"``. It
+            can also be switched from the viewer's View menu.
 
         Returns
         -------
@@ -1503,6 +1507,7 @@ class Edb(EdbInit):
             exact_component_bounds=exact_component_bounds,
             chord_error=chord_error,
             progressive=progressive,
+            theme=theme,
         )
 
     @property

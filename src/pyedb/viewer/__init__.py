@@ -26,6 +26,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
 
+from pyedb.viewer.colors import VIEWER_THEMES, viewer_theme
 from pyedb.viewer.picking import PickedObject
 from pyedb.viewer.scene import (
     LayoutScene,
@@ -51,6 +52,7 @@ __all__ = [
     "ScenePolygon",
     "SceneTrace",
     "SceneJoin",
+    "VIEWER_THEMES",
     "launch_viewer",
     "scene_from_edb",
 ]
@@ -111,6 +113,7 @@ def launch_viewer(
     chord_error: float = 0.002,
     progressive: bool = True,
     debug: bool = False,
+    theme: str = "light",
 ) -> LayoutWindow:
     """Open an interactive OpenGL layout window.
 
@@ -158,6 +161,9 @@ def launch_viewer(
         When True, exceptions caught during capture are logged with a full
         traceback and re-raised immediately instead of being recorded as a
         diagnostic note and skipped. Default is False.
+    theme : str, optional
+        Workspace and canvas theme: ``"light"`` (default) or ``"dark"``. It can
+        also be switched from the View menu or with ``LayoutWindow.set_theme``.
 
     Returns
     -------
@@ -167,6 +173,7 @@ def launch_viewer(
     """
     if (edb is None) == (scene is None):
         raise ValueError("Provide exactly one of edb or scene.")
+    theme = viewer_theme(theme)
     try:
         from pyedb.viewer.qt.app import show_scene
     except ImportError as exc:
@@ -203,5 +210,6 @@ def launch_viewer(
         annotate_component_names=annotate_component_names,
         plot_components_on_both_side=plot_components_on_both_side,
         plot_outlines=plot_outlines,
+        theme=theme,
         **options,
     )

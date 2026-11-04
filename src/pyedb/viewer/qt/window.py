@@ -31,6 +31,7 @@ from typing import TYPE_CHECKING
 from PySide6.QtCore import QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QAction, QCloseEvent, QFont, QResizeEvent
 from PySide6.QtWidgets import (
+    QApplication,
     QComboBox,
     QDockWidget,
     QHBoxLayout,
@@ -46,13 +47,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from pyedb.viewer.colors import viewer_theme
 from pyedb.viewer.mesh import prepare_scene
 from pyedb.viewer.progress import throttle_progress
 from pyedb.viewer.qt.canvas import LayoutView
 from pyedb.viewer.qt.icons import workspace_icon
 from pyedb.viewer.qt.navigation import NavigationCapsule
 from pyedb.viewer.qt.panels import ElidedLabel, LayerPanel, NetworkPanel
-from pyedb.viewer.qt.theme import COLORS, apply_viewer_theme
+from pyedb.viewer.qt.theme import COLORS, apply_viewer_theme, theme_colors
 from pyedb.viewer.scene import union_bounds
 
 if TYPE_CHECKING:
@@ -138,6 +140,7 @@ class LayoutWindow(QMainWindow):
     object_hovered = Signal(object)
     net_changed = Signal(object)
     visible_layers_changed = Signal(object)
+    theme_changed = Signal(str)
 
     def __init__(
         self,
@@ -150,8 +153,14 @@ class LayoutWindow(QMainWindow):
         plot_components_on_both_side: bool = True,
         plot_outlines: bool = True,
         loader: Callable[..., LayoutScene] | None = None,
+        theme: str = "light",
     ) -> None:
         super().__init__(parent)
+        theme = viewer_theme(theme)
+        self._theme = "light"
+        self._colors = COLORS
+        # Set by show_scene: only a viewer-owned QApplication follows the theme's color scheme.
+        self._owns_application = False
         self._capturing = loader is not None
         self._capture_error = None
         self._has_preview = False
@@ -205,6 +214,8 @@ class LayoutWindow(QMainWindow):
         self._preparation.signals.preview_ready.connect(self._scene_preview)
         self._preparation.signals.failed.connect(self._load_failed)
         self._preparation.signals.progress.connect(self.canvas.set_progress)
+        if theme != "light":
+            self.set_theme(theme)
         QThreadPool.globalInstance().start(self._preparation)
 
     @Slot(object)
@@ -279,7 +290,7 @@ class LayoutWindow(QMainWindow):
         header.setFloatable(False)
         header.setFixedHeight(62)
         self.addToolBar(header)
-        mark = QLabel()
+        mark = self._brand_mark = QLabel()
         mark.setFixedSize(32, 32)
         mark.setAlignment(Qt.AlignmentFlag.AlignCenter)
         mark.setPixmap(workspace_icon("pcb", COLORS["accent"]).pixmap(QSize(27, 27)))
@@ -309,7 +320,7 @@ class LayoutWindow(QMainWindow):
         self.view_options_button.setToolTip("Layers and component display options (Alt+V)")
         self.view_options_button.setMinimumHeight(34)
         header.addWidget(self.view_options_button)
-        notes = QToolButton()
+        notes = self._notes_button = QToolButton()
         notes.setIcon(workspace_icon("info", COLORS["muted"]))
         notes.setIconSize(QSize(18, 18))
         notes.setAccessibleName("Display notes")
@@ -461,6 +472,12 @@ class LayoutWindow(QMainWindow):
             action.toggled.connect(lambda checked, setting=setting: self._display_option(setting, checked))
             setattr(self, attribute, action)
             menu.addAction(action)
+        menu.addSeparator()
+        self.dark_theme_action = QAction("Dark theme", self)
+        self.dark_theme_action.setCheckable(True)
+        self.dark_theme_action.setToolTip("Switch the workspace and canvas between light and dark themes")
+        self.dark_theme_action.toggled.connect(lambda checked: self.set_theme("dark" if checked else "light"))
+        menu.addAction(self.dark_theme_action)
 
     def _set_layer_panel(self, scene: LayoutScene) -> None:
         dock = self.layers_dock
@@ -476,6 +493,8 @@ class LayoutWindow(QMainWindow):
         self.layer_panel.header.setParent(dock)
         dock.setTitleBarWidget(self.layer_panel.header)
         dock.setWidget(self.layer_panel)
+        if self._theme != "light":
+            self.layer_panel.apply_theme(self._colors)
         self._sync_layer_buttons()
         for widget in (previous, header):
             if widget is not None:
@@ -508,6 +527,8 @@ class LayoutWindow(QMainWindow):
         self.network_panel.header.setParent(dock)
         dock.setTitleBarWidget(self.network_panel.header)
         dock.setWidget(self.network_panel)
+        if self._theme != "light":
+            self.network_panel.apply_theme(self._colors)
         for widget in (previous, header):
             if widget is not None:
                 widget.deleteLater()
@@ -538,7 +559,7 @@ class LayoutWindow(QMainWindow):
     @Slot(str)
     def _rendering_failed(self, error: str) -> None:
         self.engine_badge.setText("OpenGL error")
-        self.engine_badge.setStyleSheet(f"color: {COLORS['error']};")
+        self.engine_badge.setStyleSheet(f"color: {self._colors['error']};")
         self.engine_badge.setToolTip(error)
         self._render_error = "Layout rendering failed. See the canvas for details."
         self._refresh_status()
@@ -611,6 +632,37 @@ class LayoutWindow(QMainWindow):
             self.selection_cleared.emit()
         else:
             self.object_selected.emit(picked)
+
+    @property
+    def theme(self) -> str:
+        """The active theme name: ``"light"`` or ``"dark"``."""
+        return self._theme
+
+    def set_theme(self, theme: str) -> None:
+        """Switch the workspace and canvas theme. GPU geometry and the view are unchanged."""
+        name = viewer_theme(theme)
+        previous = self._theme
+        colors = self._colors = theme_colors(name)
+        self._theme = name
+        apply_viewer_theme(self, colors)
+        self.canvas.set_theme(name)
+        self.navigation.apply_theme(colors)
+        self.layer_panel.apply_theme(colors)
+        self.network_panel.apply_theme(colors)
+        self._brand_mark.setPixmap(workspace_icon("pcb", colors["accent"]).pixmap(QSize(27, 27)))
+        self.view_options_button.setIcon(workspace_icon("settings", colors["text"]))
+        self._notes_button.setIcon(workspace_icon("info", colors["muted"]))
+        self.pick_action.setIcon(workspace_icon("pick", colors["text"]))
+        if self._render_error:
+            self.engine_badge.setStyleSheet(f"color: {colors['error']};")
+        with QSignalBlocker(self.dark_theme_action):
+            self.dark_theme_action.setChecked(name == "dark")
+        hints = QApplication.styleHints()
+        if self._owns_application and hasattr(hints, "setColorScheme"):
+            # Native frames (such as the Windows title bar) follow the application color scheme.
+            hints.setColorScheme(Qt.ColorScheme.Dark if name == "dark" else Qt.ColorScheme.Light)
+        if name != previous:
+            self.theme_changed.emit(name)
 
     @property
     def selected_object(self) -> PickedObject | None:

@@ -24,6 +24,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QEvent, QLineF, Qt, QTimer, Signal, Slot
@@ -41,11 +42,12 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QLabel, QWidget
 
 from pyedb.viewer.camera import Camera
+from pyedb.viewer.colors import CANVAS_PALETTES, viewer_theme
 from pyedb.viewer.picking import PickHit
 from pyedb.viewer.qt.inspector import ObjectInspector
 from pyedb.viewer.qt.loading import LoadingPanel
 from pyedb.viewer.qt.renderer import Renderer
-from pyedb.viewer.qt.theme import COLORS
+from pyedb.viewer.qt.theme import COLORS, theme_colors
 
 if TYPE_CHECKING:
     from pyedb.viewer.mesh import PreparedScene
@@ -62,6 +64,13 @@ def layout_surface_format() -> QSurfaceFormat:
     surface.setStencilBufferSize(8)
     surface.setSamples(4)
     return surface
+
+
+def _message_style(colors: Mapping[str, str]) -> str:
+    return (
+        f"background: {colors['panel']}; color: {colors['text']}; border: 1px solid {colors['border']}; "
+        "border-radius: 12px; padding: 20px;"
+    )
 
 
 class LayoutView(QOpenGLWidget):
@@ -91,6 +100,7 @@ class LayoutView(QOpenGLWidget):
         self.annotate_component_names = True
         self.components_on_both_sides = True
         self.fit_padding = (0, 0, 0, 0)
+        self.theme = "light"
         self.net = None
         self.error = None
         self._prepared = None
@@ -120,10 +130,7 @@ class LayoutView(QOpenGLWidget):
         self.message = QLabel(self)
         self.message.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.message.setWordWrap(True)
-        self.message.setStyleSheet(
-            f"background: {COLORS['panel']}; color: {COLORS['text']}; border: 1px solid {COLORS['border']}; "
-            "border-radius: 12px; padding: 20px;"
-        )
+        self.message.setStyleSheet(_message_style(COLORS))
         self.message.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.message.hide()
         self.inspector = ObjectInspector(self)
@@ -158,6 +165,15 @@ class LayoutView(QOpenGLWidget):
         if not self.error:
             self.message.setVisible(not bool(prepared.batches or len(prepared.instances)))
             self.message.setText("No geometry matches this layout selection.")
+        self.update()
+
+    def set_theme(self, theme: str) -> None:
+        """Switch canvas and overlay colors between ``"light"`` and ``"dark"``; geometry stays resident."""
+        self.theme = viewer_theme(theme)
+        colors = theme_colors(self.theme)
+        self.loading.apply_theme(colors)
+        self.inspector.apply_theme(colors)
+        self.message.setStyleSheet(_message_style(colors))
         self.update()
 
     def fail(self, error: object) -> None:
@@ -210,6 +226,7 @@ class LayoutView(QOpenGLWidget):
                 selection=self.selection,
                 hover=self.hover,
                 show_outlines=self.show_outlines,
+                palette=CANVAS_PALETTES[self.theme],
             )
             self._position_inspector()
             if self.renderer.prepared is not None and self._loading_complete:

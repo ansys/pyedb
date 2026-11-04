@@ -274,6 +274,7 @@ class SdfCoverage:
         instance_ranges: list[list[int]] | None = None,
         category: str | None = None,
         outline: bool = False,
+        outline_color: Sequence[float] = OUTLINE_COLOR,
     ) -> int:
         """Mark the layer union, then shade each covered sample exactly once.
 
@@ -340,7 +341,7 @@ class SdfCoverage:
             GL.glUseProgram(self.cover_program)
             GL.glUniform4f(self.cover_color, *color)
             GL.glUniform1i(self.cover_outline, outline)
-            GL.glUniform3f(self.cover_outline_color, *OUTLINE_COLOR)
+            GL.glUniform3f(self.cover_outline_color, *outline_color)
             GL.glUniform1f(self.cover_pixel_ratio, pixel_ratio)
             GL.glActiveTexture(GL.GL_TEXTURE0)
             GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)

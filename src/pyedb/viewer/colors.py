@@ -24,6 +24,8 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from pyedb.generic.constants import CSS4_COLORS
 
 NET_COLORS = tuple(tuple(int(value[i : i + 2], 16) / 255 for i in (1, 3, 5)) for value in CSS4_COLORS.values())
@@ -39,6 +41,38 @@ SELECTION_COLOR = (255 / 255, 0 / 255, 110 / 255)  # #FF006E
 HIGHLIGHT_KEYLINE_COLOR = (17 / 255, 24 / 255, 39 / 255)  # #111827
 # Thin shape outlines share the near-black keyline.
 OUTLINE_COLOR = HIGHLIGHT_KEYLINE_COLOR
+
+VIEWER_THEMES = ("light", "dark")
+
+
+@dataclass(frozen=True)
+class CanvasPalette:
+    """Theme-dependent canvas colors; copper, drill and interaction materials are shared."""
+
+    background: tuple[float, float, float, float]
+    grid_minor: tuple[float, float, float]
+    grid_major: tuple[float, float, float]
+    outline: tuple[float, float, float]
+
+
+def _rgb(value: str) -> tuple[float, float, float]:
+    return tuple(int(value[i : i + 2], 16) / 255 for i in (1, 3, 5))
+
+
+CANVAS_PALETTES = {
+    # Grid lines sampled from the reference light canvas: #dadaea minor, #c4c4de major.
+    "light": CanvasPalette(BACKGROUND_COLOR, _rgb("#dadaea"), _rgb("#c4c4de"), OUTLINE_COLOR),
+    # Near-black outlines still separate overlapping copper on the dark canvas.
+    "dark": CanvasPalette((*_rgb("#0e1218"), 1.0), _rgb("#1c2230"), _rgb("#2b3346"), _rgb("#020306")),
+}
+
+
+def viewer_theme(theme: str) -> str:
+    """Return the normalized viewer theme name: ``"light"`` (default) or ``"dark"``."""
+    name = str(theme).strip().lower()
+    if name not in VIEWER_THEMES:
+        raise ValueError(f"Unknown layout viewer theme {theme!r}. Use one of: {', '.join(VIEWER_THEMES)}.")
+    return name
 
 
 def net_color(net_id: int) -> tuple[float, ...] | None:
