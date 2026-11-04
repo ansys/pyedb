@@ -138,8 +138,10 @@ works on the detached snapshot, so these calls never query or modify EDB.
 
    window = edb.view_layout(block=False)
 
+
    def on_pick(picked):
        print(picked.kind, picked.object_id, picked.net, picked.layer)
+
 
    window.object_selected.connect(on_pick)
    window.net_changed.connect(print)
