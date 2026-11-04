@@ -36,7 +36,7 @@ import pytest
 pytestmark = [
     pytest.mark.integration,
     pytest.mark.no_licence,
-    # pytest.mark.skipif(os.environ.get("PYEDB_VIEWER_GL_TESTS") != "1", reason="Requires an OpenGL 3.3 desktop"),
+    pytest.mark.skipif(os.environ.get("PYEDB_VIEWER_GL_TESTS") != "1", reason="Requires an OpenGL 3.3 desktop"),
 ]
 
 
@@ -1650,7 +1650,6 @@ class TestWindowControls:
             app.processEvents()
 
 
-@pytest.mark.skipif(os.environ.get("PYEDB_VIEWER_GL_TESTS") != "1", reason="Requires desktop OpenGL")
 class TestPicking:
     def test_click_highlight_properties_clear_and_no_geometry_uploads(self):
         from PySide6.QtCore import QPoint, Qt
