@@ -33,7 +33,7 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 class TestDatabaseUtilities(BaseTestClass):
     def test_value(self):
         edbapp = self.edb_examples.create_empty_edb()
-        if conftest.config["use_grpc"]:
+        if conftest.config.use_grpc:
             edb_value = edbapp.core.utility.value.Value
 
         else:

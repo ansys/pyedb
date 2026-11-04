@@ -106,7 +106,7 @@ class TestClass(BaseTestClass):
             assert path_obj.center_line[0] == [0, 0]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC backend only")
     def test_layout_collections(self):
         """Verify Layout collection properties, layout_instance, terminals type, polygons, primitives_by_net."""
         edbapp = self.edb_examples.get_si_verse()
@@ -149,7 +149,7 @@ class TestClass(BaseTestClass):
         edbapp.layout.use_cache = False
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC backend only")
     def test_filter_primitives_prim_type_and_is_void(self):
         """filter_primitives prim_type/is_void filters, primitives_by_aedt_name and find_object_by_id."""
         edbapp = self.edb_examples.get_si_verse()
@@ -174,7 +174,7 @@ class TestClass(BaseTestClass):
         assert edbapp.layout.find_object_by_id(pi.id).id == pi.id
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC backend only")
     def test_find_primitive_variants(self):
         """find_primitive: by name only, is_void filter, list of layers, prim_type filter."""
         edbapp = self.edb_examples.get_si_verse()
@@ -202,7 +202,7 @@ class TestClass(BaseTestClass):
         assert all(p.primitive_type == "path" for p in paths)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC backend only")
     def test_find_padstack_instances_variants(self):
         """find_padstack_instances: list of aedt_names, list of net_names, list of component_names."""
         edbapp = self.edb_examples.get_si_verse()
@@ -219,7 +219,7 @@ class TestClass(BaseTestClass):
         assert {p.component.name for p in results if p.component}.intersection({"U7", "U1"})
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC backend only")
     def test_get_primitive_by_layer_and_point_edge_cases(self):
         """get_primitive_by_layer_and_point: invalid point, unknown net, and no layer filter."""
         edbapp = self.edb_examples.get_si_verse()
@@ -237,7 +237,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and platform.system() == "Linux",
+        config.use_grpc and platform.system() == "Linux",
         reason="Known issue in ansys-edb-core layout instance server on Linux",
     )
     def test_primitive_queries(self):
@@ -302,7 +302,7 @@ class TestClass(BaseTestClass):
 
         from tests.conftest import config
 
-        if config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6":
+        if config.use_grpc and ansys.edb.core.__version__ == "0.2.6":
             pytest.skip("Test skipped for ansys-edb-core version 0.2.6")
         edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.get_bounding_box()) == 2
@@ -310,7 +310,7 @@ class TestClass(BaseTestClass):
         assert bbox == [[-0.014260, -0.004550], [0.150105, 0.080000]]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="gRPC backend only")
+    @pytest.mark.skipif(not config.use_grpc, reason="gRPC backend only")
     def test_primitives_queries_from_gds(self):
         """Verify primitives queries from edb generated from GDS layout (gRPC backend).
 

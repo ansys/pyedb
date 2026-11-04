@@ -25,11 +25,10 @@
 import math
 import os
 
-import ansys.edb.core
 import pytest
 
 from pyedb.generic.settings import settings
-from tests.conftest import GRPC, config, use_grpc
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -98,7 +97,7 @@ class TestClass(BaseTestClass):
             assert padstack_instance.delete()  # grpc does not return boolean
         via = edbapp.padstacks.place([0, 0], "myVia")
         via.set_backdrill_top("Inner4(Sig2)", 0.5e-3)  # grpc is not returning boolean
-        if float(config["desktopVersion"]) < 2027.1:
+        if float(config.version) < 2027.1:
             via.set_back_drill_by_layer("Inner4(Sig2)", 0.5e-3)
         else:
             via.set_back_drill_by_layer("Inner4(Sig2)", 0.5e-3, fill_material="FR4_Epoxy")
@@ -727,7 +726,7 @@ def _assert_inside(rect, pad):
     )
 
 
-@pytest.mark.skipif(not GRPC, reason="gRPC backend only")
+@pytest.mark.skipif(not config.use_grpc, reason="gRPC backend only")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPadstacksCoverage(BaseTestClass):
     """Additional tests to push coverage above 90 % (gRPC backend only)."""
@@ -945,12 +944,11 @@ class TestPadstackCreation:
     def test_create_padstack_instance(self):
         """Create padstack instances."""
         from pyedb import Edb
-        from tests.conftest import desktop_version
 
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            version=desktop_version,
-            grpc=GRPC,
+            version=config.version,
+            grpc=config.use_grpc,
         )
 
         pad_name = edb.padstacks.create(
@@ -984,12 +982,11 @@ class TestPadstackCreation:
         import re
 
         from pyedb import Edb
-        from tests.conftest import desktop_version
 
         edb = Edb(
             os.path.join(self.local_scratch.path, "no_ghost_nets.aedb"),
-            version=desktop_version,
-            grpc=GRPC,
+            version=config.version,
+            grpc=config.use_grpc,
         )
 
         # A minimal two-layer stackup is required for padstack placement

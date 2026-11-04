@@ -80,23 +80,23 @@ def installed_versions() -> dict[str, str]:
         else:
             current_version_id = version_env_var.replace("ANSYSEM_ROOT", "")
             student = False
-        try:
-            version = int(current_version_id[0:2])
-            release = int(current_version_id[2])
-            if version < 20:
-                if release < 3:
-                    version -= 1
-                else:
-                    release -= 2
-            if student:
-                v_key = "20{0}.{1}SV".format(version, release)
-            else:
-                v_key = "20{0}.{1}".format(version, release)
-            return_dict[v_key] = os.environ[version_env_var]
-        except Exception:  # pragma: no cover
-            from pyedb.generic.settings import settings
 
-            settings.logger.debug(f"Failed to parse version and release from {current_version_id}")
+        if len(current_version_id) != 3:
+            continue
+
+        version = int(current_version_id[0:2])
+        release = int(current_version_id[2])
+        if version < 20:
+            if release < 3:
+                version -= 1
+            else:
+                release -= 2
+        if student:
+            v_key = "20{0}.{1}SV".format(version, release)
+        else:
+            v_key = "20{0}.{1}".format(version, release)
+        return_dict[v_key] = os.environ[version_env_var]
+
     return return_dict
 
 

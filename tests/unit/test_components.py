@@ -37,7 +37,7 @@ from tests.conftest import config
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
 
-_grpc_only = pytest.mark.skipif(not config["use_grpc"], reason="Not tested on DotNet.")
+_grpc_only = pytest.mark.skipif(not config.use_grpc, reason="Not tested on DotNet.")
 
 
 @pytest.fixture(autouse=True)

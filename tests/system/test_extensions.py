@@ -25,7 +25,7 @@ import os
 import pytest
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
-from tests.conftest import config, desktop_version
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -109,7 +109,7 @@ class TestClass(BaseTestClass):
         cfg = {
             "title": "Test Design",
             "general": {
-                "version": desktop_version,
+                "version": config.version,
                 "output_dir": "",
                 "outline_extent": "1mm",
                 "pitch": "1mm",
@@ -291,13 +291,13 @@ class TestClass(BaseTestClass):
             },
             "differential_signals": {},
         }
-        app = ViaDesignBackend(cfg, config["use_grpc"])
+        app = ViaDesignBackend(cfg, config.use_grpc)
 
     def test_backend_diff(self):
         cfg = {
             "title": "Test Design",
             "general": {
-                "version": desktop_version,
+                "version": config.version,
                 "output_dir": "",
                 "outline_extent": "1mm",
                 "pitch": "1mm",
@@ -503,13 +503,13 @@ class TestClass(BaseTestClass):
                 },
             },
         }
-        app = ViaDesignBackend(cfg, config["use_grpc"])
+        app = ViaDesignBackend(cfg, config.use_grpc)
 
     def test_backend_diff_pcb(self):
         cfg = {
             "title": "Test Design",
             "general": {
-                "version": desktop_version,
+                "version": config.version,
                 "output_dir": "",
                 "outline_extent": "1mm",
                 "pitch": "1mm",
@@ -596,9 +596,9 @@ class TestClass(BaseTestClass):
                 },
             },
         }
-        app = ViaDesignBackend(cfg, config["use_grpc"])
+        app = ViaDesignBackend(cfg, config.use_grpc)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Failing on Dotnet CI but fine on local.")
+    @pytest.mark.skipif(not config.use_grpc, reason="Failing on Dotnet CI but fine on local.")
     def test_arbitrary_wave_ports(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/example_arbitrary_wave_ports.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
@@ -618,7 +618,7 @@ class TestClass(BaseTestClass):
         assert create_array_from_unit_cell(edbapp, x_number=2, y_number=2)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
+    @pytest.mark.skipif(config.use_grpc, reason="Waiting for SP1.")
     def test_dxf_swap_backend_center_point(self):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf_center_point
 
@@ -637,7 +637,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.primitives[2].layer_name == layer_name
         assert round(edb.modeler.primitives[2].area(), 6) == 200e-6
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
+    @pytest.mark.skipif(config.use_grpc, reason="Waiting for SP1.")
     def test_dxf_swap_backend(self):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
 
