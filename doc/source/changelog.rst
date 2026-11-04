@@ -9,6 +9,67 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.87.0 <https://github.com/ansys/pyedb/releases/tag/v0.87.0>`_ - November 03, 2026
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Installed_versions
+          - `#2640 <https://github.com/ansys/pyedb/pull/2640>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3
+          - `#2633 <https://github.com/ansys/pyedb/pull/2633>`_
+
+        * - Bump astral-sh/setup-uv from 10.3.0 to 10.3.1
+          - `#2634 <https://github.com/ansys/pyedb/pull/2634>`_
+
+        * - Bump ty from 0.0.90 to 0.0.91
+          - `#2635 <https://github.com/ansys/pyedb/pull/2635>`_
+
+        * - Bump ruff from 0.17.1 to 0.17.2
+          - `#2636 <https://github.com/ansys/pyedb/pull/2636>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.86.0
+          - `#2630 <https://github.com/ansys/pyedb/pull/2630>`_
+
+        * - Bump release 0.87.dev0
+          - `#2631 <https://github.com/ansys/pyedb/pull/2631>`_
+
+        * - Pre-commit automatic update
+          - `#2639 <https://github.com/ansys/pyedb/pull/2639>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Remove USE_GRPC
+          - `#2638 <https://github.com/ansys/pyedb/pull/2638>`_
+
+
 `0.86.0 <https://github.com/ansys/pyedb/releases/tag/v0.86.0>`_ - October 27, 2026
 ==================================================================================
 
