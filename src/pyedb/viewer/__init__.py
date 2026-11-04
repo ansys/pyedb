@@ -60,11 +60,15 @@ def scene_from_edb(
     exact_component_bounds=False,
     chord_error=0.002,
     preview=None,
+    debug=False,
 ):
     """Capture detached millimeter-based geometry.
 
     ``progress(stage, completed, total)`` optionally reports completed items in
     the current stage. A zero total means the amount of work is not yet known.
+    When ``debug`` is True, exceptions caught during capture are logged with a
+    full traceback and re-raised immediately instead of being recorded as a
+    diagnostic note and skipped.
     """
     from pyedb.viewer.adapters.grpc import scene_from_edb as extract
 
@@ -78,6 +82,7 @@ def scene_from_edb(
         exact_component_bounds=exact_component_bounds,
         chord_error=chord_error,
         preview=preview,
+        debug=debug,
     )
 
 
@@ -98,6 +103,7 @@ def launch_viewer(
     exact_component_bounds=False,
     chord_error=0.002,
     progressive=True,
+    debug=False,
 ):
     """Open an interactive OpenGL layout window.
 
@@ -141,6 +147,10 @@ def launch_viewer(
     plot_outlines : bool, optional
         Draw a thin near-black outline, one screen pixel wide, around every
         shape. Default is True. It can also be toggled from the View menu.
+    debug : bool, optional
+        When True, exceptions caught during capture are logged with a full
+        traceback and re-raised immediately instead of being recorded as a
+        diagnostic note and skipped. Default is False.
 
     Returns
     -------
@@ -171,6 +181,7 @@ def launch_viewer(
                 exact_component_bounds=exact_component_bounds,
                 chord_error=chord_error,
                 preview=preview,
+                debug=debug,
             )
 
         options["title"] = Path(str(getattr(edb, "edbpath", None) or "EDB layout")).stem

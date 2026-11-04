@@ -1064,6 +1064,232 @@ def test_invalid_polygon_pad_retains_drill_and_continues_to_next_layer():
     assert "Padstack 9, layer TOP: A contour requires at least three distinct points." in scene.diagnostics
 
 
+def test_nsided_polygon_points_returns_a_regular_polygon():
+    from pyedb.viewer.adapters.grpc import _nsided_polygon_points
+
+    ring = _nsided_polygon_points(size=2.0, num_sides=6)
+    assert len(ring) == 6
+    for x, y in ring:
+        assert math.hypot(x, y) == pytest.approx(1.0)
+    # Vertices spaced evenly by a full turn over the side count.
+    angles = [math.atan2(y, x) for x, y in ring]
+    assert angles[0] == pytest.approx(0.0)
+    assert (angles[1] - angles[0]) % math.tau == pytest.approx(math.tau / 6)
+    # Fewer than 3 requested sides still yields a valid polygon.
+    assert len(_nsided_polygon_points(size=1.0, num_sides=1)) == 3
+
+
+def test_thermal_relief_outline_builds_round_and_square_boundaries():
+    from pyedb.viewer.adapters.grpc import _thermal_relief_outline
+
+    round_ring = _thermal_relief_outline(True, inner=1.0, isolation_gap=0.5, arc_segments=16)
+    assert len(round_ring) == 16
+    for x, y in round_ring:
+        assert math.hypot(x, y) == pytest.approx(1.0)  # inner / 2 + isolation_gap
+
+    square_ring = _thermal_relief_outline(False, inner=1.0, isolation_gap=0.5, arc_segments=16)
+    assert square_ring == ((1.0, 1.0), (-1.0, 1.0), (-1.0, -1.0), (1.0, -1.0))
+
+
+def test_pad_template_builds_nsided_polygon_ring_without_scaling_side_count():
+    from pyedb.viewer.adapters.grpc import _pad_template
+
+    pad = _pad("nsided_polygon", parameters=(0.002, 6))
+    shape, ring, offset, rotation = _pad_template(pad, arc_segments=12)
+    assert shape == "polygon"
+    assert len(ring) == 6  # Not 6000: num_sides must not be unit-scaled like a length.
+    for x, y in ring:
+        assert math.hypot(x, y) == pytest.approx(1.0)  # size (0.002 -> 2 after *1000) / 2
+    assert offset == (0, 0)
+    assert rotation == 0
+
+
+@pytest.mark.parametrize(
+    "shape,round_outer",
+    [("round45", True), ("round90", True), ("square45", False), ("square90", False)],
+)
+def test_pad_template_builds_thermal_relief_ring_for_all_variants(shape, round_outer):
+    from pyedb.viewer.adapters.grpc import _pad_template
+
+    pad = _pad(shape, parameters=(0.001, 0.0002, 0.0003))
+    result = _pad_template(pad, arc_segments=8)
+    assert result[0] == "polygon"
+    ring = result[1]
+    expected_radius = (0.001 * 1000) / 2 + 0.0003 * 1000
+    if round_outer:
+        assert len(ring) == 8
+        for x, y in ring:
+            assert math.hypot(x, y) == pytest.approx(expected_radius)
+    else:
+        assert len(ring) == 4
+        for x, y in ring:
+            assert abs(x) == pytest.approx(expected_radius)
+            assert abs(y) == pytest.approx(expected_radius)
+
+
+def test_pad_template_treats_invalid_geometry_like_no_shape():
+    from pyedb.viewer.adapters.grpc import _pad_template
+
+    assert _pad_template(_pad("geometry"), arc_segments=12) is None
+
+
+def test_raw_pad_properties_names_nsided_polygon_without_colliding_with_polygon():
+    from ansys.edb.core.definition.padstack_def_data import PadGeometryType
+
+    from pyedb.viewer.adapters.grpc import _pad_param
+
+    data = SimpleNamespace(
+        get_pad_parameters=Mock(
+            return_value=(
+                PadGeometryType.PADGEOMTYPE_NSIDED_POLYGON,
+                [_value(0.002), _value(6)],
+                _value(0.0),
+                _value(0.0),
+                _value(0.0),
+            )
+        )
+    )
+    pad = _pad_param(data, "TOP")
+    assert pad.shape == "nsided_polygon"
+    assert pad.polygon_data is None
+    assert pad.parameters_values == [0.002, 6]
+
+
+def _hole_only(geom_type, params):
+    """``get_pad_parameters`` stand-in returning only a hole, as ``get_hole_parameters`` does internally."""
+    from ansys.edb.core.definition.padstack_def_data import PadType
+
+    def get_pad_parameters(layer_name, pad_type):
+        if pad_type != PadType.HOLE:
+            return ()
+        return geom_type, [_value(v) for v in params], _value(0.0), _value(0.0), _value(0.0)
+
+    return get_pad_parameters
+
+
+@pytest.mark.parametrize(
+    "geom_type_name,hole_params,expected_diameter",
+    [
+        ("PADGEOMTYPE_CIRCLE", [0.002], 0.002),
+        ("PADGEOMTYPE_SQUARE", [0.003], 0.003),
+        ("PADGEOMTYPE_RECTANGLE", [0.001, 0.004], 0.004),
+        ("PADGEOMTYPE_OVAL", [0.004, 0.001, 0.0005], 0.004),
+        ("PADGEOMTYPE_BULLET", [0.001, 0.0025, 0.0005], 0.0025),
+        ("PADGEOMTYPE_NSIDED_POLYGON", [0.0015, 6], 0.0015),
+        ("PADGEOMTYPE_ROUND45", [0.0012, 0.0002, 0.0003], 0.0012),
+        ("PADGEOMTYPE_ROUND90", [0.0012, 0.0002, 0.0003], 0.0012),
+        ("PADGEOMTYPE_SQUARE45", [0.0012, 0.0002, 0.0003], 0.0012),
+        ("PADGEOMTYPE_SQUARE90", [0.0012, 0.0002, 0.0003], 0.0012),
+    ],
+)
+def test_padstack_definition_computes_hole_diameter_per_geometry_type(geom_type_name, hole_params, expected_diameter):
+    from ansys.edb.core.definition.padstack_def_data import PadGeometryType
+
+    from pyedb.viewer.adapters.grpc import _padstack_definition
+
+    geom_type = getattr(PadGeometryType, geom_type_name)
+    data = SimpleNamespace(
+        get_pad_parameters=Mock(side_effect=_hole_only(geom_type, hole_params)),
+        layer_names=["TOP"],
+    )
+    instance = SimpleNamespace(padstack_def=SimpleNamespace(name="via", data=data))
+    diagnostics = []
+    _data, _by_layer, hole_radius_scaled, _hole_offset = _padstack_definition(instance, {}, diagnostics)
+    # _padstack_definition stores diameter * 500 (i.e. radius * 1000 scale).
+    assert hole_radius_scaled == pytest.approx(expected_diameter * 500)
+    assert not diagnostics
+
+
+@pytest.mark.parametrize("geom_type_name", ["PADGEOMTYPE_NO_GEOMETRY", "PADGEOMTYPE_INVALID_GEOMETRY"])
+def test_padstack_definition_no_hole_for_missing_or_invalid_geometry(geom_type_name):
+    from ansys.edb.core.definition.padstack_def_data import PadGeometryType
+
+    from pyedb.viewer.adapters.grpc import _padstack_definition
+
+    geom_type = getattr(PadGeometryType, geom_type_name)
+    data = SimpleNamespace(
+        get_pad_parameters=Mock(side_effect=_hole_only(geom_type, [])),
+        layer_names=["TOP"],
+    )
+    instance = SimpleNamespace(padstack_def=SimpleNamespace(name="via", data=data))
+    diagnostics = []
+    _data, _by_layer, hole_radius_scaled, _hole_offset = _padstack_definition(instance, {}, diagnostics)
+    assert hole_radius_scaled == 0
+    assert not diagnostics
+
+
+def test_padstack_definition_flags_thermal_relief_approximation():
+    from ansys.edb.core.definition.padstack_def_data import PadGeometryType, PadType
+
+    from pyedb.viewer.adapters.grpc import _padstack_definition
+
+    def get_pad_parameters(layer_name, pad_type):
+        if pad_type != PadType.REGULAR_PAD:
+            return ()
+        return (
+            PadGeometryType.PADGEOMTYPE_ROUND90,
+            [_value(0.0012), _value(0.0002), _value(0.0003)],
+            _value(0.0),
+            _value(0.0),
+            _value(0.0),
+        )
+
+    data = SimpleNamespace(
+        get_pad_parameters=Mock(side_effect=get_pad_parameters),
+        layer_names=["TOP"],
+    )
+    instance = SimpleNamespace(padstack_def=SimpleNamespace(name="via", data=data))
+    diagnostics = []
+    _padstack_definition(instance, {}, diagnostics)
+    assert any("thermal-relief spokes are not rendered" in message for message in diagnostics)
+
+
+def test_noncircular_hole_is_cut_out_with_its_true_shape():
+    from pyedb.viewer.adapters.grpc import _append_padstack_geometry, _hole_profile
+
+    def hole(shape):
+        return SimpleNamespace(shape=shape, parameters_values=[0.004, 0.002, 0.0005], rotation=0.0)
+
+    profile = _hole_profile(hole("rectangle"))
+    assert profile == pytest.approx(("rectangle", 4.0, 2.0, 0.0, 0.0))
+    assert _hole_profile(hole("circle")) is None
+    placement = (lambda p: p, lambda v: v, 1.0)
+    pads, polygons = [], []
+    _append_padstack_geometry(
+        SimpleNamespace(edb_uid=1),
+        "TOP",
+        "GND",
+        ("circle", (10.0,), (0.0, 0.0), 0.0),
+        placement,
+        2.0,
+        (0.0, 0.0),
+        16,
+        {},
+        (pads, polygons),
+        hole_profile=profile,
+    )
+    assert not pads and len(polygons) == 1
+    xs, ys = zip(*polygons[0].holes[0])
+    assert (max(xs), max(ys)) == pytest.approx((2.0, 1.0))
+    # Oval holes keep their rounded ends: more than four vertices, extent still the full size.
+    oval = _hole_profile(hole("oval"))
+    pads, polygons = [], []
+    _append_padstack_geometry(
+        SimpleNamespace(edb_uid=1),
+        "TOP",
+        "GND",
+        ("rectangle", (10.0, 8.0), (0.0, 0.0), 0.0),
+        placement,
+        2.0,
+        (0.0, 0.0),
+        16,
+        {},
+        (pads, polygons),
+        hole_profile=oval,
+    )
+    assert len(polygons[0].holes[0]) > 4
+
+
 def test_pin_packets_reuse_copper_geometry_without_extra_border_instances():
     pad = ScenePad(1, "TOP", "GND", (1, 1), (2, 2), component="U1", pin_name="1")
     polygon = ScenePolygon(

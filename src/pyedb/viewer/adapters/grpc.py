@@ -23,9 +23,17 @@
 """Read geometry once through the public gRPC layout API."""
 
 from collections import Counter
+import logging
 import math
+import traceback
+from types import SimpleNamespace
 
 from ansys.edb.core.database import ProductIdType
+from ansys.edb.core.definition.padstack_def_data import (
+    PadGeometryType as CorePadGeometryType,
+    PadType as CorePadType,
+)
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 from pyedb.misc.utilities import arc_segment_count
 from pyedb.viewer.progress import progress_items
@@ -40,6 +48,36 @@ from pyedb.viewer.scene import (
     SceneTrace,
     union_bounds,
 )
+
+_logger = logging.getLogger(__name__)
+
+
+class _Diagnostics(list):
+    """A diagnostics list that also remembers whether debug mode is enabled."""
+
+    def __init__(self, debug=False):
+        super().__init__()
+        self.debug = debug
+
+
+def _record_exception(diagnostics, message, exc):
+    """Record a caught exception.
+
+    In normal mode, append only ``message`` and let the caller keep going
+    (best-effort capture). In debug mode, additionally append the full
+    traceback, log it, and re-raise so a debugger/pytest stops at the real
+    failure. A marker on the exception prevents duplicate logging when it
+    passes through nested ``except`` blocks on its way out.
+    """
+    if not getattr(diagnostics, "debug", False):
+        diagnostics.append(message)
+        return
+    if not getattr(exc, "_viewer_diagnostics_logged", False):
+        diagnostics.append(message)
+        diagnostics.append(traceback.format_exc())
+        _logger.exception(message)
+        exc._viewer_diagnostics_logged = True
+    raise exc
 
 
 def _names(value):
@@ -73,7 +111,9 @@ def _component_sides(edb, diagnostics):
                 if getattr(association, "name", None) == "BOTTOM_ASSOCIATED":
                     sides[names[0]] = "bottom"
             except Exception as exc:
-                diagnostics.append(f"Layer {names[0]}: side association unavailable ({exc}); using stackup order.")
+                _record_exception(
+                    diagnostics, f"Layer {names[0]}: side association unavailable ({exc}); using stackup order.", exc
+                )
     return sides
 
 
@@ -164,6 +204,33 @@ def _rotate(point, angle):
     return c * point[0] - s * point[1], s * point[0] + c * point[1]
 
 
+def _nsided_polygon_points(size, num_sides):
+    """Return a regular polygon's vertices; ``size`` is the circumscribed diameter."""
+    sides = max(3, int(round(num_sides)))
+    radius = size / 2
+    return tuple(
+        (radius * math.cos(i * math.tau / sides), radius * math.sin(i * math.tau / sides)) for i in range(sides)
+    )
+
+
+def _thermal_relief_outline(round_outer, inner, isolation_gap, arc_segments):
+    """Approximate a thermal-relief pad's outer boundary.
+
+    ``round45``/``round90``/``square45``/``square90`` pads connect an inner pad to
+    surrounding copper through spokes whose exact placement depends on the anti-pad
+    geometry, which is not available from the padstack definition alone. The spokes
+    themselves are therefore not modeled; only the plain circular or square outline
+    reachable by the pad (``inner`` plus ``isolation_gap`` on each side) is rendered.
+    """
+    radius = inner / 2 + isolation_gap
+    if round_outer:
+        return tuple(
+            (radius * math.cos(i * math.tau / arc_segments), radius * math.sin(i * math.tau / arc_segments))
+            for i in range(arc_segments)
+        )
+    return ((radius, radius), (-radius, radius), (-radius, -radius), (radius, -radius))
+
+
 def _placement(instance, component_cache, component=None):
     get_position = getattr(instance, "get_position_and_rotation", None)
     if callable(get_position):
@@ -176,11 +243,11 @@ def _placement(instance, component_cache, component=None):
     basis = ((1, 0), (0, 1))
     component = False if component is None else component
     if component:
-        key = component.id
+        key = component.edb_uid
         if key not in component_cache:
             from ansys.edb.core.geometry.point_data import PointData
 
-            transform = component.core.transform
+            transform = component.transform
             if transform.is_null:
                 component_cache[key] = basis, (0.0, 0.0)
             else:
@@ -232,7 +299,15 @@ def _pad_template(pad, arc_segments, chord_error=None):
             return shape, tuple((px * 1000, py * 1000) for px, py in zip(x, y)), offset, rotation
         polygon = pad.polygon_data.without_arcs(max_arc_angle=math.tau / arc_segments, max_points=arc_segments)
         return shape, tuple(_xy(p) for p in polygon.points), offset, rotation
+    if shape == "nsided_polygon":
+        # ``num_sides`` is a plain count, not a length, and must not be unit-scaled.
+        size, num_sides = pad.parameters_values or (0.0, 0)
+        return "polygon", _nsided_polygon_points(float(size) * 1000, float(num_sides)), offset, rotation
     values = tuple(float(v) * 1000 for v in (pad.parameters_values or ()))
+    if shape in {"round45", "round90", "square45", "square90"}:
+        inner, _channel_width, isolation_gap = values
+        ring = _thermal_relief_outline(shape.startswith("round"), inner, isolation_gap, arc_segments)
+        return "polygon", ring, offset, rotation
     if shape not in {"circle", "square", "rectangle", "oval", "bullet"}:
         raise ValueError(f"Unsupported pad shape {shape!r}.")
     return shape, values, offset, rotation
@@ -245,7 +320,7 @@ def _mapped_layers(instance, edb, definition, layers, cache, layout_layers=None,
         return {layer: layer for layer in layers}
     key = (name or instance.padstack_def.name, layer_map.msg.SerializeToString(), tuple(layers))
     if key not in cache:
-        data = definition.core.data
+        data = definition
         names = dict(zip(data.layer_ids, data.layer_names))
         mapped = {}
         for layer in layers:
@@ -271,13 +346,23 @@ def _padstack_instance_name(instance):
     return str(value).strip("'") if value else None
 
 
-def _resolve_component(edb, raw_component):
-    """Wrap a raw core component, treating null or missing components as absent."""
+def _resolve_component(raw_component):
+    """Return the raw component, or ``False`` when the instance has no component."""
     if raw_component is None or getattr(raw_component, "is_null", True):
         return False
-    from pyedb.grpc.database.hierarchy.component import Component
+    return raw_component
 
-    return Component(edb, raw_component)
+
+def _component_is_enabled(component):
+    """Mirror ``Component.is_enabled`` by reading the raw component property directly."""
+    comp_prop = getattr(component, "component_property", None)
+    return getattr(comp_prop, "enabled", True)
+
+
+def _component_placement_layer_name(component):
+    """Mirror ``Component.placement_layer`` (a layer name) without a pyedb wrapper."""
+    layer = getattr(component, "placement_layer", None)
+    return getattr(layer, "name", layer)
 
 
 def _pin_owner(instance, sides, cache, component=None):
@@ -287,14 +372,15 @@ def _pin_owner(instance, sides, cache, component=None):
     component = False if component is None else component
     if not component:
         return {}
-    if component.id not in cache:
-        layer = component.placement_layer
-        cache[component.id] = (
+    component_id = component.edb_uid
+    if component_id not in cache:
+        layer = _component_placement_layer_name(component)
+        cache[component_id] = (
             dict(component=component.name, component_layer=layer, component_side=sides[layer])
-            if component.is_enabled and layer in sides
+            if _component_is_enabled(component) and layer in sides
             else None
         )
-    owner = cache[component.id]
+    owner = cache[component_id]
     return dict(owner, pin_name=_padstack_instance_name(instance)) if owner is not None else {}
 
 
@@ -318,22 +404,120 @@ def _padstack_layers(instance, selected_layers, conductors, extended_ranges):
     return [name for name in (instance_layers or ()) if name in selected_layers]
 
 
-def _padstack_definition(edb, instance, definitions, diagnostics, name=None):
-    """Cache pad and drill data shared by instances of a definition."""
-    name = name or instance.padstack_def.name
-    if name not in definitions:
-        from pyedb.grpc.database.definition.padstack_def import PadstackDef
+def _pad_parameter_value(data, layer_name, pad_type):
+    """Read raw pad parameters, normalizing the polygon variant to a consistent 5-item layout."""
+    try:
+        p_val = data.get_pad_parameters(layer_name, pad_type)
+    except Exception:
+        return None
+    if not p_val:
+        return None
+    if isinstance(p_val[0], CorePolygonData):
+        p_val = [CorePadGeometryType.PADGEOMTYPE_POLYGON, *p_val]
+    return p_val
 
-        definition = PadstackDef(edb, instance.padstack_def)
-        diameter = definition.hole_diameter
-        if diameter is None:
-            diagnostics.append(f"Padstack definition {name}: noncircular drill profile is not displayed.")
-        definitions[name] = (
-            definition,
-            definition.pad_by_layer,
-            float(diameter or 0) * 500,
-            (float(definition.hole_offset_x) * 1000, float(definition.hole_offset_y) * 1000),
+
+def _pad_param(data, layer_name, pad_type=CorePadType.REGULAR_PAD):
+    """Local, read-only stand-in for ``PadProperties`` built directly from raw pad parameters."""
+    p_val = _pad_parameter_value(data, layer_name, pad_type)
+    if p_val is None:
+        return SimpleNamespace(
+            shape="no_shape", offset_x=0.0, offset_y=0.0, rotation=0.0, polygon_data=None, parameters_values=None
         )
+    geom_type, params = p_val[0], p_val[1]
+    polygon = params if isinstance(params, CorePolygonData) else None
+    # ``NSIDED_POLYGON`` would otherwise collide with ``POLYGON`` once reduced to its last
+    # underscore-separated word, even though it carries size/side-count parameters, not polygon data.
+    if geom_type == CorePadGeometryType.PADGEOMTYPE_NSIDED_POLYGON:
+        shape = "nsided_polygon"
+    else:
+        shape = geom_type.name.split("_")[-1].lower()
+    return SimpleNamespace(
+        shape=shape,
+        offset_x=p_val[2].double,
+        offset_y=p_val[3].double,
+        rotation=p_val[4].double,
+        polygon_data=polygon,
+        parameters_values=None if polygon is not None else [v.double for v in params],
+    )
+
+
+def _hole_param(data):
+    """Hole geometry; ``get_hole_parameters()`` is ``get_pad_parameters(None, PadType.HOLE)``."""
+    return _pad_param(data, None, CorePadType.HOLE)
+
+
+def _hole_diameter(hole):
+    """Effective circular drill diameter of a hole, or ``None`` when absent or polygonal."""
+    values = hole.parameters_values
+    if hole.shape in {"no_shape", "geometry"} or not values:
+        return None
+    if hole.shape in {"rectangle", "oval", "bullet"}:
+        return max(values[0], values[1])
+    # Circle/square/nsided-polygon/thermal shapes lead with diameter, size or inner size.
+    return values[0]
+
+
+_THERMAL_RELIEF_SHAPES = {"round45", "round90", "square45", "square90"}
+
+
+def _rounded_outline(shape, size_x, size_y, corner, arc_segments):
+    """Local outline of a rectangle, oval (all corners rounded) or bullet (+X side rounded), centered at origin."""
+    hx, hy = size_x / 2, size_y / 2
+    radius = min(corner, hx, hy)
+    if shape == "rectangle" or radius <= 0:
+        return ((hx, hy), (-hx, hy), (-hx, -hy), (hx, -hy))
+    steps = max(2, arc_segments // 4)
+
+    def arc(cx, cy, start):
+        return [
+            (
+                cx + radius * math.cos(start + i * math.pi / 2 / steps),
+                cy + radius * math.sin(start + i * math.pi / 2 / steps),
+            )
+            for i in range(steps + 1)
+        ]
+
+    ring = arc(hx - radius, hy - radius, 0.0)
+    ring += arc(-hx + radius, hy - radius, math.pi / 2) if shape == "oval" else [(-hx, hy), (-hx, -hy)]
+    if shape == "oval":
+        ring += arc(-hx + radius, -hy + radius, math.pi)
+    ring += arc(hx - radius, -hy + radius, 3 * math.pi / 2)
+    return tuple(ring)
+
+
+def _hole_profile(hole):
+    """Return a noncircular hole profile ``(shape, size_x, size_y, corner, rotation)`` in mm, else ``None``."""
+    if hole.shape not in {"rectangle", "oval", "bullet"}:
+        return None
+    values = hole.parameters_values
+    corner = 0.0 if hole.shape == "rectangle" else values[2] * 1000
+    return hole.shape, values[0] * 1000, values[1] * 1000, corner, hole.rotation
+
+
+def _padstack_definition(instance, definitions, diagnostics, name=None):
+    """Cache pad and drill data shared by instances of a definition, read directly from raw core."""
+    padstack_def = instance.padstack_def
+    name = name or padstack_def.name
+    if name not in definitions:
+        data = padstack_def.data
+        hole = _hole_param(data)
+        diameter = _hole_diameter(hole)
+        if hole.shape == "polygon":
+            diagnostics.append(f"Padstack definition {name}: polygonal drill profile is not displayed.")
+        by_layer = {layer: _pad_param(data, layer) for layer in data.layer_names}
+        if any(pad.shape in _THERMAL_RELIEF_SHAPES for pad in by_layer.values()):
+            diagnostics.append(
+                f"Padstack definition {name}: round45/round90/square45/square90 pads are approximated as a "
+                "plain circle/square outline; thermal-relief spokes are not rendered."
+            )
+        definitions[name] = (
+            data,
+            by_layer,
+            float(diameter or 0) * 500,
+            (hole.offset_x * 1000, hole.offset_y * 1000),
+        )
+        definitions[("hole_profile", name)] = _hole_profile(hole)
     return definitions[name]
 
 
@@ -360,11 +544,46 @@ def _append_padstack_geometry(
     chord_error=None,
     *,
     object_id=None,
+    hole_profile=None,
+    hole_offset=(0.0, 0.0),
 ):
-    """Place a layer's copper and retain independent drill coverage."""
+    """Place a layer's copper and retain independent drill coverage.
+
+    A noncircular ``hole_profile`` is cut out of the copper as a polygon hole, since analytic pads only
+    support circular drills.
+    """
     world, vector, scale = placement
     pads, polygons = geometry
     object_id = instance.edb_uid if object_id is None else object_id
+    if hole_profile is not None and template is not None and hole_radius > 0:
+        shape, dimensions, offset, rotation = template
+        if shape == "polygon":
+            outline = dimensions
+        elif shape in {"circle", "square", "rectangle", "oval", "bullet"}:
+            if shape == "circle":
+                outline = tuple(
+                    (
+                        dimensions[0] / 2 * math.cos(i * math.tau / arc_segments),
+                        dimensions[0] / 2 * math.sin(i * math.tau / arc_segments),
+                    )
+                    for i in range(arc_segments)
+                )
+            elif shape == "square":
+                outline = _rounded_outline("rectangle", dimensions[0], dimensions[0], 0, arc_segments)
+            else:
+                corner = dimensions[2] if shape in {"oval", "bullet"} else 0
+                outline = _rounded_outline(shape, dimensions[0], dimensions[1], corner, arc_segments)
+        else:
+            outline = None
+        if outline is not None:
+            ring = tuple(world(tuple(a + b for a, b in zip(_rotate(p, rotation), offset))) for p in outline)
+            h_shape, size_x, size_y, corner, h_rotation = hole_profile
+            hole_ring = tuple(
+                world(tuple(a + b for a, b in zip(_rotate(p, h_rotation), hole_offset)))
+                for p in _rounded_outline(h_shape, size_x, size_y, corner, arc_segments)
+            )
+            polygons.append(ScenePolygon(object_id, layer, net, ring, (hole_ring,), category="pad", **pin_owner))
+            return
     if template is None:
         # Keep nonfunctional pads absent while retaining drill marks.
         if hole_radius > 0:
@@ -436,7 +655,7 @@ def _padstack_pin_owner(instance, sides, cache, component, diagnostics):
     try:
         return _pin_owner(instance, sides, cache, component)
     except Exception as exc:
-        diagnostics.append(f"Padstack {instance.edb_uid}: component pin metadata unavailable ({exc}).")
+        _record_exception(diagnostics, f"Padstack {instance.edb_uid}: component pin metadata unavailable ({exc}).", exc)
         return {}
 
 
@@ -445,9 +664,9 @@ def _readonly_components(edb):
     component_manager = getattr(edb, "components", None)
     return (
         {
-            component.core.id: component
+            component.core.edb_uid: component
             for component in component_manager.instances.values()
-            if getattr(getattr(component, "core", None), "id", None)
+            if getattr(getattr(component, "core", None), "edb_uid", None)
         }
         if component_manager is not None and getattr(edb, "isreadonly", False)
         else None
@@ -460,7 +679,7 @@ def _padstack_component(raw_component, components):
         return None
     if raw_component.is_null:
         return False
-    return components.get(raw_component.id)
+    return components.get(raw_component.edb_uid)
 
 
 def _padstack_object_info(instance, object_id, component, net, hole_radius, placement, span, object_info, diagnostics):
@@ -481,7 +700,7 @@ def _padstack_object_info(instance, object_id, component, net, hole_radius, plac
                 name=None if component else instance_name,
             )
         except Exception as exc:
-            diagnostics.append(f"Padstack {object_id}: inspection properties unavailable ({exc}).")
+            _record_exception(diagnostics, f"Padstack {object_id}: inspection properties unavailable ({exc}).", exc)
 
 
 def _record_padstack_geometry(component_geometry, object_id, component, net, placement, pads, polygons):
@@ -496,7 +715,7 @@ def _record_padstack_geometry(component_geometry, object_id, component, net, pla
         component_geometry.setdefault("instances", {})[object_id] = instance_geometry
         if component:
             record = component_geometry.setdefault(
-                component.id, {"bounds": bounds, "nets": set(), "approximate": False}
+                component.edb_uid, {"bounds": bounds, "nets": set(), "approximate": False}
             )
             record["bounds"] = union_bounds([record["bounds"], bounds])
             record["nets"].update(instance_geometry["nets"])
@@ -537,16 +756,21 @@ def _padstacks(
                 continue
             name = instance.padstack_def.name
             definition, by_layer, hole_radius, hole_offset = _padstack_definition(
-                edb, instance, definitions, diagnostics, name
+                instance, definitions, diagnostics, name
             )
             mapped = _mapped_layers(instance, edb, definition, layers, mapping_cache, layout_layers, name)
             enabled, diameter = instance.get_hole_overrides()
+            hole_profile = definitions.get(("hole_profile", name))
             if enabled:
                 hole_radius = diameter.double * 500
+                hole_profile = None
             raw_component = getattr(instance, "component", None)
             component = _padstack_component(raw_component, component_objects)
             if component is None:
-                component = _resolve_component(edb, raw_component)
+                component = _resolve_component(raw_component)
+            elif component is not False:
+                # Readonly-mode cache stores wrapped Component objects; normalize to raw core.
+                component = getattr(component, "core", component)
             placement = _placement(instance, component_cache, component)
             pin_owner = _padstack_pin_owner(instance, sides, pin_components, component, diagnostics)
             hole_center = placement[0](hole_offset)
@@ -572,14 +796,16 @@ def _padstacks(
                         (pads, polygons),
                         chord_error,
                         object_id=object_id,
+                        hole_profile=hole_profile,
+                        hole_offset=hole_offset,
                     )
                 except Exception as exc:
-                    diagnostics.append(f"Padstack {instance.edb_uid}, layer {layer}: {exc}")
+                    _record_exception(diagnostics, f"Padstack {instance.edb_uid}, layer {layer}: {exc}", exc)
             _record_padstack_geometry(
                 component_geometry, object_id, component, net, placement, pads[pad_start:], polygons[polygon_start:]
             )
         except Exception as exc:
-            diagnostics.append(f"Padstack {instance.edb_uid}: {exc}")
+            _record_exception(diagnostics, f"Padstack {instance.edb_uid}: {exc}", exc)
     return pads, polygons
 
 
@@ -630,7 +856,7 @@ def _components(edb, selected_layers, selected_nets, diagnostics, progress=None,
                 approximate_count += 1
             result.append(SceneComponent(component.id, component.name, layer, nets, bounds, sides[layer]))
         except Exception as exc:
-            diagnostics.append(f"Component {reference}: {exc}")
+            _record_exception(diagnostics, f"Component {reference}: {exc}", exc)
     if approximate_count:
         diagnostics.append(f"{approximate_count} component envelopes estimated from pin positions for fast display.")
     return tuple(result)
@@ -739,7 +965,9 @@ def _primitives(
                         width, length = trace_dimensions(primitive)
                         info = SceneObjectInfo(object_id, kind, net_name, width=width, length=length, name=name)
                     except Exception as exc:
-                        diagnostics.append(f"Trace {primitive.id}: inspection properties unavailable ({exc}).")
+                        _record_exception(
+                            diagnostics, f"Trace {primitive.id}: inspection properties unavailable ({exc}).", exc
+                        )
                 object_info[object_id] = info
             has_voids = getattr(primitive, "has_voids", None)
             voids = primitive.voids if has_voids is None else None
@@ -751,7 +979,7 @@ def _primitives(
                     joins.extend(path_joins)
                     continue
                 except Exception as exc:
-                    diagnostics.append(f"Path {primitive.id}: using source boundary coverage ({exc}).")
+                    _record_exception(diagnostics, f"Path {primitive.id}: using source boundary coverage ({exc}).", exc)
             if primitive_type == "circle" and not has_voids:
                 x, y, radius = (v.double * 1000 for v in primitive.get_parameters())
                 pads.append(ScenePad(object_id, layer_name, net_name, (x, y), (radius * 2,) * 2))
@@ -774,7 +1002,7 @@ def _primitives(
                 )
             )
         except Exception as exc:
-            diagnostics.append(f"Primitive {primitive.id}: {exc}")
+            _record_exception(diagnostics, f"Primitive {primitive.id}: {exc}", exc)
     diagnostics.extend(f"Skipped {count} {kind} object(s)." for kind, count in sorted(skipped.items()))
     return polygons, traces, joins, pads
 
@@ -790,8 +1018,14 @@ def scene_from_edb(
     exact_component_bounds=False,
     chord_error=0.002,
     preview=None,
+    debug=False,
 ):
-    """Capture analytic traces, per-layer pads and zone contours in millimeters."""
+    """Capture analytic traces, per-layer pads and zone contours in millimeters.
+
+    When ``debug`` is True, any exception caught internally while inspecting
+    layout objects is logged with a full traceback and re-raised immediately
+    instead of being recorded as a diagnostic note and skipped.
+    """
     if not edb.grpc:
         raise ValueError("The interactive layout viewer currently supports only the gRPC backend.")
     if arc_segments is not None and (
@@ -817,7 +1051,7 @@ def scene_from_edb(
         if name in selected_layers:
             color = tuple(float(v) / 255.0 for v in layer.color[:3])
             scene_layers.append(SceneLayer(name, (*color, 1.0)))
-    diagnostics = []
+    diagnostics = _Diagnostics(debug=debug)
     object_info = {}
     net_names = tuple(edb.nets.nets)
     title = edb.active_cell.name
