@@ -59,6 +59,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.grpc]
 
+
 def rectangle(x0=0, y0=0, x1=10, y1=10):
     return ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
 
