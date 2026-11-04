@@ -22,6 +22,8 @@
 
 """PyEDB materials shared by the CPU copper pass and GPU analytic primitives."""
 
+from __future__ import annotations
+
 from pyedb.generic.constants import CSS4_COLORS
 
 NET_COLORS = tuple(tuple(int(value[i : i + 2], 16) / 255 for i in (1, 3, 5)) for value in CSS4_COLORS.values())
@@ -39,6 +41,6 @@ HIGHLIGHT_KEYLINE_COLOR = (17 / 255, 24 / 255, 39 / 255)  # #111827
 OUTLINE_COLOR = HIGHLIGHT_KEYLINE_COLOR
 
 
-def net_color(net_id):
+def net_color(net_id: int) -> tuple[float, ...] | None:
     """Match nets.plot's existing CSS4 palette; id zero retains layer color."""
     return NET_COLORS[(net_id - 1) % len(NET_COLORS)] if net_id else None

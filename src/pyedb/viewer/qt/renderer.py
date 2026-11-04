@@ -26,9 +26,13 @@ Scene preparation, resident geometry and coverage passes are separate. Qt owns
 the native window, buffer swaps and default framebuffer.
 """
 
+from __future__ import annotations
+
+from collections.abc import Collection
 from ctypes import c_void_p
 import math
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 from OpenGL import GL
@@ -42,9 +46,15 @@ from pyedb.viewer.qt.grid import GridRenderer
 from pyedb.viewer.qt.selection import SelectionOverlay
 from pyedb.viewer.scene import ScenePolygon
 
+if TYPE_CHECKING:
+    from pyedb.viewer.camera import Camera
+    from pyedb.viewer.mesh import MeshBatch, PreparedScene
+    from pyedb.viewer.picking import PickHit
+    from pyedb.viewer.scene import LayoutScene
+
 
 class Renderer:
-    def __init__(self):
+    def __init__(self) -> None:
         self.program = self.outline_program = self.vao = self.quad_vao = self.vbo = self.ebo = 0
         self.net_vbo = 0
         self.vertex_palette = False
@@ -60,7 +70,7 @@ class Renderer:
         self._overlay_ranges = {}
         self._polygon_objects = {}
 
-    def initialize(self):
+    def initialize(self) -> None:
         """Create resources only with this widget's context current."""
         shader_dir = Path(__file__).with_name("shaders")
         self.program = compileProgram(
@@ -117,7 +127,7 @@ class Renderer:
         self.grid.initialize()
         self.overlay.initialize()
 
-    def upload(self, prepared):
+    def upload(self, prepared: PreparedScene) -> None:
         """Upload once per snapshot, never on camera or visibility changes."""
         GL.glBindVertexArray(self.vao)
         same_mesh = self.prepared is not None and all(
@@ -164,7 +174,9 @@ class Renderer:
         self.labels.upload(prepared.component_batches)
         self.upload_count += 1
 
-    def _upload_mesh_buffer(self, target, buffer, values, capacity_name, previous):
+    def _upload_mesh_buffer(
+        self, target: int, buffer: int, values: np.ndarray, capacity_name: str, previous: np.ndarray | None
+    ) -> None:
         GL.glBindBuffer(target, buffer)
         if previous is not None and values.nbytes <= getattr(self, capacity_name, 0):
             tail = values[len(previous) :]
@@ -177,27 +189,27 @@ class Renderer:
                 GL.glBufferSubData(target, 0, values.nbytes, values)
             setattr(self, capacity_name, capacity)
 
-    def _indexed(self, start, count):
+    def _indexed(self, start: int, count: int) -> None:
         GL.glDrawElements(GL.GL_TRIANGLES, count, GL.GL_UNSIGNED_INT, c_void_p(start * 4))
         self.draw_calls += 1
 
     def draw(
         self,
-        scene,
-        camera,
-        visible_layers,
-        opacity,
-        net,
-        pixel_ratio,
-        color_by_net=False,
-        show_components=True,
-        components_on_both_sides=True,
-        annotate_component_names=True,
-        show_grid=True,
-        selection=None,
-        hover=None,
-        show_outlines=True,
-    ):
+        scene: LayoutScene,
+        camera: Camera,
+        visible_layers: Collection[str],
+        opacity: float,
+        net: str | None,
+        pixel_ratio: float,
+        color_by_net: bool = False,
+        show_components: bool = True,
+        components_on_both_sides: bool = True,
+        annotate_component_names: bool = True,
+        show_grid: bool = True,
+        selection: PickHit | None = None,
+        hover: PickHit | None = None,
+        show_outlines: bool = True,
+    ) -> None:
         """Draw in bottom-to-top layer order, preserving each object's hole ownership."""
         try:
             self._draw_frame(
@@ -235,7 +247,9 @@ class Renderer:
             GL.glBindVertexArray(0)
             GL.glUseProgram(0)
 
-    def _object_ranges(self, hit, visible_layers, net):
+    def _object_ranges(
+        self, hit: PickHit, visible_layers: Collection[str], net: str | None
+    ) -> tuple[list[MeshBatch], list[tuple[int, int]]]:
         key = hit.key, frozenset(visible_layers), net
         if key not in self._overlay_ranges:
             polygons, identities = [], []
@@ -266,19 +280,19 @@ class Renderer:
 
     def _draw_frame(
         self,
-        scene,
-        camera,
-        visible_layers,
-        opacity,
-        net,
-        pixel_ratio,
-        color_by_net,
-        show_components,
-        components_on_both_sides,
-        annotate_component_names,
-        show_grid,
-        show_outlines=True,
-    ):
+        scene: LayoutScene,
+        camera: Camera,
+        visible_layers: Collection[str],
+        opacity: float,
+        net: str | None,
+        pixel_ratio: float,
+        color_by_net: bool,
+        show_components: bool,
+        components_on_both_sides: bool,
+        annotate_component_names: bool,
+        show_grid: bool,
+        show_outlines: bool = True,
+    ) -> None:
         # Qt creates its framebuffer after initializeGL. Query the actual FBO
         # attachment here; GL_STENCIL_BITS is not available in core profiles.
         if not self._stencil_checked:
@@ -352,7 +366,17 @@ class Renderer:
         GL.glBindVertexArray(0)
         GL.glUseProgram(0)
 
-    def _polygons(self, layer, category, camera, pixel_ratio, alpha, net, color_by_net, show_outlines=False):
+    def _polygons(
+        self,
+        layer: str,
+        category: str,
+        camera: Camera,
+        pixel_ratio: float,
+        alpha: float,
+        net: str | None,
+        color_by_net: bool,
+        show_outlines: bool = False,
+    ) -> None:
         GL.glUseProgram(self.program)
         palette = color_by_net and self.vertex_palette
         GL.glUniform1i(self.uniforms["color_by_net"], palette)
@@ -396,7 +420,7 @@ class Renderer:
         if rings:
             self._outlines(rings, camera)
 
-    def _outlines(self, batches, camera):
+    def _outlines(self, batches: Collection[MeshBatch], camera: Camera) -> None:
         """Stroke every visible polygon ring one logical pixel wide, after all fills."""
         firsts, counts = [], []
         for batch in batches:
@@ -421,14 +445,14 @@ class Renderer:
         self.draw_calls += 1
         GL.glUseProgram(self.program)
 
-    def _solid(self, start, count):
+    def _solid(self, start: int, count: int) -> None:
         GL.glBindVertexArray(self.vao)
         GL.glUniform1i(self.uniforms["rectangle_pass"], 0)
         GL.glDisable(GL.GL_STENCIL_TEST)
         GL.glDisable(GL.GL_SCISSOR_TEST)
         self._indexed(start, count)
 
-    def _batch(self, batch, camera, pixel_ratio):
+    def _batch(self, batch: MeshBatch, camera: Camera, pixel_ratio: float) -> None:
         u = self.uniforms
         GL.glBindVertexArray(self.vao)
         GL.glUniform1i(u["rectangle_pass"], 0)
@@ -468,7 +492,7 @@ class Renderer:
         GL.glDisable(GL.GL_STENCIL_TEST)
         GL.glDisable(GL.GL_SCISSOR_TEST)
 
-    def release(self):
+    def release(self) -> None:
         """Release resources explicitly while their owning context is current."""
         if self.vbo or self.ebo:
             GL.glDeleteBuffers(3, [self.vbo, self.ebo, self.net_vbo])

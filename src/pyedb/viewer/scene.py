@@ -22,16 +22,19 @@
 
 """Immutable layout snapshots, independent of EDB, Qt and OpenGL. Coordinates are millimeters."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from functools import cached_property
 import math
+from typing import Any, Iterable, Iterator, Sequence
 
 Point = tuple[float, float]
 Ring = tuple[Point, ...]
 Bounds = tuple[float, float, float, float]
 
 
-def union_bounds(bounds) -> Bounds | None:
+def union_bounds(bounds: Sequence[Bounds]) -> Bounds | None:
     """Return the enclosing rectangle for a sequence of bounds, or None if empty."""
     if not bounds:
         return None
@@ -43,7 +46,7 @@ def union_bounds(bounds) -> Bounds | None:
     )
 
 
-def clean_ring(points) -> Ring:
+def clean_ring(points: Iterable[Iterable[float]]) -> Ring:
     """Validate a contour and remove duplicate adjacent/closing vertices."""
     result = []
     for x, y in points:
@@ -66,7 +69,7 @@ class SceneLayer:
     name: str
     color: tuple[float, float, float, float]
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         color = tuple(float(v) for v in self.color)
         if len(color) != 4 or any(not math.isfinite(v) or not 0 <= v <= 1 for v in color):
             raise ValueError("Layer color must contain four finite values between zero and one.")
@@ -88,7 +91,7 @@ class ScenePolygon:
     pin_name: str | None = None
     category: str = "zone"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         object.__setattr__(self, "exterior", clean_ring(self.exterior))
         object.__setattr__(self, "holes", tuple(clean_ring(ring) for ring in self.holes))
         _validate_pin_owner(self)
@@ -103,14 +106,14 @@ class ScenePolygon:
         return min(x), min(y), max(x), max(y)
 
 
-def _point(point):
+def _point(point: Iterable[float]) -> Point:
     result = tuple(float(v) for v in point)
     if len(result) != 2 or not all(math.isfinite(v) for v in result):
         raise ValueError("Coordinates must contain two finite values.")
     return result
 
 
-def _validate_pin_owner(item):
+def _validate_pin_owner(item: Any) -> None:
     if item.component is None:
         return
     if not isinstance(item.component, str) or not item.component:
@@ -139,7 +142,7 @@ class SceneTrace:
     sweep: float = 0.0
     end_caps: tuple[str, str] = ("round", "round")
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         object.__setattr__(self, "start", _point(self.start))
         object.__setattr__(self, "end", _point(self.end))
         object.__setattr__(self, "end_caps", tuple(self.end_caps))
@@ -214,7 +217,7 @@ class ScenePad:
     component_side: str = "top"
     pin_name: str | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         object.__setattr__(self, "center", _point(self.center))
         object.__setattr__(self, "size", _point(self.size))
         object.__setattr__(self, "hole_center", _point(self.center if self.hole_center is None else self.hole_center))
@@ -252,7 +255,7 @@ class SceneJoin:
     net: str | None
     points: tuple[Point, ...]
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         object.__setattr__(self, "points", tuple(_point(p) for p in self.points))
         if len(self.points) not in (3, 4):
             raise ValueError("A join requires three or four points.")
@@ -278,7 +281,7 @@ class SceneComponent:
     bounds: Bounds
     side: str = "top"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         bounds = tuple(float(v) for v in self.bounds)
         if len(bounds) != 4 or not all(math.isfinite(v) for v in bounds):
             raise ValueError("Component bounds must contain four finite values.")
@@ -291,7 +294,13 @@ class SceneComponent:
         object.__setattr__(self, "bounds", bounds)
         object.__setattr__(self, "nets", tuple(dict.fromkeys(self.nets)))
 
-    def visible_on(self, visible_layers, mirror=False, net=None, both_sides=False):
+    def visible_on(
+        self,
+        visible_layers: Iterable[str],
+        mirror: bool = False,
+        net: str | None = None,
+        both_sides: bool = False,
+    ) -> bool:
         """Use the same layer, network and side selection for outlines and names."""
         return (
             self.layer in visible_layers
@@ -320,7 +329,7 @@ class SceneObjectInfo:
     pin_name: str | None = None
     name: str | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.kind not in {"trace", "via", "pad", "zone"}:
             raise ValueError("Unknown selectable object kind.")
         for name in ("width", "length", "drill_diameter"):
@@ -344,7 +353,7 @@ class LayoutScene:
     components: tuple[SceneComponent, ...] = ()
     object_info: tuple[SceneObjectInfo, ...] = ()
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         object.__setattr__(self, "layers", tuple(self.layers))
         object.__setattr__(self, "polygons", tuple(self.polygons))
         object.__setattr__(self, "diagnostics", tuple(self.diagnostics))
@@ -359,7 +368,7 @@ class LayoutScene:
             raise ValueError("Every component must belong to a scene layer.")
 
     @property
-    def geometry(self):
+    def geometry(self) -> Iterator[ScenePolygon | SceneTrace | ScenePad | SceneJoin]:
         """Iterate copper geometry; component envelopes are separate overlays."""
         from itertools import chain
 

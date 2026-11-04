@@ -22,6 +22,8 @@
 
 """Orthographic camera in millimeters and logical screen pixels."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 import math
 
@@ -35,10 +37,14 @@ class Camera:
     height: float = 1.0
     mirror: bool = False
 
-    def resize(self, width, height):
+    def resize(self, width: float, height: float) -> None:
         self.width, self.height = max(float(width), 1.0), max(float(height), 1.0)
 
-    def fit(self, bounds, padding=(0, 0, 0, 0)):
+    def fit(
+        self,
+        bounds: tuple[float, float, float, float] | None,
+        padding: tuple[float, float, float, float] = (0, 0, 0, 0),
+    ) -> None:
         if bounds is None:
             self.center_x = self.center_y = 0.0
             self.scale = 10.0
@@ -53,24 +59,24 @@ class Camera:
         self.center_x += (-1 if self.mirror else 1) * (right - left) / (2 * self.scale)
         self.center_y += (top - bottom) / (2 * self.scale)
 
-    def screen_to_world(self, x, y):
+    def screen_to_world(self, x: float, y: float) -> tuple[float, float]:
         sign = -1.0 if self.mirror else 1.0
         return self.center_x + sign * (x - self.width / 2) / self.scale, self.center_y - (
             y - self.height / 2
         ) / self.scale
 
-    def world_to_screen(self, x, y):
+    def world_to_screen(self, x: float, y: float) -> tuple[float, float]:
         sign = -1.0 if self.mirror else 1.0
         return self.width / 2 + sign * (x - self.center_x) * self.scale, self.height / 2 - (
             y - self.center_y
         ) * self.scale
 
-    def pan(self, dx, dy):
+    def pan(self, dx: float, dy: float) -> None:
         sign = -1.0 if self.mirror else 1.0
         self.center_x -= sign * dx / self.scale
         self.center_y += dy / self.scale
 
-    def zoom_at(self, x, y, factor):
+    def zoom_at(self, x: float, y: float, factor: float) -> None:
         if not math.isfinite(factor) or factor <= 0:
             raise ValueError("Zoom factor must be positive and finite.")
         before = self.screen_to_world(x, y)
@@ -79,7 +85,7 @@ class Camera:
         self.center_x += before[0] - after[0]
         self.center_y += before[1] - after[1]
 
-    def visible(self, bounds):
+    def visible(self, bounds: tuple[float, float, float, float]) -> bool:
         x0, y0, x1, y1 = bounds
         half_w, half_h = self.width / (2 * self.scale), self.height / (2 * self.scale)
         return not (

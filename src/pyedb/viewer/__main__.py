@@ -22,11 +22,14 @@
 
 """Launch with ``python -m pyedb.viewer board.aedb`` or ``--demo``."""
 
+from __future__ import annotations
+
 import argparse
 from pathlib import Path
+from typing import Sequence
 
 
-def main(argv=None):
+def main(argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Interactive PySide6/OpenGL 2D EDB layout viewer")
     parser.add_argument("path", nargs="?", type=Path, help="Existing .aedb directory")
     parser.add_argument("--demo", action="store_true", help="Show a synthetic board without an EDB session")

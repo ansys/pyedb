@@ -22,22 +22,24 @@
 
 """Small synthetic board for trying the renderer without an EDB license."""
 
+from __future__ import annotations
+
 import math
 
 from pyedb.viewer.scene import LayoutScene, SceneComponent, SceneLayer, ScenePad, ScenePolygon, SceneTrace
 
 
-def _rectangle(x0, y0, x1, y1):
+def _rectangle(x0: float, y0: float, x1: float, y1: float) -> tuple[tuple[float, float], ...]:
     return ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
 
 
-def _circle(x, y, radius):
+def _circle(x: float, y: float, radius: float) -> tuple[tuple[float, float], ...]:
     return tuple(
         (x + radius * math.cos(i * math.tau / 64), y + radius * math.sin(i * math.tau / 64)) for i in range(64)
     )
 
 
-def demo_scene():
+def demo_scene() -> LayoutScene:
     """Return top copper with overlapping voids over a lower ground plane."""
     layers = (
         SceneLayer("TOP", (0.95, 0.61, 0.20, 1.0)),

@@ -22,10 +22,23 @@
 
 """Embeddable, on-demand OpenGL canvas with cursor-anchored navigation."""
 
-from PySide6.QtCore import QLineF, Qt, QTimer, Signal, Slot
-from PySide6.QtGui import QSurfaceFormat
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from PySide6.QtCore import QEvent, QLineF, Qt, QTimer, Signal, Slot
+from PySide6.QtGui import (
+    QFocusEvent,
+    QHideEvent,
+    QKeyEvent,
+    QMouseEvent,
+    QResizeEvent,
+    QShowEvent,
+    QSurfaceFormat,
+    QWheelEvent,
+)
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QLabel, QWidget
 
 from pyedb.viewer.camera import Camera
 from pyedb.viewer.picking import PickHit
@@ -34,8 +47,13 @@ from pyedb.viewer.qt.loading import LoadingPanel
 from pyedb.viewer.qt.renderer import Renderer
 from pyedb.viewer.qt.theme import COLORS
 
+if TYPE_CHECKING:
+    from pyedb.viewer.mesh import PreparedScene
+    from pyedb.viewer.picking import PickedObject, PickObject
+    from pyedb.viewer.scene import Bounds, LayoutScene
 
-def layout_surface_format():
+
+def layout_surface_format() -> QSurfaceFormat:
     """Return the core OpenGL format required by the layout canvas."""
     surface = QSurfaceFormat()
     surface.setVersion(3, 3)
@@ -58,7 +76,7 @@ class LayoutView(QOpenGLWidget):
     selection_changed = Signal(object)
     hover_changed = Signal(object)
 
-    def __init__(self, scene, parent=None):
+    def __init__(self, scene: LayoutScene, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setFormat(layout_surface_format())
         self.scene = scene
@@ -112,13 +130,13 @@ class LayoutView(QOpenGLWidget):
         self.inspector.cleared.connect(self.clear_selection)
 
     @Slot(str, int, int)
-    def set_progress(self, stage, current, total):
+    def set_progress(self, stage: str, current: int, total: int) -> None:
         if not self.error:
             if stage == "Rendering layout" and total:
                 total += 1  # The first upload/draw completes the display stage.
             self.loading.set_progress(stage, current, total)
 
-    def set_prepared(self, prepared, *, final=True):
+    def set_prepared(self, prepared: PreparedScene, *, final: bool = True) -> None:
         self._pick_index = getattr(prepared, "picking", None)
         self.hover = None
         self._notify_hover()
@@ -142,14 +160,14 @@ class LayoutView(QOpenGLWidget):
             self.message.setText("No geometry matches this layout selection.")
         self.update()
 
-    def fail(self, error):
+    def fail(self, error: object) -> None:
         self.error = str(error)
         self.loading.hide()
         self.message.setText(f"Layout viewer unavailable\n\n{self.error}")
         self.message.show()
         self.rendering_failed.emit(self.error)
 
-    def initializeGL(self):
+    def initializeGL(self) -> None:
         try:
             self.renderer.initialize()
             self.context().aboutToBeDestroyed.connect(self.cleanup)
@@ -158,7 +176,7 @@ class LayoutView(QOpenGLWidget):
             self.renderer.release()
             self.fail(exc)
 
-    def paintGL(self):
+    def paintGL(self) -> None:
         if self.error:
             return
         try:
@@ -199,7 +217,7 @@ class LayoutView(QOpenGLWidget):
         except Exception as exc:
             self.fail(exc)
 
-    def resizeGL(self, width, height):
+    def resizeGL(self, width: int, height: int) -> None:
         # QOpenGLWidget's GL dimensions may be physical pixels on high-DPI displays.
         # Navigation and shader projection consistently use logical widget pixels.
         self.camera.resize(self.width(), self.height())
@@ -207,39 +225,39 @@ class LayoutView(QOpenGLWidget):
             self.fit_all()
             self._fitted = True
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)
         self.message.setGeometry(20, max(20, self.height() // 2 - 55), max(1, self.width() - 40), 110)
         self._position_loading()
         if hasattr(self, "inspector"):
             self._position_inspector()
 
-    def _position_loading(self):
+    def _position_loading(self) -> None:
         width = min(380, max(1, self.width() - 32))
         height = self.loading.sizeHint().height()
         y = 16 if self.loading.compact else max(16, (self.height() - height) // 2)
         self.loading.setGeometry((self.width() - width) // 2, y, width, height)
 
-    def showEvent(self, event):
+    def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
         QTimer.singleShot(100, self._check_context)
         QTimer.singleShot(150, self._show_loading)
 
-    def _show_loading(self):
+    def _show_loading(self) -> None:
         if self.isVisible() and (self._prepared is None or not self._loading_complete) and not self.error:
             self.loading.show()
             self.loading.raise_()
 
-    def _check_context(self):
+    def _check_context(self) -> None:
         if self.isVisible() and not self.isValid() and not self.error:
             self.fail("Could not create an OpenGL 3.3 context. Check the desktop graphics driver.")
 
-    def fit_all(self):
+    def fit_all(self) -> None:
         self.camera.resize(self.width(), self.height())
         self.camera.fit(self.scene.bounds, padding=self.fit_padding)
         self.update()
 
-    def zoom_to_bounds(self, bounds):
+    def zoom_to_bounds(self, bounds: Bounds) -> None:
         """Fit world bounds with a margin, so tiny objects are not zoomed to the limit."""
         x0, y0, x1, y1 = bounds
         margin = max(0.25 * max(x1 - x0, y1 - y0), 0.05)
@@ -248,11 +266,11 @@ class LayoutView(QOpenGLWidget):
         self._position_inspector()
         self.update()
 
-    def zoom(self, factor):
+    def zoom(self, factor: float) -> None:
         self.camera.zoom_at(self.width() / 2, self.height() / 2, factor)
         self.update()
 
-    def wheelEvent(self, event):
+    def wheelEvent(self, event: QWheelEvent) -> None:
         self._clear_hover()
         steps = event.angleDelta().y() / 120.0
         if not steps:
@@ -261,7 +279,7 @@ class LayoutView(QOpenGLWidget):
         self.update()
         event.accept()
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         self.setFocus()
         if event.button() in (Qt.MouseButton.LeftButton, Qt.MouseButton.MiddleButton, Qt.MouseButton.RightButton):
             if self._drag_position is None:
@@ -276,7 +294,7 @@ class LayoutView(QOpenGLWidget):
         else:
             super().mousePressEvent(event)
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         dragging = self._drag_position is not None and bool(event.buttons() & self._drag_button)
         if dragging:
             if not self._dragging and QLineF(self._press_position, event.position()).length() > 4:
@@ -299,7 +317,7 @@ class LayoutView(QOpenGLWidget):
             return
         super().mouseMoveEvent(event)
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() == self._drag_button:
             click = self.pick_enabled and event.button() == Qt.MouseButton.LeftButton and not self._dragging
             self._end_pan()
@@ -309,7 +327,7 @@ class LayoutView(QOpenGLWidget):
             return
         super().mouseReleaseEvent(event)
 
-    def _end_pan(self):
+    def _end_pan(self) -> None:
         self._drag_position = None
         self._drag_button = Qt.MouseButton.NoButton
         self._press_position = None
@@ -319,15 +337,15 @@ class LayoutView(QOpenGLWidget):
         else:
             self.setCursor(Qt.CursorShape.OpenHandCursor)
 
-    def focusOutEvent(self, event):
+    def focusOutEvent(self, event: QFocusEvent) -> None:
         self._end_pan()
         super().focusOutEvent(event)
 
-    def hideEvent(self, event):
+    def hideEvent(self, event: QHideEvent) -> None:
         self._end_pan()
         super().hideEvent(event)
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key.Key_Escape:
             self.clear_selection()
             self._clear_hover()
@@ -348,13 +366,13 @@ class LayoutView(QOpenGLWidget):
             return
         event.accept()
 
-    def _hit_visible(self, hit):
+    def _hit_visible(self, hit: PickHit) -> bool:
         return self.opacity > 0 and any(
             item.layer in self.visible_layers and (self.net is None or item.net == self.net)
             for item in hit.object.items
         )
 
-    def _hit(self, x, y):
+    def _hit(self, x: float, y: float) -> PickHit | None:
         if self._pick_index is None or not self.pick_enabled:
             return None
         return self._pick_index.pick(
@@ -366,7 +384,7 @@ class LayoutView(QOpenGLWidget):
             mirror=self.camera.mirror,
         )
 
-    def pick_at(self, x, y):
+    def pick_at(self, x: float, y: float) -> PickHit | None:
         """Pick in logical canvas pixels; no EDB access or geometry upload."""
         self._clear_hover()
         self.selection = self._hit(x, y)
@@ -380,14 +398,14 @@ class LayoutView(QOpenGLWidget):
         self._notify_selection()
         return self.selection
 
-    def clear_selection(self):
+    def clear_selection(self) -> None:
         self.selection = None
         self._selection_anchor = None
         self.inspector.hide()
         self.update()
         self._notify_selection()
 
-    def find_object(self, object_id, kind=None):
+    def find_object(self, object_id: int, kind: str | None = None) -> PickObject:
         """Return the picking object for a source object id, or raise ``ValueError``."""
         if self._pick_index is None:
             raise RuntimeError("The layout is still loading; objects can be selected once it is displayed.")
@@ -400,7 +418,7 @@ class LayoutView(QOpenGLWidget):
             raise ValueError(f"Object id {object_id!r} is ambiguous; specify kind.")
         return matches[0]
 
-    def select_object(self, object_id, kind=None, layer=None):
+    def select_object(self, object_id: int, kind: str | None = None, layer: str | None = None) -> PickedObject:
         """Select an object as if it had been picked. Returns the ``PickedObject``."""
         obj = self.find_object(object_id, kind)
         if layer is None:
@@ -419,25 +437,25 @@ class LayoutView(QOpenGLWidget):
         self._notify_selection()
         return self.selection.picked
 
-    def _notify_selection(self):
+    def _notify_selection(self) -> None:
         picked = None if self.selection is None else self.selection.picked
         if picked != self._notified_selection:
             self._notified_selection = picked
             self.selection_changed.emit(picked)
 
-    def _notify_hover(self):
+    def _notify_hover(self) -> None:
         picked = None if self.hover is None else self.hover.picked
         if picked != self._notified_hover:
             self._notified_hover = picked
             self.hover_changed.emit(picked)
 
-    def _clear_hover(self):
+    def _clear_hover(self) -> None:
         self._hover_timer.stop()
         self.hover = None
         self.update()
         self._notify_hover()
 
-    def _pick_hover(self):
+    def _pick_hover(self) -> None:
         if self._hover_position is not None and self._drag_position is None and self.underMouse():
             position = self._hover_position
             hit = self._hit(position.x(), position.y())
@@ -449,7 +467,7 @@ class LayoutView(QOpenGLWidget):
                 self._notify_hover()
             self.setCursor(Qt.CursorShape.PointingHandCursor if hit is not None else Qt.CursorShape.ArrowCursor)
 
-    def _position_inspector(self):
+    def _position_inspector(self) -> None:
         if self.selection is None or self._selection_anchor is None:
             self.inspector.hide()
             return
@@ -469,16 +487,16 @@ class LayoutView(QOpenGLWidget):
         self.inspector.show()
         self.inspector.raise_()
 
-    def set_pick_enabled(self, enabled):
+    def set_pick_enabled(self, enabled: bool) -> None:
         self.pick_enabled = enabled
         self._clear_hover()
         self._end_pan()
 
-    def leaveEvent(self, event):
+    def leaveEvent(self, event: QEvent) -> None:
         self._clear_hover()
         super().leaveEvent(event)
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         if self.context() is None or not self.renderer.program:
             return
         self.makeCurrent()

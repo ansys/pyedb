@@ -22,8 +22,13 @@
 
 """Native workspace panels with explicit state, search and keyboard navigation."""
 
+from __future__ import annotations
+
+from collections.abc import Container, Sequence
+from typing import TYPE_CHECKING
+
 from PySide6.QtCore import QRectF, QSignalBlocker, QSize, Qt
-from PySide6.QtGui import QColor, QFont, QIcon, QPainter, QPen, QPixmap
+from PySide6.QtGui import QColor, QFont, QIcon, QPainter, QPaintEvent, QPen, QPixmap, QResizeEvent
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -43,18 +48,21 @@ from pyedb.viewer.mesh import scene_network_names
 from pyedb.viewer.qt.icons import workspace_icon
 from pyedb.viewer.qt.theme import COLORS
 
+if TYPE_CHECKING:
+    from pyedb.viewer.scene import LayoutScene, SceneLayer
+
 
 class ElidedLabel(QLabel):
     """Preserve a full accessible project name without forcing a wide window."""
 
-    def __init__(self, text, parent=None):
+    def __init__(self, text: str, parent: QWidget | None = None) -> None:
         super().__init__(text, parent)
         self.setTextFormat(Qt.TextFormat.PlainText)
         self.setToolTip(text)
         self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         self.setMinimumWidth(70)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter(self)
         painter.setPen(self.palette().color(self.foregroundRole()))
         text = self.fontMetrics().elidedText(self.text(), Qt.TextElideMode.ElideRight, self.width())
@@ -62,7 +70,7 @@ class ElidedLabel(QLabel):
         painter.end()
 
 
-def layer_swatch(color):
+def layer_swatch(color: Sequence[float]) -> QIcon:
     pixmap = QPixmap(28, 28)
     pixmap.setDevicePixelRatio(2)
     pixmap.fill(Qt.GlobalColor.transparent)
@@ -75,7 +83,9 @@ def layer_swatch(color):
     return QIcon(pixmap)
 
 
-def _panel_header(parent, object_name, title_text, panel_name):
+def _panel_header(
+    parent: QWidget, object_name: str, title_text: str, panel_name: str
+) -> tuple[QFrame, QLabel, QToolButton]:
     """Build a panel heading with a count badge and a close control."""
     header = QFrame(parent)
     header.setObjectName(object_name)
@@ -104,7 +114,9 @@ def _panel_header(parent, object_name, title_text, panel_name):
 class LayerPanel(QWidget):
     """Stackup visibility controls without a search field."""
 
-    def __init__(self, layers, visible_layers, parent=None):
+    def __init__(
+        self, layers: Sequence[SceneLayer], visible_layers: Container[str], parent: QWidget | None = None
+    ) -> None:
         super().__init__(parent)
         self.setObjectName("layerPanel")
         self.header, self.counter, self.close_button = _panel_header(self, "layerHeader", "Layers", "layers")
@@ -168,7 +180,7 @@ class LayerPanel(QWidget):
         self.empty_notice.setVisible(not layers)
         self.empty_notice.setText("No layers yet\nThis layout snapshot is empty.")
 
-    def sync(self, visible_layers):
+    def sync(self, visible_layers: Container[str]) -> None:
         count = self.layer_list.count()
         checked = sum(self.layer_list.item(i).text() in visible_layers for i in range(count))
         self.counter.setText(f"{checked} / {count}")
@@ -184,7 +196,7 @@ class LayerPanel(QWidget):
                 font.setWeight(QFont.Weight.Medium if visible else QFont.Weight.Normal)
                 item.setFont(font)
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)
         self.footer.setVisible(self.height() >= 320)
         self.eyebrow.setVisible(self.height() >= 260)
@@ -193,7 +205,7 @@ class LayerPanel(QWidget):
 class NetworkPanel(QWidget):
     """A searchable single-network selector, parallel to the layer panel."""
 
-    def __init__(self, scene, parent=None):
+    def __init__(self, scene: LayoutScene, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setObjectName("networkPanel")
         self.header, self.counter, self.close_button = _panel_header(self, "networkHeader", "Networks", "network")
@@ -249,7 +261,7 @@ class NetworkPanel(QWidget):
         self.search.setEnabled(bool(self.names))
         self._filter("")
 
-    def _filter(self, query):
+    def _filter(self, query: str) -> None:
         query = query.strip().casefold()
         matches = 0
         with QSignalBlocker(self.network_list):
@@ -260,7 +272,7 @@ class NetworkPanel(QWidget):
                 matches += int(match)
         self.counter.setText(f"{matches} / {len(self.names)}" if query else str(len(self.names)))
 
-    def _selection_changed(self, row):
+    def _selection_changed(self, row: int) -> None:
         item = self.network_list.item(row)
         text = item.text() if item is not None else "All networks"
         self.summary.setText(text)

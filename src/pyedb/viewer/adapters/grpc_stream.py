@@ -3,7 +3,10 @@
 
 """Geometry helpers working on public ``ansys.edb.core`` objects."""
 
+from __future__ import annotations
+
 import math
+from typing import TYPE_CHECKING, Iterable, Sequence
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from ansys.edb.core.utility.transform import Transform as CoreTransform
@@ -12,8 +15,16 @@ import grpc
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.misc.utilities import compute_arc_points
 
+if TYPE_CHECKING:
+    from ansys.edb.core.geometry.point_data import PointData
+    from ansys.edb.core.primitive.path import Path
 
-def _decode(points):
+    from pyedb.viewer.scene import Ring
+
+    DecodedPoint = tuple[float | None, float | None, float | None]
+
+
+def _decode(points: Iterable[PointData]) -> list[DecodedPoint]:
     """Return ``(x, y, arc_height)`` tuples; arc markers have ``x``/``y`` set to ``None``."""
     decoded = []
     for point in points:
@@ -24,7 +35,7 @@ def _decode(points):
     return decoded
 
 
-def _tessellate(points, arc_segments, chord_error):
+def _tessellate(points: Sequence[DecodedPoint], arc_segments: int, chord_error: float | None) -> Ring:
     x, y = [], []
     error = None if chord_error is None else chord_error / 1000
     for index, (px, py, height) in enumerate(points):
@@ -45,12 +56,12 @@ def _tessellate(points, arc_segments, chord_error):
     return tuple((px * 1000, py * 1000) for px, py in zip(x, y))
 
 
-def contour_from_points(points, arc_segments, chord_error=None):
+def contour_from_points(points: Iterable[PointData], arc_segments: int, chord_error: float | None = None) -> Ring:
     """Tessellate core ``PointData`` items, including arc-height markers."""
     return _tessellate(_decode(points), arc_segments, chord_error)
 
 
-def centerline_length(polygon_data):
+def centerline_length(polygon_data: CorePolygonData) -> float:
     """Return a core centerline's length in mm, evaluating circular arcs exactly."""
     points = _decode(polygon_data.points)
     if len(points) < 2:
@@ -77,12 +88,12 @@ def centerline_length(polygon_data):
     return length * 1000
 
 
-def trace_dimensions(path):
+def trace_dimensions(path: Path) -> tuple[float, float]:
     """Return a core path's width and centerline length in mm."""
     return path.width.double * 1000, centerline_length(path.center_line)
 
 
-def transform_basis_points(transform):
+def transform_basis_points(transform: CoreTransform) -> list[PointData] | None:
     """Transform an affine basis in one native call instead of three RPCs."""
     if not isinstance(transform, CoreTransform):
         return None

@@ -22,13 +22,15 @@
 
 """Small consistent, locally drawn icons for the native workspace chrome."""
 
+from __future__ import annotations
+
 from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
 
 from pyedb.viewer.qt.theme import COLORS
 
 
-def layer_icon_path(layer_count=2):
+def layer_icon_path(layer_count: int = 2) -> QPainterPath:
     """Build the shared stacked-layer outline at its original logical size."""
     path = QPainterPath()
     path.moveTo(10, 3)
@@ -43,7 +45,7 @@ def layer_icon_path(layer_count=2):
     return path
 
 
-def workspace_icon(name, color=None):
+def workspace_icon(name: str, color: str | None = None) -> QIcon:
     pixmap = QPixmap(40, 40)
     pixmap.setDevicePixelRatio(2)
     pixmap.fill(Qt.GlobalColor.transparent)

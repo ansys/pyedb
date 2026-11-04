@@ -3,6 +3,10 @@
 
 """A canvas-owned, nonmodal property card for the picked source object."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (
@@ -21,11 +25,14 @@ from pyedb.viewer.picking import inspector_rows
 from pyedb.viewer.qt.icons import workspace_icon
 from pyedb.viewer.qt.theme import COLORS
 
+if TYPE_CHECKING:
+    from pyedb.viewer.picking import PickHit
+
 
 class ObjectInspector(QFrame):
     cleared = Signal()
 
-    def __init__(self, parent):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
         self.setObjectName("objectInspector")
         self.setAccessibleName("Picked object properties")
@@ -72,13 +79,13 @@ class ObjectInspector(QFrame):
         self._stacked = False
         self.hide()
 
-    def set_hit(self, hit):
+    def set_hit(self, hit: PickHit) -> None:
         self.values = dict(inspector_rows(hit))
         self.title.setText(hit.object.info.kind.capitalize())
         self._build_rows(min(340, self.parentWidget().width() - 24) < 260)
         self.setAccessibleDescription("; ".join(f"{name}: {text}" for name, text in self.values.items()))
 
-    def _build_rows(self, stacked):
+    def _build_rows(self, stacked: bool) -> None:
         self._stacked = stacked
         while self.rows.count():
             item = self.rows.takeAt(0)
@@ -112,7 +119,7 @@ class ObjectInspector(QFrame):
             value.show()
         self.layout().activate()
 
-    def fit_canvas(self, width, height):
+    def fit_canvas(self, width: int, height: int) -> None:
         self.setFixedWidth(max(120, min(340, width - 24)))
         if (self.width() < 260) != self._stacked:
             self._build_rows(self.width() < 260)

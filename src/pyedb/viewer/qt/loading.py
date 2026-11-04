@@ -3,14 +3,16 @@
 
 """Compact, accessible loading feedback shared by extraction and preparation."""
 
+from __future__ import annotations
+
 from PySide6.QtCore import QElapsedTimer, Qt, QTimer, Slot
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QProgressBar, QVBoxLayout
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QProgressBar, QVBoxLayout, QWidget
 
 from pyedb.viewer.qt.theme import COLORS
 
 
 class LoadingPanel(QFrame):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setObjectName("loadingPanel")
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
@@ -65,14 +67,14 @@ class LoadingPanel(QFrame):
         self.timer.start()
         self.compact = False
 
-    def set_compact(self):
+    def set_compact(self) -> None:
         self.compact = True
         self.title.hide()
         self.layout().setContentsMargins(16, 12, 16, 12)
         self.layout().setSpacing(8)
 
     @Slot(str, int, int)
-    def set_progress(self, stage, current, total):
+    def set_progress(self, stage: str, current: int, total: int) -> None:
         self.stage.setText(stage)
         self.bar.setAccessibleDescription(stage)
         if total > 0:
@@ -88,6 +90,6 @@ class LoadingPanel(QFrame):
             self.detail.setText("Working…")
         self._elapsed()
 
-    def _elapsed(self):
+    def _elapsed(self) -> None:
         minutes, seconds = divmod(self.clock.elapsed() // 1000, 60)
         self.elapsed.setText(f"{minutes}:{seconds:02}")

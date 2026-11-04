@@ -22,17 +22,33 @@
 
 """A compact floating navigation capsule, independent of the GL drawing pass."""
 
-from string import Template
+from __future__ import annotations
 
-from PySide6.QtCore import QEvent, QSize, Qt
-from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
+from string import Template
+from typing import TYPE_CHECKING
+
+from PySide6.QtCore import QEvent, QObject, QSize, Qt
+from PySide6.QtGui import (
+    QAction,
+    QColor,
+    QIcon,
+    QMouseEvent,
+    QPainter,
+    QPainterPath,
+    QPen,
+    QPixmap,
+    QWheelEvent,
+)
 from PySide6.QtWidgets import QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QToolButton
 
 from pyedb.viewer.qt.icons import layer_icon_path
 from pyedb.viewer.qt.theme import COLORS
 
+if TYPE_CHECKING:
+    from pyedb.viewer.qt.canvas import LayoutView
 
-def navigation_icon(name):
+
+def navigation_icon(name: str) -> QIcon:
     """Draw a small consistent vector icon at double density."""
     pixmap = QPixmap(40, 40)
     pixmap.setDevicePixelRatio(2)
@@ -64,7 +80,9 @@ def navigation_icon(name):
 class NavigationCapsule(QFrame):
     """Keep navigation over the canvas, with keyboard focus and explicit hit areas."""
 
-    def __init__(self, canvas, fit_action, zoom_out_action, zoom_in_action):
+    def __init__(
+        self, canvas: LayoutView, fit_action: QAction, zoom_out_action: QAction, zoom_in_action: QAction
+    ) -> None:
         super().__init__(canvas)
         self.canvas = canvas
         self.has_geometry = canvas.scene.bounds is not None
@@ -116,7 +134,7 @@ class NavigationCapsule(QFrame):
         canvas.installEventFilter(self)
         self.reposition()
 
-    def _button(self, action, icon, name):
+    def _button(self, action: QAction, icon: str, name: str) -> QToolButton:
         action.setIcon(navigation_icon(icon))
         button = QToolButton(self)
         button.setDefaultAction(action)
@@ -126,25 +144,25 @@ class NavigationCapsule(QFrame):
         button.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         return button
 
-    def reposition(self):
+    def reposition(self) -> None:
         self.adjustSize()
         self.move(max(8, (self.canvas.width() - self.width()) // 2), max(8, self.canvas.height() - self.height() - 20))
         self.canvas.fit_padding = (16, 16, 16, self.height() + 36) if self.has_geometry else (0, 0, 0, 0)
         self.raise_()
 
-    def eventFilter(self, watched, event):
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
         if watched is self.canvas and event.type() in (QEvent.Type.Resize, QEvent.Type.Show):
             self.reposition()
         return super().eventFilter(watched, event)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         event.accept()
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         event.accept()
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         event.accept()
 
-    def wheelEvent(self, event):
+    def wheelEvent(self, event: QWheelEvent) -> None:
         event.accept()

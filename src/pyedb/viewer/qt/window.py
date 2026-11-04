@@ -22,15 +22,20 @@
 
 """Native desktop controls around the GPU layout canvas."""
 
-from concurrent.futures import ThreadPoolExecutor
+from __future__ import annotations
+
+from collections.abc import Callable, Iterable
+from concurrent.futures import Future, ThreadPoolExecutor
+from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, Signal, Slot
-from PySide6.QtGui import QAction, QFont
+from PySide6.QtGui import QAction, QCloseEvent, QFont, QResizeEvent
 from PySide6.QtWidgets import (
     QComboBox,
     QDockWidget,
     QHBoxLayout,
     QLabel,
+    QListWidgetItem,
     QMainWindow,
     QMessageBox,
     QSizePolicy,
@@ -50,6 +55,11 @@ from pyedb.viewer.qt.panels import ElidedLabel, LayerPanel, NetworkPanel
 from pyedb.viewer.qt.theme import COLORS, apply_viewer_theme
 from pyedb.viewer.scene import union_bounds
 
+if TYPE_CHECKING:
+    from pyedb.viewer.mesh import PreparedScene
+    from pyedb.viewer.picking import PickedObject
+    from pyedb.viewer.scene import LayoutScene
+
 
 class _PreparationSignals(QObject):
     ready = Signal(object)
@@ -60,17 +70,17 @@ class _PreparationSignals(QObject):
 
 
 class _Prepare(QRunnable):
-    def __init__(self, scene, loader=None):
+    def __init__(self, scene: LayoutScene, loader: Callable[..., LayoutScene] | None = None) -> None:
         super().__init__()
         self.scene = scene
         self.loader = loader
         self.preview_scene = self.preview_prepared = None
-        self._preview_executor = None
-        self._preview_jobs = []
+        self._preview_executor: ThreadPoolExecutor | None = None
+        self._preview_jobs: list[Future[None]] = []
         self.signals = _PreparationSignals()
 
     @Slot()
-    def run(self):
+    def run(self) -> None:
         try:
             progress = throttle_progress(self.signals.progress.emit)
             if self.loader is not None:
@@ -99,12 +109,12 @@ class _Prepare(QRunnable):
         except Exception as exc:
             self.signals.failed.emit(exc)
 
-    def _queue_preview(self, scene):
+    def _queue_preview(self, scene: LayoutScene) -> None:
         if len(self._preview_jobs) >= 2:
             self._preview_jobs.pop(0).result()
         self._preview_jobs.append(self._preview_executor.submit(self._preview, scene))
 
-    def _preview(self, scene):
+    def _preview(self, scene: LayoutScene) -> None:
         _ = scene.bounds  # Cache derived bounds off the GUI thread.
         previous = (self.preview_scene, self.preview_prepared) if self.preview_prepared is not None else None
         prepared = prepare_scene(scene, polygon_mesh=previous)
@@ -131,16 +141,16 @@ class LayoutWindow(QMainWindow):
 
     def __init__(
         self,
-        scene,
-        parent=None,
+        scene: LayoutScene,
+        parent: QWidget | None = None,
         *,
-        color_by_net=True,
-        plot_components=True,
-        annotate_component_names=True,
-        plot_components_on_both_side=True,
-        plot_outlines=True,
-        loader=None,
-    ):
+        color_by_net: bool = True,
+        plot_components: bool = True,
+        annotate_component_names: bool = True,
+        plot_components_on_both_side: bool = True,
+        plot_outlines: bool = True,
+        loader: Callable[..., LayoutScene] | None = None,
+    ) -> None:
         super().__init__(parent)
         self._capturing = loader is not None
         self._capture_error = None
@@ -198,7 +208,7 @@ class LayoutWindow(QMainWindow):
         QThreadPool.globalInstance().start(self._preparation)
 
     @Slot(object)
-    def _scene_loaded(self, scene):
+    def _scene_loaded(self, scene: LayoutScene) -> None:
         self._capturing = False
         self._display_scene(scene, preserve_view=self._has_preview)
         self.scene_ready.emit(scene)
@@ -206,14 +216,14 @@ class LayoutWindow(QMainWindow):
             self.close()
 
     @Slot(object, object)
-    def _scene_preview(self, scene, prepared):
+    def _scene_preview(self, scene: LayoutScene, prepared: PreparedScene) -> None:
         if self._close_after_capture:
             return
         self._display_scene(scene, preserve_view=self._has_preview)
         self._has_preview = True
         self.canvas.set_prepared(prepared, final=False)
 
-    def _display_scene(self, scene, preserve_view=False):
+    def _display_scene(self, scene: LayoutScene, preserve_view: bool = False) -> None:
         visible = self.canvas.visible_layers
         selected_net = self.canvas.net
         self.canvas.scene = scene
@@ -252,7 +262,7 @@ class LayoutWindow(QMainWindow):
             self.canvas.fit_all()
 
     @Slot(object)
-    def _load_failed(self, error):
+    def _load_failed(self, error: BaseException) -> None:
         capturing = self._capturing
         self._capturing = False
         self.canvas.fail(error)
@@ -262,7 +272,7 @@ class LayoutWindow(QMainWindow):
         if self._close_after_capture:
             self.close()
 
-    def _build_toolbar(self, scene):
+    def _build_toolbar(self, scene: LayoutScene) -> None:
         header = QToolBar("Workspace", self)
         header.setObjectName("workspaceHeader")
         header.setMovable(False)
@@ -404,7 +414,7 @@ class LayoutWindow(QMainWindow):
         row.addStretch()
         toolbar.addWidget(controls)
 
-    def _build_layers(self, scene):
+    def _build_layers(self, scene: LayoutScene) -> None:
         dock = QDockWidget("Layers", self)
         dock.setObjectName("layersDock")
         dock.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
@@ -452,7 +462,7 @@ class LayoutWindow(QMainWindow):
             setattr(self, attribute, action)
             menu.addAction(action)
 
-    def _set_layer_panel(self, scene):
+    def _set_layer_panel(self, scene: LayoutScene) -> None:
         dock = self.layers_dock
         previous, header = dock.widget(), dock.titleBarWidget()
         self.layer_panel = LayerPanel(scene.layers, self.canvas.visible_layers, dock)
@@ -471,7 +481,7 @@ class LayoutWindow(QMainWindow):
             if widget is not None:
                 widget.deleteLater()
 
-    def _build_networks(self, scene):
+    def _build_networks(self, scene: LayoutScene) -> None:
         dock = QDockWidget("Networks", self)
         dock.setObjectName("networksDock")
         dock.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
@@ -488,7 +498,7 @@ class LayoutWindow(QMainWindow):
         self.search_action.triggered.connect(self._focus_network_search)
         self.addAction(self.search_action)
 
-    def _set_network_panel(self, scene):
+    def _set_network_panel(self, scene: LayoutScene) -> None:
         dock = self.networks_dock
         previous, header = dock.widget(), dock.titleBarWidget()
         self.network_panel = NetworkPanel(scene, dock)
@@ -503,7 +513,7 @@ class LayoutWindow(QMainWindow):
                 widget.deleteLater()
 
     @Slot(object)
-    def _prepared(self, prepared):
+    def _prepared(self, prepared: PreparedScene) -> None:
         self.canvas.set_prepared(prepared)
         if self.canvas.error:
             return
@@ -522,32 +532,32 @@ class LayoutWindow(QMainWindow):
         self._refresh_status()
 
     @Slot(float, float)
-    def _position_changed(self, x, y):
+    def _position_changed(self, x: float, y: float) -> None:
         self.coordinates.setText(f"X {x:.4f}   Y {y:.4f}  mm")
 
     @Slot(str)
-    def _rendering_failed(self, error):
+    def _rendering_failed(self, error: str) -> None:
         self.engine_badge.setText("OpenGL error")
         self.engine_badge.setStyleSheet(f"color: {COLORS['error']};")
         self.engine_badge.setToolTip(error)
         self._render_error = "Layout rendering failed. See the canvas for details."
         self._refresh_status()
 
-    def _refresh_status(self):
+    def _refresh_status(self) -> None:
         self.statusBar().showMessage(
             self._render_error or (self._compact_stats if self.width() < 900 else self._stats_summary)
         )
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)
         if hasattr(self, "_stats_summary"):
             self._refresh_status()
 
-    def _mirror(self, checked):
+    def _mirror(self, checked: bool) -> None:
         self.canvas.camera.mirror = checked
         self.canvas.update()
 
-    def _net_changed(self, index):
+    def _net_changed(self, index: int) -> None:
         item = self.network_list.item(index)
         previous = self.canvas.net
         self.canvas.net = item.data(Qt.ItemDataRole.UserRole) if item is not None else None
@@ -555,20 +565,20 @@ class LayoutWindow(QMainWindow):
         if self.canvas.net != previous:
             self.net_changed.emit(self.canvas.net)
 
-    def _color_changed(self, index):
+    def _color_changed(self, index: int) -> None:
         self.canvas.color_by_net = self.color_mode.itemData(index)
         self.canvas.update()
 
-    def _display_option(self, setting, checked):
+    def _display_option(self, setting: str, checked: bool) -> None:
         setattr(self.canvas, setting, checked)
         self.canvas.update()
 
-    def _opacity_changed(self, value):
+    def _opacity_changed(self, value: int) -> None:
         self.canvas.opacity = value / 100.0
         self.opacity_readout.setText(f"{value}%")
         self.canvas.update()
 
-    def _layer_changed(self, item):
+    def _layer_changed(self, item: QListWidgetItem) -> None:
         previous = self.visible_layers
         if item.checkState() == Qt.CheckState.Checked:
             self.canvas.visible_layers.add(item.text())
@@ -579,11 +589,11 @@ class LayoutWindow(QMainWindow):
         if self.visible_layers != previous:
             self.visible_layers_changed.emit(self.visible_layers)
 
-    def _set_all_layers(self, visible):
+    def _set_all_layers(self, visible: bool) -> None:
         """Change the full layer selection atomically, with one canvas update."""
         self._apply_visible_layers({layer.name for layer in self.canvas.scene.layers} if visible else set())
 
-    def _apply_visible_layers(self, names):
+    def _apply_visible_layers(self, names: Iterable[str]) -> None:
         previous = self.visible_layers
         with QSignalBlocker(self.layer_list):
             for index in range(self.layer_list.count()):
@@ -596,28 +606,28 @@ class LayoutWindow(QMainWindow):
             self.visible_layers_changed.emit(self.visible_layers)
 
     @Slot(object)
-    def _selection_changed(self, picked):
+    def _selection_changed(self, picked: PickedObject | None) -> None:
         if picked is None:
             self.selection_cleared.emit()
         else:
             self.object_selected.emit(picked)
 
     @property
-    def selected_object(self):
+    def selected_object(self) -> PickedObject | None:
         """The selected ``PickedObject``, or None."""
         return None if self.canvas.selection is None else self.canvas.selection.picked
 
     @property
-    def selected_net(self):
+    def selected_net(self) -> str | None:
         """The net filter name, or None when all networks are shown."""
         return self.canvas.net
 
     @property
-    def visible_layers(self):
+    def visible_layers(self) -> tuple[str, ...]:
         """Visible layer names in stackup order."""
         return tuple(layer.name for layer in self.canvas.scene.layers if layer.name in self.canvas.visible_layers)
 
-    def select_net(self, name):
+    def select_net(self, name: str | None) -> None:
         """Filter the view to a net; ``None`` shows all networks."""
         for row in range(self.network_list.count()):
             item = self.network_list.item(row)
@@ -628,7 +638,7 @@ class LayoutWindow(QMainWindow):
                 return
         raise ValueError(f"Unknown net {name!r}.")
 
-    def set_visible_layers(self, names):
+    def set_visible_layers(self, names: str | Iterable[str]) -> None:
         """Show exactly the named layers."""
         names = {names} if isinstance(names, str) else set(names)
         unknown = names - {layer.name for layer in self.canvas.scene.layers}
@@ -636,34 +646,34 @@ class LayoutWindow(QMainWindow):
             raise ValueError(f"Unknown layers: {sorted(unknown)}.")
         self._apply_visible_layers(names)
 
-    def select_object(self, object_id, kind=None, layer=None):
+    def select_object(self, object_id: int, kind: str | None = None, layer: str | None = None) -> PickedObject:
         """Select a trace, via, pad or zone by source object id. Returns its ``PickedObject``."""
         return self.canvas.select_object(object_id, kind, layer)
 
-    def clear_selection(self):
+    def clear_selection(self) -> None:
         self.canvas.clear_selection()
 
-    def fit_view(self):
+    def fit_view(self) -> None:
         self.canvas.fit_all()
 
-    def zoom_to_object(self, object_id, kind=None):
+    def zoom_to_object(self, object_id: int, kind: str | None = None) -> None:
         self.canvas.zoom_to_bounds(self.canvas.find_object(object_id, kind).bounds)
 
-    def zoom_to_net(self, name):
+    def zoom_to_net(self, name: str) -> None:
         bounds = union_bounds([item.bounds for item in self.canvas.scene.geometry if item.net == name])
         if bounds is None:
             raise ValueError(f"Unknown net {name!r}.")
         self.canvas.zoom_to_bounds(bounds)
 
-    def _sync_layer_buttons(self):
+    def _sync_layer_buttons(self) -> None:
         self.layer_panel.sync(self.canvas.visible_layers)
 
-    def _focus_network_search(self):
+    def _focus_network_search(self) -> None:
         self.networks_dock.show()
         self.network_panel.search.setFocus()
         self.network_panel.search.selectAll()
 
-    def _show_notes(self):
+    def _show_notes(self) -> None:
         notes = list(self.canvas.scene.diagnostics) or ["Scene supplied by caller. Coordinates are in millimeters."]
         prepared = self.canvas.renderer.prepared
         if prepared is not None:
@@ -674,7 +684,7 @@ class LayoutWindow(QMainWindow):
             )
         QMessageBox.information(self, "Layout display notes", "\n\n".join(notes))
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent) -> None:
         if self._capturing:
             self._close_after_capture = True
             self.hide()

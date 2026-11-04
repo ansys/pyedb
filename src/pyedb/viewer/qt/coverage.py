@@ -27,8 +27,12 @@ remain reserved for object-local copper masks. Multisample alpha-to-coverage
 preserves SDF edge coverage without accumulating opacity at joins.
 """
 
+from __future__ import annotations
+
+from collections.abc import Collection, Iterable, Sequence
 from ctypes import c_void_p
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 from OpenGL import GL
@@ -38,8 +42,12 @@ from pyedb.viewer.colors import COMPONENT_COLORS, NET_COLORS, OUTLINE_COLOR
 from pyedb.viewer.mesh import SDF_STRIDE
 from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
+if TYPE_CHECKING:
+    from pyedb.viewer.camera import Camera
+    from pyedb.viewer.mesh import PreparedScene
 
-def _shader_source(path):
+
+def _shader_source(path: Path) -> str:
     """Expand our local GLSL modules; OpenGL 3.3 has no native #include."""
     lines = []
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -51,7 +59,7 @@ def _shader_source(path):
 
 
 class SdfCoverage:
-    def __init__(self):
+    def __init__(self) -> None:
         self.program = self.cover_program = self.vao = self.cover_vao = self.vbo = 0
         self.fbo = self.resolve_fbo = self.texture = self.color_buffer = self.palette = 0
         self._target_key = None
@@ -60,7 +68,7 @@ class SdfCoverage:
         self.component_batches = ()
         self.drawn_pin_count = 0
 
-    def initialize(self):
+    def initialize(self) -> None:
         shader_dir = Path(__file__).with_name("shaders")
         for name, attribute in (("sdf", "program"), ("coverage", "cover_program")):
             setattr(
@@ -109,7 +117,7 @@ class SdfCoverage:
         GL.glTexParameteri(GL.GL_TEXTURE_1D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST)
         GL.glActiveTexture(GL.GL_TEXTURE0)
 
-    def _target(self, target, width, height, samples):
+    def _target(self, target: int, width: int, height: int, samples: int) -> None:
         """Share Qt's stencil attachment; retain the last material per covered sample.
 
         The color attachment belongs to this renderer. The Qt framebuffer itself
@@ -165,7 +173,7 @@ class SdfCoverage:
             raise RuntimeError("Unable to create the SDF stroke-cover framebuffer.")
         self._target_key = key
 
-    def _attributes(self, start):
+    def _attributes(self, start: int) -> None:
         for location in range(SDF_STRIDE // 4):
             GL.glEnableVertexAttribArray(location)
             GL.glVertexAttribPointer(
@@ -173,7 +181,7 @@ class SdfCoverage:
             )
             GL.glVertexAttribDivisor(location, 1)
 
-    def _draw_ranges(self, ranges):
+    def _draw_ranges(self, ranges: Iterable[Sequence[int]]) -> None:
         """Draw resident instance ranges with the current shader and pass state."""
         GL.glBindVertexArray(self.vao)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
@@ -183,7 +191,7 @@ class SdfCoverage:
             self._attributes(start)
             GL.glDrawArraysInstanced(GL.GL_TRIANGLE_STRIP, 0, 4, count)
 
-    def upload(self, prepared):
+    def upload(self, prepared: PreparedScene) -> None:
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, prepared.instances.nbytes, prepared.instances, GL.GL_STATIC_DRAW)
         self.layer_batches = {}
@@ -193,7 +201,15 @@ class SdfCoverage:
         self.net_ids[""] = 0
         self.component_batches = prepared.component_batches
 
-    def draw_components(self, camera, pixel_ratio, visible_layers, opacity, net, both_sides=False):
+    def draw_components(
+        self,
+        camera: Camera,
+        pixel_ratio: float,
+        visible_layers: Collection[str],
+        opacity: float,
+        net: str | None,
+        both_sides: bool = False,
+    ) -> int:
         """Draw the same compound-net component selection used for reference labels."""
         groups = {"top": [], "bottom": []}
         for batch in self.component_batches:
@@ -222,7 +238,9 @@ class SdfCoverage:
                 )
         return calls
 
-    def mark_ranges(self, camera, pixel_ratio, ranges, multisampled):
+    def mark_ranges(
+        self, camera: Camera, pixel_ratio: float, ranges: Iterable[Sequence[int]], multisampled: bool
+    ) -> None:
         """Mark selected resident instances in the currently bound mask target."""
         GL.glDisable(GL.GL_STENCIL_TEST)
         GL.glDisable(GL.GL_SCISSOR_TEST)
@@ -244,19 +262,19 @@ class SdfCoverage:
 
     def draw(
         self,
-        camera,
-        pixel_ratio,
-        layers,
-        color,
-        net,
+        camera: Camera,
+        pixel_ratio: float,
+        layers: Iterable[str],
+        color: Sequence[float],
+        net: str | None,
         *,
-        drills=False,
-        color_by_net=False,
-        component_pass=False,
-        instance_ranges=None,
-        category=None,
-        outline=False,
-    ):
+        drills: bool = False,
+        color_by_net: bool = False,
+        component_pass: bool = False,
+        instance_ranges: list[list[int]] | None = None,
+        category: str | None = None,
+        outline: bool = False,
+    ) -> int:
         """Mark the layer union, then shade each covered sample exactly once.
 
         With ``outline``, the cover pass inks the union's inner edge one logical pixel wide.
@@ -341,7 +359,7 @@ class SdfCoverage:
             GL.glStencilMask(0xFF)
             GL.glEnable(GL.GL_BLEND)
 
-    def release(self):
+    def release(self) -> None:
         if self.vbo:
             GL.glDeleteBuffers(1, [self.vbo])
         if self.vao or self.cover_vao:

@@ -22,6 +22,10 @@
 
 """Optional interactive layout viewer. Importing this module does not load Qt."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable
+
 from pyedb.viewer.picking import PickedObject
 from pyedb.viewer.scene import (
     LayoutScene,
@@ -33,6 +37,9 @@ from pyedb.viewer.scene import (
     ScenePolygon,
     SceneTrace,
 )
+
+if TYPE_CHECKING:
+    from pyedb.viewer.qt.window import LayoutWindow
 
 __all__ = [
     "LayoutScene",
@@ -50,18 +57,18 @@ __all__ = [
 
 
 def scene_from_edb(
-    edb,
-    layers=None,
-    nets=None,
-    arc_segments=None,
+    edb: Any,
+    layers: str | list[str] | None = None,
+    nets: str | list[str] | None = None,
+    arc_segments: int | None = None,
     *,
-    progress=None,
-    analytic_traces=True,
-    exact_component_bounds=False,
-    chord_error=0.002,
-    preview=None,
-    debug=False,
-):
+    progress: Callable[[str, int, int], None] | None = None,
+    analytic_traces: bool = True,
+    exact_component_bounds: bool = False,
+    chord_error: float = 0.002,
+    preview: Callable[..., Any] | None = None,
+    debug: bool = False,
+) -> LayoutScene:
     """Capture detached millimeter-based geometry.
 
     ``progress(stage, completed, total)`` optionally reports completed items in
@@ -87,24 +94,24 @@ def scene_from_edb(
 
 
 def launch_viewer(
-    edb=None,
+    edb: Any = None,
     *,
-    scene=None,
-    layers=None,
-    nets=None,
-    arc_segments=None,
-    block=None,
-    color_by_net=True,
-    plot_components=True,
-    annotate_component_names=True,
-    plot_components_on_both_side=True,
-    plot_outlines=True,
-    analytic_traces=False,
-    exact_component_bounds=False,
-    chord_error=0.002,
-    progressive=True,
-    debug=False,
-):
+    scene: LayoutScene | None = None,
+    layers: str | list[str] | None = None,
+    nets: str | list[str] | None = None,
+    arc_segments: int | None = None,
+    block: bool | None = None,
+    color_by_net: bool = True,
+    plot_components: bool = True,
+    annotate_component_names: bool = True,
+    plot_components_on_both_side: bool = True,
+    plot_outlines: bool = True,
+    analytic_traces: bool = False,
+    exact_component_bounds: bool = False,
+    chord_error: float = 0.002,
+    progressive: bool = True,
+    debug: bool = False,
+) -> LayoutWindow:
     """Open an interactive OpenGL layout window.
 
     Parameters
@@ -164,13 +171,15 @@ def launch_viewer(
         from pyedb.viewer.qt.app import show_scene
     except ImportError as exc:
         raise ImportError("The layout viewer requires optional dependencies: pip install 'pyedb[viewer]'.") from exc
-    options = {}
+    options: dict[str, Any] = {}
     if scene is None:
         from pathlib import Path
 
         from pyedb.viewer.capture import SourceCapture
 
-        def load(progress, preview=None):
+        def load(
+            progress: Callable[[str, int, int], None] | None, preview: Callable[..., Any] | None = None
+        ) -> LayoutScene:
             return scene_from_edb(
                 edb,
                 layers=layers,

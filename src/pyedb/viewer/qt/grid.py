@@ -22,8 +22,11 @@
 
 """World-anchored, adaptive shader grid. Navigation updates uniforms only."""
 
+from __future__ import annotations
+
 import math
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
@@ -31,8 +34,11 @@ from OpenGL.GL.shaders import compileProgram, compileShader
 from pyedb.viewer.qt.coverage import _shader_source
 from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
+if TYPE_CHECKING:
+    from pyedb.viewer.camera import Camera
 
-def grid_spacing(scale, pixel_ratio=1.0):
+
+def grid_spacing(scale: float, pixel_ratio: float = 1.0) -> float:
     """Choose a readable 1/2/5 millimeter step at the current zoom."""
     target = 20.0 / (scale * pixel_ratio)
     base = 10.0 ** math.floor(math.log10(target))
@@ -40,11 +46,11 @@ def grid_spacing(scale, pixel_ratio=1.0):
 
 
 class GridRenderer:
-    def __init__(self):
+    def __init__(self) -> None:
         self.program = self.vao = 0
         self.spacing = 1.0
 
-    def initialize(self):
+    def initialize(self) -> None:
         shaders = Path(__file__).with_name("shaders")
         self.program = compileProgram(
             compileShader(_shader_source(shaders / "coverage.vert"), GL.GL_VERTEX_SHADER),
@@ -57,7 +63,7 @@ class GridRenderer:
         }
         self.vao = int(GL.glGenVertexArrays(1))
 
-    def draw(self, camera, pixel_ratio):
+    def draw(self, camera: Camera, pixel_ratio: float) -> None:
         self.spacing = grid_spacing(camera.scale, pixel_ratio)
         GL.glDisable(GL.GL_BLEND)
         GL.glDisable(GL.GL_STENCIL_TEST)
@@ -72,7 +78,7 @@ class GridRenderer:
         GL.glBindVertexArray(self.vao)
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, 3)
 
-    def release(self):
+    def release(self) -> None:
         if self.vao:
             GL.glDeleteVertexArrays(1, [self.vao])
         if self.program:

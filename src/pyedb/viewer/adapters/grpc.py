@@ -22,11 +22,14 @@
 
 """Read geometry once through the public gRPC layout API."""
 
+from __future__ import annotations
+
 from collections import Counter
 import logging
 import math
 import traceback
 from types import SimpleNamespace
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Iterator
 
 from ansys.edb.core.database import ProductIdType
 from ansys.edb.core.definition.padstack_def_data import (
@@ -49,18 +52,37 @@ from pyedb.viewer.scene import (
     union_bounds,
 )
 
+if TYPE_CHECKING:
+    from ansys.edb.core.definition.padstack_def_data import PadstackDefData
+    from ansys.edb.core.geometry.point_data import PointData
+    from ansys.edb.core.hierarchy.component_group import ComponentGroup
+    from ansys.edb.core.primitive.padstack_instance import PadstackInstance
+    from ansys.edb.core.primitive.primitive import Primitive
+
+    from pyedb.grpc.edb import Edb
+    from pyedb.viewer.scene import Point, Ring
+
+    Progress = Callable[[str, int, int], None]
+    Placement = tuple[Callable[[Point], Point], Callable[[Point], Point], float]
+    PadTemplate = tuple[str, tuple[Any, ...], Point, float]
+    HoleProfile = tuple[str, float, float, float, float]
+    PinOwner = dict[str, Any]
+    ComponentBasis = tuple[tuple[Point, Point], Point]
+    PadstackDefinition = tuple[PadstackDefData, dict[str, SimpleNamespace], float, Point]
+    ScenePrimitives = tuple[list[ScenePolygon], list[SceneTrace], list[SceneJoin], list[ScenePad]]
+
 _logger = logging.getLogger(__name__)
 
 
 class _Diagnostics(list):
     """A diagnostics list that also remembers whether debug mode is enabled."""
 
-    def __init__(self, debug=False):
+    def __init__(self, debug: bool = False) -> None:
         super().__init__()
         self.debug = debug
 
 
-def _record_exception(diagnostics, message, exc):
+def _record_exception(diagnostics: list[str], message: str, exc: BaseException) -> None:
     """Record a caught exception.
 
     In normal mode, append only ``message`` and let the caller keep going
@@ -80,11 +102,11 @@ def _record_exception(diagnostics, message, exc):
     raise exc
 
 
-def _names(value):
+def _names(value: str | Iterable[str] | None) -> set[str] | None:
     return None if value is None else {value} if isinstance(value, str) else set(value)
 
 
-def _conductor_names(edb):
+def _conductor_names(edb: Edb) -> tuple[str, ...]:
     """Use stackup order/types, never conventional TOP/BOTTOM layer names."""
     signals = set(edb.stackup.signal_layers)
     return tuple(
@@ -94,7 +116,7 @@ def _conductor_names(edb):
     )
 
 
-def _component_sides(edb, diagnostics):
+def _component_sides(edb: Edb, diagnostics: list[str]) -> dict[str, str]:
     names = _conductor_names(edb)
     if not names:
         return {}
@@ -117,17 +139,17 @@ def _component_sides(edb, diagnostics):
     return sides
 
 
-def _contour(primitive, arc_segments, chord_error=None):
+def _contour(primitive: Primitive, arc_segments: int, chord_error: float | None = None) -> Ring:
     from pyedb.viewer.adapters.grpc_stream import contour_from_points
 
     return contour_from_points(primitive.polygon_data.points, arc_segments, chord_error)
 
 
-def _xy(point):
+def _xy(point: PointData) -> Point:
     return point.x.double * 1000, point.y.double * 1000
 
 
-def _tangent(trace, end=False):
+def _tangent(trace: SceneTrace, end: bool = False) -> Point:
     if trace.center is None:
         x, y = (b - a for a, b in zip(trace.start, trace.end))
     else:
@@ -138,7 +160,7 @@ def _tangent(trace, end=False):
     return (x / length, y / length) if length else (1, 0)
 
 
-def _trace_geometry(primitive, layer, net):
+def _trace_geometry(primitive: Primitive, layer: str, net: str | None) -> tuple[list[SceneTrace], list[SceneJoin]]:
     """Preserve source lines/arcs and add only constant-size join geometry."""
     arcs = primitive.center_line.arc_data
     if not arcs:
@@ -199,12 +221,12 @@ def _trace_geometry(primitive, layer, net):
     return traces, joins
 
 
-def _rotate(point, angle):
+def _rotate(point: Point, angle: float) -> Point:
     c, s = math.cos(angle), math.sin(angle)
     return c * point[0] - s * point[1], s * point[0] + c * point[1]
 
 
-def _nsided_polygon_points(size, num_sides):
+def _nsided_polygon_points(size: float, num_sides: float) -> Ring:
     """Return a regular polygon's vertices; ``size`` is the circumscribed diameter."""
     sides = max(3, int(round(num_sides)))
     radius = size / 2
@@ -213,7 +235,7 @@ def _nsided_polygon_points(size, num_sides):
     )
 
 
-def _thermal_relief_outline(round_outer, inner, isolation_gap, arc_segments):
+def _thermal_relief_outline(round_outer: bool, inner: float, isolation_gap: float, arc_segments: int) -> Ring:
     """Approximate a thermal-relief pad's outer boundary.
 
     ``round45``/``round90``/``square45``/``square90`` pads connect an inner pad to
@@ -231,7 +253,11 @@ def _thermal_relief_outline(round_outer, inner, isolation_gap, arc_segments):
     return ((radius, radius), (-radius, radius), (-radius, -radius), (radius, -radius))
 
 
-def _placement(instance, component_cache, component=None):
+def _placement(
+    instance: PadstackInstance,
+    component_cache: dict[int, ComponentBasis],
+    component: ComponentGroup | bool | None = None,
+) -> Placement:
     get_position = getattr(instance, "get_position_and_rotation", None)
     if callable(get_position):
         state = tuple(value.double for value in get_position())
@@ -270,11 +296,11 @@ def _placement(instance, component_cache, component=None):
                 origin[1] + basis[0][1] * px + basis[1][1] * py,
             )
 
-    def vector(point):
+    def vector(point: Point) -> Point:
         x, y = _rotate(point, rotation)
         return basis[0][0] * x + basis[1][0] * y, basis[0][1] * x + basis[1][1] * y
 
-    def world(point):
+    def world(point: Point) -> Point:
         x, y = vector(point)
         return position[0] + x, position[1] + y
 
@@ -282,7 +308,7 @@ def _placement(instance, component_cache, component=None):
     return world, vector, scale
 
 
-def _pad_template(pad, arc_segments, chord_error=None):
+def _pad_template(pad: SimpleNamespace, arc_segments: int, chord_error: float | None = None) -> PadTemplate | None:
     shape = pad.shape
     if shape in {"no_shape", "geometry", "no_geometry"}:
         return None
@@ -313,7 +339,15 @@ def _pad_template(pad, arc_segments, chord_error=None):
     return shape, values, offset, rotation
 
 
-def _mapped_layers(instance, edb, definition, layers, cache, layout_layers=None, name=None):
+def _mapped_layers(
+    instance: PadstackInstance,
+    edb: Edb,
+    definition: PadstackDefData,
+    layers: list[str],
+    cache: dict[Any, dict[str, str]],
+    layout_layers: dict[str, Any] | None = None,
+    name: str | None = None,
+) -> dict[str, str]:
     """Resolve explicit definition-to-layout mappings, including permuted names."""
     layer_map = getattr(instance, "layer_map", None)
     if layer_map is None or layer_map.is_null:
@@ -334,7 +368,7 @@ def _mapped_layers(instance, edb, definition, layers, cache, layout_layers=None,
     return cache[key]
 
 
-def _padstack_instance_name(instance):
+def _padstack_instance_name(instance: PadstackInstance) -> str | None:
     """Return the AEDT display name of a raw padstack instance, mirroring ``PadstackInstance.name``."""
     name = getattr(instance, "name", None)
     if name:
@@ -346,26 +380,31 @@ def _padstack_instance_name(instance):
     return str(value).strip("'") if value else None
 
 
-def _resolve_component(raw_component):
+def _resolve_component(raw_component: ComponentGroup | None) -> ComponentGroup | bool:
     """Return the raw component, or ``False`` when the instance has no component."""
     if raw_component is None or getattr(raw_component, "is_null", True):
         return False
     return raw_component
 
 
-def _component_is_enabled(component):
+def _component_is_enabled(component: ComponentGroup) -> bool:
     """Mirror ``Component.is_enabled`` by reading the raw component property directly."""
     comp_prop = getattr(component, "component_property", None)
     return getattr(comp_prop, "enabled", True)
 
 
-def _component_placement_layer_name(component):
+def _component_placement_layer_name(component: ComponentGroup) -> str:
     """Mirror ``Component.placement_layer`` (a layer name) without a pyedb wrapper."""
     layer = getattr(component, "placement_layer", None)
     return getattr(layer, "name", layer)
 
 
-def _pin_owner(instance, sides, cache, component=None):
+def _pin_owner(
+    instance: PadstackInstance,
+    sides: dict[str, str],
+    cache: dict[int, PinOwner | None],
+    component: ComponentGroup | bool | None = None,
+) -> PinOwner:
     """Keep component-pin ownership separate from the physical copper pad layer."""
     if not getattr(instance, "is_layout_pin", False):
         return {}
@@ -384,7 +423,12 @@ def _pin_owner(instance, sides, cache, component=None):
     return dict(owner, pin_name=_padstack_instance_name(instance)) if owner is not None else {}
 
 
-def _padstack_layers(instance, selected_layers, conductors, extended_ranges):
+def _padstack_layers(
+    instance: PadstackInstance,
+    selected_layers: set[str],
+    conductors: tuple[str, ...],
+    extended_ranges: bool,
+) -> list[str]:
     """Include conducting layers within the instance's physical span."""
     instance_layers = None
     get_range = getattr(instance, "get_layer_range", None)
@@ -404,7 +448,7 @@ def _padstack_layers(instance, selected_layers, conductors, extended_ranges):
     return [name for name in (instance_layers or ()) if name in selected_layers]
 
 
-def _pad_parameter_value(data, layer_name, pad_type):
+def _pad_parameter_value(data: PadstackDefData, layer_name: str | None, pad_type: CorePadType) -> list[Any] | None:
     """Read raw pad parameters, normalizing the polygon variant to a consistent 5-item layout."""
     try:
         p_val = data.get_pad_parameters(layer_name, pad_type)
@@ -417,7 +461,9 @@ def _pad_parameter_value(data, layer_name, pad_type):
     return p_val
 
 
-def _pad_param(data, layer_name, pad_type=CorePadType.REGULAR_PAD):
+def _pad_param(
+    data: PadstackDefData, layer_name: str | None, pad_type: CorePadType = CorePadType.REGULAR_PAD
+) -> SimpleNamespace:
     """Local, read-only stand-in for ``PadProperties`` built directly from raw pad parameters."""
     p_val = _pad_parameter_value(data, layer_name, pad_type)
     if p_val is None:
@@ -442,12 +488,12 @@ def _pad_param(data, layer_name, pad_type=CorePadType.REGULAR_PAD):
     )
 
 
-def _hole_param(data):
+def _hole_param(data: PadstackDefData) -> SimpleNamespace:
     """Hole geometry; ``get_hole_parameters()`` is ``get_pad_parameters(None, PadType.HOLE)``."""
     return _pad_param(data, None, CorePadType.HOLE)
 
 
-def _hole_diameter(hole):
+def _hole_diameter(hole: SimpleNamespace) -> float | None:
     """Effective circular drill diameter of a hole, or ``None`` when absent or polygonal."""
     values = hole.parameters_values
     if hole.shape in {"no_shape", "geometry"} or not values:
@@ -461,7 +507,7 @@ def _hole_diameter(hole):
 _THERMAL_RELIEF_SHAPES = {"round45", "round90", "square45", "square90"}
 
 
-def _rounded_outline(shape, size_x, size_y, corner, arc_segments):
+def _rounded_outline(shape: str, size_x: float, size_y: float, corner: float, arc_segments: int) -> Ring:
     """Local outline of a rectangle, oval (all corners rounded) or bullet (+X side rounded), centered at origin."""
     hx, hy = size_x / 2, size_y / 2
     radius = min(corner, hx, hy)
@@ -469,7 +515,7 @@ def _rounded_outline(shape, size_x, size_y, corner, arc_segments):
         return ((hx, hy), (-hx, hy), (-hx, -hy), (hx, -hy))
     steps = max(2, arc_segments // 4)
 
-    def arc(cx, cy, start):
+    def arc(cx: float, cy: float, start: float) -> list[Point]:
         return [
             (
                 cx + radius * math.cos(start + i * math.pi / 2 / steps),
@@ -486,7 +532,7 @@ def _rounded_outline(shape, size_x, size_y, corner, arc_segments):
     return tuple(ring)
 
 
-def _hole_profile(hole):
+def _hole_profile(hole: SimpleNamespace) -> HoleProfile | None:
     """Return a noncircular hole profile ``(shape, size_x, size_y, corner, rotation)`` in mm, else ``None``."""
     if hole.shape not in {"rectangle", "oval", "bullet"}:
         return None
@@ -495,7 +541,12 @@ def _hole_profile(hole):
     return hole.shape, values[0] * 1000, values[1] * 1000, corner, hole.rotation
 
 
-def _padstack_definition(instance, definitions, diagnostics, name=None):
+def _padstack_definition(
+    instance: PadstackInstance,
+    definitions: dict[Any, Any],
+    diagnostics: list[str],
+    name: str | None = None,
+) -> PadstackDefinition:
     """Cache pad and drill data shared by instances of a definition, read directly from raw core."""
     padstack_def = instance.padstack_def
     name = name or padstack_def.name
@@ -521,7 +572,14 @@ def _padstack_definition(instance, definitions, diagnostics, name=None):
     return definitions[name]
 
 
-def _cached_pad_template(name, definition_layer, by_layer, templates, arc_segments, chord_error=None):
+def _cached_pad_template(
+    name: str,
+    definition_layer: str,
+    by_layer: dict[str, SimpleNamespace],
+    templates: dict[Any, PadTemplate | None],
+    arc_segments: int,
+    chord_error: float | None = None,
+) -> PadTemplate | None:
     """Cache each definition layer's geometry, including absent copper."""
     key = (name, definition_layer, chord_error)
     if key not in templates:
@@ -531,22 +589,22 @@ def _cached_pad_template(name, definition_layer, by_layer, templates, arc_segmen
 
 
 def _append_padstack_geometry(
-    instance,
-    layer,
-    net,
-    template,
-    placement,
-    hole_radius,
-    hole_center,
-    arc_segments,
-    pin_owner,
-    geometry,
-    chord_error=None,
+    instance: PadstackInstance,
+    layer: str,
+    net: str | None,
+    template: PadTemplate | None,
+    placement: Placement,
+    hole_radius: float,
+    hole_center: Point,
+    arc_segments: int,
+    pin_owner: PinOwner,
+    geometry: tuple[list[ScenePad], list[ScenePolygon]],
+    chord_error: float | None = None,
     *,
-    object_id=None,
-    hole_profile=None,
-    hole_offset=(0.0, 0.0),
-):
+    object_id: int | None = None,
+    hole_profile: HoleProfile | None = None,
+    hole_offset: Point = (0.0, 0.0),
+) -> None:
     """Place a layer's copper and retain independent drill coverage.
 
     A noncircular ``hole_profile`` is cut out of the copper as a polygon hole, since analytic pads only
@@ -650,7 +708,13 @@ def _append_padstack_geometry(
     )
 
 
-def _padstack_pin_owner(instance, sides, cache, component, diagnostics):
+def _padstack_pin_owner(
+    instance: PadstackInstance,
+    sides: dict[str, str],
+    cache: dict[int, PinOwner | None],
+    component: ComponentGroup | bool | None,
+    diagnostics: list[str],
+) -> PinOwner:
     """Retain padstack geometry when optional component-pin metadata is unavailable."""
     try:
         return _pin_owner(instance, sides, cache, component)
@@ -659,7 +723,7 @@ def _padstack_pin_owner(instance, sides, cache, component, diagnostics):
         return {}
 
 
-def _readonly_components(edb):
+def _readonly_components(edb: Edb) -> dict[int, Any] | None:
     """Index existing component wrappers for read-only padstack capture."""
     component_manager = getattr(edb, "components", None)
     return (
@@ -673,7 +737,7 @@ def _readonly_components(edb):
     )
 
 
-def _padstack_component(raw_component, components):
+def _padstack_component(raw_component: ComponentGroup | None, components: dict[int, Any] | None) -> Any:  # noqa: ANN401
     """Reuse a capture's component wrapper; ``False`` means the instance has no component."""
     if components is None or raw_component is None:
         return None
@@ -682,7 +746,17 @@ def _padstack_component(raw_component, components):
     return components.get(raw_component.edb_uid)
 
 
-def _padstack_object_info(instance, object_id, component, net, hole_radius, placement, span, object_info, diagnostics):
+def _padstack_object_info(
+    instance: PadstackInstance,
+    object_id: int,
+    component: ComponentGroup | bool | None,
+    net: str,
+    hole_radius: float,
+    placement: Placement,
+    span: list[str],
+    object_info: dict[int, SceneObjectInfo] | None,
+    diagnostics: list[str],
+) -> None:
     """Capture optional inspector properties without discarding valid geometry."""
     if object_info is not None:
         try:
@@ -703,7 +777,15 @@ def _padstack_object_info(instance, object_id, component, net, hole_radius, plac
             _record_exception(diagnostics, f"Padstack {object_id}: inspection properties unavailable ({exc}).", exc)
 
 
-def _record_padstack_geometry(component_geometry, object_id, component, net, placement, pads, polygons):
+def _record_padstack_geometry(
+    component_geometry: dict[Any, Any] | None,
+    object_id: int,
+    component: ComponentGroup | bool | None,
+    net: str,
+    placement: Placement,
+    pads: list[ScenePad],
+    polygons: list[ScenePolygon],
+) -> None:
     """Accumulate pin envelopes for the component pass, including copper-free pins."""
     if component_geometry is not None:
         bounds = union_bounds([item.bounds for item in (*pads, *polygons)])
@@ -723,16 +805,16 @@ def _record_padstack_geometry(component_geometry, object_id, component, net, pla
 
 
 def _padstacks(
-    edb,
-    selected_layers,
-    selected_nets,
-    arc_segments,
-    diagnostics,
-    progress=None,
-    component_geometry=None,
-    chord_error=None,
-    object_info=None,
-):
+    edb: Edb,
+    selected_layers: set[str],
+    selected_nets: set[str] | None,
+    arc_segments: int,
+    diagnostics: list[str],
+    progress: Progress | None = None,
+    component_geometry: dict[Any, Any] | None = None,
+    chord_error: float | None = None,
+    object_info: dict[int, SceneObjectInfo] | None = None,
+) -> tuple[list[ScenePad], list[ScenePolygon]]:
     pads, polygons = [], []
     definitions, templates, component_cache, mapping_cache = {}, {}, {}, {}
     pin_components = {}
@@ -809,7 +891,14 @@ def _padstacks(
     return pads, polygons
 
 
-def _components(edb, selected_layers, selected_nets, diagnostics, progress=None, component_geometry=None):
+def _components(
+    edb: Edb,
+    selected_layers: set[str],
+    selected_nets: set[str] | None,
+    diagnostics: list[str],
+    progress: Progress | None = None,
+    component_geometry: dict[Any, Any] | None = None,
+) -> tuple[SceneComponent, ...]:
     """Reuse captured pad envelopes, falling back to source bounds when needed."""
     manager = getattr(edb, "components", None)
     if manager is None:
@@ -862,7 +951,9 @@ def _components(edb, selected_layers, selected_nets, diagnostics, progress=None,
     return tuple(result)
 
 
-def _scene_filters(edb, layers, nets):
+def _scene_filters(
+    edb: Edb, layers: str | Iterable[str] | None, nets: str | Iterable[str] | None
+) -> tuple[set[str], set[str] | None]:
     """Normalize filters and reject names outside the source layout."""
     selected_layers, selected_nets = _names(layers), _names(nets)
     source_layers = edb.stackup.layers
@@ -878,10 +969,17 @@ def _scene_filters(edb, layers, nets):
     return selected_layers, selected_nets
 
 
-def _selected_primitives(edb, selected_layers, selected_nets, skipped, progress=None, priority_layer=None):
+def _selected_primitives(
+    edb: Edb,
+    selected_layers: set[str],
+    selected_nets: set[str] | None,
+    skipped: Counter[str],
+    progress: Progress | None = None,
+    priority_layer: str | None = None,
+) -> Iterator[tuple[Primitive, str, str, str]]:
     """Filter source primitives and count unsupported copper geometry."""
 
-    def load():
+    def load() -> list[tuple[Primitive, str | None, bool | None]]:
         source = [primitive for primitive in edb.layout.core.primitives if not primitive.net.is_null]
         if priority_layer is None:
             return [(primitive, None, None) for primitive in source]
@@ -917,7 +1015,7 @@ def _selected_primitives(edb, selected_layers, selected_nets, skipped, progress=
 _PRIMITIVE_NAME_PREFIX = {"path": "line", "rectangle": "rect", "polygon": "poly", "bondwire": "bwr"}
 
 
-def _primitive_name(primitive):
+def _primitive_name(primitive: Primitive) -> str:
     """Return the AEDT display name, falling back to its default ``<type>_<uid>`` without writing it back."""
     try:
         name = primitive.get_product_property(ProductIdType.DESIGNER, 1).strip("'")
@@ -930,18 +1028,18 @@ def _primitive_name(primitive):
 
 
 def _primitives(
-    edb,
-    selected_layers,
-    selected_nets,
-    arc_segments,
-    diagnostics,
-    progress=None,
-    analytic_traces=True,
-    chord_error=None,
-    on_preview=None,
-    priority_layer=None,
-    object_info=None,
-):
+    edb: Edb,
+    selected_layers: set[str],
+    selected_nets: set[str] | None,
+    arc_segments: int,
+    diagnostics: list[str],
+    progress: Progress | None = None,
+    analytic_traces: bool = True,
+    chord_error: float | None = None,
+    on_preview: Callable[[list[ScenePolygon], list[SceneTrace], list[SceneJoin], list[ScenePad]], None] | None = None,
+    priority_layer: str | None = None,
+    object_info: dict[int, SceneObjectInfo] | None = None,
+) -> ScenePrimitives:
     """Capture analytic geometry with source contours as a fallback."""
     polygons, traces, joins, pads = [], [], [], []
     skipped = Counter()
@@ -1008,18 +1106,18 @@ def _primitives(
 
 
 def scene_from_edb(
-    edb,
-    layers=None,
-    nets=None,
-    arc_segments=None,
+    edb: Edb,
+    layers: str | Iterable[str] | None = None,
+    nets: str | Iterable[str] | None = None,
+    arc_segments: int | None = None,
     *,
-    progress=None,
-    analytic_traces=True,
-    exact_component_bounds=False,
-    chord_error=0.002,
-    preview=None,
-    debug=False,
-):
+    progress: Progress | None = None,
+    analytic_traces: bool = True,
+    exact_component_bounds: bool = False,
+    chord_error: float | None = 0.002,
+    preview: Callable[[LayoutScene], None] | None = None,
+    debug: bool = False,
+) -> LayoutScene:
     """Capture analytic traces, per-layer pads and zone contours in millimeters.
 
     When ``debug`` is True, any exception caught internally while inspecting
@@ -1056,7 +1154,9 @@ def scene_from_edb(
     net_names = tuple(edb.nets.nets)
     title = edb.active_cell.name
 
-    def publish(polygons, traces, joins, pads):
+    def publish(
+        polygons: list[ScenePolygon], traces: list[SceneTrace], joins: list[SceneJoin], pads: list[ScenePad]
+    ) -> None:
         if preview is not None and (polygons or traces or pads):
             preview(
                 LayoutScene(

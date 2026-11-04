@@ -22,14 +22,18 @@
 
 """Resident reference-label atlas and instances, built once on the GUI thread."""
 
+from __future__ import annotations
+
+from collections.abc import Collection, Sequence
 from ctypes import c_void_p
 import math
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QRectF, Qt
 from PySide6.QtGui import QColor, QFont, QImage, QPainter, QPainterPath, QPen
 
 from pyedb.viewer.colors import COMPONENT_OUTLINE_COLOR
@@ -37,16 +41,21 @@ from pyedb.viewer.mesh import split_coordinates
 from pyedb.viewer.qt.coverage import _shader_source
 from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
+if TYPE_CHECKING:
+    from pyedb.viewer.camera import Camera
+    from pyedb.viewer.mesh import ComponentBatch
+    from pyedb.viewer.scene import SceneComponent
+
 
 class ComponentLabels:
     """Reference labels use immutable GPU sprites, with CPU visibility/decluttering."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.program = self.vao = self.vbo = self.texture = 0
         self.records = ()
         self.drawn_count = 0
 
-    def initialize(self):
+    def initialize(self) -> None:
         shaders = Path(__file__).with_name("shaders")
         self.program = compileProgram(
             compileShader(_shader_source(shaders / "label.vert"), GL.GL_VERTEX_SHADER),
@@ -62,7 +71,7 @@ class ComponentLabels:
         self.texture = int(GL.glGenTextures(1))
 
     @staticmethod
-    def _glyph(component):
+    def _glyph(component: SceneComponent) -> tuple[QPainterPath, QRectF, int, int]:
         # Match nets.plot's small/large-component typography threshold: 6 mm².
         x0, y0, x1, y1 = component.bounds
         font = QFont()
@@ -72,7 +81,7 @@ class ComponentLabels:
         bounds = path.boundingRect()
         return path, bounds, math.ceil(bounds.width()) + 8, math.ceil(bounds.height()) + 8
 
-    def upload(self, batches):
+    def upload(self, batches: Sequence[ComponentBatch]) -> None:
         """Bake labels at 2x density, then upload atlas and instance coordinates once."""
         self.records = ()
         if not batches:
@@ -147,7 +156,7 @@ class ComponentLabels:
         GL.glBufferData(GL.GL_ARRAY_BUFFER, data.nbytes, data, GL.GL_STATIC_DRAW)
         self.records = tuple(records)
 
-    def _visible(self, camera, visible_layers, net, both_sides):
+    def _visible(self, camera: Camera, visible_layers: Collection[str], net: str | None, both_sides: bool) -> list[int]:
         candidates = []
         for index, (component, center, width, height) in enumerate(self.records):
             if not component.visible_on(visible_layers, camera.mirror, net, both_sides):
@@ -181,7 +190,14 @@ class ComponentLabels:
                 occupied.setdefault(cell, []).append(rectangle)
         return sorted(accepted)
 
-    def draw(self, camera, visible_layers, opacity, net, both_sides=False):
+    def draw(
+        self,
+        camera: Camera,
+        visible_layers: Collection[str],
+        opacity: float,
+        net: str | None,
+        both_sides: bool = False,
+    ) -> int:
         self.drawn_count = 0
         if opacity <= 0:
             return 0
@@ -216,7 +232,7 @@ class ComponentLabels:
         self.drawn_count = len(accepted)
         return len(ranges)
 
-    def release(self):
+    def release(self) -> None:
         if self.vbo:
             GL.glDeleteBuffers(1, [self.vbo])
         if self.vao:

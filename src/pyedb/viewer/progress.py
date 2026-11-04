@@ -3,15 +3,18 @@
 
 """Optional, bounded progress notifications without a GUI dependency."""
 
+from __future__ import annotations
+
 from time import monotonic
+from typing import Any, Callable, Iterator, Sequence
 
 
-def throttle_progress(callback):
+def throttle_progress(callback: Callable[[str, int, int], None]) -> Callable[[str, int, int], None]:
     """Bound UI notifications while retaining stage changes and completion."""
     previous = 0.0
     previous_stage = None
 
-    def report(stage, current, total):
+    def report(stage: str, current: int, total: int) -> None:
         nonlocal previous, previous_stage
         now = monotonic()
         if stage != previous_stage or current == total or now - previous >= 0.08:
@@ -21,7 +24,9 @@ def throttle_progress(callback):
     return report
 
 
-def progress_items(load, progress, stage):
+def progress_items(
+    load: Callable[[], Sequence[Any]], progress: Callable[[str, int, int], None] | None, stage: str
+) -> Iterator[Any]:
     """Report collection discovery and completed items, including filtered items."""
     if progress is not None:
         progress(stage, 0, 0)

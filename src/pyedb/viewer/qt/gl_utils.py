@@ -22,12 +22,22 @@
 
 """Shared OpenGL uniform setup for the layout rendering passes."""
 
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import TYPE_CHECKING
+
 from OpenGL import GL
 
 from pyedb.viewer.mesh import split_coordinates
 
+if TYPE_CHECKING:
+    from pyedb.viewer.camera import Camera
 
-def bind_camera_uniforms(program, uniforms, camera, pixel_ratio=None):
+
+def bind_camera_uniforms(
+    program: int, uniforms: Mapping[str, int], camera: Camera, pixel_ratio: float | None = None
+) -> None:
     """Bind a rendering program and upload its camera uniforms."""
     GL.glUseProgram(program)
     if "camera_split" in uniforms:

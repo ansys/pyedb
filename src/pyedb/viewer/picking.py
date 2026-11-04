@@ -3,22 +3,36 @@
 
 """Detached object picking: spatial broad phase and geometry-exact narrow phase."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, replace
 import math
+from typing import Any, Collection, Sequence
 
 import numpy as np
 
-from pyedb.viewer.scene import SceneJoin, SceneObjectInfo, ScenePad, SceneTrace, union_bounds
+from pyedb.viewer.scene import (
+    LayoutScene,
+    Point,
+    SceneJoin,
+    SceneObjectInfo,
+    ScenePad,
+    ScenePolygon,
+    SceneTrace,
+    union_bounds,
+)
+
+PickItem = ScenePolygon | SceneTrace | ScenePad | SceneJoin
 
 
-def _segment_distance(point, start, end):
+def _segment_distance(point: Point, start: Point, end: Point) -> float:
     dx, dy = end[0] - start[0], end[1] - start[1]
     length = dx * dx + dy * dy
     t = max(0, min(1, ((point[0] - start[0]) * dx + (point[1] - start[1]) * dy) / length)) if length else 0
     return math.hypot(point[0] - start[0] - t * dx, point[1] - start[1] - t * dy)
 
 
-def _ring_test(point, ring):
+def _ring_test(point: Point, ring: Sequence[Point]) -> tuple[bool, float]:
     # Rebase before products, preserving tiny geometry at large board offsets.
     values = np.asarray(ring, dtype=np.float64) - point
     a, b = values, np.roll(values, -1, axis=0)
@@ -38,7 +52,7 @@ def _ring_test(point, ring):
     return inside, distance
 
 
-def _pad_distance(point, pad):
+def _pad_distance(point: Point, pad: ScenePad) -> float:
     dx, dy = point[0] - pad.center[0], point[1] - pad.center[1]
     if pad.shape == "circle":
         return math.hypot(dx, dy) - pad.size[0] / 2
@@ -49,7 +63,7 @@ def _pad_distance(point, pad):
     return math.hypot(max(x, 0), max(y, 0)) + min(max(x, y), 0) - corner
 
 
-def _straight_trace_distance(point, item, radius):
+def _straight_trace_distance(point: Point, item: SceneTrace, radius: float) -> float:
     dx, dy = item.end[0] - item.start[0], item.end[1] - item.start[1]
     length = math.hypot(dx, dy)
     tx, ty = (dx / length, dy / length) if length else (1, 0)
@@ -64,7 +78,7 @@ def _straight_trace_distance(point, item, radius):
     return abs(across) - radius
 
 
-def _arc_cap_distance(point, endpoint, tangent, cap, radius, index):
+def _arc_cap_distance(point: Point, endpoint: Point, tangent: Point, cap: str, radius: float, index: int) -> float:
     px, py = point[0] - endpoint[0], point[1] - endpoint[1]
     if cap == "round":
         return math.hypot(px, py) - radius
@@ -77,7 +91,7 @@ def _arc_cap_distance(point, endpoint, tangent, cap, radius, index):
     return math.hypot(max(qx, 0), max(qy, 0)) + min(max(qx, qy), 0)
 
 
-def _arc_trace_distance(point, item, radius):
+def _arc_trace_distance(point: Point, item: SceneTrace, radius: float) -> float:
     angle = math.atan2(point[1] - item.center[1], point[0] - item.center[0])
     start = math.atan2(item.start[1] - item.center[1], item.start[0] - item.center[0])
     direction = 1 if item.sweep > 0 else -1
@@ -126,15 +140,15 @@ class PickedObject:
     layer: str
 
     @property
-    def object_id(self):
+    def object_id(self) -> int:
         return self.info.object_id
 
     @property
-    def kind(self):
+    def kind(self) -> str:
         return self.info.kind
 
     @property
-    def net(self):
+    def net(self) -> str | None:
         return self.info.net
 
 
@@ -145,15 +159,15 @@ class PickHit:
     distance: float
 
     @property
-    def key(self):
+    def key(self) -> tuple[str, int]:
         return self.object.key
 
     @property
-    def layer(self):
+    def layer(self) -> str:
         return self.item.layer
 
     @property
-    def picked(self):
+    def picked(self) -> PickedObject:
         return PickedObject(self.object.info, self.item.layer)
 
 
@@ -168,7 +182,7 @@ class _Node:
 class PickIndex:
     """One tree entry per physical object, retaining exact per-layer pad shapes."""
 
-    def __init__(self, scene):
+    def __init__(self, scene: LayoutScene) -> None:
         self.scene = scene
         metadata = {info.object_id: info for info in scene.object_info}
         grouped = {}
@@ -234,7 +248,7 @@ class PickIndex:
         self.bounds = np.asarray([item.bounds for item in objects], dtype=np.float64).reshape(-1, 4)
         self.root = self._build(np.arange(len(objects))) if objects else None
         self.last_candidates = 0
-        self._hole_bounds = {}
+        self._hole_bounds: dict[int, np.ndarray] = {}
         # Large zone void lists are indexed off the GUI thread along with the BVH.
         for polygon in scene.polygons:
             if polygon.holes:
@@ -250,7 +264,7 @@ class PickIndex:
                     ]
                 )
 
-    def _build(self, indices):
+    def _build(self, indices: np.ndarray) -> _Node:
         boxes = self.bounds[indices]
         bounds = np.r_[boxes[:, :2].min(axis=0), boxes[:, 2:].max(axis=0)]
         if len(indices) <= 16:
@@ -261,7 +275,7 @@ class PickIndex:
         ordered = indices[np.argpartition(centers, middle)]
         return _Node(bounds, left=self._build(ordered[:middle]), right=self._build(ordered[middle:]))
 
-    def _distance(self, point, item, tolerance, min_radius=0):
+    def _distance(self, point: Point, item: PickItem, tolerance: float, min_radius: float = 0) -> float:
         if isinstance(item, ScenePad):
             # A drill is selectable as part of its source via/pin.
             return min(
@@ -293,7 +307,17 @@ class PickIndex:
                     inside = False
         return -distance if inside else distance
 
-    def pick(self, point, scale, visible_layers, *, net=None, opacity=1, mirror=False, pixels=5):
+    def pick(
+        self,
+        point: Point,
+        scale: float,
+        visible_layers: Collection[str],
+        *,
+        net: str | None = None,
+        opacity: float = 1,
+        mirror: bool = False,
+        pixels: float = 5,
+    ) -> PickHit | None:
         if self.root is None or scale <= 0 or opacity <= 0:
             return None
         tolerance = pixels / scale
@@ -336,7 +360,7 @@ class PickIndex:
         return min(hits, key=lambda hit: (hit[0], tuple(-v for v in hit[1])))[2] if hits else None
 
 
-def inspector_rows(hit):
+def inspector_rows(hit: PickHit) -> list[tuple[str, str]]:
     """User-facing source properties; never derive trace length from copper perimeter."""
     info, item = hit.object.info, hit.item
     mm = lambda value: "—" if value is None else f"{value:.4f} mm"

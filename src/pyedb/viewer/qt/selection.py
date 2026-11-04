@@ -3,7 +3,11 @@
 
 """Vivid interaction colors and screen-space patterns over resident geometry."""
 
+from __future__ import annotations
+
+from collections.abc import Sequence
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
@@ -12,12 +16,17 @@ from pyedb.viewer.colors import HIGHLIGHT_KEYLINE_COLOR, HOVER_COLOR, SELECTION_
 from pyedb.viewer.qt.coverage import _shader_source
 from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
+if TYPE_CHECKING:
+    from pyedb.viewer.camera import Camera
+    from pyedb.viewer.mesh import MeshBatch
+    from pyedb.viewer.qt.renderer import Renderer
+
 
 class SelectionOverlay:
-    def __init__(self):
+    def __init__(self) -> None:
         self.program = self.vao = 0
 
-    def initialize(self):
+    def initialize(self) -> None:
         directory = Path(__file__).with_name("shaders")
         self.program = compileProgram(
             compileShader(_shader_source(directory / "selection.vert"), GL.GL_VERTEX_SHADER),
@@ -38,7 +47,17 @@ class SelectionOverlay:
             )
         }
 
-    def draw(self, renderer, camera, pixel_ratio, polygons, ranges, *, hovering, patterned):
+    def draw(
+        self,
+        renderer: Renderer,
+        camera: Camera,
+        pixel_ratio: float,
+        polygons: Sequence[MeshBatch],
+        ranges: Sequence[tuple[int, int]],
+        *,
+        hovering: bool,
+        patterned: bool,
+    ) -> None:
         if not polygons and not ranges:
             return
         sdf = renderer.sdf
@@ -100,7 +119,7 @@ class SelectionOverlay:
             GL.glColorMask(True, True, True, True)
             GL.glBindVertexArray(0)
 
-    def release(self):
+    def release(self) -> None:
         if self.program:
             GL.glDeleteProgram(self.program)
         if self.vao:

@@ -22,19 +22,34 @@
 
 """Prepare exterior/hole coverage and split-coordinate GPU data, independent of Qt."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, replace
 import math
+from typing import Any, Callable, Iterator, Sequence
 
 import numpy as np
 
-from pyedb.viewer.scene import Bounds, LayoutScene, SceneComponent, ScenePad, ScenePolygon, SceneTrace, union_bounds
+from pyedb.viewer.scene import (
+    Bounds,
+    LayoutScene,
+    SceneComponent,
+    SceneJoin,
+    ScenePad,
+    ScenePolygon,
+    SceneTrace,
+    union_bounds,
+)
+
+ProgressCallback = Callable[[str, int, int], None]
+SdfItem = SceneTrace | SceneJoin | ScenePad | SceneComponent
 
 # Ten vec4 attributes, all per-instance. Coordinates retain their low parts.
 SDF_STRIDE = 40
 SDF_CHUNK_SIZE = 256
 
 
-def split_coordinates(values):
+def split_coordinates(values: Any) -> np.ndarray:
     """Pack double coordinates as [x_high, y_high, x_low, y_low] float32 vertices."""
     values = np.asarray(values, dtype=np.float64)
     width = values.shape[-1]
@@ -100,7 +115,7 @@ class SdfBatch:
     category: str
 
 
-def _sdf_packet(item, net_id):
+def _sdf_packet(item: SdfItem, net_id: int) -> np.ndarray:
     packet = np.zeros(SDF_STRIDE, dtype=np.float32)
     packet[12:20] = split_coordinates([item.bounds[:2], item.bounds[2:]]).reshape(-1)
     packet[27] = net_id
@@ -147,7 +162,7 @@ def _sdf_packet(item, net_id):
     return packet
 
 
-def scene_network_names(scene):
+def scene_network_names(scene: LayoutScene) -> tuple[str | None, ...]:
     """Share stable network palette IDs between the renderer and workspace lists."""
     names = dict.fromkeys(net for net in scene.net_names if net)
     names.update(dict.fromkeys(sorted({item.net for item in scene.geometry if item.net})))
@@ -155,7 +170,7 @@ def scene_network_names(scene):
     return (None, *names)
 
 
-def _write_pad_packets(items, net_ids, packets):
+def _write_pad_packets(items: Sequence[ScenePad], net_ids: dict[str | None, int], packets: np.ndarray) -> None:
     """Fill validated pads in bulk, keeping the scalar packet's float residuals."""
     packets[:, :4] = split_coordinates([item.center for item in items])
     bounds = np.asarray([item.bounds for item in items], dtype=np.float64)
@@ -177,7 +192,7 @@ def _write_pad_packets(items, net_ids, packets):
     packets[:, 38] = radii[:, 1] - packets[:, 29]
 
 
-def _sdf_chunks(scene):
+def _sdf_chunks(scene: LayoutScene) -> Iterator[tuple[str, str, list[SdfItem]]]:
     """Group analytic copper by layer and ownership, then split spatial chunks."""
     by_layer = {}
     for collection, category in ((scene.traces, "trace"), (scene.joins, "trace"), (scene.pads, "pad")):
@@ -199,7 +214,15 @@ def _sdf_chunks(scene):
             yield layer, category, items[start : start + SDF_CHUNK_SIZE]
 
 
-def _write_sdf_chunk(chunk, category, net_ids, packets, packet_count, sources, pin_batches):
+def _write_sdf_chunk(
+    chunk: Sequence[SdfItem],
+    category: str,
+    net_ids: dict[str | None, int],
+    packets: np.ndarray,
+    packet_count: int,
+    sources: np.ndarray | None,
+    pin_batches: list[PinBatch],
+) -> None:
     for index, item in enumerate(chunk):
         if sources is not None:
             sources[packet_count + index] = id(item)
@@ -212,7 +235,9 @@ def _write_sdf_chunk(chunk, category, net_ids, packets, packet_count, sources, p
             packets[index] = _sdf_packet(item, net_ids.get(item.net, 0))
 
 
-def _prepare_sdf(scene, progress=None, sources=None):
+def _prepare_sdf(
+    scene: LayoutScene, progress: ProgressCallback | None = None, sources: np.ndarray | None = None
+) -> tuple[np.ndarray, tuple[SdfBatch, ...], tuple[str | None, ...], tuple[ComponentBatch, ...], tuple[PinBatch, ...]]:
     nets = scene_network_names(scene)
     net_ids = {net: index for index, net in enumerate(nets)}
     batches, pin_batches = [], []
@@ -260,14 +285,14 @@ def _prepare_sdf(scene, progress=None, sources=None):
     return instances, tuple(batches), nets, tuple(component_batches), tuple(pin_batches)
 
 
-def _pickable(prepared, scene, sources):
+def _pickable(prepared: PreparedScene, scene: LayoutScene, sources: np.ndarray) -> PreparedScene:
     from pyedb.viewer.picking import PickIndex
 
     sources.setflags(write=False)
     return replace(prepared, picking=PickIndex(scene), sdf_sources=sources)
 
 
-def _can_reuse_polygons(scene, previous, mesh):
+def _can_reuse_polygons(scene: LayoutScene, previous: LayoutScene, mesh: PreparedScene) -> bool:
     return (
         len(previous.polygons) <= len(scene.polygons)
         and all(a is b for a, b in zip(previous.polygons, scene.polygons))
@@ -276,7 +301,9 @@ def _can_reuse_polygons(scene, previous, mesh):
     )
 
 
-def _reuse_polygon_buffers(scene, previous, mesh):
+def _reuse_polygon_buffers(
+    scene: LayoutScene, previous: LayoutScene, mesh: PreparedScene
+) -> tuple[np.ndarray, np.ndarray, tuple[MeshBatch, ...], np.ndarray]:
     """Retain existing polygon buffers and append only newly captured copper."""
     vertices, indices, batches, vertex_nets = mesh.vertices, mesh.indices, mesh.batches, mesh.vertex_nets
     additions = scene.polygons[len(previous.polygons) :]
@@ -298,7 +325,9 @@ def _reuse_polygon_buffers(scene, previous, mesh):
     return vertices, indices, batches, vertex_nets
 
 
-def _prepare_polygon_buffers(scene, progress, total_rings, total_items):
+def _prepare_polygon_buffers(
+    scene: LayoutScene, progress: ProgressCallback | None, total_rings: int, total_items: int
+) -> tuple[np.ndarray, np.ndarray, tuple[MeshBatch, ...], np.ndarray]:
     if scene.polygons:
         try:
             import mapbox_earcut
@@ -357,7 +386,12 @@ def _prepare_polygon_buffers(scene, progress, total_rings, total_items):
     )
 
 
-def prepare_scene(scene, *, progress=None, polygon_mesh=None):
+def prepare_scene(
+    scene: LayoutScene,
+    *,
+    progress: ProgressCallback | None = None,
+    polygon_mesh: tuple[LayoutScene, PreparedScene] | None = None,
+) -> PreparedScene:
     """Triangulate each ring independently; holes are subtracted with GPU stencil.
 
     Hole coverage is a union, even for overlapping holes. It must never be
@@ -377,7 +411,7 @@ def prepare_scene(scene, *, progress=None, polygon_mesh=None):
         total_items = total_rings + total_sdf + 1
         vertices, indices, batches, vertex_nets = _prepare_polygon_buffers(scene, progress, total_rings, total_items)
 
-    def sdf_progress(stage, current, total):
+    def sdf_progress(stage: str, current: int, total: int) -> None:
         progress("Rendering layout", total_rings + current, total_items)
 
     instances, sdf_batches, nets, component_batches, pin_batches = _prepare_sdf(

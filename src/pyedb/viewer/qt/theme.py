@@ -22,9 +22,12 @@
 
 """Viewer-scoped chrome tokens; PCB materials and the host application are separate."""
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from PySide6.QtGui import QColor, QFont, QFontDatabase, QPalette
+from PySide6.QtWidgets import QWidget
 
 COLORS = {
     "window": "#f6f7fb",
@@ -42,7 +45,7 @@ COLORS = {
 }
 
 
-def apply_viewer_theme(window):
+def apply_viewer_theme(window: QWidget) -> None:
     """Style this window without changing other windows in an embedded QApplication."""
     families = set(QFontDatabase.families())
     family = next(

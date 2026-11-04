@@ -22,6 +22,9 @@
 
 """Application lifecycle, separate from EDB session ownership."""
 
+from __future__ import annotations
+
+from collections.abc import Callable
 from importlib import import_module
 import threading
 
@@ -37,10 +40,10 @@ from pyedb.viewer.scene import LayoutScene
 # Check triangulation support before creating QApplication.
 import_module("mapbox_earcut")
 
-_application = None
+_application: QApplication | None = None
 
 
-def _get_application():
+def _get_application() -> tuple[QApplication, bool]:
     """Validate the GUI thread and initialize an application once."""
     global _application
     if threading.current_thread() is not threading.main_thread():
@@ -65,17 +68,17 @@ def _get_application():
 
 
 def show_scene(
-    scene=None,
-    block=None,
-    color_by_net=True,
-    plot_components=True,
-    annotate_component_names=True,
-    plot_components_on_both_side=True,
-    plot_outlines=True,
+    scene: LayoutScene | None = None,
+    block: bool | None = None,
+    color_by_net: bool = True,
+    plot_components: bool = True,
+    annotate_component_names: bool = True,
+    plot_components_on_both_side: bool = True,
+    plot_outlines: bool = True,
     *,
-    loader=None,
-    title="EDB layout",
-):
+    loader: Callable[..., LayoutScene] | None = None,
+    title: str = "EDB layout",
+) -> LayoutWindow:
     """Create a native window, reusing the host application's event loop if present."""
     application, owns_application = _get_application()
     if block is None:
