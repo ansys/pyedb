@@ -75,7 +75,7 @@ class _PolygonData:
         self.reads += 1
         if self.error is not None:
             raise self.error
-        return [SimpleNamespace(is_arc=False, x=x, y=y) for x, y in self.ring]
+        return [SimpleNamespace(is_arc=False, x=_value(x), y=_value(y)) for x, y in self.ring]
 
 
 def _enum(name):
@@ -98,6 +98,7 @@ def _primitive(
     """Fake an ``ansys.edb.core`` primitive as returned by ``layout.core.primitives``."""
     values = dict(
         id=object_id,
+        edb_uid=object_id,
         layer=SimpleNamespace(name=layer),
         net=SimpleNamespace(name=net, is_null=net is None),
         primitive_type=_enum(type),
@@ -115,14 +116,15 @@ def _primitive(
 
 
 class _Layout:
-    """Fake pyedb layout exposing core primitives."""
+    """Fake pyedb layout exposing core primitives and padstack instances."""
 
-    def __init__(self, primitives):
+    def __init__(self, primitives, padstack_instances=()):
         self.primitives = primitives
+        self.padstack_instances = list(padstack_instances)
 
     @property
     def core(self):
-        return SimpleNamespace(primitives=self.primitives)
+        return SimpleNamespace(primitives=self.primitives, padstack_instances=self.padstack_instances)
 
 
 def _edb(primitives):
@@ -161,26 +163,167 @@ def _pad(shape="circle", parameters=(0.002,), **kwargs):
     return SimpleNamespace(**values)
 
 
+def _geometry_type(shape):
+    """Core ``PadGeometryType`` for a shape name; unknown names get a stand-in enum member."""
+    from ansys.edb.core.definition.padstack_def_data import PadGeometryType
+
+    name = f"PADGEOMTYPE_{shape.upper()}"
+    return getattr(PadGeometryType, name, None) or SimpleNamespace(name=name)
+
+
+def _core_polygon(points=(), without_arcs=None):
+    """Fake core ``PolygonData``; the adapter recognizes polygon pads by this type."""
+    from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+
+    class _CorePolygon(CorePolygonData):
+        def __init__(self):
+            self._points = list(points)
+            if without_arcs is not None:
+                self.without_arcs = without_arcs
+
+        @property
+        def points(self):
+            return self._points
+
+    return _CorePolygon()
+
+
+class _PadstackData:
+    """Fake core ``PadstackDefData`` answering ``get_pad_parameters`` from per-layer ``_pad`` specs."""
+
+    def __init__(self, spec):
+        self.spec = spec
+
+    @property
+    def layer_names(self):
+        return list(self.spec.pad_by_layer)
+
+    @property
+    def layer_ids(self):
+        return self.spec.layer_ids
+
+    def get_pad_parameters(self, layer_name, pad_type):
+        from ansys.edb.core.definition.padstack_def_data import PadGeometryType, PadType
+
+        spec = self.spec
+        if pad_type == PadType.HOLE:
+            if not spec.hole_diameter:
+                return ()
+            offsets = (_value(spec.hole_offset_x), _value(spec.hole_offset_y), _value(0.0))
+            return PadGeometryType.PADGEOMTYPE_CIRCLE, [_value(spec.hole_diameter)], *offsets
+        pad = spec.pad_by_layer.get(layer_name)
+        if pad is None or pad.shape == "no_shape":
+            return ()
+        offsets = (_value(pad.offset_x), _value(pad.offset_y), _value(pad.rotation))
+        if pad.shape == "polygon":
+            return pad.polygon_data, *offsets
+        return _geometry_type(pad.shape), [_value(v) for v in pad.parameters_values], *offsets
+
+
+class _CoreComponent:
+    """Fake core ``ComponentGroup`` read from a ``_component`` spec.
+
+    Missing spec attributes raise ``RuntimeError``, as a failing gRPC property read would.
+    """
+
+    is_null = False
+
+    def __init__(self, owner):
+        self.owner = owner
+
+    def _read(self, name):
+        try:
+            return getattr(self.owner, name)
+        except AttributeError:
+            raise RuntimeError(f"{name} unavailable") from None
+
+    @property
+    def edb_uid(self):
+        return self._read("id")
+
+    @property
+    def name(self):
+        return self._read("name")
+
+    @property
+    def transform(self):
+        return self._read("core").transform
+
+    @property
+    def placement_layer(self):
+        return SimpleNamespace(name=self._read("placement_layer"))
+
+    @property
+    def component_property(self):
+        return SimpleNamespace(enabled=self._read("is_enabled"))
+
+
+class _Via:
+    """Fake core ``PadstackInstance`` exposing what ``layout.core.padstack_instances`` returns.
+
+    Plain spec attributes (``position``, ``layer_range_names``, ``definition``, ``component`` …)
+    stay mutable so tests can adjust them; the core API is derived from them on each read.
+    """
+
+    def __init__(self, object_id=9, **kwargs):
+        definition = SimpleNamespace(
+            pad_by_layer={"TOP": _pad(offset_x=0.001), "BOTTOM": _pad("rectangle", (0.004, 0.002))},
+            hole_diameter=0.001,
+            hole_offset_x=0,
+            hole_offset_y=0,
+        )
+        values = dict(
+            id=object_id,
+            net_name="GND",
+            layer_range_names=["TOP", "BOTTOM"],
+            padstack_definition="via",
+            definition=definition,
+            position=(0.010, 0.020),
+            rotation=math.pi / 2,
+            component=None,
+            is_pin=False,
+            name=None,
+            layer_map=None,
+            get_hole_overrides=lambda: (False, _value(0)),
+        )
+        values.update(kwargs)
+        self.__dict__.update(values)
+
+    @property
+    def edb_uid(self):
+        return self.id
+
+    @property
+    def net(self):
+        return SimpleNamespace(name=self.net_name, is_null=not self.net_name)
+
+    @property
+    def is_layout_pin(self):
+        return self.is_pin
+
+    @property
+    def padstack_def(self):
+        return SimpleNamespace(name=self.padstack_definition, data=_PadstackData(self.definition))
+
+    @property
+    def component(self):
+        owner = self.__dict__["component"]
+        return SimpleNamespace(is_null=True) if owner is None else _CoreComponent(owner)
+
+    @component.setter
+    def component(self, owner):
+        self.__dict__["component"] = owner
+
+    def get_layer_range(self):
+        names = self.layer_range_names
+        return (SimpleNamespace(name=names[0]), SimpleNamespace(name=names[-1])) if names else ()
+
+    def get_position_and_rotation(self):
+        return _value(self.position[0]), _value(self.position[1]), _value(self.rotation)
+
+
 def _via(object_id=9, **kwargs):
-    definition = SimpleNamespace(
-        pad_by_layer={"TOP": _pad(offset_x=0.001), "BOTTOM": _pad("rectangle", (0.004, 0.002))},
-        hole_diameter=0.001,
-        hole_offset_x=0,
-        hole_offset_y=0,
-    )
-    values = dict(
-        id=object_id,
-        net_name="GND",
-        layer_range_names=["TOP", "BOTTOM"],
-        padstack_definition="via",
-        definition=definition,
-        position=(0.010, 0.020),
-        rotation=math.pi / 2,
-        component=None,
-        get_hole_overrides=lambda: (False, 0),
-    )
-    values.update(kwargs)
-    return SimpleNamespace(**values)
+    return _Via(object_id, **kwargs)
 
 
 def _component(reference="U1", layer="TOP", nets=None, **kwargs):
@@ -390,7 +533,10 @@ class TestGrpcAdapter:
         assert len(scene.polygons) == 1
         assert ("Reading polygons", 3, 3) in events
         assert events[0] == ("Reading polygons", 0, 0)
-        assert {stage for stage, _, _ in events} == {"Reading polygons"}
+        polygon_events = [event for event in events if event[0] == "Reading polygons"]
+        assert events[: len(polygon_events)] == polygon_events
+        # The layout has no padstack instances, so the pad stage reports no work.
+        assert {event for event in events if event[0] != "Reading polygons"} == {("Reading pads and vias", 0, 0)}
 
     def test_progressive_extraction_prioritizes_visible_layer_and_preserves_layer_order(self):
         bottom_first = _primitive(1, "BOTTOM")
@@ -544,21 +690,17 @@ class TestGrpcAdapter:
         # One net read for the unassigned-net filter and one for its name, regardless of segment count.
         assert reads == {"layer": 1, "net": 2}
 
-    def test_grpc_polygon_data_is_read_once(self):
+    def test_grpc_polygon_data_wraps_core_or_returns_none(self):
         from pyedb.grpc.database.primitive.primitive import Primitive
 
         class Source:
-            reads = 0
-
             @property
             def polygon_data(self):
-                self.reads += 1
                 return self
 
         source = Source()
         primitive = Primitive(None, SimpleNamespace(cast=lambda: source))
         assert primitive.polygon_data.core is source
-        assert source.reads == 1
         primitive.core = SimpleNamespace(cast=lambda: SimpleNamespace())
         assert primitive.polygon_data is None
 
@@ -623,10 +765,10 @@ class TestGrpcAdapter:
         "kind, prop, expected",
         [
             ("PATH", "'Trace_A'", "Trace_A"),
-            ("PATH", "", "line_42"),
-            ("POLYGON", None, "poly_42"),
-            ("RECTANGLE", "''", "rect_42"),
-            ("CIRCLE", RuntimeError("no property"), "circle_42"),
+            ("PATH", "", "line__42"),
+            ("POLYGON", None, "poly__42"),
+            ("RECTANGLE", "''", "rect__42"),
+            ("CIRCLE", RuntimeError("no property"), "circle__42"),
         ],
     )
     def test_primitive_name_uses_aedt_name_with_default_fallback(self, kind, prop, expected):
@@ -635,7 +777,9 @@ class TestGrpcAdapter:
         getter = Mock(side_effect=prop) if isinstance(prop, Exception) else Mock(return_value=prop)
         if prop is None:
             getter = Mock(side_effect=AttributeError("unset"))
-        primitive = SimpleNamespace(get_product_property=getter, primitive_type=SimpleNamespace(name=kind), id=42)
+        primitive = SimpleNamespace(
+            get_product_property=getter, primitive_type=SimpleNamespace(name=kind), id=42, edb_uid=42
+        )
         assert _primitive_name(primitive) == expected
 
 
@@ -742,7 +886,7 @@ class TestPadstacks:
     def test_adapter_extracts_per_layer_via_pads_offset_rotation_drill_and_filters(self):
         via = _via()
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={via.id: via})
+        edb.layout.padstack_instances = [via]
         top_only = scene_from_edb(edb, layers="TOP")
         info = next(info for info in top_only.object_info if info.object_id == via.id)
         assert info.kind == "via"
@@ -765,14 +909,13 @@ class TestPadstacks:
         assert top.center == pytest.approx((10, 21))
 
     def test_padstack_span_uses_core_layer_range_without_reenumerating_signal_layers(self):
-        via = _via(
-            core=SimpleNamespace(get_layer_range=lambda: (SimpleNamespace(name="BOTTOM"), SimpleNamespace(name="TOP")))
-        )
-        del via.layer_range_names
+        via = _via()
+        via.get_layer_range = Mock(return_value=(SimpleNamespace(name="BOTTOM"), SimpleNamespace(name="TOP")))
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={via.id: via})
+        edb.layout.padstack_instances = [via]
         scene = scene_from_edb(edb)
         assert [pad.layer for pad in scene.pads] == ["TOP", "BOTTOM"]
+        via.get_layer_range.assert_called_once_with()
         assert len(scene_from_edb(edb, layers="BOTTOM").pads) == 1
 
     def test_via_default_pad_blind_span_hole_override_and_missing_geometry_diagnostics(self):
@@ -794,7 +937,7 @@ class TestPadstacks:
             ),
         )
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={9: via, 10: bad})
+        edb.layout.padstack_instances = [via, bad]
         scene = scene_from_edb(edb)
         assert len(scene.pads) == 1
         assert scene.pads[0].layer == "TOP"
@@ -810,7 +953,7 @@ class TestPadstacks:
             "BOTTOM": SimpleNamespace(color=(0, 0, 255)),
         }
         edb.stackup.signal_layers = edb.stackup.layers
-        edb.padstacks = SimpleNamespace(instances={via.id: via})
+        edb.layout.padstack_instances = [via]
         scene = scene_from_edb(edb, layers="INNER", nets="GND")
         assert not scene.polygons and not scene.traces
         assert len(scene.pads) == 1
@@ -823,7 +966,7 @@ class TestPadstacks:
 
     def test_explicit_padstack_layer_mapping_uses_definition_layer_ids(self):
         via = _via()
-        via.definition.core = SimpleNamespace(data=SimpleNamespace(layer_ids=[1, 2], layer_names=["TOP", "BOTTOM"]))
+        via.definition.layer_ids = [1, 2]
         via.layer_map = SimpleNamespace(
             is_null=False,
             msg=SimpleNamespace(SerializeToString=lambda: b"map"),
@@ -832,7 +975,7 @@ class TestPadstacks:
         edb = _edb([])
         edb.stackup.layers["TOP"].id = 100
         edb.stackup.layers["BOTTOM"].id = 101
-        edb.padstacks = SimpleNamespace(instances={9: via})
+        edb.layout.padstack_instances = [via]
         scene = scene_from_edb(edb)
         assert scene.pads[0].layer == "TOP"
         assert scene.pads[0].shape == "rectangle"
@@ -841,7 +984,7 @@ class TestPadstacks:
 
     @pytest.mark.parametrize("hole_diameter", [0, 0.001])
     def test_polygon_pad_templates_are_cached_and_preserve_placement_drills_and_pin_ownership(self, hole_diameter):
-        polygon = SimpleNamespace(
+        polygon = _core_polygon(
             without_arcs=Mock(
                 return_value=SimpleNamespace(points=[_point(x, y) for x, y in rectangle(-0.001, -0.002, 0.001, 0.002)])
             )
@@ -868,7 +1011,7 @@ class TestPadstacks:
             for i in (9, 10)
         ]
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={pin.id: pin for pin in pins})
+        edb.layout.padstack_instances = pins
         scene = scene_from_edb(edb, arc_segments=12)
         polygon.without_arcs.assert_called_once_with(max_arc_angle=math.tau / 12, max_points=12)
         assert len(scene.polygons) == 2
@@ -896,13 +1039,13 @@ class TestPadstacks:
         via = _via()
         via.definition.pad_by_layer["TOP"] = _pad(
             "polygon",
-            polygon_data=SimpleNamespace(
-                without_arcs=lambda **kwargs: SimpleNamespace(points=[_point(0, 0), _point(1, 1)]),
+            polygon_data=_core_polygon(
                 points=[SimpleNamespace(is_arc=False, x=0.0, y=0.0), SimpleNamespace(is_arc=False, x=1.0, y=1.0)],
+                without_arcs=lambda **kwargs: SimpleNamespace(points=[_point(0, 0), _point(1, 1)]),
             ),
         )
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={via.id: via})
+        edb.layout.padstack_instances = [via]
         scene = scene_from_edb(edb)
         assert not scene.polygons
         assert [pad.layer for pad in scene.pads] == ["TOP", "BOTTOM"]
@@ -1120,29 +1263,28 @@ class TestPadstacks:
     def test_pad_metadata_uses_core_layer_range_and_pose(self):
         from pyedb.viewer.adapters.grpc import _padstack_layers, _placement
 
-        core = SimpleNamespace(
-            get_layer_range=Mock(return_value=(SimpleNamespace(name="INNER"), SimpleNamespace(name="BACK"))),
-            get_position_and_rotation=Mock(return_value=(CoreValue(0.001), CoreValue(0.002), CoreValue(0))),
-        )
-        instance = SimpleNamespace(core=core, component=None)
+        layer_range = Mock(return_value=(SimpleNamespace(name="INNER"), SimpleNamespace(name="BACK")))
+        pose = Mock(return_value=(CoreValue(0.001), CoreValue(0.002), CoreValue(0)))
+        instance = SimpleNamespace(get_layer_range=layer_range, get_position_and_rotation=pose, component=None)
         layers = ("FRONT", "INNER", "BACK")
         assert _padstack_layers(instance, {"INNER", "BACK"}, layers, False) == ["INNER", "BACK"]
         assert _placement(instance, {})[0]((0, 0)) == (1, 2)
-        core.get_layer_range.assert_called_once_with()
-        core.get_position_and_rotation.assert_called_once_with()
+        layer_range.assert_called_once_with()
+        pose.assert_called_once_with()
 
 
 class TestComponents:
     def test_component_pad_offsets_follow_mirrored_component_basis(self):
-        via = _via(rotation=0)
+        # Core pin positions are component-local; this transform mirrors about the Y axis.
+        via = _via(rotation=0, position=(-0.010, 0.020))
 
         def transform_point(point):
-            return _point(100 - point.x.value, 200 + point.y.value)
+            return _point(-point.x.value, point.y.value)
 
         transform = SimpleNamespace(is_null=False, transform_point=transform_point)
         via.component = SimpleNamespace(id=42, core=SimpleNamespace(transform=transform))
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={9: via})
+        edb.layout.padstack_instances = [via]
         scene = scene_from_edb(edb)
         assert len(scene.pads) == 2
         assert scene.pads[0].center == (9, 20)
@@ -1164,7 +1306,7 @@ class TestComponents:
         )
         via = _via(component=component, is_pin=False)
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={via.id: via})
+        edb.layout.padstack_instances = [via]
         edb.components = SimpleNamespace(instances={"U1": component})
         scene = scene_from_edb(edb)
         assert len(scene.components) == 1
@@ -1190,7 +1332,7 @@ class TestComponents:
         first = _via(9, definition=definition, position=(0.01, 0.02))
         second = _via(10, definition=definition, position=(0.012, 0.02))
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={9: first, 10: second})
+        edb.layout.padstack_instances = [first, second]
         edb.components = SimpleNamespace(instances={"U1": component})
         scene = scene_from_edb(edb)
         assert len(scene.components) == 1
@@ -1204,30 +1346,24 @@ class TestComponents:
             is_null=False,
             transform_point=Mock(side_effect=lambda point: _point(0.01 - point.y.value, 0.02 + point.x.value)),
         )
-        component = SimpleNamespace(id=7, core=SimpleNamespace(transform=transform))
-        first = SimpleNamespace(
-            core=SimpleNamespace(get_position_and_rotation=Mock(return_value=tuple(map(_value, (0.001, 0.002, 0))))),
-            component=component,
-        )
-        second = SimpleNamespace(
-            core=SimpleNamespace(get_position_and_rotation=Mock(return_value=tuple(map(_value, (0.003, 0.004, 0))))),
-            component=component,
-        )
+        component = SimpleNamespace(edb_uid=7, transform=transform)
+        first = SimpleNamespace(get_position_and_rotation=Mock(return_value=tuple(map(_value, (0.001, 0.002, 0)))))
+        second = SimpleNamespace(get_position_and_rotation=Mock(return_value=tuple(map(_value, (0.003, 0.004, 0)))))
         cache = {}
-        world, vector, scale = _placement(first, cache)
+        world, vector, scale = _placement(first, cache, component)
         assert world((0, 0)) == pytest.approx((8, 21))
         assert vector((1, 0)) == pytest.approx((0, 1))
         assert scale == pytest.approx(1)
-        assert _placement(second, cache)[0]((0, 0)) == pytest.approx((6, 23))
+        assert _placement(second, cache, component)[0]((0, 0)) == pytest.approx((6, 23))
         assert transform.transform_point.call_count == 3
-        first.core.get_position_and_rotation.assert_called_once()
-        second.core.get_position_and_rotation.assert_called_once()
+        first.get_position_and_rotation.assert_called_once()
+        second.get_position_and_rotation.assert_called_once()
 
     def test_exact_component_envelopes_remain_available(self):
         component = _component(core=SimpleNamespace(transform=SimpleNamespace(is_null=True)))
         via = _via(component=component)
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={via.id: via})
+        edb.layout.padstack_instances = [via]
         edb.components = SimpleNamespace(instances={"U1": component})
         exact = scene_from_edb(edb, exact_component_bounds=True)
         assert exact.components[0].bounds == (1, 2, 4, 6)
@@ -1283,7 +1419,7 @@ class TestComponents:
         owner = _component("U1", "TOP", id=42, core=SimpleNamespace(transform=SimpleNamespace(is_null=True)))
         pin = _via(9, is_pin=True, name="A1", component=owner)
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={9: pin})
+        edb.layout.padstack_instances = [pin]
         scene = scene_from_edb(edb)
         info = next(info for info in scene.object_info if info.object_id == pin.id)
         assert (info.kind, info.component, info.pin_name) == ("pad", "U1", "A1")
@@ -1303,7 +1439,7 @@ class TestComponents:
         owner = SimpleNamespace(id=42, core=SimpleNamespace(transform=SimpleNamespace(is_null=True)))
         pin = _via(9, is_pin=True, name="1", component=owner)
         edb = _edb([])
-        edb.padstacks = SimpleNamespace(instances={9: pin})
+        edb.layout.padstack_instances = [pin]
         scene = scene_from_edb(edb)
         assert len(scene.pads) == 2
         assert all(p.component is None for p in scene.pads)
@@ -1338,21 +1474,19 @@ class TestComponents:
             is_pin=True,
             name="1",
             component=owner,
-            layer_range_names=[],
-            start_layer="metal_1",
-            stop_layer="metal_1",
+            layer_range_names=["metal_1"],
             definition=SimpleNamespace(
                 pad_by_layer={"Default": _pad()}, hole_diameter=0, hole_offset_x=0, hole_offset_y=0
             ),
         )
-        edb.padstacks = SimpleNamespace(instances={9: pin})
+        edb.layout.padstack_instances = [pin]
         scene = scene_from_edb(edb)
         assert [layer.name for layer in scene.layers] == ["metal_1"]
         assert scene.components[0].side == "bottom"
         assert scene.pads[0].component_side == "bottom"
         assert scene.pads[0].layer == "metal_1"
         edb.components.instances = {}
-        edb.padstacks.instances = {}
+        edb.layout.padstack_instances = []
         assert not scene_from_edb(edb).components
 
     @pytest.mark.grpc
@@ -1386,15 +1520,14 @@ class TestComponents:
     def test_pad_component_reuses_only_current_capture_components(self):
         from pyedb.viewer.adapters.grpc import _padstack_component
 
-        group = SimpleNamespace(is_null=False, id=101)
-        instance = SimpleNamespace(core=SimpleNamespace(component=group))
+        group = SimpleNamespace(is_null=False, edb_uid=101)
         component = object()
-        assert _padstack_component(instance, {101: component}) is component
-        assert _padstack_component(instance, {102: component}) is None
-        assert _padstack_component(instance, None) is None
+        assert _padstack_component(group, {101: component}) is component
+        assert _padstack_component(group, {102: component}) is None
+        assert _padstack_component(group, None) is None
         group.is_null = True
-        assert _padstack_component(instance, {}) is False
-        assert _padstack_component(SimpleNamespace(), {}) is None
+        assert _padstack_component(group, {}) is False
+        assert _padstack_component(None, {}) is None
 
 
 class TestMeshPreparation:
