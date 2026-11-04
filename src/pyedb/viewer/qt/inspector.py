@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import Qt, Signal
@@ -36,15 +37,6 @@ class ObjectInspector(QFrame):
         super().__init__(parent)
         self.setObjectName("objectInspector")
         self.setAccessibleName("Picked object properties")
-        self.setStyleSheet(f"""
-            QFrame#objectInspector {{ background: {COLORS["panel"]}; border: 1px solid {COLORS["border"]};
-                                     border-radius: 10px; }}
-            QLabel {{ background: transparent; border: none; color: {COLORS["text"]}; font-size: 13px; }}
-            QLabel#propertyTitle {{ font-size: 15px; font-weight: 600; }}
-            QLabel[propertyRole="key"] {{ color: {COLORS["muted"]}; }}
-            QScrollArea {{ background: transparent; border: none; }}
-            QWidget#propertyBody {{ background: transparent; }}
-        """)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(16, 12, 12, 14)
         layout.setSpacing(10)
@@ -53,11 +45,11 @@ class ObjectInspector(QFrame):
         self.title.setObjectName("propertyTitle")
         heading.addWidget(self.title, 1)
         self.close_button = QToolButton(self)
-        self.close_button.setIcon(workspace_icon("close"))
         self.close_button.setFixedSize(28, 28)
         self.close_button.setAccessibleName("Clear picked object")
         self.close_button.setToolTip("Clear selection (Esc)")
         self.close_button.clicked.connect(self.cleared)
+        self.apply_theme(COLORS)
         heading.addWidget(self.close_button)
         layout.addLayout(heading)
         self.scroll = QScrollArea(self)
@@ -78,6 +70,18 @@ class ObjectInspector(QFrame):
         self.values = {}
         self._stacked = False
         self.hide()
+
+    def apply_theme(self, colors: Mapping[str, str]) -> None:
+        self.setStyleSheet(f"""
+            QFrame#objectInspector {{ background: {colors["panel"]}; border: 1px solid {colors["border"]};
+                                     border-radius: 10px; }}
+            QLabel {{ background: transparent; border: none; color: {colors["text"]}; font-size: 13px; }}
+            QLabel#propertyTitle {{ font-size: 15px; font-weight: 600; }}
+            QLabel[propertyRole="key"] {{ color: {colors["muted"]}; }}
+            QScrollArea {{ background: transparent; border: none; }}
+            QWidget#propertyBody {{ background: transparent; }}
+        """)
+        self.close_button.setIcon(workspace_icon("close", colors["text"]))
 
     def set_hit(self, hit: PickHit) -> None:
         self.values = dict(inspector_rows(hit))

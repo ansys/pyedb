@@ -24,7 +24,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Container, Sequence
+from collections.abc import Container, Mapping, Sequence
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QRectF, QSignalBlocker, QSize, Qt
@@ -70,13 +70,13 @@ class ElidedLabel(QLabel):
         painter.end()
 
 
-def layer_swatch(color: Sequence[float]) -> QIcon:
+def layer_swatch(color: Sequence[float], border: str | None = None) -> QIcon:
     pixmap = QPixmap(28, 28)
     pixmap.setDevicePixelRatio(2)
     pixmap.fill(Qt.GlobalColor.transparent)
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    painter.setPen(QPen(QColor(COLORS["muted"]), 0.7))
+    painter.setPen(QPen(QColor(border or COLORS["muted"]), 0.7))
     painter.setBrush(QColor.fromRgbF(*color))
     painter.drawRoundedRect(QRectF(1, 1, 12, 12), 3, 3)
     painter.end()
@@ -118,6 +118,7 @@ class LayerPanel(QWidget):
         self, layers: Sequence[SceneLayer], visible_layers: Container[str], parent: QWidget | None = None
     ) -> None:
         super().__init__(parent)
+        self.colors: Mapping[str, str] = COLORS
         self.setObjectName("layerPanel")
         self.header, self.counter, self.close_button = _panel_header(self, "layerHeader", "Layers", "layers")
         self.counter.setAccessibleName("Visible layer count")
@@ -148,6 +149,7 @@ class LayerPanel(QWidget):
         self.layer_list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.layer_list.setTextElideMode(Qt.TextElideMode.ElideRight)
         self.layer_list.setMinimumHeight(0)
+        self._swatches = [layer.color for layer in layers]
         for layer in layers:
             item = QListWidgetItem(layer_swatch(layer.color), layer.name)
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
@@ -191,10 +193,19 @@ class LayerPanel(QWidget):
             for index in range(count):
                 item = self.layer_list.item(index)
                 visible = item.text() in visible_layers
-                item.setForeground(QColor(COLORS["text"] if visible else COLORS["muted"]))
+                item.setForeground(QColor(self.colors["text"] if visible else self.colors["muted"]))
                 font = QFont(self.font())
                 font.setWeight(QFont.Weight.Medium if visible else QFont.Weight.Normal)
                 item.setFont(font)
+
+    def apply_theme(self, colors: Mapping[str, str]) -> None:
+        """Redraw icons and item colors with the theme tokens; visibility is unchanged."""
+        self.colors = colors
+        self.close_button.setIcon(workspace_icon("close", colors["muted"]))
+        for index, color in enumerate(self._swatches):
+            self.layer_list.item(index).setIcon(layer_swatch(color, colors["muted"]))
+        items = (self.layer_list.item(index) for index in range(self.layer_list.count()))
+        self.sync({item.text() for item in items if item.checkState() == Qt.CheckState.Checked})
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)
@@ -217,7 +228,9 @@ class NetworkPanel(QWidget):
         self.search.setAccessibleName("Search networks")
         self.search.setToolTip("Search network names (Ctrl+F)")
         self.search.setClearButtonEnabled(True)
-        self.search.addAction(workspace_icon("search", COLORS["muted"]), QLineEdit.ActionPosition.LeadingPosition)
+        self._search_icon = self.search.addAction(
+            workspace_icon("search", COLORS["muted"]), QLineEdit.ActionPosition.LeadingPosition
+        )
         self.search.setMinimumHeight(36)
         layout.addWidget(self.search)
         caption = QLabel("SELECT A NETWORK", self)
@@ -235,13 +248,13 @@ class NetworkPanel(QWidget):
             | {net for component in scene.components for net in component.nets}
         )
         ids = {net: index for index, net in enumerate(scene_network_names(scene))}
+        self._swatches = [(*(net_color(ids.get(net, 0)) or (0.5, 0.5, 0.5)), 1) for net in self.names]
         all_item = QListWidgetItem(workspace_icon("layers", COLORS["muted"]), "All networks")
         all_item.setData(Qt.ItemDataRole.UserRole, None)
         all_item.setSizeHint(QSize(0, 40))
         self.network_list.addItem(all_item)
-        for net in self.names:
-            color = net_color(ids.get(net, 0)) or (0.5, 0.5, 0.5)
-            item = QListWidgetItem(layer_swatch((*color, 1)), net or "Unassigned")
+        for net, color in zip(self.names, self._swatches):
+            item = QListWidgetItem(layer_swatch(color), net or "Unassigned")
             item.setData(Qt.ItemDataRole.UserRole, net)
             item.setToolTip(net or "Unassigned")
             item.setSizeHint(QSize(0, 36))
@@ -260,6 +273,14 @@ class NetworkPanel(QWidget):
         self.search.textChanged.connect(self._filter)
         self.search.setEnabled(bool(self.names))
         self._filter("")
+
+    def apply_theme(self, colors: Mapping[str, str]) -> None:
+        """Redraw icons with the theme tokens; the selection and filter are unchanged."""
+        self.close_button.setIcon(workspace_icon("close", colors["muted"]))
+        self._search_icon.setIcon(workspace_icon("search", colors["muted"]))
+        self.network_list.item(0).setIcon(workspace_icon("layers", colors["muted"]))
+        for row, color in enumerate(self._swatches, start=1):
+            self.network_list.item(row).setIcon(layer_swatch(color, colors["muted"]))
 
     def _filter(self, query: str) -> None:
         query = query.strip().casefold()

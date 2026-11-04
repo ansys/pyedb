@@ -1643,3 +1643,122 @@ def test_component_frame_uses_reference_copper_color_without_white_halo():
         view.cleanup()
         view.close()
         app.processEvents()
+
+
+def test_dark_theme_switches_canvas_and_overlays_without_geometry_uploads(monkeypatch):
+    from unittest.mock import Mock
+
+    from OpenGL import GL
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon
+    from pyedb.viewer.colors import CANVAS_PALETTES
+    from pyedb.viewer.mesh import prepare_scene
+    from pyedb.viewer.qt.canvas import LayoutView
+    from pyedb.viewer.qt.theme import DARK_COLORS, LIGHT_COLORS
+
+    scene = LayoutScene(
+        (SceneLayer("TOP", (0.9, 0.6, 0.2, 1)),), (ScenePolygon(1, "TOP", "GND", ((0, 0), (10, 0), (10, 10), (0, 10))),)
+    )
+    app = QApplication.instance() or QApplication([])
+    view = LayoutView(scene)
+    view.color_by_net = False
+    view.opacity = 1
+    view.resize(640, 480)
+    view.set_prepared(prepare_scene(scene))
+    view.show()
+    try:
+        QTest.qWait(60)
+        view.zoom(1 / 3)  # Leave canvas around the board for background and grid samples.
+        view.grabFramebuffer()
+        upload = Mock(wraps=GL.glBufferData)
+        sub_upload = Mock(wraps=GL.glBufferSubData)
+        monkeypatch.setattr(GL, "glBufferData", upload)
+        monkeypatch.setattr(GL, "glBufferSubData", sub_upload)
+        dark = tuple(round(value * 255) for value in CANVAS_PALETTES["dark"].background[:3])
+
+        def background_and_grid(frame):
+            # A canvas band below the board: mostly background, crossed by grid lines in both directions.
+            ratio = view.devicePixelRatioF()
+            top = round(view.camera.world_to_screen(5, -2)[1] * ratio)
+            bottom = round(view.camera.world_to_screen(5, -4)[1] * ratio)
+            assert 0 <= top < bottom < frame.height()
+            pixels = [
+                frame.pixelColor(x, y).getRgb()[:3] for y in range(top, bottom) for x in range(0, frame.width(), 3)
+            ]
+            return max(set(pixels), key=pixels.count), max(pixels, key=sum)
+
+        def copper(frame):
+            px, py = view.camera.world_to_screen(5, 5)
+            ratio = view.devicePixelRatioF()
+            return frame.pixelColor(round(px * ratio), round(py * ratio)).getRgb()[:3]
+
+        assert background_and_grid(view.grabFramebuffer())[0] == (255, 255, 255)
+        view.set_theme("dark")
+        assert view.theme == "dark"
+        frame = view.grabFramebuffer()
+        background, brightest = background_and_grid(frame)
+        assert background == dark
+        assert sum(brightest) > sum(dark) + 20  # Grid lines are lighter than the dark canvas.
+        assert copper(frame) == pytest.approx((230, 153, 51), abs=1)  # Copper does not change with the theme.
+        for widget in (view.inspector, view.loading, view.message):
+            assert DARK_COLORS["panel"] in widget.styleSheet()
+        view.show_grid = False
+        assert background_and_grid(view.grabFramebuffer()) == (dark, dark)
+        view.set_theme("light")
+        assert background_and_grid(view.grabFramebuffer())[0] == (255, 255, 255)
+        assert LIGHT_COLORS["panel"] in view.inspector.styleSheet()
+        with pytest.raises(ValueError, match="Unknown layout viewer theme"):
+            view.set_theme("sepia")
+        assert view.renderer.upload_count == 1
+        upload.assert_not_called()
+        sub_upload.assert_not_called()
+        assert view.error is None, view.error
+    finally:
+        view.cleanup()
+        view.close()
+        app.processEvents()
+
+
+def test_window_dark_theme_option_menu_toggle_and_rebuilt_panels():
+    import time
+
+    from PySide6.QtGui import QColor
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.viewer import launch_viewer
+    from pyedb.viewer.demo import demo_scene
+    from pyedb.viewer.qt.theme import DARK_COLORS, LIGHT_COLORS
+
+    app = QApplication.instance() or QApplication([])
+    window = launch_viewer(scene=demo_scene(), theme="dark", block=False)
+    try:
+        canvas = window.canvas
+        deadline = time.monotonic() + 10
+        while canvas.renderer.prepared is None and not canvas.error and time.monotonic() < deadline:
+            QTest.qWait(20)
+        assert canvas.error is None, canvas.error
+        assert window.theme == canvas.theme == "dark"
+        assert window.dark_theme_action.isChecked()
+        assert DARK_COLORS["window"] in window.styleSheet()
+        assert window.layer_list.item(0).foreground().color() == QColor(DARK_COLORS["text"])
+        # Panels rebuilt for a new snapshot keep the active theme.
+        window._display_scene(canvas.scene)
+        assert window.layer_list.item(0).foreground().color() == QColor(DARK_COLORS["text"])
+        changes = []
+        window.theme_changed.connect(changes.append)
+        uploads = canvas.renderer.upload_count
+        window.dark_theme_action.trigger()
+        assert window.theme == canvas.theme == "light"
+        assert changes == ["light"]
+        assert LIGHT_COLORS["window"] in window.styleSheet()
+        assert window.layer_list.item(0).foreground().color() == QColor(LIGHT_COLORS["text"])
+        window.set_theme("light")
+        assert changes == ["light"]  # Re-applying the active theme does not signal a change.
+        canvas.grabFramebuffer()
+        assert canvas.renderer.upload_count == uploads
+    finally:
+        window.close()
+        app.processEvents()

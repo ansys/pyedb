@@ -78,6 +78,7 @@ def show_scene(
     *,
     loader: Callable[..., LayoutScene] | None = None,
     title: str = "EDB layout",
+    theme: str = "light",
 ) -> LayoutWindow:
     """Create a native window, reusing the host application's event loop if present."""
     application, owns_application = _get_application()
@@ -93,7 +94,11 @@ def show_scene(
         plot_components_on_both_side=plot_components_on_both_side,
         plot_outlines=plot_outlines,
         loader=loader,
+        theme=theme,
     )
+    window._owns_application = owns_application
+    if owns_application and window.theme == "dark":
+        window.set_theme("dark")  # Also switch the owned application's native color scheme.
     # Keep QApplication alive for the lifetime of non-blocking standalone windows.
     window._application = application
     window.scene_failed.connect(lambda error: window.close())

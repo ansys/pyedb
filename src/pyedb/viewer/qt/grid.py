@@ -31,6 +31,7 @@ from typing import TYPE_CHECKING
 from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
 
+from pyedb.viewer.colors import CANVAS_PALETTES, CanvasPalette
 from pyedb.viewer.qt.coverage import _shader_source
 from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
@@ -59,17 +60,32 @@ class GridRenderer:
         )
         self.uniforms = {
             name: GL.glGetUniformLocation(self.program, name)
-            for name in ("viewport", "scale", "pixel_ratio", "mirror_x", "spacing", "minor_phase", "major_phase")
+            for name in (
+                "viewport",
+                "scale",
+                "pixel_ratio",
+                "mirror_x",
+                "spacing",
+                "minor_phase",
+                "major_phase",
+                "background",
+                "minor_color",
+                "major_color",
+            )
         }
         self.vao = int(GL.glGenVertexArrays(1))
 
-    def draw(self, camera: Camera, pixel_ratio: float) -> None:
+    def draw(self, camera: Camera, pixel_ratio: float, palette: CanvasPalette | None = None) -> None:
+        palette = palette or CANVAS_PALETTES["light"]
         self.spacing = grid_spacing(camera.scale, pixel_ratio)
         GL.glDisable(GL.GL_BLEND)
         GL.glDisable(GL.GL_STENCIL_TEST)
         u = self.uniforms
         bind_camera_uniforms(self.program, u, camera, pixel_ratio)
         GL.glUniform1f(u["spacing"], self.spacing)
+        GL.glUniform3f(u["background"], *palette.background[:3])
+        GL.glUniform3f(u["minor_color"], *palette.grid_minor)
+        GL.glUniform3f(u["major_color"], *palette.grid_major)
         # Reduce double coordinates before narrowing to float32; kilometre-scale
         # offsets must not lose the grid phase when zoomed into micrometer detail.
         GL.glUniform2f(u["minor_phase"], camera.center_x % self.spacing, camera.center_y % self.spacing)
