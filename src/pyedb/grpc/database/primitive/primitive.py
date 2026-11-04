@@ -322,7 +322,7 @@ class Primitive:
                     area -= void_pd.area()
         return area
 
-    def _get_points_for_plot(self, my_net_points, num) -> tuple[list[float], list[float]]:
+    def _get_points_for_plot(self, my_net_points, num, *, chord_error=None) -> tuple[list[float], list[float]]:
         """
         Get the points to be plotted.
         """
@@ -340,7 +340,10 @@ class Primitive:
                     p2 = [Value(my_net_points[i + 1].x), Value(my_net_points[i + 1].y)]
                 else:
                     p2 = [Value(my_net_points[0].x), Value(my_net_points[0].y)]
-                x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num)
+                if chord_error is None:
+                    x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num)
+                else:
+                    x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num, chord_error=chord_error)
                 x.extend(x_arc)
                 y.extend(y_arc)
         # fmt: on
@@ -807,20 +810,23 @@ class Primitive:
             )
         return self.add_void(void_poly)
 
-    def points(self, arc_segments=6) -> tuple[list[float], list[float]] | None:
+    def points(self, arc_segments=6, *, chord_error=None) -> tuple[list[float], list[float]] | None:
         """Return the list of points with arcs converted to segments.
 
         Parameters
         ----------
         arc_segments : int, optional
             Number of facets to convert an arc. The default is ``6``.
+        chord_error : float, optional
+            Maximum arc chord error in meters. When set, subdivisions depend
+            on radius and sweep instead of a fixed point count.
 
         Returns
         -------
         tuple[list[float], list[float]] or None
             Tuple of ``(x, y)`` coordinate lists, or ``None`` if no points are found.
         """
-        xt, yt = self._get_points_for_plot(self.polygon_data.core.points, arc_segments)
+        xt, yt = self._get_points_for_plot(self.polygon_data.core.points, arc_segments, chord_error=chord_error)
         if not xt:
             return None
         x, y = GeometryOperators.orient_polygon(xt, yt, clockwise=True)

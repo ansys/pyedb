@@ -1412,6 +1412,99 @@ class Edb(EdbInit):
         self._layout = Layout(self, self.active_cell.layout)
         return self._layout
 
+    def view_layout(
+        self,
+        layers=None,
+        nets=None,
+        arc_segments=None,
+        block=None,
+        color_by_net=True,
+        *,
+        plot_components=True,
+        annotate_component_names=True,
+        plot_components_on_both_side=True,
+        plot_outlines=True,
+        analytic_traces=False,
+        exact_component_bounds=False,
+        chord_error=0.002,
+        progressive=True,
+    ):
+        """Open a PySide6/OpenGL 2D layout viewer using a detached snapshot.
+
+        Parameters
+        ----------
+        layers, nets : str or list[str], optional
+            Layer and network names to capture. Defaults to all conductor layers
+            and all networks.
+        arc_segments : int, optional
+            Select fixed subdivisions per arc. Defaults to adaptive chords.
+            An explicit count overrides ``chord_error``.
+        chord_error : float, optional
+            Maximum chord sagitta in millimeters. Defaults to 0.002 mm, with
+            subdivisions chosen from radius and sweep and at most 10 degrees per chord.
+        progressive : bool, optional
+            Display copper first while remaining geometry loads. Default is True.
+        analytic_traces : bool, optional
+            Preserve analytic traces at deep zoom. Default is False to read
+            source contours with fewer remote geometry-property requests.
+        exact_component_bounds : bool, optional
+            Read exact source component envelopes. Default is False to use
+            captured pads and estimated envelopes for copper-free footprints.
+        block : bool, optional
+            Run the Qt event loop. Defaults to True when creating QApplication,
+            or False when an application already exists.
+        color_by_net : bool, optional
+            Start with PyEDB's network palette. Colors and opacity can be changed
+            without rebuilding or uploading geometry. Default is True.
+        plot_components : bool, optional
+            Display component envelopes derived from captured pads, falling
+            back to source bounding boxes when no pad geometry is available.
+            Default is True.
+        annotate_component_names : bool, optional
+            Display component reference names when readable. Default is True.
+        plot_components_on_both_side : bool, optional
+            Display components on all visible placement layers. Default is True.
+            Set False to restrict components to the current view side.
+        plot_outlines : bool, optional
+            Draw a thin near-black outline, one screen pixel wide, around every
+            shape. Default is True. It can also be toggled from the View menu.
+
+        Returns
+        -------
+        pyedb.viewer.qt.window.LayoutWindow
+            Viewer window. Keep a reference when using non-blocking mode. Its
+            signals (``object_selected``, ``selection_cleared``, ``object_hovered``,
+            ``net_changed``, ``visible_layers_changed``) report user interaction, and
+            ``select_net``, ``set_visible_layers``, ``select_object``, ``fit_view``,
+            ``zoom_to_object`` and ``zoom_to_net`` drive the view.
+
+        Notes
+        -----
+        Requires ``pip install pyedb[viewer]`` and an OpenGL 3.3-capable desktop.
+        Displays SDF traces/arcs, per-layer pads and circular drills, and stencil
+        zones, component envelopes and reference names. 3D bodies, arbitrary text
+        and bondwires are not displayed. The window does not close or save
+        the EDB session. Call this method on the main GUI thread.
+        """
+        from pyedb.viewer import launch_viewer
+
+        return launch_viewer(
+            self,
+            layers=layers,
+            nets=nets,
+            arc_segments=arc_segments,
+            block=block,
+            color_by_net=color_by_net,
+            plot_components=plot_components,
+            annotate_component_names=annotate_component_names,
+            plot_components_on_both_side=plot_components_on_both_side,
+            plot_outlines=plot_outlines,
+            analytic_traces=analytic_traces,
+            exact_component_bounds=exact_component_bounds,
+            chord_error=chord_error,
+            progressive=progressive,
+        )
+
     @property
     def active_layout(self) -> Layout:
         """Active layout access.
