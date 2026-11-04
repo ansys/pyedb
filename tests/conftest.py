@@ -53,6 +53,9 @@ class TestConfig:
 # Initialize default desktop configuration
 config = TestConfig()
 
+# Get use_grpc from env in CI
+config.use_grpc = os.getenv("USE_GRPC") in {"1", True}
+
 # Check for the local config file, override defaults if found
 local_config_file = os.path.join(local_path, "local_config.json")
 if os.path.exists(local_config_file):
