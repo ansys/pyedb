@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
+# SPDX-License-Identifier: MIT
 #
 # Copyright (C) 2021 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
@@ -23,15 +24,12 @@
 # SOFTWARE.
 
 """Provides functions for performing common checks."""
-import warnings
 
 from collections.abc import Callable
-from importlib import import_module
 from functools import wraps
-from typing import TypeVar
-from typing import Any
-from typing import cast
-
+from importlib import import_module
+from typing import Any, TypeVar, cast
+import warnings
 
 _F = TypeVar("_F", bound=Callable[..., Any])
 

@@ -103,6 +103,7 @@ from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
+from pyedb.internal.checks import requires_dotnet_dependency
 from pyedb.misc.decorators import (
     deprecate_argument_name,
     deprecated as runtime_deprecated,
@@ -111,7 +112,6 @@ from pyedb.misc.decorators import (
 )
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflows.utilities.cutout import Cutout
-from pyedb.internal.checks import requires_dotnet_dependency
 
 
 @requires_dotnet_dependency("ansys-pythonnet")
