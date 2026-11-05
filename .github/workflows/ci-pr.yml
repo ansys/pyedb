@@ -132,7 +132,7 @@ jobs:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: uv sync --frozen --extra all --group tests --extra dotnet
+        run: uv sync --frozen --extra all --group tests --extra dotnet --extra viewer
 
       - name: Run unit tests
         run: |
@@ -194,7 +194,7 @@ jobs:
           enable-cache: false
 
       - name: Install Python library and tests dependencies
-        run: uv sync --frozen --extra all --group tests
+        run: uv sync --frozen --extra all --group tests --extra viewer
 
       - name: Run unit tests
         run: |
