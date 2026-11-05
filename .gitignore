@@ -402,3 +402,6 @@ model.index\+
 /.env
 /doc/source/local_config.json
 /tests/local_config.json
+
+# Compiled Qt shaders
+*.qsb

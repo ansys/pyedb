@@ -25,21 +25,15 @@
 from __future__ import annotations
 
 from collections.abc import Collection, Sequence
-from ctypes import c_void_p
 import math
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-from OpenGL import GL
-from OpenGL.GL.shaders import compileProgram, compileShader
 from PySide6.QtCore import QRectF, Qt
-from PySide6.QtGui import QColor, QFont, QImage, QPainter, QPainterPath, QPen
+from PySide6.QtGui import QColor, QFont, QImage, QPainter, QPainterPath, QPen, QRhi, QRhiBuffer, QRhiTexture
 
 from pyedb.viewer.colors import COMPONENT_OUTLINE_COLOR
 from pyedb.viewer.mesh import split_coordinates
-from pyedb.viewer.qt.coverage import _shader_source
-from pyedb.viewer.qt.gl_utils import bind_camera_uniforms
 
 if TYPE_CHECKING:
     from pyedb.viewer.camera import Camera
@@ -50,25 +44,10 @@ if TYPE_CHECKING:
 class ComponentLabels:
     """Reference labels use immutable GPU sprites, with CPU visibility/decluttering."""
 
-    def __init__(self) -> None:
-        self.program = self.vao = self.vbo = self.texture = 0
+    def __init__(self):
+        self.vbo = self.texture = None
         self.records = ()
         self.drawn_count = 0
-
-    def initialize(self) -> None:
-        shaders = Path(__file__).with_name("shaders")
-        self.program = compileProgram(
-            compileShader(_shader_source(shaders / "label.vert"), GL.GL_VERTEX_SHADER),
-            compileShader(_shader_source(shaders / "label.frag"), GL.GL_FRAGMENT_SHADER),
-            validate=False,
-        )
-        self.uniforms = {
-            name: GL.glGetUniformLocation(self.program, name)
-            for name in ("camera_split", "viewport", "scale", "mirror_x", "atlas", "opacity", "label_color")
-        }
-        self.vao = int(GL.glGenVertexArrays(1))
-        self.vbo = int(GL.glGenBuffers(1))
-        self.texture = int(GL.glGenTextures(1))
 
     @staticmethod
     def _glyph(component: SceneComponent) -> tuple[QPainterPath, QRectF, int, int]:
@@ -81,12 +60,12 @@ class ComponentLabels:
         bounds = path.boundingRect()
         return path, bounds, math.ceil(bounds.width()) + 8, math.ceil(bounds.height()) + 8
 
-    def upload(self, batches: Sequence[ComponentBatch]) -> None:
+    def upload(self, device, updates, batches):
         """Bake labels at 2x density, then upload atlas and instance coordinates once."""
         self.records = ()
         if not batches:
             return
-        limit = int(GL.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE))
+        limit = device.rhi.resourceLimit(QRhi.ResourceLimit.TextureSizeMax)
         glyphs = [self._glyph(batch.component) for batch in batches]
         width = min(2048, limit)
         if any(glyph[2] > width for glyph in glyphs):
@@ -143,17 +122,15 @@ class ComponentLabels:
                 records.append((component, center, w / 2, h / 2))
         finally:
             painter.end()
-        pixels = np.frombuffer(image.bits(), dtype=np.uint8, count=image.sizeInBytes())
-        GL.glActiveTexture(GL.GL_TEXTURE0)
-        GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
-        GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA8, width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, pixels)
-        GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
-        GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR)
-        GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE)
-        GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE)
+        if self.texture is not None:
+            device.release_targets()
+            self.texture.deleteLater()
+            device.resources.remove(self.texture)
+        self.texture = device.create(device.rhi.newTexture(QRhiTexture.Format.RGBA8, image.size()))
+        updates.uploadTexture(self.texture, image)
         data = np.asarray(packets, dtype=np.float32)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, data.nbytes, data, GL.GL_STATIC_DRAW)
+        self.vbo = device.buffer(data, QRhiBuffer.UsageFlag.VertexBuffer, self.vbo)
+        device.upload_buffer(updates, self.vbo, data)
         self.records = tuple(records)
 
     def _visible(self, camera: Camera, visible_layers: Collection[str], net: str | None, both_sides: bool) -> list[int]:
@@ -190,14 +167,7 @@ class ComponentLabels:
                 occupied.setdefault(cell, []).append(rectangle)
         return sorted(accepted)
 
-    def draw(
-        self,
-        camera: Camera,
-        visible_layers: Collection[str],
-        opacity: float,
-        net: str | None,
-        both_sides: bool = False,
-    ) -> int:
+    def draw(self, device, uniforms, camera, visible_layers, opacity, net, both_sides=False):
         self.drawn_count = 0
         if opacity <= 0:
             return 0
@@ -210,37 +180,16 @@ class ComponentLabels:
                 ranges[-1][1] += 1
             else:
                 ranges.append([index, 1])
-        GL.glDisable(GL.GL_STENCIL_TEST)
-        GL.glDisable(GL.GL_SCISSOR_TEST)
-        GL.glEnable(GL.GL_BLEND)
-        GL.glBlendFuncSeparate(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA, GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA)
-        u = self.uniforms
-        bind_camera_uniforms(self.program, u, camera)
-        GL.glUniform1f(u["opacity"], opacity)
-        GL.glUniform3f(u["label_color"], *COMPONENT_OUTLINE_COLOR)
-        GL.glUniform1i(u["atlas"], 0)
-        GL.glActiveTexture(GL.GL_TEXTURE0)
-        GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
-        GL.glBindVertexArray(self.vao)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vbo)
+        values = uniforms.copy()
+        values[28:32] = *COMPONENT_OUTLINE_COLOR, opacity
         for start, count in ranges:
-            for location in range(3):
-                GL.glEnableVertexAttribArray(location)
-                GL.glVertexAttribPointer(location, 4, GL.GL_FLOAT, False, 48, c_void_p(start * 48 + location * 16))
-                GL.glVertexAttribDivisor(location, 1)
-            GL.glDrawArraysInstanced(GL.GL_TRIANGLE_STRIP, 0, 4, count)
+            device.draw(
+                "label",
+                values,
+                layout="label",
+                buffers=((self.vbo, start * 48),),
+                instances=count,
+                texture=self.texture,
+            )
         self.drawn_count = len(accepted)
         return len(ranges)
-
-    def release(self) -> None:
-        if self.vbo:
-            GL.glDeleteBuffers(1, [self.vbo])
-        if self.vao:
-            GL.glDeleteVertexArrays(1, [self.vao])
-        if self.texture:
-            GL.glDeleteTextures([self.texture])
-        if self.program:
-            GL.glDeleteProgram(self.program)
-        self.program = self.vao = self.vbo = self.texture = 0
-        self.records = ()
-        self.drawn_count = 0

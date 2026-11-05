@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 
-"""Layout viewer unit tests; they require no OpenGL context or EDB license."""
+"""Layout viewer unit tests; they require no graphics device or EDB license."""
 
 import math
 import subprocess

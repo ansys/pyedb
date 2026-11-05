@@ -20,26 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#version 330 core
+#version 440
+#extension GL_GOOGLE_include_directive : require
+#include "uniforms.glsl"
 
-flat in vec4 a;
-flat in vec4 b;
-flat in vec4 c;
-flat in vec4 params;
-flat in vec4 flags;
-flat in vec4 detail;
-flat in vec4 hole;
-flat in vec4 tangent;
-uniform vec2 viewport;
-uniform float scale;
-uniform float pixel_ratio;
-uniform float mirror_x;
-uniform bool drill_pass;
-uniform bool multisampled;
-uniform bool color_by_net;
-uniform vec4 layer_color;
-uniform sampler1D net_palette;
-out vec4 fragment_color;
+layout(location = 0) flat in vec4 a;
+layout(location = 1) flat in vec4 b;
+layout(location = 2) flat in vec4 c;
+layout(location = 3) flat in vec4 params;
+layout(location = 4) flat in vec4 flags;
+layout(location = 5) flat in vec4 detail;
+layout(location = 6) flat in vec4 hole;
+layout(location = 7) flat in vec4 tangent;
+layout(binding = 1) uniform sampler2D net_palette;
+layout(location = 0) out vec4 fragment_color;
 
 #include "common.glsl"
 #include "trace.glsl"
@@ -48,7 +42,7 @@ out vec4 fragment_color;
 
 void main() {
     // Native stencil_mark's deterministic tie-break keeps pixel-aligned hairlines visible.
-    vec2 screen_xy = ((gl_FragCoord.xy + vec2(1.0 / 256.0)) / pixel_ratio - viewport * 0.5)
+    vec2 screen_xy = ((world_fragment + vec2(1.0 / 256.0)) / pixel_ratio - viewport * 0.5)
                      * vec2(mirror_x, 1.0) / scale;
     vec4 screen = vec4(screen_xy, 0, 0);
     float distance;
@@ -70,10 +64,13 @@ void main() {
     float aa = 0.65 / (scale * pixel_ratio);
     float coverage = 1.0 - smoothstep(-aa, aa, distance);
     if (coverage <= 0.0) discard;
-    if (!multisampled && coverage <= 0.5) discard;
+    if (!multisampled) {
+        if (coverage <= 0.5) discard;
+        coverage = 1.0;
+    }
     vec3 material = layer_color.rgb;
     int net = int(flags.w + 0.5);
     if (color_by_net && net > 0)
-        material = texelFetch(net_palette, (net - 1) % textureSize(net_palette, 0), 0).rgb;
-    fragment_color = vec4(material * coverage, coverage);
+        material = texelFetch(net_palette, ivec2((net - 1) % textureSize(net_palette, 0).x, 0), 0).rgb;
+    fragment_color = vec4(material, coverage);
 }

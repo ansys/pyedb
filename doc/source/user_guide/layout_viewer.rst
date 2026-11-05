@@ -2,7 +2,8 @@ Interactive 2D layout viewer
 ============================
 
 The optional layout viewer displays copper, traces, pads, vias, and component
-envelopes in a native PySide6 window using OpenGL. Its rendering design references
+envelopes in a native PySide6 window using Qt RHI. Windows defaults to Direct3D 11;
+Linux uses Vulkan. Its rendering design references
 `Pomelo-Desktop <https://github.com/HaiwenZhang/Pomelo-Desktop>`_. Geometry remains
 on the GPU during navigation and display changes.
 
@@ -13,6 +14,7 @@ Install and launch
 
    pip install "pyedb[viewer]"
    python -m pyedb.viewer --demo
+   python -m pyedb.viewer --demo --backend vulkan
    python -m pyedb.viewer path/to/board.aedb
    python -m pyedb.viewer path/to/board.aedb --layer TOP --color-by-layer
    python -m pyedb.viewer path/to/board.aedb --version 2026.1 --net GND --net VCC
@@ -104,10 +106,11 @@ The properties and spatial index belong to the detached snapshot. Picking never
 queries EDB and still works after the source session closes. Highlighting uses
 the resident geometry; it does not rebuild or upload the board's geometry.
 
-Within each layer, copper is composited in Zone, Trace, then Pad order. Reducing
-opacity reveals objects underneath. By default every shape receives a thin
-near-black outline, one screen pixel wide; use ``plot_outlines=False`` or View >
-Outlines to hide it. Gray drill marks remain visible on layers without copper pads.
+Within each layer, copper is composited in Zone, Trace, then Pad order. Fill
+opacity defaults to 60%; reducing it reveals objects underneath. Every shape
+receives a thin net-colored outline at full opacity, one screen pixel wide;
+use ``plot_outlines=False`` or View > Outlines to hide it. Gray drill marks remain
+visible on layers without copper pads.
 Rectangle, oval and bullet (slotted) drills are cut out of the copper with their
 true shape.
 Component references use the same color as their outlines
@@ -186,11 +189,111 @@ Unknown nets, layers or object ids raise ``ValueError``. ``select_object`` and
 ``zoom_to_object`` raise ``RuntimeError`` while the layout is still loading.
 Signals fire only on real changes, so applying the current state is a no-op.
 
-Requirements and scope
-----------------------
+Graphics backends and platform requirements
+------------------------------------------
 
-An OpenGL 3.3 context with stencil support is required. The viewer supports the
-gRPC backend and reports extraction or rendering failures in the interface.
+The viewer targets 64-bit Windows 10/11 and mainstream glibc-based Linux
+desktops from approximately the last four years. This includes Ubuntu LTS,
+Debian, maintained Fedora releases, RHEL-compatible distributions and openSUSE.
+Actual availability depends on the Python/Qt wheel, desktop libraries and GPU
+driver, rather than the distribution's release date alone.
+
+* Windows: Direct3D 11 is the default. Vulkan can be selected explicitly.
+* Linux: Vulkan is selected explicitly on both X11 and Wayland. A working
+  Vulkan loader and GPU driver are required; Mesa software Vulkan drivers can
+  also be used for testing. There is no OpenGL fallback.
+* macOS: the platform default is Metal. It is outside the Windows/Linux
+  compatibility test matrix.
+
+Use ``backend="vulkan"`` with ``edb.view_layout()`` or ``launch_viewer()``,
+``--backend vulkan`` on the command line, or set ``PYEDB_VIEWER_BACKEND=vulkan``.
+An explicit argument overrides the environment. ``auto`` selects the defaults
+above. The status bar displays the selected renderer. Initialization failures
+are reported in the canvas; the viewer does not silently change graphics APIs.
+All RHI canvases inside one host top-level window must use the same graphics API.
+
+PySide6 6.8.3 or later is required. The bundled shaders contain SPIR-V and HLSL
+(and MSL for Metal), so running the viewer does not require a Vulkan SDK,
+shader compiler, C++ compiler or PyOpenGL. Install the GPU vendor's Vulkan
+driver; installing the Vulkan SDK alone does not install a GPU driver.
+
+For current PySide6 wheels, the Linux x86-64 baseline is glibc 2.34; ARM64
+wheels can require newer glibc and are not part of this compatibility target.
+On older systems pip may select an older compatible PySide6 release. Use a
+Python version supported by that release. Alpine/musl systems require a
+separate Qt build and are outside the binary-wheel target.
+
+For example, on Ubuntu/Debian X11 desktops, install the native dependencies
+in addition to the Python extra:
+
+.. code-block:: console
+
+   sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-tools libegl1 \
+       libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 \
+       libxcb-render-util0 libxcb-xinerama0
+   vulkaninfo --summary
+   python -m pyedb.viewer --demo --backend vulkan
+
+Use the distribution's Qt Wayland dependencies on a Wayland desktop. If Qt
+chooses a different display plugin, ``QT_QPA_PLATFORM=xcb`` or
+``QT_QPA_PLATFORM=wayland`` selects the session explicitly; this does not change
+the Vulkan graphics backend. Remote/headless sessions need their own working
+Vulkan presentation path. A display server alone does not provide a GPU driver.
+
+The platform baselines above are deployment targets, not a claim that every
+distribution, GPU and compositor combination has been tested. The automated
+Linux matrix uses X11/Xvfb and Mesa Vulkan; Wayland and vendor GPU drivers need
+desktop validation on the target machines.
+
+Development and rendering tests
+-------------------------------
+
+Shader sources (``.vert``, ``.frag`` and ``.glsl``) are version-controlled;
+generated ``.qsb`` packs are ignored by Git. The PEP 517 build backend compiles
+fresh packs in a temporary staging tree when building a wheel, then delegates
+the Python packaging to Flit. Building a wheel does not change the checkout.
+An sdist contains the sources and build helpers, and compiles the packs when
+it is converted into a wheel. Installing and running a built wheel never
+invokes a shader compiler.
+
+Build both distribution formats with a standard frontend:
+
+.. code-block:: console
+
+   python -m pip install build
+   python -m build
+
+Build isolation installs PySide6 as a build dependency to obtain its Qt Shader
+Baker executable. It remains an optional ``viewer`` dependency at runtime.
+Build services with an existing Qt toolchain may set ``PYEDB_QSB`` to the full
+path of a compatible ``qsb`` executable instead. Metadata generation and
+source-archive creation do not need Qt. Use a PEP 517 frontend such as
+``python -m build``, ``pip wheel`` or ``uv build`` so the compilation hook runs.
+
+Editable installs (``pip install -e ".[viewer]"``) generate ignored local packs
+beside the source files. After editing shader sources in an editable checkout,
+refresh those local packs with:
+
+.. code-block:: console
+
+   python tools/bake_viewer_shaders.py
+
+Enable the desktop pixel and interaction regression tests:
+
+.. code-block:: console
+
+   PYEDB_VIEWER_RHI_TESTS=1 PYEDB_VIEWER_BACKEND=vulkan pytest \
+       tests/integration/test_layout_viewer_rhi.py
+
+Use PowerShell environment-variable syntax on Windows, and select ``d3d11``
+to test the default Windows backend. Geometry preparation and picking unit
+tests remain independent of a desktop and EDB license.
+
+Scope
+-----
+
+The viewer supports the gRPC EDB backend and reports extraction or rendering
+failures in the interface.
 3D component bodies, arbitrary source text, bondwires, polygonal drill profiles,
 and backdrill profiles are not currently displayed. Thermal-relief pads
 (round45/round90/square45/square90) are drawn as plain outlines without spokes.

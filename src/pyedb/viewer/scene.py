@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Immutable layout snapshots, independent of EDB, Qt and OpenGL. Coordinates are millimeters."""
+"""Immutable layout snapshots, independent of EDB, Qt and graphics APIs. Coordinates are millimeters."""
 
 from __future__ import annotations
 

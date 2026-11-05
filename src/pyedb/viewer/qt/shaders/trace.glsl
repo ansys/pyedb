@@ -23,7 +23,7 @@
 // The MIT notice above applies to PyEDB modifications.
 // The upstream portions retain their original license below.
 // SPDX-License-Identifier: Apache-2.0
-// Modified for PyEDB's OpenGL renderer; see THIRD_PARTY_NOTICES.txt.
+// Modified for PyEDB's RHI renderer; see THIRD_PARTY_NOTICES.txt.
 
 float line_distance(vec4 screen) {
     vec4 p = delta(screen, a);

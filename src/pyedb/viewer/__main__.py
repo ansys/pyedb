@@ -30,8 +30,14 @@ from typing import Sequence
 
 
 def main(argv: Sequence[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Interactive PySide6/OpenGL 2D EDB layout viewer")
+    parser = argparse.ArgumentParser(description="Interactive PySide6/RHI 2D EDB layout viewer")
     parser.add_argument("path", nargs="?", type=Path, help="Existing .aedb directory")
+    parser.add_argument(
+        "--backend",
+        choices=("auto", "vulkan", "d3d11", "metal"),
+        default=None,
+        help="Graphics API (default: platform native)",
+    )
     parser.add_argument("--demo", action="store_true", help="Show a synthetic board without an EDB session")
     parser.add_argument("--version", help="EDB server version, for example 2026.1")
     parser.add_argument("--layer", action="append", help="Include this layer (repeatable)")
@@ -63,7 +69,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     if args.demo:
         from pyedb.viewer.demo import demo_scene
 
-        launch_viewer(scene=demo_scene(), color_by_net=args.color_by_net)
+        launch_viewer(scene=demo_scene(), color_by_net=args.color_by_net, backend=args.backend)
         return
     if not args.path.is_dir() or args.path.suffix.lower() != ".aedb":
         parser.error("path must be an existing .aedb directory.")
@@ -73,6 +79,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     try:
         edb.view_layout(
             layers=args.layer,
+            backend=args.backend,
             nets=args.net,
             arc_segments=args.arc_segments,
             color_by_net=args.color_by_net,

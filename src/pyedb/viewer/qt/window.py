@@ -150,6 +150,7 @@ class LayoutWindow(QMainWindow):
         plot_components_on_both_side: bool = True,
         plot_outlines: bool = True,
         loader: Callable[..., LayoutScene] | None = None,
+        backend: str | None = None,
     ) -> None:
         super().__init__(parent)
         self._capturing = loader is not None
@@ -160,7 +161,7 @@ class LayoutWindow(QMainWindow):
         self.setWindowTitle(f"{scene.title} — PyEDB Layout Viewer")
         self.resize(1280, 800)
         self.setMinimumSize(640, 400)
-        self.canvas = LayoutView(scene, self)
+        self.canvas = LayoutView(scene, self, backend=backend)
         self.canvas.setMinimumWidth(180)
         self.canvas.color_by_net = color_by_net
         self.canvas.show_components = plot_components
@@ -180,9 +181,9 @@ class LayoutWindow(QMainWindow):
         self.coordinates.setMinimumWidth(220)
         self.statusBar().setSizeGripEnabled(False)
         self.statusBar().setMinimumHeight(30)
-        self.engine_badge = QLabel("●  OpenGL")
+        self.engine_badge = QLabel({"d3d11": "Direct3D 11", "vulkan": "Vulkan", "metal": "Metal"}[self.canvas.backend])
         self.engine_badge.setProperty("role", "engine")
-        self.engine_badge.setToolTip("OpenGL layout renderer")
+        self.engine_badge.setToolTip("Qt RHI layout renderer")
         self.statusBar().addPermanentWidget(self.engine_badge)
         self.statusBar().addPermanentWidget(self.coordinates)
         self.statusBar().showMessage("Preparing layout…")
@@ -537,7 +538,7 @@ class LayoutWindow(QMainWindow):
 
     @Slot(str)
     def _rendering_failed(self, error: str) -> None:
-        self.engine_badge.setText("OpenGL error")
+        self.engine_badge.setText("Renderer error")
         self.engine_badge.setStyleSheet(f"color: {COLORS['error']};")
         self.engine_badge.setToolTip(error)
         self._render_error = "Layout rendering failed. See the canvas for details."

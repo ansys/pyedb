@@ -1,14 +1,10 @@
 // Copyright (C) 2023 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 // SPDX-License-Identifier: MIT
-#version 330 core
-uniform sampler2D mask_texture;
-uniform vec2 viewport;
-uniform float pixel_ratio;
-uniform bool hovering;
-uniform bool patterned;
-uniform vec3 highlight_color;
-uniform vec3 keyline_color;
-out vec4 fragment_color;
+#version 440
+#extension GL_GOOGLE_include_directive : require
+#include "uniforms.glsl"
+layout(binding = 1) uniform sampler2D mask_texture;
+layout(location = 0) out vec4 fragment_color;
 float boundary(vec2 uv, vec2 step_uv, float center) {
     float left = texture(mask_texture, uv - vec2(step_uv.x, 0)).a;
     float right = texture(mask_texture, uv + vec2(step_uv.x, 0)).a;
@@ -21,8 +17,10 @@ void main() {
     vec2 uv = gl_FragCoord.xy / viewport;
     vec2 step_uv = vec2(pixel_ratio) / viewport;
     float center = texture(mask_texture, uv).a;
-    float ink = boundary(uv, step_uv, center);
-    float halo = boundary(uv, step_uv * 2.0, center);
+    // Normalize resolved edge coverage so thin, antialiased traces retain
+    // the same vivid outline at 100% and fractional desktop scale factors.
+    float ink = smoothstep(0.05, 0.65, boundary(uv, step_uv, center));
+    float halo = smoothstep(0.05, 0.65, boundary(uv, step_uv * 2.0, center));
     if (patterned && !hovering) {
         vec2 cell = mod(gl_FragCoord.xy / pixel_ratio, 5.0) - vec2(2.5);
         float dots = 1.0 - smoothstep(.65, 1.25, length(cell));

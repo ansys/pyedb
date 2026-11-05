@@ -111,8 +111,9 @@ def launch_viewer(
     chord_error: float = 0.002,
     progressive: bool = True,
     debug: bool = False,
+    backend: str | None = None,
 ) -> LayoutWindow:
-    """Open an interactive OpenGL layout window.
+    """Open an interactive Qt RHI layout window.
 
     Parameters
     ----------
@@ -152,12 +153,17 @@ def launch_viewer(
         Show components on all visible placement layers. Default is True.
         Set False to restrict them to the current view side.
     plot_outlines : bool, optional
-        Draw a thin near-black outline, one screen pixel wide, around every
+        Draw an opaque net-colored outline, one screen pixel wide, around every
         shape. Default is True. It can also be toggled from the View menu.
     debug : bool, optional
         When True, exceptions caught during capture are logged with a full
         traceback and re-raised immediately instead of being recorded as a
         diagnostic note and skipped. Default is False.
+
+    backend : str, optional
+        Rendering API: "auto", "vulkan", "d3d11", or "metal". Defaults to
+        PYEDB_VIEWER_BACKEND or "auto": Direct3D 11 on Windows, Vulkan on
+        Linux, Metal on macOS. OpenGL is not supported.
 
     Returns
     -------
@@ -198,6 +204,7 @@ def launch_viewer(
     return show_scene(
         scene,
         block=block,
+        backend=backend,
         color_by_net=color_by_net,
         plot_components=plot_components,
         annotate_component_names=annotate_component_names,

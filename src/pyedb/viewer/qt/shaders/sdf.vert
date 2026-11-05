@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#version 330 core
+#version 440
+#extension GL_GOOGLE_include_directive : require
+#include "uniforms.glsl"
 
-// One resident packet per primitive; gl_VertexID expands it to a clipped quad.
+// One resident packet per primitive; gl_VertexIndex expands it to a clipped quad.
 layout(location = 0) in vec4 source_a;
 layout(location = 1) in vec4 source_b;
 layout(location = 2) in vec4 source_c;
@@ -34,23 +36,15 @@ layout(location = 7) in vec4 source_detail;
 layout(location = 8) in vec4 source_hole;
 layout(location = 9) in vec4 source_tangent;
 
-uniform vec4 camera_split;
-uniform vec2 viewport;
-uniform float scale;
-uniform float pixel_ratio;
-uniform float mirror_x;
-uniform int selected_net;
-uniform bool drill_pass;
-uniform bool component_pass;
 
-flat out vec4 a;
-flat out vec4 b;
-flat out vec4 c;
-flat out vec4 params;
-flat out vec4 flags;
-flat out vec4 detail;
-flat out vec4 hole;
-flat out vec4 tangent;
+layout(location = 0) flat out vec4 a;
+layout(location = 1) flat out vec4 b;
+layout(location = 2) flat out vec4 c;
+layout(location = 3) flat out vec4 params;
+layout(location = 4) flat out vec4 flags;
+layout(location = 5) flat out vec4 detail;
+layout(location = 6) flat out vec4 hole;
+layout(location = 7) flat out vec4 tangent;
 
 #include "common.glsl"
 
@@ -83,6 +77,7 @@ void main() {
     vec2 lo = clamp(lo_pair.xy + lo_pair.zw - aa, -limit, limit);
     vec2 hi = clamp(hi_pair.xy + hi_pair.zw + aa, -limit, limit);
     vec2 corners[4] = vec2[4](vec2(0, 0), vec2(1, 0), vec2(0, 1), vec2(1, 1));
-    vec2 position = mix(lo, hi, corners[gl_VertexID]);
+    vec2 position = mix(lo, hi, corners[gl_VertexIndex]);
     gl_Position = vec4(position * vec2(mirror_x, 1.0) * scale * 2.0 / viewport, 0.0, 1.0);
+    gl_Position = clip_corr * gl_Position;
 }
