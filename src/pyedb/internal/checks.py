@@ -39,7 +39,7 @@ _DEPENDENCY_CACHE: dict[str, bool] = {}
 _DEPENDENCY_IMPORT_ALIASES = {
     "pillow": "PIL",
     "visualization_interface": "ansys.tools.visualization_interface",
-    "ansys-pythonnet": "pythonnet"
+    "ansys-pythonnet": "pythonnet",
 }
 """Import-module aliases for dependencies whose module differs from their name."""
 
