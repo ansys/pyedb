@@ -19,10 +19,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import os
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from dataclasses import dataclass
 import json
-import os
 from pathlib import Path
 import secrets
 import shutil
