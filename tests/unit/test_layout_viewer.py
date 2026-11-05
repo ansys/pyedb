@@ -683,8 +683,9 @@ class TestGrpcAdapter:
         )
         scene = scene_from_edb(_edb([path]))
         assert len(scene.traces) == 20
-        # One net read for the unassigned-net filter and one for its name, regardless of segment count.
-        assert reads == {"layer": 1, "net": 2}
+        # A single net read is cached and reused for both the unassigned-net
+        # filter and its name, regardless of segment count.
+        assert reads == {"layer": 1, "net": 1}
 
     def test_grpc_polygon_data_wraps_core_or_returns_none(self):
         from pyedb.grpc.database.primitive.primitive import Primitive

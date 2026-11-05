@@ -37,6 +37,10 @@ from ansys.edb.core.definition.padstack_def_data import (
     PadType as CorePadType,
 )
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+from ansys.edb.core.layer.layer import Layer as CoreLayer
+from ansys.edb.core.primitive.padstack_instance import PadstackInstance as CorePadstackInstance
+from ansys.edb.core.primitive.primitive import Primitive as CorePrimitive
+from ansys.edb.core.session import StubAccessor, StubType
 
 from pyedb.misc.utilities import arc_segment_count
 from pyedb.viewer.progress import progress_items
@@ -82,6 +86,9 @@ class _Diagnostics(list):
         self.debug = debug
 
 
+_UNSET: Any = object()
+
+
 def _record_exception(diagnostics: list[str], message: str, exc: BaseException) -> None:
     """Record a caught exception.
 
@@ -106,18 +113,25 @@ def _names(value: str | Iterable[str] | None) -> set[str] | None:
     return None if value is None else {value} if isinstance(value, str) else set(value)
 
 
-def _conductor_names(edb: Edb) -> tuple[str, ...]:
-    """Use stackup order/types, never conventional TOP/BOTTOM layer names."""
+def _conductor_names(edb: Edb, layout_layers: dict[str, Any] | None = None) -> tuple[str, ...]:
+    """Use stackup order/types, never conventional TOP/BOTTOM layer names.
+
+    ``edb.stackup.layers`` fetches and wraps every stackup layer from the EDB
+    server, so callers that already hold that dictionary should pass it in
+    via ``layout_layers`` instead of triggering another round of server calls.
+    """
     signals = set(edb.stackup.signal_layers)
+    layers = edb.stackup.layers if layout_layers is None else layout_layers
     return tuple(
         name
-        for name, layer in edb.stackup.layers.items()
+        for name, layer in layers.items()
         if name in signals or getattr(layer, "type", None) in {"signal", "conducting"}
     )
 
 
-def _component_sides(edb: Edb, diagnostics: list[str]) -> dict[str, str]:
-    names = _conductor_names(edb)
+def _component_sides(edb: Edb, diagnostics: list[str], layout_layers: dict[str, Any] | None = None) -> dict[str, str]:
+    layout_layers = edb.stackup.layers if layout_layers is None else layout_layers
+    names = _conductor_names(edb, layout_layers)
     if not names:
         return {}
     sides = {names[0]: "top"}
@@ -126,7 +140,7 @@ def _component_sides(edb: Edb, diagnostics: list[str]) -> dict[str, str]:
     else:
         # A single conductor can explicitly belong to the back surface. If no
         # association is supplied, the sole layer is the front of the stackup.
-        core = getattr(edb.stackup.layers[names[0]], "core", None)
+        core = getattr(layout_layers[names[0]], "core", None)
         if core is not None:
             try:
                 association = getattr(core, "top_bottom_association", None)
@@ -257,6 +271,7 @@ def _placement(
     instance: PadstackInstance,
     component_cache: dict[int, ComponentBasis],
     component: ComponentGroup | bool | None = None,
+    component_id: int | None = None,
 ) -> Placement:
     get_position = getattr(instance, "get_position_and_rotation", None)
     if callable(get_position):
@@ -269,7 +284,7 @@ def _placement(
     basis = ((1, 0), (0, 1))
     component = False if component is None else component
     if component:
-        key = component.edb_uid
+        key = component.edb_uid if component_id is None else component_id
         if key not in component_cache:
             from ansys.edb.core.geometry.point_data import PointData
 
@@ -404,6 +419,8 @@ def _pin_owner(
     sides: dict[str, str],
     cache: dict[int, PinOwner | None],
     component: ComponentGroup | bool | None = None,
+    component_id: int | None = None,
+    instance_name: str | None = _UNSET,
 ) -> PinOwner:
     """Keep component-pin ownership separate from the physical copper pad layer."""
     if not getattr(instance, "is_layout_pin", False):
@@ -411,7 +428,7 @@ def _pin_owner(
     component = False if component is None else component
     if not component:
         return {}
-    component_id = component.edb_uid
+    component_id = component.edb_uid if component_id is None else component_id
     if component_id not in cache:
         layer = _component_placement_layer_name(component)
         cache[component_id] = (
@@ -420,7 +437,75 @@ def _pin_owner(
             else None
         )
     owner = cache[component_id]
-    return dict(owner, pin_name=_padstack_instance_name(instance)) if owner is not None else {}
+    if owner is None:
+        return {}
+    if instance_name is _UNSET:
+        instance_name = _padstack_instance_name(instance)
+    return dict(owner, pin_name=instance_name)
+
+
+_PADSTACK_INSTANCE_STUB = StubAccessor(StubType.padstack_instance)
+_PRIMITIVE_STUB = StubAccessor(StubType.primitive)
+
+
+def _cached_name(obj: Any, cache: dict[int, str]) -> str:  # noqa: ANN401
+    """Read ``obj.name`` once per server object; ``.id`` is the local handle, not a server call."""
+    key = getattr(obj, "id", None)
+    if not isinstance(key, int) or not key:
+        return obj.name
+    name = cache.get(key)
+    if name is None:
+        name = cache[key] = obj.name
+    return name
+
+
+def _primitive_layer_name(primitive: Primitive, layer_names: dict[int, str] | None) -> str:
+    """Return the primitive's layer name without ``Layer.cast()`` and repeated name calls."""
+    if layer_names is not None and isinstance(primitive, CorePrimitive):
+        msg = _PRIMITIVE_STUB.__get__().GetLayer(primitive.msg)
+        if msg.id:
+            name = layer_names.get(msg.id)
+            if name is None:
+                name = layer_names[msg.id] = CoreLayer(msg).name
+            return name
+    return primitive.layer.name
+
+
+def _layer_names_by_id(layout_layers: dict[str, Any]) -> dict[int, str]:
+    """Seed the layer ID-to-name cache from stackup layers already in memory (``.id`` is local)."""
+    names = {}
+    for name, layer in layout_layers.items():
+        layer_id = getattr(layer, "id", None)
+        if isinstance(layer_id, int) and layer_id:
+            names[layer_id] = name
+    return names
+
+
+def _layer_range_names(instance: PadstackInstance, layer_names: dict[int, str] | None) -> tuple[str, str] | None:
+    """Return the instance's ``(first, last)`` layer names, or ``None`` when it has no range.
+
+    ``PadstackInstance.get_layer_range()`` casts both layers to their concrete
+    type and every ``.name`` read is another server call (7 calls per
+    instance). On a real core instance, read the range message once and
+    resolve names from ``layer_names``, an ID-to-name cache shared across
+    instances; other objects fall back to the public API.
+    """
+    if layer_names is not None and type(instance) is CorePadstackInstance:
+        params = _PADSTACK_INSTANCE_STUB.__get__().GetLayerRange(instance.msg)
+        result = []
+        for msg in (params.top_layer, params.bottom_layer):
+            if not msg.id:
+                return None
+            name = layer_names.get(msg.id)
+            if name is None:
+                name = layer_names[msg.id] = CoreLayer(msg).name
+            result.append(name)
+        return result[0], result[1]
+    layer_range = instance.get_layer_range()
+    if not layer_range:
+        return None
+    first, last = (layer.name for layer in layer_range)
+    return first, last
 
 
 def _padstack_layers(
@@ -428,15 +513,16 @@ def _padstack_layers(
     selected_layers: set[str],
     conductors: tuple[str, ...],
     extended_ranges: bool,
+    layer_names: dict[int, str] | None = None,
 ) -> list[str]:
     """Include conducting layers within the instance's physical span."""
     instance_layers = None
     get_range = getattr(instance, "get_layer_range", None)
     if callable(get_range):
-        layer_range = get_range()
+        layer_range = _layer_range_names(instance, layer_names)
         if not layer_range:
             return []
-        first, last = (layer.name for layer in layer_range)
+        first, last = layer_range
         if first in conductors and last in conductors:
             start, stop = sorted((conductors.index(first), conductors.index(last)))
             instance_layers = conductors[start : stop + 1]
@@ -546,9 +632,10 @@ def _padstack_definition(
     definitions: dict[Any, Any],
     diagnostics: list[str],
     name: str | None = None,
+    padstack_def: Any = None,
 ) -> PadstackDefinition:
     """Cache pad and drill data shared by instances of a definition, read directly from raw core."""
-    padstack_def = instance.padstack_def
+    padstack_def = instance.padstack_def if padstack_def is None else padstack_def
     name = name or padstack_def.name
     if name not in definitions:
         data = padstack_def.data
@@ -714,10 +801,12 @@ def _padstack_pin_owner(
     cache: dict[int, PinOwner | None],
     component: ComponentGroup | bool | None,
     diagnostics: list[str],
+    component_id: int | None = None,
+    instance_name: str | None = _UNSET,
 ) -> PinOwner:
     """Retain padstack geometry when optional component-pin metadata is unavailable."""
     try:
-        return _pin_owner(instance, sides, cache, component)
+        return _pin_owner(instance, sides, cache, component, component_id, instance_name)
     except Exception as exc:
         _record_exception(diagnostics, f"Padstack {instance.edb_uid}: component pin metadata unavailable ({exc}).", exc)
         return {}
@@ -737,13 +826,15 @@ def _readonly_components(edb: Edb) -> dict[int, Any] | None:
     )
 
 
-def _padstack_component(raw_component: ComponentGroup | None, components: dict[int, Any] | None) -> Any:  # noqa: ANN401
+def _padstack_component(
+    raw_component: ComponentGroup | None, components: dict[int, Any] | None, component_id: int | None = None
+) -> Any:  # noqa: ANN401
     """Reuse a capture's component wrapper; ``False`` means the instance has no component."""
     if components is None or raw_component is None:
         return None
     if raw_component.is_null:
         return False
-    return components.get(raw_component.edb_uid)
+    return components.get(raw_component.edb_uid if component_id is None else component_id)
 
 
 def _padstack_object_info(
@@ -756,12 +847,16 @@ def _padstack_object_info(
     span: list[str],
     object_info: dict[int, SceneObjectInfo] | None,
     diagnostics: list[str],
+    reference: str | None = _UNSET,
+    instance_name: str | None = _UNSET,
 ) -> None:
     """Capture optional inspector properties without discarding valid geometry."""
     if object_info is not None:
         try:
-            reference = getattr(component, "name", None) if component else None
-            instance_name = _padstack_instance_name(instance)
+            if reference is _UNSET:
+                reference = getattr(component, "name", None) if component else None
+            if instance_name is _UNSET:
+                instance_name = _padstack_instance_name(instance)
             object_info[object_id] = SceneObjectInfo(
                 object_id,
                 "pad" if component or hole_radius == 0 else "via",
@@ -785,6 +880,7 @@ def _record_padstack_geometry(
     placement: Placement,
     pads: list[ScenePad],
     polygons: list[ScenePolygon],
+    component_id: int | None = None,
 ) -> None:
     """Accumulate pin envelopes for the component pass, including copper-free pins."""
     if component_geometry is not None:
@@ -797,7 +893,8 @@ def _record_padstack_geometry(
         component_geometry.setdefault("instances", {})[object_id] = instance_geometry
         if component:
             record = component_geometry.setdefault(
-                component.edb_uid, {"bounds": bounds, "nets": set(), "approximate": False}
+                component.edb_uid if component_id is None else component_id,
+                {"bounds": bounds, "nets": set(), "approximate": False},
             )
             record["bounds"] = union_bounds([record["bounds"], bounds])
             record["nets"].update(instance_geometry["nets"])
@@ -814,31 +911,37 @@ def _padstacks(
     component_geometry: dict[Any, Any] | None = None,
     chord_error: float | None = None,
     object_info: dict[int, SceneObjectInfo] | None = None,
+    layout_layers: dict[str, Any] | None = None,
 ) -> tuple[list[ScenePad], list[ScenePolygon]]:
     pads, polygons = [], []
     definitions, templates, component_cache, mapping_cache = {}, {}, {}, {}
     pin_components = {}
-    sides = _component_sides(edb, diagnostics)
-    conductors = _conductor_names(edb)
+    layout_layers = edb.stackup.layers if layout_layers is None else layout_layers
+    sides = _component_sides(edb, diagnostics, layout_layers)
+    conductors = _conductor_names(edb, layout_layers)
     extended_ranges = bool(set(conductors).difference(edb.stackup.signal_layers))
-    layout_layers = edb.stackup.layers
     core_layout = getattr(getattr(edb, "layout", None), "core", None)
     if core_layout is None:
         return pads, polygons
     component_objects = _readonly_components(edb)
+    layer_names = _layer_names_by_id(layout_layers)
+    net_names, component_names, definition_names = {}, {}, {}
     for instance in progress_items(lambda: core_layout.padstack_instances, progress, "Reading pads and vias"):
         try:
             object_id = instance.edb_uid
-            net = "" if getattr(instance.net, "is_null", False) else instance.net.name
+            # Fetch .net once: it is a separate GetNet round-trip to the EDB server.
+            instance_net = instance.net
+            net = "" if getattr(instance_net, "is_null", False) else _cached_name(instance_net, net_names)
             if selected_nets is not None and net not in selected_nets:
                 continue
-            span = _padstack_layers(instance, set(conductors), conductors, extended_ranges)
+            span = _padstack_layers(instance, set(conductors), conductors, extended_ranges, layer_names)
             layers = [layer for layer in span if layer in selected_layers]
             if not layers:
                 continue
-            name = instance.padstack_def.name
+            padstack_def = instance.padstack_def
+            name = _cached_name(padstack_def, definition_names)
             definition, by_layer, hole_radius, hole_offset = _padstack_definition(
-                instance, definitions, diagnostics, name
+                instance, definitions, diagnostics, name, padstack_def
             )
             mapped = _mapped_layers(instance, edb, definition, layers, mapping_cache, layout_layers, name)
             enabled, diameter = instance.get_hole_overrides()
@@ -847,17 +950,51 @@ def _padstacks(
                 hole_radius = diameter.double * 500
                 hole_profile = None
             raw_component = getattr(instance, "component", None)
-            component = _padstack_component(raw_component, component_objects)
+            # Read the component's persistent ID once; every helper below keys on it.
+            component_id = (
+                raw_component.edb_uid
+                if raw_component is not None and not getattr(raw_component, "is_null", True)
+                else None
+            )
+            component = _padstack_component(raw_component, component_objects, component_id)
             if component is None:
                 component = _resolve_component(raw_component)
             elif component is not False:
                 # Readonly-mode cache stores wrapped Component objects; normalize to raw core.
                 component = getattr(component, "core", component)
-            placement = _placement(instance, component_cache, component)
-            pin_owner = _padstack_pin_owner(instance, sides, pin_components, component, diagnostics)
+            if not component:
+                component_id = None
+            placement = _placement(instance, component_cache, component, component_id)
+            reference = instance_name = _UNSET
+            if object_info is not None:
+                # Shared by the pin owner and the inspector entry; on failure each helper retries and reports.
+                try:
+                    instance_name = _padstack_instance_name(instance)
+                    if component:
+                        if component_id is None:
+                            reference = getattr(component, "name", None)
+                        else:
+                            if component_id not in component_names:
+                                component_names[component_id] = getattr(component, "name", None)
+                            reference = component_names[component_id]
+                except Exception:
+                    pass
+            pin_owner = _padstack_pin_owner(
+                instance, sides, pin_components, component, diagnostics, component_id, instance_name
+            )
             hole_center = placement[0](hole_offset)
             _padstack_object_info(
-                instance, object_id, component, net, hole_radius, placement, span, object_info, diagnostics
+                instance,
+                object_id,
+                component,
+                net,
+                hole_radius,
+                placement,
+                span,
+                object_info,
+                diagnostics,
+                reference,
+                instance_name,
             )
             pad_start, polygon_start = len(pads), len(polygons)
             for layer in layers:
@@ -882,9 +1019,16 @@ def _padstacks(
                         hole_offset=hole_offset,
                     )
                 except Exception as exc:
-                    _record_exception(diagnostics, f"Padstack {instance.edb_uid}, layer {layer}: {exc}", exc)
+                    _record_exception(diagnostics, f"Padstack {object_id}, layer {layer}: {exc}", exc)
             _record_padstack_geometry(
-                component_geometry, object_id, component, net, placement, pads[pad_start:], polygons[polygon_start:]
+                component_geometry,
+                object_id,
+                component,
+                net,
+                placement,
+                pads[pad_start:],
+                polygons[polygon_start:],
+                component_id,
             )
         except Exception as exc:
             _record_exception(diagnostics, f"Padstack {instance.edb_uid}: {exc}", exc)
@@ -898,12 +1042,13 @@ def _components(
     diagnostics: list[str],
     progress: Progress | None = None,
     component_geometry: dict[Any, Any] | None = None,
+    layout_layers: dict[str, Any] | None = None,
 ) -> tuple[SceneComponent, ...]:
     """Reuse captured pad envelopes, falling back to source bounds when needed."""
     manager = getattr(edb, "components", None)
     if manager is None:
         return ()
-    sides = _component_sides(edb, diagnostics)
+    sides = _component_sides(edb, diagnostics, layout_layers)
     if not sides:
         return ()
     net_filter = set(edb.nets.nets) if selected_nets is None else selected_nets
@@ -952,13 +1097,16 @@ def _components(
 
 
 def _scene_filters(
-    edb: Edb, layers: str | Iterable[str] | None, nets: str | Iterable[str] | None
+    edb: Edb,
+    layers: str | Iterable[str] | None,
+    nets: str | Iterable[str] | None,
+    layout_layers: dict[str, Any] | None = None,
 ) -> tuple[set[str], set[str] | None]:
     """Normalize filters and reject names outside the source layout."""
     selected_layers, selected_nets = _names(layers), _names(nets)
-    source_layers = edb.stackup.layers
+    source_layers = edb.stackup.layers if layout_layers is None else layout_layers
     if selected_layers is None:
-        selected_layers = set(_conductor_names(edb))
+        selected_layers = set(_conductor_names(edb, source_layers))
     unknown = selected_layers.difference(source_layers)
     if unknown:
         raise ValueError(f"Unknown layers: {', '.join(sorted(unknown))}")
@@ -976,30 +1124,38 @@ def _selected_primitives(
     skipped: Counter[str],
     progress: Progress | None = None,
     priority_layer: str | None = None,
+    layer_names: dict[int, str] | None = None,
 ) -> Iterator[tuple[Primitive, str, str, str]]:
     """Filter source primitives and count unsupported copper geometry."""
+    net_names = {}
 
-    def load() -> list[tuple[Primitive, str | None, bool | None]]:
-        source = [primitive for primitive in edb.layout.core.primitives if not primitive.net.is_null]
+    def load() -> list[tuple[Primitive, Any, str | None, bool | None]]:
+        # Keep the resolved net object instead of re-fetching it later: each
+        # ``.net`` access is a separate GetNet round-trip to the EDB server.
+        source = []
+        for primitive in edb.layout.core.primitives:
+            net = primitive.net
+            if not net.is_null:
+                source.append((primitive, net))
         if priority_layer is None:
-            return [(primitive, None, None) for primitive in source]
+            return [(primitive, net, None, None) for primitive, net in source]
         records = []
-        for primitive in source:
+        for primitive, net in source:
             void = primitive.is_void
-            records.append((primitive, None if void else primitive.layer.name, void))
-        records.sort(key=lambda item: item[1] != priority_layer)
+            records.append((primitive, net, None if void else _primitive_layer_name(primitive, layer_names), void))
+        records.sort(key=lambda item: item[2] != priority_layer)
         return records
 
-    for primitive, layer_name, void in progress_items(load, progress, "Reading polygons"):
+    for primitive, net, layer_name, void in progress_items(load, progress, "Reading polygons"):
         if void is None:
             void = primitive.is_void
         if void:
             continue
         if layer_name is None:
-            layer_name = primitive.layer.name
+            layer_name = _primitive_layer_name(primitive, layer_names)
         if layer_name not in selected_layers:
             continue
-        net_name = primitive.net.name
+        net_name = _cached_name(net, net_names)
         if selected_nets is not None and net_name not in selected_nets:
             continue
         primitive_type = primitive.primitive_type.name.lower()
@@ -1015,14 +1171,14 @@ def _selected_primitives(
 _PRIMITIVE_NAME_PREFIX = {"path": "line", "rectangle": "rect", "polygon": "poly", "bondwire": "bwr"}
 
 
-def _primitive_name(primitive: Primitive) -> str:
+def _primitive_name(primitive: Primitive, primitive_type: str | None = None) -> str:
     """Return the AEDT display name, falling back to its default ``<type>_<uid>`` without writing it back."""
     try:
         name = primitive.get_product_property(ProductIdType.DESIGNER, 1).strip("'")
     except Exception:
         name = ""
     if not name:
-        kind = primitive.primitive_type.name.lower()
+        kind = primitive.primitive_type.name.lower() if primitive_type is None else primitive_type
         name = f"{_PRIMITIVE_NAME_PREFIX.get(kind, kind)}__{primitive.edb_uid}"
     return name
 
@@ -1039,13 +1195,14 @@ def _primitives(
     on_preview: Callable[[list[ScenePolygon], list[SceneTrace], list[SceneJoin], list[ScenePad]], None] | None = None,
     priority_layer: str | None = None,
     object_info: dict[int, SceneObjectInfo] | None = None,
+    layer_names: dict[int, str] | None = None,
 ) -> ScenePrimitives:
     """Capture analytic geometry with source contours as a fallback."""
     polygons, traces, joins, pads = [], [], [], []
     skipped = Counter()
     published = False
     for primitive, primitive_type, layer_name, net_name in _selected_primitives(
-        edb, selected_layers, selected_nets, skipped, progress, priority_layer
+        edb, selected_layers, selected_nets, skipped, progress, priority_layer, layer_names
     ):
         if on_preview is not None and not published and layer_name != priority_layer:
             on_preview(polygons, traces, joins, pads)
@@ -1054,7 +1211,7 @@ def _primitives(
             object_id = primitive.id
             if object_info is not None:
                 kind = "trace" if primitive_type == "path" else "pad" if primitive_type == "circle" else "zone"
-                name = _primitive_name(primitive)
+                name = _primitive_name(primitive, primitive_type)
                 info = SceneObjectInfo(object_id, kind, net_name, name=name)
                 if kind == "trace":
                     from pyedb.viewer.adapters.grpc_stream import trace_dimensions
@@ -1143,9 +1300,12 @@ def scene_from_edb(
         chord_error = None
     if progress is not None:
         progress("Reading polygons", 0, 0)
-    selected_layers, selected_nets = _scene_filters(edb, layers, nets)
+    # Fetch once: edb.stackup.layers wraps every stackup layer from the EDB
+    # server, so every helper below reuses this instead of refetching it.
+    layout_layers = edb.stackup.layers
+    selected_layers, selected_nets = _scene_filters(edb, layers, nets, layout_layers)
     scene_layers = []
-    for name, layer in edb.stackup.layers.items():
+    for name, layer in layout_layers.items():
         if name in selected_layers:
             color = tuple(float(v) / 255.0 for v in layer.color[:3])
             scene_layers.append(SceneLayer(name, (*color, 1.0)))
@@ -1184,6 +1344,7 @@ def scene_from_edb(
         publish if priority_layer is not None else None,
         priority_layer,
         object_info,
+        _layer_names_by_id(layout_layers),
     )
     publish(polygons, traces, joins, pads)
     component_geometry = None if exact_component_bounds else {}
@@ -1197,10 +1358,13 @@ def scene_from_edb(
         component_geometry,
         chord_error,
         object_info,
+        layout_layers,
     )
     pads.extend(via_pads)
     polygons.extend(via_polygons)
-    components = _components(edb, selected_layers, selected_nets, diagnostics, progress, component_geometry)
+    components = _components(
+        edb, selected_layers, selected_nets, diagnostics, progress, component_geometry, layout_layers
+    )
     diagnostics.append(
         "GPU copper and component envelopes/references; arbitrary text, 3D bodies and bondwires are not displayed."
     )
