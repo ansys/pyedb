@@ -60,6 +60,24 @@ class ComponentLabels:
         bounds = path.boundingRect()
         return path, bounds, math.ceil(bounds.width()) + 8, math.ceil(bounds.height()) + 8
 
+    @staticmethod
+    def _pack(glyphs, width):
+        """Shelf-pack glyphs into rows of the given width.
+
+        Returns ``(placements, height)``, or ``None`` if a glyph is wider than ``width``.
+        """
+        placements = []
+        x = y = row_height = 0
+        for _, _, w, h in glyphs:
+            if w > width:
+                return None
+            if x + w > width:
+                x, y, row_height = 0, y + row_height, 0
+            placements.append((x, y))
+            x += w
+            row_height = max(row_height, h)
+        return placements, y + row_height
+
     def upload(self, device, updates, batches):
         """Bake labels at 2x density, then upload atlas and instance coordinates once."""
         self.records = ()
@@ -70,19 +88,20 @@ class ComponentLabels:
         width = min(2048, limit)
         if any(glyph[2] > width for glyph in glyphs):
             width = min(limit, max(glyph[2] for glyph in glyphs))
-        placements = []
-        x = y = row_height = 0
-        for _, _, w, h in glyphs:
-            if w > width:
-                raise ValueError("A component reference exceeds the GPU label atlas width.")
-            if x + w > width:
-                x, y, row_height = 0, y + row_height, 0
-            placements.append((x, y))
-            x += w
-            row_height = max(row_height, h)
-        height = y + row_height
+        packed = self._pack(glyphs, width)
+        # Grow the atlas width (up to the GPU's actual texture-size limit) rather than
+        # failing outright when the default 2048px-wide packing is too tall.
+        while (packed is None or packed[1] > limit) and width < limit:
+            width = min(limit, width * 2)
+            packed = self._pack(glyphs, width)
+        if packed is None:
+            raise ValueError("A component reference exceeds the GPU label atlas width.")
+        placements, height = packed
         if height > limit:
-            raise ValueError("Component reference labels exceed the GPU label atlas capacity.")
+            raise ValueError(
+                f"{len(batches)} component reference labels exceed the GPU label atlas capacity "
+                f"even at the maximum supported texture size ({limit}x{limit})."
+            )
         image = QImage(width, height, QImage.Format.Format_RGBA8888)
         image.fill(Qt.GlobalColor.transparent)
         painter = QPainter(image)
