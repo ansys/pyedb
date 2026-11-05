@@ -23,9 +23,8 @@
 
 """Layout viewer unit tests; they require no OpenGL context or EDB license."""
 
-import os
-
 import math
+import os
 import subprocess
 import sys
 from types import SimpleNamespace
