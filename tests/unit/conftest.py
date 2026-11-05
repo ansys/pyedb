@@ -24,6 +24,9 @@
 
 import csv
 import os
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+
 from os.path import dirname
 
 import pytest
