@@ -22,9 +22,11 @@
 
 
 """Layout viewer unit tests; they require no OpenGL context or EDB license."""
+import os
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 import math
-import os
 import subprocess
 import sys
 from types import SimpleNamespace
@@ -53,9 +55,6 @@ from pyedb.viewer.adapters.grpc_stream import centerline_length
 from pyedb.viewer.camera import Camera
 from pyedb.viewer.mesh import prepare_scene, split_coordinates
 from pyedb.viewer.picking import PickIndex, inspector_rows
-
-os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.grpc]
 
