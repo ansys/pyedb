@@ -24,15 +24,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from pathlib import Path
 
 from PySide6.QtGui import QColor, QFont, QFontDatabase, QPalette
 from PySide6.QtWidgets import QWidget
 
-from pyedb.viewer.colors import viewer_theme
-
-LIGHT_COLORS = {
+COLORS = {
     "window": "#f6f7fb",
     "panel": "#ffffff",
     "surface": "#eef1f7",
@@ -45,60 +42,10 @@ LIGHT_COLORS = {
     "accent_surface": "#ece8ff",
     "positive": "#197451",
     "error": "#b43e4e",
-    "border_hover": "#b0bbcc",
-    "border_disabled": "#e3e7ef",
-    "input_hover": "#a9b5c8",
-    "text_selection": "#e2dcff",
-    "popup_border": "#bdc7d8",
-    "menu_border": "#c4cddc",
-    "selected_border": "#b8abe8",
-    "indicator_border": "#7d8ca4",
-    "groove": "#dce2ec",
-    "scrollbar": "#c1cad9",
-    "scrollbar_hover": "#9aa9bf",
-    "shadow": "#2d182337",
-    "chevron": "chevron.svg",
 }
 
-DARK_COLORS = {
-    "window": "#0f141c",
-    "panel": "#161c26",
-    "surface": "#1f2632",
-    "hover": "#2a3240",
-    "border": "#2e3746",
-    "text": "#e6eaf2",
-    "muted": "#9aa6b8",
-    "disabled": "#5d6878",
-    "accent": "#8f80ff",
-    "accent_surface": "#2c2650",
-    "positive": "#4cc38a",
-    "error": "#f07a8a",
-    "border_hover": "#46536a",
-    "border_disabled": "#232a35",
-    "input_hover": "#4a576d",
-    "text_selection": "#3d3570",
-    "popup_border": "#3a4557",
-    "menu_border": "#3a4557",
-    "selected_border": "#5b4fb0",
-    "indicator_border": "#7a879c",
-    "groove": "#2e3746",
-    "scrollbar": "#3a4557",
-    "scrollbar_hover": "#56647a",
-    "shadow": "#73000000",
-    "chevron": "chevron_light.svg",
-}
 
-THEMES = {"light": LIGHT_COLORS, "dark": DARK_COLORS}
-# Light tokens, the default theme.
-COLORS = LIGHT_COLORS
-
-
-def theme_colors(theme: str) -> dict[str, str]:
-    """Return the chrome tokens of a viewer theme: ``"light"`` or ``"dark"``."""
-    return THEMES[viewer_theme(theme)]
-
-
-def apply_viewer_theme(window: QWidget, colors: Mapping[str, str] = LIGHT_COLORS) -> None:
+def apply_viewer_theme(window: QWidget) -> None:
     """Style this window without changing other windows in an embedded QApplication."""
     families = set(QFontDatabase.families())
     family = next(
@@ -122,14 +69,14 @@ def apply_viewer_theme(window: QWidget, colors: Mapping[str, str] = LIGHT_COLORS
         (QPalette.ColorRole.ToolTipBase, "surface"),
         (QPalette.ColorRole.ToolTipText, "text"),
     ):
-        palette.setColor(role, QColor(colors[token]))
+        palette.setColor(role, QColor(COLORS[token]))
     for role in (QPalette.ColorRole.Text, QPalette.ColorRole.ButtonText, QPalette.ColorRole.WindowText):
-        palette.setColor(QPalette.ColorGroup.Disabled, role, QColor(colors["disabled"]))
+        palette.setColor(QPalette.ColorGroup.Disabled, role, QColor(COLORS["disabled"]))
     window.setPalette(palette)
     assets = Path(__file__).with_name("assets")
     check = (assets / "check.svg").as_posix()
-    chevron = (assets / colors["chevron"]).as_posix()
-    c = colors
+    chevron = (assets / "chevron.svg").as_posix()
+    c = COLORS
     window.setStyleSheet(f"""
         QMainWindow {{ background: {c["window"]}; }}
         QWidget {{ color: {c["text"]}; font-family: "{family}"; font-size: 13px; }}
@@ -157,21 +104,20 @@ def apply_viewer_theme(window: QWidget, colors: Mapping[str, str] = LIGHT_COLORS
         QToolButton::menu-indicator {{ image: none; width: 0px; }}
         QPushButton {{ background: {c["surface"]}; border: 1px solid {c["border"]};
             border-radius: 7px; padding: 6px 10px; font-size: 12px; }}
-        QPushButton:hover {{ background: {c["hover"]}; border-color: {c["border_hover"]}; }}
+        QPushButton:hover {{ background: {c["hover"]}; border-color: #b0bbcc; }}
         QPushButton:pressed {{ background: {c["accent_surface"]}; }}
         QPushButton:focus {{ border-color: {c["accent"]}; }}
-        QPushButton:disabled {{ background: {c["panel"]}; color: {c["disabled"]};
-            border-color: {c["border_disabled"]}; }}
+        QPushButton:disabled {{ background: {c["panel"]}; color: {c["disabled"]}; border-color: #e3e7ef; }}
         QLineEdit, QComboBox {{ background: {c["surface"]}; color: {c["text"]};
             border: 1px solid {c["border"]}; border-radius: 7px; padding: 7px 10px;
-            selection-background-color: {c["text_selection"]}; }}
+            selection-background-color: #e2dcff; }}
         QLineEdit:focus, QComboBox:focus {{ border-color: {c["accent"]}; }}
-        QLineEdit:hover, QComboBox:hover {{ border-color: {c["input_hover"]}; }}
+        QLineEdit:hover, QComboBox:hover {{ border-color: #a9b5c8; }}
         QComboBox {{ padding-right: 28px; min-height: 18px; }}
         QComboBox::drop-down {{ border: none; width: 27px; }}
         QComboBox::down-arrow {{ image: url("{chevron}"); width: 12px; height: 12px; }}
         QComboBox QAbstractItemView {{ background: {c["panel"]}; color: {c["text"]};
-            border: 1px solid {c["popup_border"]}; border-radius: 6px; padding: 4px;
+            border: 1px solid #bdc7d8; border-radius: 6px; padding: 4px;
             selection-background-color: {c["accent_surface"]}; outline: none; }}
         QComboBox QAbstractItemView::item {{ min-height: 28px; padding: 4px 8px; }}
         QDockWidget {{ background: {c["panel"]}; border: none; }}
@@ -185,19 +131,19 @@ def apply_viewer_theme(window: QWidget, colors: Mapping[str, str] = LIGHT_COLORS
             padding: 2px; selection-background-color: {c["accent_surface"]}; }}
         QListWidget::item {{ border: 1px solid transparent; border-radius: 7px; padding: 7px 8px; }}
         QListWidget::item:hover {{ background: {c["surface"]}; }}
-        QListWidget::item:selected {{ background: {c["accent_surface"]}; border-color: {c["selected_border"]}; }}
+        QListWidget::item:selected {{ background: {c["accent_surface"]}; border-color: #b8abe8; }}
         QListWidget::item:focus {{ border-color: {c["accent"]}; }}
-        QListWidget::indicator {{ width: 15px; height: 15px; border: 1px solid {c["indicator_border"]};
+        QListWidget::indicator {{ width: 15px; height: 15px; border: 1px solid #7d8ca4;
             border-radius: 4px; margin-right: 6px; background: {c["panel"]}; }}
         QListWidget::indicator:checked {{ background: {c["accent"]};
             border-color: {c["accent"]}; image: url("{check}"); }}
-        QSlider::groove:horizontal {{ height: 4px; background: {c["groove"]}; border-radius: 2px; }}
+        QSlider::groove:horizontal {{ height: 4px; background: #dce2ec; border-radius: 2px; }}
         QSlider::sub-page:horizontal {{ background: {c["accent"]}; border-radius: 2px; }}
         QSlider::handle:horizontal {{ background: {c["text"]}; border: 2px solid {c["panel"]};
             width: 12px; height: 12px; margin: -6px 0; border-radius: 8px; }}
         QSlider::handle:horizontal:hover {{ background: {c["accent"]}; }}
         QSlider:focus {{ border: 1px solid {c["accent"]}; border-radius: 5px; }}
-        QMenu {{ background: {c["panel"]}; color: {c["text"]}; border: 1px solid {c["menu_border"]};
+        QMenu {{ background: {c["panel"]}; color: {c["text"]}; border: 1px solid #c4cddc;
             padding: 6px; }}
         QMenu::item {{ padding: 8px 28px 8px 12px; border-radius: 5px; }}
         QMenu::item:selected {{ background: {c["accent_surface"]}; }}
@@ -209,11 +155,11 @@ def apply_viewer_theme(window: QWidget, colors: Mapping[str, str] = LIGHT_COLORS
             border-top: 1px solid {c["border"]}; font-size: 11px; }}
         QStatusBar::item {{ border: none; }}
         QScrollBar:vertical {{ background: transparent; width: 8px; margin: 3px 0; }}
-        QScrollBar::handle:vertical {{ background: {c["scrollbar"]}; min-height: 28px; border-radius: 4px; }}
-        QScrollBar::handle:vertical:hover {{ background: {c["scrollbar_hover"]}; }}
+        QScrollBar::handle:vertical {{ background: #c1cad9; min-height: 28px; border-radius: 4px; }}
+        QScrollBar::handle:vertical:hover {{ background: #9aa9bf; }}
         QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{ height: 0px; }}
         QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{ background: transparent; }}
-        QToolTip {{ background: {c["surface"]}; color: {c["text"]}; border: 1px solid {c["popup_border"]};
+        QToolTip {{ background: {c["surface"]}; color: {c["text"]}; border: 1px solid #bdc7d8;
             padding: 6px 9px; }}
         QMessageBox {{ background: {c["panel"]}; }}
     """)

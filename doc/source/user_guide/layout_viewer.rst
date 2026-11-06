@@ -54,18 +54,10 @@ reads or geometry uploads. No scene or GPU data is saved to disk.
 Display and navigation
 ----------------------
 
-The workspace uses a light theme and a white canvas with an optional grid by
-default. A dark theme with a dark canvas is also available: pass ``theme="dark"``
-or ``--theme dark``, select View > Dark theme, or call ``window.set_theme("dark")``.
-Switching themes keeps the view, selection and GPU geometry; copper, drill and
-highlight colors are the same in both themes.
+The workspace uses a light theme and a white canvas with an optional grid.
 Color by Net is enabled by default, and only the first listed layer is initially
 visible. Opacity defaults to 75%. Use ``color_by_net=False`` or
 ``--color-by-layer`` for layer colors.
-
-.. code-block:: console
-
-   python -m pyedb.viewer path/to/board.aedb --theme dark
 
 * Drag with the left, middle, or right mouse button to pan; arrow keys also pan.
 * Scroll to zoom around the pointer, or use ``+`` and ``-`` on the canvas.
@@ -76,9 +68,9 @@ visible. Opacity defaults to 75%. Use ``color_by_net=False`` or
   Searching preserves the active filter. Select All networks to reset it.
 * Use Color and Opacity at the top to change colors and transparency.
 * Use View to toggle the Layers panel, the grid, shape outlines, the flipped
-  (bottom) view, component envelopes, reference names, components on both
-  sides, and the dark theme. Components follow their actual placement layers;
-  layer names need not be ``TOP`` or ``BOTTOM``.
+  (bottom) view, component envelopes, reference names, and components on both
+  sides. Components follow their actual placement layers; layer names need not
+  be ``TOP`` or ``BOTTOM``.
 * Use the info button to inspect scene details and unsupported geometry.
 
 Picking and object properties
@@ -182,7 +174,6 @@ Signals:
 * ``object_hovered(PickedObject | None)`` follows the hover highlight.
 * ``net_changed(str | None)`` and ``visible_layers_changed(tuple[str, ...])``
   follow the Networks and Layers panels. Layer names are in stackup order.
-* ``theme_changed(str)`` reports ``"light"`` or ``"dark"`` when the theme changes.
 
 A ``PickedObject`` is a detached value with ``object_id`` (the source EDB id),
 ``kind`` (``trace``, ``via``, ``pad`` or ``zone``), ``net``, ``layer`` and the full
@@ -190,8 +181,7 @@ A ``PickedObject`` is a detached value with ``object_id`` (the source EDB id),
 
 Properties and commands:
 
-* ``selected_object``, ``selected_net``, ``visible_layers`` and ``theme`` return the current state.
-* ``set_theme("light" | "dark")`` switches the workspace and canvas theme.
+* ``selected_object``, ``selected_net`` and ``visible_layers`` return the current state.
 * ``select_net(name)`` filters the view; ``None`` shows all networks.
 * ``set_visible_layers(names)`` shows exactly those layers.
 * ``select_object(object_id, kind=None, layer=None)`` selects as if picked.

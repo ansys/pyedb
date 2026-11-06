@@ -5,8 +5,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-
 from PySide6.QtCore import QElapsedTimer, Qt, QTimer, Slot
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QProgressBar, QVBoxLayout, QWidget
 
@@ -19,7 +17,17 @@ class LoadingPanel(QFrame):
         self.setObjectName("loadingPanel")
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.setAccessibleName("Layout loading progress")
-        self.apply_theme(COLORS)
+        self.setStyleSheet(f"""
+            QFrame#loadingPanel {{ background: {COLORS["panel"]}; border: 1px solid {COLORS["border"]};
+                border-radius: 12px; }}
+            QLabel {{ background: transparent; border: none; color: {COLORS["text"]}; font-size: 13px; }}
+            QLabel#loadingTitle {{ font-size: 18px; font-weight: 600; }}
+            QLabel#loadingStage {{ color: {COLORS["muted"]}; }}
+            QLabel#loadingDetail, QLabel#loadingElapsed {{ color: {COLORS["muted"]}; font-size: 12px; }}
+            QLabel#loadingPercent {{ color: {COLORS["accent"]}; font-weight: 600; }}
+            QProgressBar {{ background: {COLORS["surface"]}; border: none; border-radius: 3px; }}
+            QProgressBar::chunk {{ background: {COLORS["accent"]}; border-radius: 3px; }}
+        """)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 22)
         layout.setSpacing(12)
@@ -58,19 +66,6 @@ class LoadingPanel(QFrame):
         self.timer.timeout.connect(self._elapsed)
         self.timer.start()
         self.compact = False
-
-    def apply_theme(self, colors: Mapping[str, str]) -> None:
-        self.setStyleSheet(f"""
-            QFrame#loadingPanel {{ background: {colors["panel"]}; border: 1px solid {colors["border"]};
-                border-radius: 12px; }}
-            QLabel {{ background: transparent; border: none; color: {colors["text"]}; font-size: 13px; }}
-            QLabel#loadingTitle {{ font-size: 18px; font-weight: 600; }}
-            QLabel#loadingStage {{ color: {colors["muted"]}; }}
-            QLabel#loadingDetail, QLabel#loadingElapsed {{ color: {colors["muted"]}; font-size: 12px; }}
-            QLabel#loadingPercent {{ color: {colors["accent"]}; font-weight: 600; }}
-            QProgressBar {{ background: {colors["surface"]}; border: none; border-radius: 3px; }}
-            QProgressBar::chunk {{ background: {colors["accent"]}; border-radius: 3px; }}
-        """)
 
     def set_compact(self) -> None:
         self.compact = True

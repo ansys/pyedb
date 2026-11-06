@@ -439,20 +439,6 @@ class TestSceneModel:
         with pytest.raises(ValueError, match="exactly one"):
             launch_viewer(_edb([]), scene=LayoutScene((), ()))
 
-    def test_theme_names_are_validated_before_loading_qt(self):
-        from pyedb.viewer.colors import viewer_theme
-
-        assert viewer_theme(" Dark ") == "dark"
-        assert viewer_theme("light") == "light"
-        code = (
-            "import sys, pytest; from pyedb.viewer import LayoutScene, launch_viewer\n"
-            "with pytest.raises(ValueError, match='Unknown layout viewer theme'):\n"
-            "    launch_viewer(scene=LayoutScene((), ()), theme='blue')\n"
-            "assert 'PySide6' not in sys.modules"
-        )
-        result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
-        assert result.returncode == 0, result.stderr
-
     def test_sdf_scene_validation_and_pad_only_bounds(self):
         with pytest.raises(ValueError, match="width"):
             SceneTrace(1, "TOP", None, (0, 0), (1, 0), -1)
@@ -612,14 +598,10 @@ class TestGrpcAdapter:
             exact_component_bounds=False,
             chord_error=0.002,
             progressive=True,
-            theme="light",
         )
         launch.reset_mock()
         Edb.view_layout(edb, block=False, color_by_net=True)
         assert launch.call_args.kwargs["color_by_net"] is True
-        launch.reset_mock()
-        Edb.view_layout(edb, block=False, theme="dark")
-        assert launch.call_args.kwargs["theme"] == "dark"
         launch.reset_mock()
         Edb.view_layout(
             edb,
@@ -1945,17 +1927,10 @@ class TestCliAndTheme:
             launch.reset_mock()
             main(arguments)
             assert launch.call_args.kwargs["color_by_net"] is expected
-            assert launch.call_args.kwargs["theme"] == "light"
-        main(["--demo", "--theme", "dark"])
-        assert launch.call_args.kwargs["theme"] == "dark"
 
-    @pytest.mark.parametrize("theme", ["light", "dark"])
-    def test_workspace_theme_has_readable_text_and_interaction_contrast(self, theme):
+    def test_workspace_theme_has_readable_text_and_interaction_contrast(self):
         pytest.importorskip("PySide6")
-        from pyedb.viewer.qt.theme import COLORS, theme_colors
-
-        colors = theme_colors(theme)
-        assert set(colors) == set(COLORS)
+        from pyedb.viewer.qt.theme import COLORS
 
         def luminance(hex_color):
             rgb = [int(hex_color[i : i + 2], 16) / 255 for i in (1, 3, 5)]
@@ -1967,6 +1942,6 @@ class TestCliAndTheme:
             return (high + 0.05) / (low + 0.05)
 
         for background in ("window", "panel", "surface"):
-            assert contrast(colors["text"], colors[background]) >= 4.5
-            assert contrast(colors["muted"], colors[background]) >= 4.5
-        assert contrast(colors["accent"], colors["panel"]) >= 3
+            assert contrast(COLORS["text"], COLORS[background]) >= 4.5
+            assert contrast(COLORS["muted"], COLORS[background]) >= 4.5
+        assert contrast(COLORS["accent"], COLORS["panel"]) >= 3

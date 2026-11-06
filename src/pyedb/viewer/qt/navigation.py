@@ -24,7 +24,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from string import Template
 from typing import TYPE_CHECKING
 
@@ -49,33 +48,7 @@ if TYPE_CHECKING:
     from pyedb.viewer.qt.canvas import LayoutView
 
 
-_CAPSULE_STYLE = Template("""
-    QFrame#navigationCapsule {
-        background: $surface;
-        border: 1px solid $border;
-        border-radius: 28px;
-    }
-    QFrame#navigationCapsule QToolButton {
-        color: $text;
-        background: transparent;
-        border: 1px solid transparent;
-        border-radius: 22px;
-        padding: 0px;
-        font-size: 12px;
-    }
-    QFrame#navigationCapsule QToolButton:hover { background: $hover; }
-    QFrame#navigationCapsule QToolButton:pressed { background: $hover; }
-    QFrame#navigationCapsule QToolButton:checked { background: $accent_surface; }
-    QFrame#navigationCapsule QToolButton:focus { border-color: $accent; }
-    QFrame#navigationCapsule QToolButton:disabled { color: $disabled; }
-    QFrame#navigationCapsule QFrame#navigationDivider {
-        background: $border;
-        border: none;
-    }
-""")
-
-
-def navigation_icon(name: str, color: str | None = None) -> QIcon:
+def navigation_icon(name: str) -> QIcon:
     """Draw a small consistent vector icon at double density."""
     pixmap = QPixmap(40, 40)
     pixmap.setDevicePixelRatio(2)
@@ -83,13 +56,7 @@ def navigation_icon(name: str, color: str | None = None) -> QIcon:
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
     painter.setPen(
-        QPen(
-            QColor(color or COLORS["text"]),
-            1.6,
-            Qt.PenStyle.SolidLine,
-            Qt.PenCapStyle.RoundCap,
-            Qt.PenJoinStyle.RoundJoin,
-        )
+        QPen(QColor(COLORS["text"]), 1.6, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
     )
     try:
         if name == "fit":
@@ -122,6 +89,32 @@ class NavigationCapsule(QFrame):
         self.setObjectName("navigationCapsule")
         self.setAccessibleName("Canvas navigation")
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
+        self.setStyleSheet(
+            Template("""
+            QFrame#navigationCapsule {
+                background: $surface;
+                border: 1px solid $border;
+                border-radius: 28px;
+            }
+            QFrame#navigationCapsule QToolButton {
+                color: $text;
+                background: transparent;
+                border: 1px solid transparent;
+                border-radius: 22px;
+                padding: 0px;
+                font-size: 12px;
+            }
+            QFrame#navigationCapsule QToolButton:hover { background: $hover; }
+            QFrame#navigationCapsule QToolButton:pressed { background: $hover; }
+            QFrame#navigationCapsule QToolButton:checked { background: $accent_surface; }
+            QFrame#navigationCapsule QToolButton:focus { border-color: $accent; }
+            QFrame#navigationCapsule QToolButton:disabled { color: $disabled; }
+            QFrame#navigationCapsule QFrame#navigationDivider {
+                background: $border;
+                border: none;
+            }
+        """).substitute(COLORS)
+        )
         row = QHBoxLayout(self)
         row.setContentsMargins(6, 6, 6, 6)
         row.setSpacing(2)
@@ -130,22 +123,16 @@ class NavigationCapsule(QFrame):
         self.zoom_in_button = self._button(zoom_in_action, "plus", "Zoom in")
         for button in (self.fit_button, self.zoom_out_button, self.zoom_in_button):
             row.addWidget(button)
-        self.shadow = QGraphicsDropShadowEffect(self)
-        self.shadow.setBlurRadius(24)
-        self.shadow.setOffset(0, 4)
-        self.setGraphicsEffect(self.shadow)
-        self.apply_theme(COLORS)
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setBlurRadius(24)
+        shadow.setOffset(0, 4)
+        shadow.setColor(QColor(24, 35, 55, 45))
+        self.setGraphicsEffect(shadow)
         for action in (fit_action, zoom_out_action, zoom_in_action):
             action.setEnabled(self.has_geometry)
         self.setVisible(self.has_geometry)
         canvas.installEventFilter(self)
         self.reposition()
-
-    def apply_theme(self, colors: Mapping[str, str]) -> None:
-        self.setStyleSheet(_CAPSULE_STYLE.substitute(colors))
-        self.shadow.setColor(QColor(colors["shadow"]))
-        for button, icon in ((self.fit_button, "fit"), (self.zoom_out_button, "minus"), (self.zoom_in_button, "plus")):
-            button.defaultAction().setIcon(navigation_icon(icon, colors["text"]))
 
     def _button(self, action: QAction, icon: str, name: str) -> QToolButton:
         action.setIcon(navigation_icon(icon))
