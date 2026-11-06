@@ -136,6 +136,9 @@ class LayoutView(QRhiWidget):
             obj = self._pick_index.by_key.get(self.selection.key) if self._pick_index is not None else None
             if obj is not None:
                 item = next((item for item in obj.items if item.layer == self.selection.layer), obj.items[0])
+                if item.bounds != self.selection.item.bounds:
+                    x0, y0, x1, y1 = item.bounds
+                    self._selection_anchor = ((x0 + x1) / 2, (y0 + y1) / 2)
                 self.selection = PickHit(obj, item, 0)
                 self.inspector.set_hit(self.selection)
             else:

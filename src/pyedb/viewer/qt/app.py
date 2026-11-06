@@ -73,6 +73,8 @@ def show_scene(
     loader: Callable[..., LayoutScene] | None = None,
     title: str = "EDB layout",
     backend: str | None = None,
+    live: bool = False,
+    refresh_interval: int = 50,
 ) -> LayoutWindow:
     """Create a native window, reusing the host application's event loop if present."""
     application, owns_application = _get_application()
@@ -89,6 +91,8 @@ def show_scene(
         plot_outlines=plot_outlines,
         loader=loader,
         backend=backend,
+        live=live,
+        refresh_interval=refresh_interval,
     )
     # Keep QApplication alive for the lifetime of non-blocking standalone windows.
     window._application = application

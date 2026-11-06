@@ -36,6 +36,7 @@ from ansys.tools.common import warnings
 from pyedb import __version__
 from pyedb.generic.general_methods import env_path, env_value
 from pyedb.generic.settings import settings
+from pyedb.grpc.database.layout_changes import layout_session_close
 from pyedb.grpc.rpc_session import RpcSession
 
 
@@ -282,6 +283,7 @@ class EdbInit(object):
         else:
             return False
 
+    @layout_session_close
     def close(self, terminate_rpc_session=None):
         """Close the database.
 

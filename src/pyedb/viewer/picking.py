@@ -317,6 +317,7 @@ class PickIndex:
         opacity: float = 1,
         mirror: bool = False,
         pixels: float = 5,
+        excluded: frozenset[int] = frozenset(),
     ) -> PickHit | None:
         if self.root is None or scale <= 0 or opacity <= 0:
             return None
@@ -347,6 +348,8 @@ class PickIndex:
         hits = []
         for index in candidates:
             obj = self.objects[index]
+            if obj.info.object_id in excluded:
+                continue
             for sequence, item in enumerate(obj.items):
                 if item.layer not in visible_layers or (net is not None and item.net != net):
                     continue
@@ -358,6 +361,72 @@ class PickIndex:
         if exact:
             return max(exact, key=lambda hit: hit[1])[2]
         return min(hits, key=lambda hit: (hit[0], tuple(-v for v in hit[1])))[2] if hits else None
+
+
+class _UnchangedObjects:
+    """Read-through key lookup without copying the base index's large mapping."""
+
+    def __init__(self, mapping, changed):
+        self.mapping, self.changed = mapping, changed
+
+    def __getitem__(self, key):
+        if key[1] in self.changed:
+            raise KeyError(key)
+        return self.mapping[key]
+
+    def __contains__(self, key):
+        return key[1] not in self.changed and key in self.mapping
+
+    def __iter__(self):
+        return (key for key in self.mapping if key[1] not in self.changed)
+
+    def keys(self):
+        return iter(self)
+
+    def __len__(self):
+        return sum(1 for _ in self)
+
+
+class OverlayPickIndex:
+    """Keep the large initial BVH and rebuild only its small edited overlay."""
+
+    def __init__(self, previous, scene, changed):
+        from collections import ChainMap
+        from dataclasses import replace
+
+        self.base = previous.base if isinstance(previous, OverlayPickIndex) else previous
+        self.changed = changed | (previous.changed if isinstance(previous, OverlayPickIndex) else frozenset())
+        local = {
+            name: tuple(item for item in getattr(scene, name) if item.object_id in self.changed)
+            for name in ("polygons", "traces", "pads", "joins", "object_info")
+        }
+        self.overlay = PickIndex(replace(scene, components=(), **local))
+        self.by_key = ChainMap(self.overlay.by_key, _UnchangedObjects(self.base.by_key, self.changed))
+        self.scene = scene
+        self.last_candidates = 0
+
+    @property
+    def objects(self):
+        return tuple(self.by_key.values())
+
+    def pick(self, point, scale, visible_layers, **kwargs):
+        original = self.base.pick(point, scale, visible_layers, excluded=self.changed, **kwargs)
+        edited = self.overlay.pick(point, scale, visible_layers, **kwargs)
+        self.last_candidates = self.base.last_candidates + self.overlay.last_candidates
+        hits = [hit for hit in (original, edited) if hit is not None]
+        if not hits:
+            return None
+        mirror = kwargs.get("mirror", False)
+        layers = {layer.name: i if mirror else len(self.scene.layers) - i for i, layer in enumerate(self.scene.layers)}
+        ranks = {"zone": 0, "trace": 1, "pad": 2, "via": 3}
+
+        def priority(hit):
+            return ranks[hit.object.info.kind], layers[hit.layer], hit is edited
+
+        exact = [hit for hit in hits if hit.distance <= 0]
+        if exact:
+            return max(exact, key=priority)
+        return min(hits, key=lambda hit: (hit.distance, tuple(-value for value in priority(hit))))
 
 
 def inspector_rows(hit: PickHit) -> list[tuple[str, str]]:

@@ -110,6 +110,8 @@ def launch_viewer(
     exact_component_bounds: bool = False,
     chord_error: float = 0.002,
     progressive: bool = True,
+    live: bool = False,
+    refresh_interval: int = 50,
     debug: bool = False,
     backend: str | None = None,
 ) -> LayoutWindow:
@@ -133,6 +135,12 @@ def launch_viewer(
     progressive : bool, optional
         Display the current layer first, then remaining copper, pads and
         components. Default is True. One progress indicator remains until complete.
+    live : bool, optional
+        Automatically refresh after supported PyEDB gRPC geometry edits. Default
+        is False. An EDB-backed window also supports explicit ``refresh()``.
+    refresh_interval : int, optional
+        Minimum interval in milliseconds for coalescing automatic updates.
+        Default is 50. The Qt event loop must be running.
     analytic_traces : bool, optional
         Preserve analytic traces for precision at deep zoom. Default is False:
         read source path contours to reduce remote geometry-property requests.
@@ -173,6 +181,10 @@ def launch_viewer(
     """
     if (edb is None) == (scene is None):
         raise ValueError("Provide exactly one of edb or scene.")
+    if live and edb is None:
+        raise ValueError("live=True requires an EDB session.")
+    if isinstance(refresh_interval, bool) or not isinstance(refresh_interval, int) or refresh_interval < 0:
+        raise ValueError("refresh_interval must be a nonnegative integer in milliseconds.")
     try:
         from pyedb.viewer.qt.app import show_scene
     except ImportError as exc:
@@ -181,6 +193,7 @@ def launch_viewer(
     if scene is None:
         from pathlib import Path
 
+        from pyedb.grpc.database.layout_changes import layout_changes
         from pyedb.viewer.capture import SourceCapture
 
         def load(
@@ -199,8 +212,26 @@ def launch_viewer(
                 debug=debug,
             )
 
+        def load_delta(delta, previous, progress):
+            from pyedb.viewer.adapters.grpc import scene_patch_from_edb
+
+            return scene_patch_from_edb(
+                edb,
+                delta,
+                previous,
+                progress=progress,
+                nets=nets,
+                arc_segments=arc_segments,
+                analytic_traces=analytic_traces,
+                chord_error=chord_error,
+            )
+
         options["title"] = Path(str(getattr(edb, "edbpath", None) or "EDB layout")).stem
-        options["loader"] = SourceCapture(load, progressive=progressive)
+        options["loader"] = SourceCapture(
+            load, progressive=progressive, changes=layout_changes(edb), delta_loader=load_delta
+        )
+        options["live"] = live
+        options["refresh_interval"] = refresh_interval
     return show_scene(
         scene,
         block=block,

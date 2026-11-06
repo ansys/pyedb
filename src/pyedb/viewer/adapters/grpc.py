@@ -1125,6 +1125,7 @@ def _selected_primitives(
     progress: Progress | None = None,
     priority_layer: str | None = None,
     layer_names: dict[int, str] | None = None,
+    source_primitives=None,
 ) -> Iterator[tuple[Primitive, str, str, str]]:
     """Filter source primitives and count unsupported copper geometry."""
     net_names = {}
@@ -1133,7 +1134,7 @@ def _selected_primitives(
         # Keep the resolved net object instead of re-fetching it later: each
         # ``.net`` access is a separate GetNet round-trip to the EDB server.
         source = []
-        for primitive in edb.layout.core.primitives:
+        for primitive in edb.layout.core.primitives if source_primitives is None else source_primitives:
             net = primitive.net
             if not net.is_null:
                 source.append((primitive, net))
@@ -1196,13 +1197,14 @@ def _primitives(
     priority_layer: str | None = None,
     object_info: dict[int, SceneObjectInfo] | None = None,
     layer_names: dict[int, str] | None = None,
+    source_primitives=None,
 ) -> ScenePrimitives:
     """Capture analytic geometry with source contours as a fallback."""
     polygons, traces, joins, pads = [], [], [], []
     skipped = Counter()
     published = False
     for primitive, primitive_type, layer_name, net_name in _selected_primitives(
-        edb, selected_layers, selected_nets, skipped, progress, priority_layer, layer_names
+        edb, selected_layers, selected_nets, skipped, progress, priority_layer, layer_names, source_primitives
     ):
         if on_preview is not None and not published and layer_name != priority_layer:
             on_preview(polygons, traces, joins, pads)
@@ -1260,6 +1262,70 @@ def _primitives(
             _record_exception(diagnostics, f"Primitive {primitive.id}: {exc}", exc)
     diagnostics.extend(f"Skipped {count} {kind} object(s)." for kind, count in sorted(skipped.items()))
     return polygons, traces, joins, pads
+
+
+def scene_patch_from_edb(
+    edb, delta, previous, *, nets=None, arc_segments=None, analytic_traces=False, chord_error=0.002, progress=None
+):
+    """Read only notified copper handles; never enumerate the layout or its nets.
+
+    Layer metadata comes from the accepted snapshot. Changes with global or
+    unknown dependencies are routed to full capture before reaching here.
+    Incremental extraction is strict: a failed object must not silently erase
+    its previously displayed geometry.
+    """
+    diagnostics = _Diagnostics(debug=True)
+    from pyedb.grpc.database.layout_changes import PadstackSource
+
+    vias = tuple(source.core for _, source in delta.upserts if isinstance(source, PadstackSource))
+    primitives = tuple(source for _, source in delta.upserts if not isinstance(source, PadstackSource))
+    info = {}
+    polygons, traces, joins, pads = _primitives(
+        edb,
+        {layer.name for layer in previous.layers},
+        _names(nets),
+        arc_segments or 8,
+        diagnostics,
+        progress,
+        analytic_traces,
+        chord_error if arc_segments is None else None,
+        object_info=info,
+        source_primitives=primitives,
+    )
+    if vias:
+        # Read small stackup metadata, but never enumerate board pads or
+        # components. Component-owned pins use the full-capture fallback.
+        layout_layers = edb.stackup.layers
+        isolated = SimpleNamespace(
+            stackup=SimpleNamespace(layers=layout_layers, signal_layers=edb.stackup.signal_layers),
+            layout=SimpleNamespace(core=SimpleNamespace(padstack_instances=vias)),
+            components=None,
+            isreadonly=False,
+        )
+        via_pads, via_polygons = _padstacks(
+            isolated,
+            {layer.name for layer in previous.layers},
+            _names(nets),
+            arc_segments or 8,
+            diagnostics,
+            progress,
+            None,
+            chord_error if arc_segments is None else None,
+            info,
+            layout_layers,
+        )
+        pads.extend(via_pads)
+        polygons.extend(via_polygons)
+    return LayoutScene(
+        previous.layers,
+        tuple(polygons),
+        previous.title,
+        tuple(diagnostics),
+        traces=tuple(traces),
+        joins=tuple(joins),
+        pads=tuple(pads),
+        object_info=tuple(info.values()),
+    )
 
 
 def scene_from_edb(

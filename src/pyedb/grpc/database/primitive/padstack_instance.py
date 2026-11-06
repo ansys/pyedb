@@ -44,6 +44,7 @@ from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.inner import conn_obj
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
+from pyedb.grpc.database.layout_changes import layout_mutation
 from pyedb.grpc.database.modeler import Circle
 from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
@@ -78,6 +79,7 @@ class PadstackInstance(conn_obj.ConnObj):
         self._object_instance = None
 
     @classmethod
+    @layout_mutation
     def create(
         cls,
         layout,
@@ -175,6 +177,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return self.core.layer_map
 
     @layer_map.setter
+    @layout_mutation
     def layer_map(self, layer_map):
         self.core.layer_map = layer_map
 
@@ -183,6 +186,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return self.core.solderball_layer
 
     @solderball_layer.setter
+    @layout_mutation
     def solderball_layer(self, solderball_layer):
         self.core.solderball_layer = solderball_layer
 
@@ -216,6 +220,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return data
 
     @backdrill_parameters.setter
+    @layout_mutation
     def backdrill_parameters(self, params):
         from_bottom = params.get("from_bottom")
         if from_bottom:
@@ -254,6 +259,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return self.core.is_layout_pin
 
     @is_pin.setter
+    @layout_mutation
     def is_pin(self, value):
         """Property added for backward compatibility with earlier versions of pyEDB."""
         self.core.is_layout_pin = value
@@ -271,6 +277,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return net if net is not None else None
 
     @net.setter
+    @layout_mutation
     def net(self, value):
         """Net.
 
@@ -349,6 +356,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return 0
 
     @side_number.setter
+    @layout_mutation
     def side_number(self, value):
         if isinstance(value, int) and 3 <= value <= 64:
             prop_string = f"$begin ''\n\tsid={value}\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
@@ -356,6 +364,7 @@ class PadstackInstance(conn_obj.ConnObj):
         else:
             raise ValueError("Number of sides must be an integer between 3 and 64")
 
+    @layout_mutation
     def delete(self):
         """Delete the padstack instance."""
         self.core.delete()
@@ -632,6 +641,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return self.core.get_layer_range()[0].name
 
     @start_layer.setter
+    @layout_mutation
     def start_layer(self, layer_name):
         stop_layer = self._pedb.stackup.signal_layers[self.stop_layer]
         start_layer = self._pedb.stackup.signal_layers[layer_name]
@@ -649,6 +659,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return self.core.get_layer_range()[-1].name
 
     @stop_layer.setter
+    @layout_mutation
     def stop_layer(self, layer_name):
         start_layer = self._pedb.stackup.signal_layers[self.start_layer]
         stop_layer = self._pedb.stackup.signal_layers[layer_name]
@@ -715,6 +726,7 @@ class PadstackInstance(conn_obj.ConnObj):
             return self.net.name
 
     @net_name.setter
+    @layout_mutation
     def net_name(self, val):
         if not self.core.is_null:
             self.net = self._pedb.nets.find_or_create_net(val)
@@ -769,6 +781,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return self._position
 
     @position.setter
+    @layout_mutation
     def position(self, value):
         pos = []
         for v in value:
@@ -795,6 +808,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return Value(self.core.get_position_and_rotation()[-1])
 
     @rotation.setter
+    @layout_mutation
     def rotation(self, value):
         self.core.set_position_and_rotation(x=self.position[0], y=self.position[1], rotation=self._pedb.value(value))
 
@@ -821,6 +835,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return _position_and_rotation
 
     @position_and_rotation.setter
+    @layout_mutation
     def position_and_rotation(self, value):
         pos = [self._pedb._value_setter(v) for v in value]
         self.core.set_position_and_rotation(x=pos[0], y=pos[1], rotation=pos[2])
@@ -841,6 +856,7 @@ class PadstackInstance(conn_obj.ConnObj):
             return self.core.name
 
     @name.setter
+    @layout_mutation
     def name(self, value):
         self.core.name = value
         # changing aedt_name too
@@ -899,6 +915,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return 0.0
 
     @backdrill_diameter.setter
+    @layout_mutation
     def backdrill_diameter(self, value):
         if self.backdrill_bottom:
             parameters = self.get_back_drill_by_layer(True)
@@ -929,6 +946,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return ""
 
     @backdrill_layer.setter
+    @layout_mutation
     def backdrill_layer(self, value):
         if self.backdrill_bottom:
             parameters = self.get_back_drill_by_layer(True)
@@ -959,6 +977,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return 0.0
 
     @backdrill_offset.setter
+    @layout_mutation
     def backdrill_offset(self, value) -> bool | None:
         if self.backdrill_bottom:
             parameters = self.get_back_drill_by_layer(True)
@@ -1059,6 +1078,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return str(name).strip("'")
 
     @aedt_name.setter
+    @layout_mutation
     def aedt_name(self, value):
         self.core.set_product_property(CoreProductIdType.DESIGNER, 11, value)
 

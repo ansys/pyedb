@@ -23,6 +23,8 @@
 import math
 from typing import TYPE_CHECKING, TypeAlias
 
+from pyedb.grpc.database.layout_changes import layout_mutation
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
@@ -69,6 +71,7 @@ class Path(Primitive):
         return Value(self.core.width)
 
     @width.setter
+    @layout_mutation
     def width(self, value):
         self.core.width = self._pedb._value_setter(value)
 
@@ -94,6 +97,7 @@ class Path(Primitive):
         return round(path_length, 9)
 
     @classmethod
+    @layout_mutation
     def create(
         cls,
         layout,
@@ -416,6 +420,7 @@ class Path(Primitive):
         return self.get_center_line()
 
     @center_line.setter
+    @layout_mutation
     def center_line(self, points: list[PointData]) -> None:
         """Set the path center line from a list of points.
 
@@ -522,6 +527,7 @@ class Path(Primitive):
         return self.core.corner_style.name.lower()
 
     @corner_style.setter
+    @layout_mutation
     def corner_style(self, corner_type):
         if isinstance(corner_type, str):
             mapping = {
@@ -544,6 +550,7 @@ class Path(Primitive):
         return self.core.get_end_cap_style()[0].name.lower()
 
     @end_cap1.setter
+    @layout_mutation
     def end_cap1(self, end_cap_style):
         if isinstance(end_cap_style, str):
             self.core.set_end_cap_style(mapping[end_cap_style.lower()], self.core.get_end_cap_style()[1])
@@ -561,10 +568,12 @@ class Path(Primitive):
         return self.core.get_end_cap_style()[1].name.lower()
 
     @end_cap2.setter
+    @layout_mutation
     def end_cap2(self, end_cap_style):
         if isinstance(end_cap_style, str):
             self.core.set_end_cap_style(self.core.get_end_cap_style()[0], mapping[end_cap_style.lower()])
 
+    @layout_mutation
     def move(self, vector):
         """Move the path by a given vector.
 

@@ -17,9 +17,11 @@ class SdfCoverage:
         self.component_batches = ()
         self.drawn_pin_count = 0
 
-    def upload(self, device, updates, prepared):
+    def upload(self, device, updates, prepared, *, parent=None):
+        previous = self.vbo
         self.vbo = device.buffer(prepared.instances, QRhiBuffer.UsageFlag.VertexBuffer, self.vbo)
-        device.upload_buffer(updates, self.vbo, prepared.instances)
+        start = len(parent.instances) if parent is not None and previous is self.vbo else 0
+        device.upload_buffer(updates, self.vbo, prepared.instances[start:], start * 160)
         if self.palette is None:
             colors = np.full((1, len(NET_COLORS), 4), 255, dtype=np.uint8)
             colors[0, :, :3] = np.rint(np.asarray(NET_COLORS) * 255).astype(np.uint8)

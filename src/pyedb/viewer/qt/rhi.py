@@ -170,7 +170,7 @@ class Device:
             if previous is not None:
                 previous.deleteLater()
                 self.resources.remove(previous)
-            previous = self.create(allocate_geometry_buffer(self.rhi, usage, max(4, size + 65536)))
+            previous = self.create(allocate_geometry_buffer(self.rhi, usage, max(4, size + max(65536, size // 2))))
         return previous
 
     def upload_buffer(self, updates, buffer, data, offset=0):

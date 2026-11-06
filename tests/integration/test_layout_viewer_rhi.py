@@ -56,6 +56,185 @@ def _pixels(view):
     return np.frombuffer(image.constBits(), dtype=np.uint8).reshape(image.height(), image.width(), 4).copy()
 
 
+def test_live_edits_refresh_gpu_pixels_and_picking_in_the_same_window(monkeypatch):
+    from types import SimpleNamespace
+
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.grpc.database.layout_changes import layout_mutation
+    from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon, launch_viewer
+
+    app = QApplication.instance() or QApplication([])
+    layers = (SceneLayer("TOP", (1, 0, 0, 1)),)
+    left = ScenePolygon(1, "TOP", "GND", ((-5, -1), (-3, -1), (-3, 1), (-5, 1)))
+    right = ScenePolygon(2, "TOP", "GND", ((3, -1), (5, -1), (5, 1), (3, 1)))
+    edb = SimpleNamespace(current=LayoutScene(layers, (left,)))
+    monkeypatch.setattr("pyedb.viewer.scene_from_edb", lambda source, **kwargs: source.current)
+    window = launch_viewer(edb, block=False, live=True, color_by_net=False, refresh_interval=5)
+    canvas = window.canvas
+
+    def wait_ready(expected):
+        deadline = time.monotonic() + 5
+        while (window._busy or canvas.scene is not expected) and time.monotonic() < deadline:
+            QTest.qWait(10)
+        assert not window._busy and canvas.scene is expected
+        assert canvas.error is None, canvas.error
+
+    def color(x):
+        frame = canvas.grabFramebuffer()
+        assert not frame.isNull(), canvas.error
+        px, py = canvas.camera.world_to_screen(x, 0)
+        ratio = canvas.devicePixelRatioF()
+        pixel = frame.pixelColor(round(px * ratio), round(py * ratio))
+        return pixel.red(), pixel.green(), pixel.blue()
+
+    @layout_mutation
+    def edit(owner, polygons):
+        edb.current = LayoutScene(layers, polygons)
+
+    try:
+        wait_ready(edb.current)
+        canvas.show_grid = False
+        canvas.opacity = 1
+        window.zoom_to_net("GND")
+        canvas.zoom_to_bounds((-6, -3, 6, 3))
+        assert color(-4) == (255, 0, 0)
+        assert color(4) == (255, 255, 255)
+        window.select_object(1)
+        camera = (canvas.camera.center_x, canvas.camera.center_y, canvas.camera.scale)
+
+        window.run_script(edit, SimpleNamespace(_pedb=edb), (left, right))
+        deadline = time.monotonic() + 5
+        while window._script is not None and time.monotonic() < deadline:
+            QTest.qWait(10)
+        wait_ready(edb.current)
+        assert color(4) == (255, 0, 0)
+        assert window.selected_object.object_id == 1
+        assert (canvas.camera.center_x, canvas.camera.center_y, canvas.camera.scale) == camera
+
+        edit(SimpleNamespace(_pedb=edb), (right,))
+        wait_ready(edb.current)
+        assert window.selected_object is None
+        assert color(-4) == (255, 255, 255)
+        assert color(4) == (255, 0, 0)
+        assert window.select_object(2).object_id == 2
+
+        window.stop_live()
+        edb.current = LayoutScene(layers, ())
+        window.refresh()
+        wait_ready(edb.current)
+        assert window.selected_object is None
+        assert color(4) == (255, 255, 255)
+        assert canvas.renderer.upload_count == 4
+    finally:
+        window.close()
+        deadline = time.monotonic() + 5
+        while window._busy and time.monotonic() < deadline:
+            QTest.qWait(10)
+        app.processEvents()
+
+
+def test_large_board_object_deltas_upload_only_changed_geometry():
+    from unittest.mock import Mock
+
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.grpc.database.primitive.primitive import Primitive
+    from pyedb.viewer import launch_viewer
+    from pyedb.viewer.mesh import prepare_scene
+    from tests.unit.test_layout_viewer import _edb, _primitive, _value
+
+    app = QApplication.instance() or QApplication([])
+    cores = [
+        _primitive(index + 10, ring=((i, 0), (i + 0.001, 0), (i + 0.001, 0.001), (i, 0.001)))
+        for index, i in enumerate(np.arange(1, 2, 0.001))
+    ]
+    left = _primitive(1, ring=((-0.005, -0.001), (-0.003, -0.001), (-0.003, 0.001), (-0.005, 0.001)))
+    cores.append(left)
+    edb = _edb(cores)
+    edb.stackup.layers["TOP"].color = (255, 0, 0)
+    window = launch_viewer(edb, live=True, block=False, color_by_net=False, refresh_interval=1)
+    canvas = window.canvas
+
+    def ready(revision):
+        deadline = time.monotonic() + 10
+        while (window._busy or window._source.revision != revision) and time.monotonic() < deadline:
+            QTest.qWait(10)
+        assert not window._busy and window._source.revision == revision
+        assert canvas.error is None, canvas.error
+        return _pixels(canvas)
+
+    def color(frame, x):
+        px, py = canvas.camera.world_to_screen(x, 0)
+        ratio = canvas.devicePixelRatioF()
+        return tuple(frame[round(py * ratio), round(px * ratio), :3])
+
+    try:
+        ready(0)
+        canvas.show_grid = False
+        canvas.opacity = 1
+        canvas.zoom_to_bounds((-6, -3, 6, 3))
+        before = _pixels(canvas)
+        assert color(before, -4) == (255, 0, 0)
+        device = canvas.renderer.device
+        full_bytes = device.geometry_upload_bytes
+        reads = [core.polygon_data.reads for core in cores]
+        window.select_object(1)
+        original_loader = window._source.loader
+        window._source.loader = Mock(side_effect=AssertionError("A local edit must not recapture the board"))
+
+        right = _primitive(2, ring=((0.003, -0.001), (0.005, -0.001), (0.005, 0.001), (0.003, 0.001)))
+        cores.append(right)
+        Primitive(edb, right).is_negative = False
+        before_bytes = device.geometry_upload_bytes
+        added = ready(1)
+        assert color(added, 4) == (255, 0, 0)
+        assert device.geometry_upload_bytes - before_bytes == 232
+        assert full_bytes > 1000 * 232
+        assert [core.polygon_data.reads for core in cores[:-1]] == reads
+        assert canvas._prepared.update_count == 1
+
+        # Removing a selected object changes draw/index metadata without any GPU geometry upload.
+        left.delete = lambda: cores.remove(left)
+        Primitive(edb, left).delete()
+        before_bytes = device.geometry_upload_bytes
+        deleted = ready(2)
+        assert color(deleted, -4) == (255, 255, 255)
+        assert device.geometry_upload_bytes == before_bytes
+        assert window.selected_object is None
+
+        circle = _primitive(3, type="circle", get_parameters=lambda: (_value(0), _value(0), _value(0.001)))
+        cores.append(circle)
+        Primitive(edb, circle).is_negative = False
+        before_bytes = device.geometry_upload_bytes
+        added_circle = ready(3)
+        assert color(added_circle, 0) == (255, 0, 0)
+        assert device.geometry_upload_bytes - before_bytes == 160
+        window.select_object(3)
+        assert window.selected_object.object_id == 3
+
+        circle.get_parameters = lambda: (_value(-0.004), _value(0), _value(0.001))
+        Primitive(edb, circle).is_negative = False
+        before_bytes = device.geometry_upload_bytes
+        moved = ready(4)
+        assert color(moved, 0) == (255, 255, 255)
+        assert device.geometry_upload_bytes - before_bytes == 160
+        assert window.selected_object.object_id == 3
+
+        # The incremental frame, including selection, must match a full rebuild.
+        canvas.set_prepared(prepare_scene(canvas.scene))
+        np.testing.assert_array_equal(moved, _pixels(canvas))
+        window._source.loader = original_loader
+    finally:
+        window.close()
+        deadline = time.monotonic() + 10
+        while window._busy and time.monotonic() < deadline:
+            QTest.qWait(10)
+        app.processEvents()
+
+
 class TestLoading:
     def test_mesh_preparation_overlaps_source_reads_and_finishes_before_final_snapshot(self, monkeypatch):
         import threading

@@ -25,6 +25,8 @@ from __future__ import annotations
 import math
 from typing import TYPE_CHECKING, Any
 
+from pyedb.grpc.database.layout_changes import layout_mutation
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.primitive.polygon import Polygon
@@ -111,6 +113,7 @@ class Primitive:
         return PolygonData(self._pedb, primitive.polygon_data) if hasattr(primitive, "polygon_data") else None
 
     @polygon_data.setter
+    @layout_mutation
     def polygon_data(self, value):
         """Set polygon data.
 
@@ -154,6 +157,7 @@ class Primitive:
         return None
 
     @net_name.setter
+    @layout_mutation
     def net_name(self, value):
         if value in self._pedb.nets.nets:
             self.core.net = self._pedb.nets.nets[value].core
@@ -170,6 +174,7 @@ class Primitive:
         return self.core.layer.name
 
     @layer_name.setter
+    @layout_mutation
     def layer_name(self, value):
         if value in self._pedb.stackup.layers:
             self.core.layer = self._pedb.stackup.layers[value].core
@@ -206,6 +211,7 @@ class Primitive:
         return self.core.is_negative
 
     @is_negative.setter
+    @layout_mutation
     def is_negative(self, value: bool):
         """Set primitive as negative.
 
@@ -280,6 +286,7 @@ class Primitive:
         return name
 
     @aedt_name.setter
+    @layout_mutation
     def aedt_name(self, value):
         self.core.set_product_property(CoreProductIdType.DESIGNER, 1, value)
 
@@ -387,6 +394,7 @@ class Primitive:
         bbox = self.core.cast().polygon_data.bbox()
         return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
+    @layout_mutation
     def convert_to_polygon(self) -> Polygon | bool:
         """Convert path to polygon.
 
@@ -489,6 +497,7 @@ class Primitive:
                 len = i.length
         return arc
 
+    @layout_mutation
     def rotate(self, angle, center=None) -> bool:
         """Rotate polygon around a center point by an angle.
 
@@ -511,6 +520,7 @@ class Primitive:
             return True
         return False
 
+    @layout_mutation
     def move(self, vector) -> bool:
         """Move polygon along a vector.
 
@@ -538,6 +548,7 @@ class Primitive:
                 return True
         return False
 
+    @layout_mutation
     def scale(self, factor, center=None) -> bool:
         """Scales the polygon relative to a center point by a factor.
 
@@ -571,6 +582,7 @@ class Primitive:
             return True
         return False
 
+    @layout_mutation
     def subtract(self, primitives) -> list[Any]:
         """Subtract active primitive with one or more primitives.
 
@@ -621,6 +633,7 @@ class Primitive:
         self._pedb.modeler.clear_cache()
         return new_polys
 
+    @layout_mutation
     def intersect(self, primitives) -> list[Any]:
         """Intersect active primitive with one or more primitives.
 
@@ -692,6 +705,7 @@ class Primitive:
             prim.delete()
         return new_polys
 
+    @layout_mutation
     def unite(self, primitives) -> list[Any]:
         """Unite active primitive with one or more primitives.
 
@@ -786,6 +800,7 @@ class Primitive:
                 len = i.length
         return arc
 
+    @layout_mutation
     def add_void(self, point_list) -> bool:
         """Add a void to current primitive.
 
@@ -882,6 +897,7 @@ class Primitive:
         return Net(self._pedb, self.core.net)
 
     @net.setter
+    @layout_mutation
     def net(self, value):
         from pyedb.grpc.database.net.net import Net
 
@@ -1016,6 +1032,7 @@ class Primitive:
             plt.show()
         return ax, fig
 
+    @layout_mutation
     def delete(self):
         """Delete the primitive."""
         self.core.delete()

@@ -79,7 +79,7 @@ class Renderer:
         """Upload once; progressive appends retain resident geometry prefixes."""
         old = self.prepared
         parent = old if old is not None and prepared.mesh_parent_id == id(old) else None
-        if old is None or old.vertices is not prepared.vertices:
+        if old is None or old.vertices is not prepared.vertices or old.batches is not prepared.batches:
             self._upload_outlines(prepared, updates, parent)
         for name, attribute, usage in (
             ("vertices", "vbo", QRhiBuffer.UsageFlag.VertexBuffer),
@@ -111,12 +111,23 @@ class Renderer:
         for batch in prepared.batches:
             self.layer_batches.setdefault(batch.layer, []).append(batch)
             self._polygon_objects.setdefault((batch.object_id, batch.layer, batch.category), []).append(batch)
-        self.sdf.upload(self.device, updates, prepared)
-        self.labels.upload(self.device, updates, prepared.component_batches)
+        self.sdf.upload(self.device, updates, prepared, parent=parent)
+        if old is None or old.component_batches is not prepared.component_batches:
+            self.labels.upload(self.device, updates, prepared.component_batches)
         self.upload_count += 1
 
     def _upload_outlines(self, prepared, updates, parent):
         """Retain split-coordinate edge endpoints for instanced, antialiased strokes."""
+        if prepared.outlines is not None:
+            edges = prepared.outlines
+            self._outline_ranges = {
+                id(batch): (batch.vertex_start, sum(batch.ring_sizes)) for batch in prepared.batches
+            }
+            previous = self.outline_vbo
+            self.outline_vbo = self.device.buffer(edges, QRhiBuffer.UsageFlag.VertexBuffer, previous)
+            start = len(parent.vertices) if parent is not None and self.outline_vbo is previous else 0
+            self.device.upload_buffer(updates, self.outline_vbo, edges[start:], start * 32)
+            return
         edges = np.empty((len(prepared.vertices), 8), dtype=np.float32)
         self._outline_ranges = {}
         cursor = 0
@@ -368,7 +379,15 @@ class Renderer:
                 else:
                     identities.append(id(item))
             sources = self.prepared.sdf_sources
-            indices = np.flatnonzero(np.isin(sources, identities)) if identities and sources is not None else ()
+            if self.prepared.sdf_ranges is not None:
+                indices = sorted(
+                    index
+                    for source in identities
+                    for start, count in self.prepared.sdf_ranges.get(source, ())
+                    for index in range(start, start + count)
+                )
+            else:
+                indices = np.flatnonzero(np.isin(sources, identities)) if identities and sources is not None else ()
             ranges = []
             for index in indices:
                 if ranges and sum(ranges[-1]) == index:
