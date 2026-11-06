@@ -37,7 +37,6 @@ import sys
 import time
 import traceback
 from typing import Any, Dict, List, Union
-import warnings
 from zipfile import ZipFile as zpf
 
 from typing_extensions import deprecated
@@ -98,12 +97,13 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
 )
 from pyedb.dotnet.database.utilities.value import Value
 from pyedb.edb_logger import EdbLogger
-from pyedb.generic.constants import AEDT_UNITS, SolverType, decompose_variable_value, unit_converter
+from pyedb.generic.constants import AEDT_UNITS, decompose_variable_value, unit_converter
 from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
+from pyedb.internal.checks import requires_dotnet_dependency
 from pyedb.misc.decorators import (
     deprecate_argument_name,
     deprecated as runtime_deprecated,
@@ -114,6 +114,7 @@ from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflows.utilities.cutout import Cutout
 
 
+@requires_dotnet_dependency("ansys-pythonnet")
 class Edb:
     """Provides the EDB application interface.
 
