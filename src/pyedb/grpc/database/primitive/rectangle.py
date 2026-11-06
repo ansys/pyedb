@@ -243,7 +243,6 @@ class Rectangle(Primitive):
         return self.core.get_parameters()[5].value
 
     @corner_radius.setter
-    @layout_mutation
     def corner_radius(self, value):
         """Set corner radius.
 
@@ -275,7 +274,6 @@ class Rectangle(Primitive):
         return self.core.get_parameters()[6].value
 
     @rotation.setter
-    @layout_mutation
     def rotation(self, value):
         parameters = self.get_parameters()
         self.set_parameters(
@@ -307,7 +305,6 @@ class Rectangle(Primitive):
             return None
 
     @width.setter
-    @layout_mutation
     def width(self, value):
         parameters = self.get_parameters()
         self.set_parameters(
@@ -339,7 +336,6 @@ class Rectangle(Primitive):
             return None
 
     @height.setter
-    @layout_mutation
     def height(self, value):
         parameters = self.get_parameters()
         self.set_parameters(

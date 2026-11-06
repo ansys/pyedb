@@ -122,7 +122,6 @@ class Circle(Primitive):
         return self.get_parameters()[2]
 
     @radius.setter
-    @layout_mutation
     def radius(self, value: float | int):
         cx, cy, _ = self.get_parameters()
         self.set_parameters(float(cx), float(cy), value)
@@ -139,7 +138,6 @@ class Circle(Primitive):
         return float(params[0]), float(params[1])
 
     @center.setter
-    @layout_mutation
     def center(self, value: tuple):
         _, _, r = self.get_parameters()
         self.set_parameters(value[0], value[1], float(r))

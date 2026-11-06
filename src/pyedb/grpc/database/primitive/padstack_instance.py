@@ -220,7 +220,6 @@ class PadstackInstance(conn_obj.ConnObj):
         return data
 
     @backdrill_parameters.setter
-    @layout_mutation
     def backdrill_parameters(self, params):
         from_bottom = params.get("from_bottom")
         if from_bottom:
@@ -726,7 +725,6 @@ class PadstackInstance(conn_obj.ConnObj):
             return self.net.name
 
     @net_name.setter
-    @layout_mutation
     def net_name(self, val):
         if not self.core.is_null:
             self.net = self._pedb.nets.find_or_create_net(val)
@@ -915,7 +913,6 @@ class PadstackInstance(conn_obj.ConnObj):
         return 0.0
 
     @backdrill_diameter.setter
-    @layout_mutation
     def backdrill_diameter(self, value):
         if self.backdrill_bottom:
             parameters = self.get_back_drill_by_layer(True)
@@ -946,7 +943,6 @@ class PadstackInstance(conn_obj.ConnObj):
         return ""
 
     @backdrill_layer.setter
-    @layout_mutation
     def backdrill_layer(self, value):
         if self.backdrill_bottom:
             parameters = self.get_back_drill_by_layer(True)
@@ -977,7 +973,6 @@ class PadstackInstance(conn_obj.ConnObj):
         return 0.0
 
     @backdrill_offset.setter
-    @layout_mutation
     def backdrill_offset(self, value) -> bool | None:
         if self.backdrill_bottom:
             parameters = self.get_back_drill_by_layer(True)
@@ -1255,6 +1250,7 @@ class PadstackInstance(conn_obj.ConnObj):
                 drill_depth, drill_diameter = params
                 return Value(drill_depth), Value(drill_diameter)
 
+    @layout_mutation
     def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom=True, fill_material=""):
         """Set back drill by depth.
 
@@ -1354,6 +1350,7 @@ class PadstackInstance(conn_obj.ConnObj):
                     return drill_to_layer.name, Value(offset).value, Value(diameter).value
         return None
 
+    @layout_mutation
     def set_back_drill_by_layer(self, drill_to_layer, diameter, offset=0.0, from_bottom=True, fill_material=""):
         """Set back drill layer.
 
