@@ -1,0 +1,101 @@
+﻿MinLineWidth
+============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoclass:: MinLineWidth
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      MinLineWidth.construct
+      
+      
+      MinLineWidth.copy
+      
+      
+      MinLineWidth.dict
+      
+      
+      MinLineWidth.from_orm
+      
+      
+      MinLineWidth.json
+      
+      
+      MinLineWidth.model_construct
+      
+      
+      MinLineWidth.model_copy
+      
+      
+      MinLineWidth.model_dump
+      
+      
+      MinLineWidth.model_dump_json
+      
+      
+      MinLineWidth.model_json_schema
+      
+      
+      MinLineWidth.model_parametrized_name
+      
+      
+      MinLineWidth.model_post_init
+      
+      
+      MinLineWidth.model_rebuild
+      
+      
+      MinLineWidth.model_validate
+      
+      
+      MinLineWidth.model_validate_json
+      
+      
+      MinLineWidth.model_validate_strings
+      
+      
+      MinLineWidth.parse_file
+      
+      
+      MinLineWidth.parse_obj
+      
+      
+      MinLineWidth.parse_raw
+      
+      
+      MinLineWidth.schema
+      
+      
+      MinLineWidth.schema_json
+      
+      
+      MinLineWidth.update_forward_refs
+      
+      
+      MinLineWidth.validate
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MinLineWidth.model_computed_fields
+      MinLineWidth.model_config
+      MinLineWidth.model_fields
+      MinLineWidth.name
+      MinLineWidth.value
+   
+   

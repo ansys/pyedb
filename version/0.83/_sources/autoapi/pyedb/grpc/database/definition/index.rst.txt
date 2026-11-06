@@ -1,0 +1,104 @@
+
+
+
+
+
+
+The ``definition`` package
+==============================
+
+.. py:module:: pyedb.grpc.database.definition
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: definition
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.component_def`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.component_model`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.component_pin`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.materials`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.n_port_component_model`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.package_def`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.padstack_def`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition.wirebond_def`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> component_def</autoapi/pyedb/grpc/database/definition/component_def/index>
+    <span class="nf nf-fa-file"></span> component_model</autoapi/pyedb/grpc/database/definition/component_model/index>
+    <span class="nf nf-fa-file"></span> component_pin</autoapi/pyedb/grpc/database/definition/component_pin/index>
+    <span class="nf nf-fa-file"></span> materials</autoapi/pyedb/grpc/database/definition/materials/index>
+    <span class="nf nf-fa-file"></span> n_port_component_model</autoapi/pyedb/grpc/database/definition/n_port_component_model/index>
+    <span class="nf nf-fa-file"></span> package_def</autoapi/pyedb/grpc/database/definition/package_def/index>
+    <span class="nf nf-fa-file"></span> padstack_def</autoapi/pyedb/grpc/database/definition/padstack_def/index>
+    <span class="nf nf-fa-file"></span> wirebond_def</autoapi/pyedb/grpc/database/definition/wirebond_def/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

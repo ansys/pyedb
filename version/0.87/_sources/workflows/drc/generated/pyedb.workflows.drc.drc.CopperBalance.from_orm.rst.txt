@@ -1,0 +1,6 @@
+from\_orm
+=========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: CopperBalance.from_orm

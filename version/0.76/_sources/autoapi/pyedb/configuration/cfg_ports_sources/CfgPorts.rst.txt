@@ -1,0 +1,587 @@
+
+
+
+
+
+
+:class:`CfgPorts`
+=================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgPorts(pedb=None, ports_data=None)
+
+   
+   Collect lumped, coaxial, and edge-port entries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPorts
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_pin_group`
+            - Return the pin-group object associated with *port*.
+          * - :py:attr:`~add_circuit_port`
+            - Add a lumped circuit port between two terminals.
+          * - :py:attr:`~add_coax_port`
+            - Add a coaxial (via) port.
+          * - :py:attr:`~add_wave_port`
+            - Add a wave port on a trace edge.
+          * - :py:attr:`~add_gap_port`
+            - Add a gap port on a trace edge.
+          * - :py:attr:`~add_diff_wave_port`
+            - Add a differential wave port from two edge-terminal descriptors.
+          * - :py:attr:`~apply`
+            - Write all configured ports into the open EDB design.
+          * - :py:attr:`~get_data_from_db`
+            - Read existing ports from the open EDB design.
+          * - :py:attr:`~export_properties`
+            - Serialize all ports to plain dictionaries.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ports`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgPorts
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: ports
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_pin_group(port)
+
+   
+   Return the pin-group object associated with *port*.
+
+
+   :Parameters:
+
+       **port** : :obj:`object`
+           EDB terminal object that exposes a ``pin_group`` attribute.
+
+
+
+   :Returns:
+
+       :obj:`object`
+           The pin-group object bound to the terminal.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_circuit_port(name=None, positive_terminal=None, negative_terminal=None, reference_designator=None, impedance=None, distributed=False, positive_net=None, negative_net=None)
+
+   
+   Add a lumped circuit port between two terminals.
+
+   **Resolution priority** – when both *positive_net* and *negative_net*
+   are supplied they **always take priority** over *positive_terminal* and
+   *negative_terminal*, even if those are also provided.
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Unique port name.  When omitted and *positive_net* is supplied the
+           name is auto-generated as
+           ``"Port_{reference_designator}_{positive_net}_{pin_name}"``.
+
+       **positive_terminal** : :class:`python:dict`, :obj:`optional`
+           Terminal-selector dictionary for the positive terminal.
+           Ignored when *positive_net* is supplied.
+
+       **negative_terminal** : :class:`python:dict`, :obj:`optional`
+           Terminal-selector dictionary for the negative (reference) terminal.
+           When *None* an empty dictionary is used (solver assigns
+           automatically).  Ignored when *negative_net* is supplied.
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Component reference designator.  Required when *positive_net* or
+           *negative_net* is used.
+
+       **impedance** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Port impedance in ohms.  Default is ``50 Ω``.
+
+       **distributed** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Create one port per pin when ``True``.  Default is ``False``.
+
+       **positive_net** : :class:`python:str`, :obj:`optional`
+           Net name for the positive terminal.  When provided together with
+           *reference_designator* and a live EDB session, the first pin found
+           on that net on the component is used as the positive terminal.
+           **This argument takes priority over** *positive_terminal*.
+
+       **negative_net** : :class:`python:str`, :obj:`optional`
+           Net name for the negative terminal.  When provided, the closest
+           pin on that net that does not already carry a terminal assignment
+           is resolved via
+           :meth:`PadstackInstance.get_reference_pins
+           <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance.get_reference_pins>`
+           with ``max_limit=1``.
+           **This argument takes priority over** *negative_terminal*.
+
+
+
+   :Returns:
+
+       :obj:`CfgPort`
+           The newly created port object.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If *positive_net* or *negative_net* is supplied but
+           *reference_designator* is missing, the component is not found, or
+           no matching (terminal-free) pins exist.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.ports.add_circuit_port(
+   ...     "port_U1",
+   ...     positive_terminal=CfgTerminalInfo.pin_group("pg_VDD"),
+   ...     negative_terminal=CfgTerminalInfo.pin_group("pg_GND"),
+   ...     impedance=50,
+   ... )
+   >>> # positive_net / negative_net take priority – terminal args are ignored
+   >>> cfg.ports.add_circuit_port(
+   ...     "port_U1_auto",
+   ...     reference_designator="U1",
+   ...     positive_net="VDD",
+   ...     negative_net="GND",
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_coax_port(name: str = None, positive_terminal=None, reference_designator: str = None, impedance=None, padstack=None, net=None, pin=None, net_list: list[str] = None)
+
+   
+   Add a coaxial (via) port.
+
+   Provide exactly one of *positive_terminal*, *padstack*, *net*, *pin*,
+   or *net_list* to identify the positive connection point.
+
+   When *net_list* is provided together with *reference_designator* and a
+   live EDB session is attached, the method queries the component pins
+   directly from EDB, collects every padstack instance whose net name
+   appears in *net_list*, and creates one coax port per matching pin.
+   This path takes priority over all other terminal-selector arguments.
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Base port name.  When *net_list* resolves multiple pins the pin's
+           AEDT name is appended to make each port name unique, i.e.
+           ``"<name>_<aedt_name>"``.  When *name* is ``None`` the AEDT
+           padstack-instance name is used directly.
+
+       **positive_terminal** : :class:`python:dict`, :obj:`optional`
+           Raw terminal-selector dictionary (any :class:`TerminalInfo` type).
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Component reference designator.  Required when using *net*,
+           *pin*, or *net_list* shortcuts.
+
+       **impedance** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Port impedance in ohms.  Default is ``50 Ω``.
+
+       **padstack** : :class:`python:str`, :obj:`optional`
+           AEDT padstack-instance name, e.g. ``"via_A1"``.  Shortcut that
+           creates a single coax port on the named via.
+
+       **net** : :class:`python:str`, :obj:`optional`
+           Net name shortcut.  All matching pins on *reference_designator*
+           are targeted; when more than one pin matches the port becomes
+           **distributed**.
+
+       **pin** : :class:`python:str`, :obj:`optional`
+           Pin-name shortcut.  A single named pin on *reference_designator*.
+
+       **net_list** : :class:`python:list` :obj:`of` :class:`python:str`, :obj:`optional`
+           List of net names.  When supplied together with
+           *reference_designator* and a live EDB session, all padstack
+           instances of the component whose net belongs to *net_list* are
+           discovered automatically and one coax port is created per pin.
+           This argument takes priority over *positive_terminal*, *padstack*,
+           *net*, and *pin*.
+
+
+
+   :Returns:
+
+       :obj:`CfgPort` or :class:`python:list`\[:obj:`CfgPort`]
+           A single :class:`CfgPort` for all paths except the *net_list* EDB
+           discovery path, which returns a list of :class:`CfgPort` objects
+           (one per matching pin).
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If *net* or *pin* is supplied without *reference_designator*, or
+           if *net_list* is supplied without *reference_designator*, or
+           if no terminal selector is provided at all.
+
+       :obj:`RuntimeError`
+           If *net_list* + *reference_designator* discovery is requested but
+           no live EDB session is attached.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.ports.add_coax_port("coax_via", padstack="via_A1")
+   >>> cfg.ports.add_coax_port("coax_vdd", net="VDD", reference_designator="U1")
+   >>> cfg.ports.add_coax_port("coax_a1", pin="A1", reference_designator="U1", impedance=50)
+   >>> # Discover all pins of U1 whose net is PCIe_TX0_P or PCIe_TX0_N:
+   >>> cfg.ports.add_coax_port(
+   ...     "coax_pcie",
+   ...     reference_designator="U1",
+   ...     net_list=["PCIe_TX0_P", "PCIe_TX0_N"],
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_wave_port(name: str, primitive, point_on_edge: list[float], horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+   Add a wave port on a trace edge.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique port name.
+
+       **primitive** : :class:`python:str` or :obj:`primitive` :obj:`object`
+           AEDT name of the trace primitive hosting the port, or a primitive
+           object whose ``aedt_name`` (or ``name``) attribute is used automatically.
+
+       **point_on_edge** : :class:`python:list` :obj:`of` :class:`python:float`
+           ``[x, y]`` coordinates in metres of a point on the trace edge.
+
+       **horizontal_extent_factor** : :class:`python:int` or :class:`python:float`, :obj:`optional`
+           Horizontal de-embedding extent relative to the trace width.
+           Default is ``5``.
+
+       **vertical_extent_factor** : :class:`python:int` or :class:`python:float`, :obj:`optional`
+           Vertical de-embedding extent relative to the trace width.
+           Default is ``3``.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           PEC launch pad width, e.g. ``"0.01mm"``.  Default is
+           ``"0.01mm"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgEdgePort`
+           The newly created edge-port object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.ports.add_wave_port("wport1", "trace1", [0.001, 0.002], horizontal_extent_factor=6)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_gap_port(name: str, primitive: str | Any, point_on_edge: list[float], horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+   Add a gap port on a trace edge.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique port name.
+
+       **primitive** : :class:`python:str` or :obj:`primitive` :obj:`object`
+           AEDT name of the trace primitive, or a primitive object whose
+           ``aedt_name`` (or ``name``) attribute is used automatically.
+
+       **point_on_edge** : :class:`python:list` :obj:`of` :class:`python:float`
+           ``[x, y]`` coordinates on the trace edge.
+
+       **horizontal_extent_factor** : :class:`python:int` or :class:`python:float`, :obj:`optional`
+           Default is ``5``.
+
+       **vertical_extent_factor** : :class:`python:int` or :class:`python:float`, :obj:`optional`
+           Default is ``3``.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           Default is ``"0.01mm"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgEdgePort`
+           The newly created edge-port object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_diff_wave_port(name: str = None, positive_terminal: dict = None, negative_terminal: dict = None, horizontal_extent_factor: int = 5, vertical_extent_factor: int = 3, pec_launch_width: str = '0.01mm', positive_primitive: str | Any = None, positive_terminal_point: list[float | int] = None, negative_primitive: str | Any = None, negative_terminal_point: list[float | int] = None)
+
+   
+   Add a differential wave port from two edge-terminal descriptors.
+
+   The terminals can be supplied in two ways:
+
+   1. **Dict form** – pass ``positive_terminal`` and ``negative_terminal``
+      as dictionaries with ``"primitive_name"`` and ``"point_on_edge"`` keys.
+   2. **Flat form** – pass ``positive_primitive``, ``positive_terminal_point``,
+      ``negative_primitive``, and ``negative_terminal_point`` directly.
+      Each primitive may be a string name or a primitive object (its ``.name``
+      attribute is used automatically).
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique port name.
+
+       **positive_terminal** : :class:`python:dict`, :obj:`optional`
+           Edge-terminal descriptor for the positive arm, containing
+           ``"primitive_name"`` and ``"point_on_edge"`` keys.
+           Ignored when the flat-form arguments are provided.
+
+       **negative_terminal** : :class:`python:dict`, :obj:`optional`
+           Edge-terminal descriptor for the negative arm.
+           Ignored when the flat-form arguments are provided.
+
+       **horizontal_extent_factor** : :class:`python:int` or :class:`python:float`, :obj:`optional`
+           Default is ``5``.
+
+       **vertical_extent_factor** : :class:`python:int` or :class:`python:float`, :obj:`optional`
+           Default is ``3``.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           Default is ``"0.01mm"``.
+
+       **positive_primitive** : :class:`python:str` or :obj:`primitive` :obj:`object`, :obj:`optional`
+           Primitive carrying the positive trace edge.  Used together with
+           ``positive_terminal_point`` when ``positive_terminal`` is not given.
+
+       **positive_terminal_point** : :class:`python:list` :obj:`of` :class:`python:float`, :obj:`optional`
+           ``[x, y]`` point on the positive primitive edge.
+
+       **negative_primitive** : :class:`python:str` or :obj:`primitive` :obj:`object`, :obj:`optional`
+           Primitive carrying the negative trace edge.  Used together with
+           ``negative_terminal_point`` when ``negative_terminal`` is not given.
+
+       **negative_terminal_point** : :class:`python:list` :obj:`of` :class:`python:float`, :obj:`optional`
+           ``[x, y]`` point on the negative primitive edge.
+
+
+
+   :Returns:
+
+       :obj:`CfgDiffWavePort`
+           The newly created differential-port object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Dict form:
+
+   >>> cfg.ports.add_diff_wave_port(
+   ...     "diff1",
+   ...     positive_terminal={"primitive_name": "trace_p", "point_on_edge": [0.001, 0.0]},
+   ...     negative_terminal={"primitive_name": "trace_n", "point_on_edge": [0.001, 0.0002]},
+   ... )
+
+   Flat form:
+
+   >>> cfg.ports.add_diff_wave_port(
+   ...     "diff1",
+   ...     positive_primitive="trace_p",
+   ...     positive_terminal_point=[0.001, 0.0],
+   ...     negative_primitive="trace_n",
+   ...     negative_terminal_point=[0.001, 0.0002],
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Write all configured ports into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db()
+
+   
+   Read existing ports from the open EDB design.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`python:dict`
+           Serialized port payloads.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_properties()
+
+   
+   Serialize all ports to plain dictionaries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

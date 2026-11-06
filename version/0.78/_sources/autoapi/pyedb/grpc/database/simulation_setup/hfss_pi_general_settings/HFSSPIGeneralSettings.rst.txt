@@ -1,0 +1,211 @@
+
+
+
+
+
+
+:class:`HFSSPIGeneralSettings`
+==============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_pi_general_settings.HFSSPIGeneralSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_pi_simulation_settings.HFSSPIGeneralSettings)
+
+   
+   PyEDB HFSS PI general settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSPIGeneralSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~mesh_region_name`
+            - Mesh region name.
+          * - :py:attr:`~model_type`
+            - Model type.
+          * - :py:attr:`~use_auto_mesh_region`
+            - Flag indicating if auto mesh regions are used.
+          * - :py:attr:`~use_mesh_region`
+            - Flag indicating if mesh region is used.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_pi_general_settings import HFSSPIGeneralSettings
+
+Property detail
+---------------
+
+.. py:property:: mesh_region_name
+   :type: str
+
+
+   
+   Mesh region name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Mesh region name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: model_type
+   :type: str
+
+
+   
+   Model type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Model type, possible values are "pcb", "rdl", and "package".
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_auto_mesh_region
+   :type: bool
+
+
+   
+   Flag indicating if auto mesh regions are used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if auto mesh region is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_mesh_region
+   :type: bool
+
+
+   
+   Flag indicating if mesh region is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if mesh region is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

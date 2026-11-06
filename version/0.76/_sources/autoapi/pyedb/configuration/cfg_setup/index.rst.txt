@@ -1,0 +1,139 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_setup`` library
+=============================================
+
+.. py:module:: pyedb.configuration.cfg_setup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_setup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgFrequencies`
+            - Represent one frequency range or single-point sweep segment.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgSetupDC`
+            - Base class for DC-style setup payloads.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgSetupAC`
+            - Base class for AC-style setup payloads with frequency sweeps.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgSIwaveACSetup`
+            - Represent one SIwave AC setup entry.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgSIwaveDCSetup`
+            - Represent one SIwave DC setup entry.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgHFSSSetup`
+            - Represent one HFSS setup entry with adaptive and sweep settings.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgSetups`
+            - Collect all configured HFSS and SIwave setup entries.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~FrequencyDistribution`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgFrequencies</autoapi/pyedb/configuration/cfg_setup/CfgFrequencies>
+    <span class="nf nf-cod-symbol_class"></span> CfgSetupDC</autoapi/pyedb/configuration/cfg_setup/CfgSetupDC>
+    <span class="nf nf-cod-symbol_class"></span> CfgSetupAC</autoapi/pyedb/configuration/cfg_setup/CfgSetupAC>
+    <span class="nf nf-cod-symbol_class"></span> CfgSIwaveACSetup</autoapi/pyedb/configuration/cfg_setup/CfgSIwaveACSetup>
+    <span class="nf nf-cod-symbol_class"></span> CfgSIwaveDCSetup</autoapi/pyedb/configuration/cfg_setup/CfgSIwaveDCSetup>
+    <span class="nf nf-cod-symbol_class"></span> CfgHFSSSetup</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup>
+    <span class="nf nf-cod-symbol_class"></span> CfgSetups</autoapi/pyedb/configuration/cfg_setup/CfgSetups>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Build HFSS and SIwave setup entries for configuration payloads.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: FrequencyDistribution
+
+
+

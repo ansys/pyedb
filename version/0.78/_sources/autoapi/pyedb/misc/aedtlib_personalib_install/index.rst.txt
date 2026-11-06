@@ -1,0 +1,91 @@
+
+
+
+
+
+
+The ``pyedb.misc.aedtlib_personalib_install`` library
+=====================================================
+
+.. py:module:: pyedb.misc.aedtlib_personalib_install
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: aedtlib_personalib_install
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~write_pretty_xml`
+            - Write the XML in a pretty format.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: write_pretty_xml(root, file_path)
+
+   
+   Write the XML in a pretty format.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

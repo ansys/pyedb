@@ -1,0 +1,294 @@
+
+
+
+
+
+
+:class:`CfgPackageDefinitions`
+==============================
+
+
+.. py:class:: pyedb.configuration.cfg_package_definition.CfgPackageDefinitions(pedb=None, data=None)
+
+   
+   Manage thermal package definitions for the ``package_definitions`` section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPackageDefinitions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_parameters_from_edb`
+            - Read thermal package definitions from EDB.
+          * - :py:attr:`~set_parameters_to_edb`
+            - Write all configured package definitions into the open EDB design.
+          * - :py:attr:`~to_list`
+            - Serialize all package definitions to a list of dictionaries.
+          * - :py:attr:`~add`
+            - Add a thermal package definition entry.
+          * - :py:attr:`~apply`
+            - Write all configured package definitions into the open EDB design.
+          * - :py:attr:`~get_data_from_db`
+            - Read package definitions from EDB.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_parameter_from_edb`
+            - 
+          * - :py:attr:`~set_parameter_to_edb`
+            - 
+          * - :py:attr:`~packages`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: get_parameter_from_edb
+
+.. py:attribute:: set_parameter_to_edb
+
+.. py:attribute:: packages
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_parameters_from_edb()
+
+   
+   Read thermal package definitions from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_parameters_to_edb()
+
+   
+   Write all configured package definitions into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_list()
+
+   
+   Serialize all package definitions to a list of dictionaries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add(name: str, component_definition: str, apply_to_all=None, components=None, maximum_power=None, thermal_conductivity=None, theta_jb=None, theta_jc=None, height=None, extent_bounding_box=None)
+
+   
+   Add a thermal package definition entry.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Package definition name, e.g. ``"PKG_U1"``.
+
+       **component_definition** : :class:`python:str`
+           Component part-definition name.
+
+       **apply_to_all** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Assign the package to every matching component when ``True``.
+
+       **components** : :class:`python:list` :obj:`of` :class:`python:str`, :obj:`optional`
+           Specific reference designators to target when *apply_to_all* is
+           ``False``.
+
+       **maximum_power** : :class:`python:str`, :obj:`optional`
+           Maximum power dissipation, e.g. ``"5W"``.
+
+       **thermal_conductivity** : :class:`python:str`, :obj:`optional`
+           Package thermal conductivity.
+
+       **theta_jb** : :class:`python:str`, :obj:`optional`
+           Junction-to-board thermal resistance, e.g. ``"10C/W"``.
+
+       **theta_jc** : :class:`python:str`, :obj:`optional`
+           Junction-to-case thermal resistance, e.g. ``"5C/W"``.
+
+       **height** : :class:`python:str`, :obj:`optional`
+           Package height, e.g. ``"1mm"``.
+
+       **extent_bounding_box** : :class:`python:dict`, :obj:`optional`
+           Custom bounding-box extent override.
+
+
+
+   :Returns:
+
+       :obj:`CfgPackage`
+           The newly created package object.  Call
+           :meth:`CfgPackage.set_heatsink` on it to add fin geometry.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> pkg = cfg.package_definitions.add(
+   ...     "PKG_U1",
+   ...     component_definition="IC_U1",
+   ...     apply_to_all=True,
+   ...     maximum_power="5W",
+   ...     theta_jb="10C/W",
+   ...     theta_jc="5C/W",
+   ...     height="1mm",
+   ... )
+   >>> pkg.set_heatsink(fin_base_height="0.5mm", fin_height="3mm")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Write all configured package definitions into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db()
+
+   
+   Read package definitions from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

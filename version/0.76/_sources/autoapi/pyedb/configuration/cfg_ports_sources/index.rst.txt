@@ -1,0 +1,157 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_ports_sources`` library
+=====================================================
+
+.. py:module:: pyedb.configuration.cfg_ports_sources
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_ports_sources
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgTerminalInfo`
+            - Describe a high-level terminal selector used by ports, sources, and probes.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgCoordinateTerminalInfo`
+            - Represent a coordinate-based terminal selector.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgNearestPinTerminalInfo`
+            - Represent a nearest-reference-pin selector for negative terminals.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgSources`
+            - Collect current-source and voltage-source entries.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgPorts`
+            - Collect lumped, coaxial, and edge-port entries.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgProbes`
+            - Collect configured probe entries.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgCircuitElement`
+            - Shared base class for ports, sources, and probes using terminal selectors.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgPort`
+            - Lumped circuit port or coaxial (via) port.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgSource`
+            - Represent one current or voltage source entry.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgProbe`
+            - Represent one voltage-probe entry.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgEdgePort`
+            - Represent one wave-port or gap-port edge excitation.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_ports_sources.CfgDiffWavePort`
+            - Represent one bundled differential wave-port entry.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgTerminalInfo</autoapi/pyedb/configuration/cfg_ports_sources/CfgTerminalInfo>
+    <span class="nf nf-cod-symbol_class"></span> CfgCoordinateTerminalInfo</autoapi/pyedb/configuration/cfg_ports_sources/CfgCoordinateTerminalInfo>
+    <span class="nf nf-cod-symbol_class"></span> CfgNearestPinTerminalInfo</autoapi/pyedb/configuration/cfg_ports_sources/CfgNearestPinTerminalInfo>
+    <span class="nf nf-cod-symbol_class"></span> CfgSources</autoapi/pyedb/configuration/cfg_ports_sources/CfgSources>
+    <span class="nf nf-cod-symbol_class"></span> CfgPorts</autoapi/pyedb/configuration/cfg_ports_sources/CfgPorts>
+    <span class="nf nf-cod-symbol_class"></span> CfgProbes</autoapi/pyedb/configuration/cfg_ports_sources/CfgProbes>
+    <span class="nf nf-cod-symbol_class"></span> CfgCircuitElement</autoapi/pyedb/configuration/cfg_ports_sources/CfgCircuitElement>
+    <span class="nf nf-cod-symbol_class"></span> CfgPort</autoapi/pyedb/configuration/cfg_ports_sources/CfgPort>
+    <span class="nf nf-cod-symbol_class"></span> CfgSource</autoapi/pyedb/configuration/cfg_ports_sources/CfgSource>
+    <span class="nf nf-cod-symbol_class"></span> CfgProbe</autoapi/pyedb/configuration/cfg_ports_sources/CfgProbe>
+    <span class="nf nf-cod-symbol_class"></span> CfgEdgePort</autoapi/pyedb/configuration/cfg_ports_sources/CfgEdgePort>
+    <span class="nf nf-cod-symbol_class"></span> CfgDiffWavePort</autoapi/pyedb/configuration/cfg_ports_sources/CfgDiffWavePort>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Build ports, sources, probes, and terminal-selector helpers.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

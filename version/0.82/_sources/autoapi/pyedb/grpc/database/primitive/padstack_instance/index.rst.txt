@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``padstack_instance.py`` module
+===================================
+
+.. py:module:: pyedb.grpc.database.primitive.padstack_instance
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: padstack_instance
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
+            - Manages EDB functionalities for a padstack.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> PadstackInstance</autoapi/pyedb/grpc/database/primitive/padstack_instance/PadstackInstance>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

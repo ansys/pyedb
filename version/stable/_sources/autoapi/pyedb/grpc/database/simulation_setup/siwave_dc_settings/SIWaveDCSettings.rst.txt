@@ -1,0 +1,221 @@
+
+
+
+
+
+
+:class:`SIWaveDCSettings`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_dc_settings.SIWaveDCSettings(pedb, core: ansys.edb.core.simulation_setup.siwave_simulation_settings.SIWaveDCSettings)
+
+
+.. py:currentmodule:: SIWaveDCSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~compute_inductance`
+            - Compute inductance flag.
+          * - :py:attr:`~contact_radius`
+            - Contact radius value.
+          * - :py:attr:`~dc_slider_position`
+            - DC slider position.
+          * - :py:attr:`~plot_jv`
+            - Plot JV flag.
+          * - :py:attr:`~use_dc_custom_settings`
+            - Use DC custom settings flag.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
+
+Property detail
+---------------
+
+.. py:property:: compute_inductance
+   :type: bool
+
+
+   
+   Compute inductance flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if compute inductance is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: contact_radius
+   :type: str
+
+
+   
+   Contact radius value.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Contact radius.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_slider_position
+   :type: int
+
+
+   
+   DC slider position.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           DC slider position.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: plot_jv
+   :type: bool
+
+
+   
+   Plot JV flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if plot JV is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_dc_custom_settings
+   :type: bool
+
+
+   
+   Use DC custom settings flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if DC custom settings are used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

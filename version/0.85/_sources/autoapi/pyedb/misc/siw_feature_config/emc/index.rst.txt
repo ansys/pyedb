@@ -1,0 +1,84 @@
+
+
+
+
+
+
+The ``emc`` package
+=======================
+
+.. py:module:: pyedb.misc.siw_feature_config.emc
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: emc
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.component_tags`
+            - 
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.net_tags`
+            - 
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.tag_library`
+            - 
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.xml_generic`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> component_tags</autoapi/pyedb/misc/siw_feature_config/emc/component_tags/index>
+    <span class="nf nf-fa-file"></span> net_tags</autoapi/pyedb/misc/siw_feature_config/emc/net_tags/index>
+    <span class="nf nf-fa-file"></span> tag_library</autoapi/pyedb/misc/siw_feature_config/emc/tag_library/index>
+    <span class="nf nf-fa-file"></span> xml_generic</autoapi/pyedb/misc/siw_feature_config/emc/xml_generic/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,195 @@
+
+
+
+
+
+
+:class:`ImpedanceScan`
+======================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.xtalk_scan.impedance_scan_config.ImpedanceScan(pedb)
+
+   
+   Impedance scan configuration class handler.
+
+   This class manages impedance scanning configuration including transmission line
+   segment length, frequency, and net-specific impedance parameters.
+
+   :Parameters:
+
+       **pedb** : :obj:`object`
+           PyEDB instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("path/to/aedb")
+   >>> impedance_scan = ImpedanceScan(edb)
+   >>> impedance_scan.min_transmission_line_segment_length = "0.5mm"
+   >>> impedance_scan.frequency = "5e9Hz"
+   >>> impedance_scan.add_single_ended_net("CLK", nominal_impedance=50.0, warning_threshold=10.0)
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ImpedanceScan
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~extend_xml`
+            - Write object to XML section.
+          * - :py:attr:`~add_single_ended_net`
+            - Add single ended net to impedance scan configuration.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~min_transmission_line_segment_length`
+            - 
+          * - :py:attr:`~frequency`
+            - 
+          * - :py:attr:`~nets`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.xtalk_scan.impedance_scan_config import ImpedanceScan
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: min_transmission_line_segment_length
+   :type:  str
+   :value: '0.25mm'
+
+
+.. py:attribute:: frequency
+   :type:  str
+   :value: '2e9Hz'
+
+
+.. py:attribute:: nets
+   :type:  dict[str, pyedb.misc.siw_feature_config.xtalk_scan.net.SingleEndedNet]
+
+
+
+Method detail
+-------------
+
+.. py:method:: extend_xml(parent) -> None
+
+   
+   Write object to XML section.
+
+
+   :Parameters:
+
+       **parent** : :obj:`xml.etree.ElementTree.Element`
+           Parent XML element to extend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_single_ended_net(name: str, nominal_impedance: float | str = 50.0, warning_threshold: float | str = 17.0, violation_threshold: float | str = 32.0) -> bool
+
+   
+   Add single ended net to impedance scan configuration.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Net name.
+
+       **nominal_impedance** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Nominal impedance in ohms.
+           The default is ``50.0``.
+
+       **warning_threshold** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Warning threshold value in percentage.
+           The default is ``17.0``.
+
+       **violation_threshold** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Violation threshold value in percentage.
+           The default is ``32.0``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the net was added successfully, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> impedance_scan = ImpedanceScan(pedb)
+   >>> impedance_scan.add_single_ended_net("DDR_DQ0", nominal_impedance=40.0, warning_threshold=15.0)
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
