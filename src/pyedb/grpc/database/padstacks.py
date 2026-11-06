@@ -44,6 +44,7 @@ import numpy as np
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
+from pyedb.grpc.database.layout_changes import layout_mutation
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
@@ -660,11 +661,13 @@ class Padstacks(object):
 
         return padstackname
 
+    @layout_mutation
     def delete_batch_instances(self, instances_to_delete):
         for inst in instances_to_delete:
             inst.core.delete()
         self._instances = None
 
+    @layout_mutation
     def delete_padstack_instances(self, net_names: Union[str, List[str]]) -> bool:
         """Delete padstack instances by net names.
 
@@ -1337,6 +1340,7 @@ class Padstacks(object):
         return new_padstack_name
 
     @deprecate_argument_name({"fromlayer": "from_layer", "tolayer": "to_layer", "solderlayer": "solder_ball_layer"})
+    @layout_mutation
     def place(
         self,
         position: List[float],

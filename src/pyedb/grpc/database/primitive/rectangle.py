@@ -22,6 +22,8 @@
 
 from typing import TYPE_CHECKING, Union
 
+from pyedb.grpc.database.layout_changes import layout_mutation
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.primitive.rectangle import (
@@ -61,6 +63,7 @@ class Rectangle(Primitive):
         return self.core.representation_type.name.lower()
 
     @representation_type.setter
+    @layout_mutation
     def representation_type(self, value):
         if not value in self._mapping_representation_type:
             self.core.representation_type = CoreRectangleRepresentationType.INVALID_RECT_TYPE
@@ -68,6 +71,7 @@ class Rectangle(Primitive):
             self.core.representation_type = self._mapping_representation_type[value]
 
     @classmethod
+    @layout_mutation
     def create(
         cls,
         layout,
@@ -196,6 +200,7 @@ class Rectangle(Primitive):
         rotation = Value(parameters[6])
         return representation_type, parameter1, parameter2, parameter3, parameter4, corner_radius, rotation
 
+    @layout_mutation
     def set_parameters(self, rep_type, param1, param2, param3, param4, corner_rad, rotation):
         """Set coordinates parameters.
 
@@ -343,6 +348,7 @@ class Rectangle(Primitive):
             rotation=parameters[6],
         )
 
+    @layout_mutation
     def duplicate_across_layers(self, layers) -> bool:
         """Duplicate across layer a primitive object.
 

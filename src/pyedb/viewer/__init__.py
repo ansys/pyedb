@@ -26,7 +26,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
 
-from pyedb.viewer.colors import VIEWER_THEMES, viewer_theme
 from pyedb.viewer.picking import PickedObject
 from pyedb.viewer.scene import (
     LayoutScene,
@@ -52,7 +51,6 @@ __all__ = [
     "ScenePolygon",
     "SceneTrace",
     "SceneJoin",
-    "VIEWER_THEMES",
     "launch_viewer",
     "scene_from_edb",
 ]
@@ -112,10 +110,12 @@ def launch_viewer(
     exact_component_bounds: bool = False,
     chord_error: float = 0.002,
     progressive: bool = True,
+    live: bool = False,
+    refresh_interval: int = 50,
     debug: bool = False,
-    theme: str = "light",
+    backend: str | None = None,
 ) -> LayoutWindow:
-    """Open an interactive OpenGL layout window.
+    """Open an interactive Qt RHI layout window.
 
     Parameters
     ----------
@@ -135,6 +135,12 @@ def launch_viewer(
     progressive : bool, optional
         Display the current layer first, then remaining copper, pads and
         components. Default is True. One progress indicator remains until complete.
+    live : bool, optional
+        Automatically refresh after supported PyEDB gRPC geometry edits. Default
+        is False. An EDB-backed window also supports explicit ``refresh()``.
+    refresh_interval : int, optional
+        Minimum interval in milliseconds for coalescing automatic updates.
+        Default is 50. The Qt event loop must be running.
     analytic_traces : bool, optional
         Preserve analytic traces for precision at deep zoom. Default is False:
         read source path contours to reduce remote geometry-property requests.
@@ -155,15 +161,17 @@ def launch_viewer(
         Show components on all visible placement layers. Default is True.
         Set False to restrict them to the current view side.
     plot_outlines : bool, optional
-        Draw a thin near-black outline, one screen pixel wide, around every
+        Draw an opaque net-colored outline, one screen pixel wide, around every
         shape. Default is True. It can also be toggled from the View menu.
     debug : bool, optional
         When True, exceptions caught during capture are logged with a full
         traceback and re-raised immediately instead of being recorded as a
         diagnostic note and skipped. Default is False.
-    theme : str, optional
-        Workspace and canvas theme: ``"light"`` (default) or ``"dark"``. It can
-        also be switched from the View menu or with ``LayoutWindow.set_theme``.
+
+    backend : str, optional
+        Rendering API: "auto", "vulkan", "d3d11", or "metal". Defaults to
+        PYEDB_VIEWER_BACKEND or "auto": Direct3D 11 on Windows, Vulkan on
+        Linux, Metal on macOS. OpenGL is not supported.
 
     Returns
     -------
@@ -173,7 +181,10 @@ def launch_viewer(
     """
     if (edb is None) == (scene is None):
         raise ValueError("Provide exactly one of edb or scene.")
-    theme = viewer_theme(theme)
+    if live and edb is None:
+        raise ValueError("live=True requires an EDB session.")
+    if isinstance(refresh_interval, bool) or not isinstance(refresh_interval, int) or refresh_interval < 0:
+        raise ValueError("refresh_interval must be a nonnegative integer in milliseconds.")
     try:
         from pyedb.viewer.qt.app import show_scene
     except ImportError as exc:
@@ -182,6 +193,7 @@ def launch_viewer(
     if scene is None:
         from pathlib import Path
 
+        from pyedb.grpc.database.layout_changes import layout_changes
         from pyedb.viewer.capture import SourceCapture
 
         def load(
@@ -200,16 +212,34 @@ def launch_viewer(
                 debug=debug,
             )
 
+        def load_delta(delta, previous, progress):
+            from pyedb.viewer.adapters.grpc import scene_patch_from_edb
+
+            return scene_patch_from_edb(
+                edb,
+                delta,
+                previous,
+                progress=progress,
+                nets=nets,
+                arc_segments=arc_segments,
+                analytic_traces=analytic_traces,
+                chord_error=chord_error,
+            )
+
         options["title"] = Path(str(getattr(edb, "edbpath", None) or "EDB layout")).stem
-        options["loader"] = SourceCapture(load, progressive=progressive)
+        options["loader"] = SourceCapture(
+            load, progressive=progressive, changes=layout_changes(edb), delta_loader=load_delta
+        )
+        options["live"] = live
+        options["refresh_interval"] = refresh_interval
     return show_scene(
         scene,
         block=block,
+        backend=backend,
         color_by_net=color_by_net,
         plot_components=plot_components,
         annotate_component_names=annotate_component_names,
         plot_components_on_both_side=plot_components_on_both_side,
         plot_outlines=plot_outlines,
-        theme=theme,
         **options,
     )

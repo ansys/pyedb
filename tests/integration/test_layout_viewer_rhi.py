@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 
-"""Real OpenGL pixel, interaction and picking tests for the layout viewer.
+"""Real RHI pixel, interaction and picking tests for the layout viewer.
 
-Picking tests are opt-in: set PYEDB_VIEWER_GL_TESTS=1 on a desktop.
+Picking tests are opt-in: set PYEDB_VIEWER_RHI_TESTS=1 on a desktop.
 """
 
 import gc
@@ -36,7 +36,9 @@ import pytest
 pytestmark = [
     pytest.mark.integration,
     pytest.mark.no_licence,
-    pytest.mark.skipif(os.environ.get("PYEDB_VIEWER_GL_TESTS") != "1", reason="Requires an OpenGL 3.3 desktop"),
+    pytest.mark.skipif(
+        os.environ.get("PYEDB_VIEWER_RHI_TESTS") != "1", reason="Requires a Vulkan, Direct3D 11 or Metal desktop"
+    ),
 ]
 
 
@@ -52,6 +54,185 @@ def _pixels(view):
 
     image = view.grabFramebuffer().convertToFormat(QImage.Format.Format_RGBA8888)
     return np.frombuffer(image.constBits(), dtype=np.uint8).reshape(image.height(), image.width(), 4).copy()
+
+
+def test_live_edits_refresh_gpu_pixels_and_picking_in_the_same_window(monkeypatch):
+    from types import SimpleNamespace
+
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.grpc.database.layout_changes import layout_mutation
+    from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon, launch_viewer
+
+    app = QApplication.instance() or QApplication([])
+    layers = (SceneLayer("TOP", (1, 0, 0, 1)),)
+    left = ScenePolygon(1, "TOP", "GND", ((-5, -1), (-3, -1), (-3, 1), (-5, 1)))
+    right = ScenePolygon(2, "TOP", "GND", ((3, -1), (5, -1), (5, 1), (3, 1)))
+    edb = SimpleNamespace(current=LayoutScene(layers, (left,)))
+    monkeypatch.setattr("pyedb.viewer.scene_from_edb", lambda source, **kwargs: source.current)
+    window = launch_viewer(edb, block=False, live=True, color_by_net=False, refresh_interval=5)
+    canvas = window.canvas
+
+    def wait_ready(expected):
+        deadline = time.monotonic() + 5
+        while (window._busy or canvas.scene is not expected) and time.monotonic() < deadline:
+            QTest.qWait(10)
+        assert not window._busy and canvas.scene is expected
+        assert canvas.error is None, canvas.error
+
+    def color(x):
+        frame = canvas.grabFramebuffer()
+        assert not frame.isNull(), canvas.error
+        px, py = canvas.camera.world_to_screen(x, 0)
+        ratio = canvas.devicePixelRatioF()
+        pixel = frame.pixelColor(round(px * ratio), round(py * ratio))
+        return pixel.red(), pixel.green(), pixel.blue()
+
+    @layout_mutation
+    def edit(owner, polygons):
+        edb.current = LayoutScene(layers, polygons)
+
+    try:
+        wait_ready(edb.current)
+        canvas.show_grid = False
+        canvas.opacity = 1
+        window.zoom_to_net("GND")
+        canvas.zoom_to_bounds((-6, -3, 6, 3))
+        assert color(-4) == (255, 0, 0)
+        assert color(4) == (255, 255, 255)
+        window.select_object(1)
+        camera = (canvas.camera.center_x, canvas.camera.center_y, canvas.camera.scale)
+
+        window.run_script(edit, SimpleNamespace(_pedb=edb), (left, right))
+        deadline = time.monotonic() + 5
+        while window._script is not None and time.monotonic() < deadline:
+            QTest.qWait(10)
+        wait_ready(edb.current)
+        assert color(4) == (255, 0, 0)
+        assert window.selected_object.object_id == 1
+        assert (canvas.camera.center_x, canvas.camera.center_y, canvas.camera.scale) == camera
+
+        edit(SimpleNamespace(_pedb=edb), (right,))
+        wait_ready(edb.current)
+        assert window.selected_object is None
+        assert color(-4) == (255, 255, 255)
+        assert color(4) == (255, 0, 0)
+        assert window.select_object(2).object_id == 2
+
+        window.stop_live()
+        edb.current = LayoutScene(layers, ())
+        window.refresh()
+        wait_ready(edb.current)
+        assert window.selected_object is None
+        assert color(4) == (255, 255, 255)
+        assert canvas.renderer.upload_count == 4
+    finally:
+        window.close()
+        deadline = time.monotonic() + 5
+        while window._busy and time.monotonic() < deadline:
+            QTest.qWait(10)
+        app.processEvents()
+
+
+def test_large_board_object_deltas_upload_only_changed_geometry():
+    from unittest.mock import Mock
+
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from pyedb.grpc.database.primitive.primitive import Primitive
+    from pyedb.viewer import launch_viewer
+    from pyedb.viewer.mesh import prepare_scene
+    from tests.unit.test_layout_viewer import _edb, _primitive, _value
+
+    app = QApplication.instance() or QApplication([])
+    cores = [
+        _primitive(index + 10, ring=((i, 0), (i + 0.001, 0), (i + 0.001, 0.001), (i, 0.001)))
+        for index, i in enumerate(np.arange(1, 2, 0.001))
+    ]
+    left = _primitive(1, ring=((-0.005, -0.001), (-0.003, -0.001), (-0.003, 0.001), (-0.005, 0.001)))
+    cores.append(left)
+    edb = _edb(cores)
+    edb.stackup.layers["TOP"].color = (255, 0, 0)
+    window = launch_viewer(edb, live=True, block=False, color_by_net=False, refresh_interval=1)
+    canvas = window.canvas
+
+    def ready(revision):
+        deadline = time.monotonic() + 10
+        while (window._busy or window._source.revision != revision) and time.monotonic() < deadline:
+            QTest.qWait(10)
+        assert not window._busy and window._source.revision == revision
+        assert canvas.error is None, canvas.error
+        return _pixels(canvas)
+
+    def color(frame, x):
+        px, py = canvas.camera.world_to_screen(x, 0)
+        ratio = canvas.devicePixelRatioF()
+        return tuple(frame[round(py * ratio), round(px * ratio), :3])
+
+    try:
+        ready(0)
+        canvas.show_grid = False
+        canvas.opacity = 1
+        canvas.zoom_to_bounds((-6, -3, 6, 3))
+        before = _pixels(canvas)
+        assert color(before, -4) == (255, 0, 0)
+        device = canvas.renderer.device
+        full_bytes = device.geometry_upload_bytes
+        reads = [core.polygon_data.reads for core in cores]
+        window.select_object(1)
+        original_loader = window._source.loader
+        window._source.loader = Mock(side_effect=AssertionError("A local edit must not recapture the board"))
+
+        right = _primitive(2, ring=((0.003, -0.001), (0.005, -0.001), (0.005, 0.001), (0.003, 0.001)))
+        cores.append(right)
+        Primitive(edb, right).is_negative = False
+        before_bytes = device.geometry_upload_bytes
+        added = ready(1)
+        assert color(added, 4) == (255, 0, 0)
+        assert device.geometry_upload_bytes - before_bytes == 232
+        assert full_bytes > 1000 * 232
+        assert [core.polygon_data.reads for core in cores[:-1]] == reads
+        assert canvas._prepared.update_count == 1
+
+        # Removing a selected object changes draw/index metadata without any GPU geometry upload.
+        left.delete = lambda: cores.remove(left)
+        Primitive(edb, left).delete()
+        before_bytes = device.geometry_upload_bytes
+        deleted = ready(2)
+        assert color(deleted, -4) == (255, 255, 255)
+        assert device.geometry_upload_bytes == before_bytes
+        assert window.selected_object is None
+
+        circle = _primitive(3, type="circle", get_parameters=lambda: (_value(0), _value(0), _value(0.001)))
+        cores.append(circle)
+        Primitive(edb, circle).is_negative = False
+        before_bytes = device.geometry_upload_bytes
+        added_circle = ready(3)
+        assert color(added_circle, 0) == (255, 0, 0)
+        assert device.geometry_upload_bytes - before_bytes == 160
+        window.select_object(3)
+        assert window.selected_object.object_id == 3
+
+        circle.get_parameters = lambda: (_value(-0.004), _value(0), _value(0.001))
+        Primitive(edb, circle).is_negative = False
+        before_bytes = device.geometry_upload_bytes
+        moved = ready(4)
+        assert color(moved, 0) == (255, 255, 255)
+        assert device.geometry_upload_bytes - before_bytes == 160
+        assert window.selected_object.object_id == 3
+
+        # The incremental frame, including selection, must match a full rebuild.
+        canvas.set_prepared(prepare_scene(canvas.scene))
+        np.testing.assert_array_equal(moved, _pixels(canvas))
+        window._source.loader = original_loader
+    finally:
+        window.close()
+        deadline = time.monotonic() + 10
+        while window._busy and time.monotonic() < deadline:
+            QTest.qWait(10)
+        app.processEvents()
 
 
 class TestLoading:
@@ -306,12 +487,12 @@ class TestLoading:
     def test_progressive_mesh_append_uploads_only_new_tail_data(self, monkeypatch):
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
 
         from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon
         from pyedb.viewer.mesh import prepare_scene
+        from pyedb.viewer.qt import rhi
         from pyedb.viewer.qt.canvas import LayoutView
 
         layers = (SceneLayer("TOP", (1, 0, 0, 1)),)
@@ -330,19 +511,20 @@ class TestLoading:
         try:
             QTest.qWait(100)
             view.grabFramebuffer()
-            allocation = Mock(wraps=GL.glBufferData)
-            updates = Mock(wraps=GL.glBufferSubData)
-            monkeypatch.setattr(GL, "glBufferData", allocation)
-            monkeypatch.setattr(GL, "glBufferSubData", updates)
+            allocation = Mock(wraps=rhi.allocate_geometry_buffer)
+            updates = Mock(wraps=rhi.upload_geometry_buffer)
+            monkeypatch.setattr(rhi, "allocate_geometry_buffer", allocation)
+            monkeypatch.setattr(rhi, "upload_geometry_buffer", updates)
             view.scene = complete
             view.fit_all()
             view.set_prepared(appended)
             view.grabFramebuffer()
-            assert not any(call.args[1] > 0 for call in allocation.call_args_list)
-            assert {call.args[1] for call in updates.call_args_list} == {
+            allocation.assert_not_called()
+            assert {call.args[2] for call in updates.call_args_list} == {
                 base.vertices.nbytes,
                 base.indices.nbytes,
                 base.vertex_nets.nbytes,
+                base.vertices.nbytes * 2,  # Resident outline endpoint pairs append with the mesh.
             }
             assert view.error is None
         finally:
@@ -398,7 +580,6 @@ class TestRendering:
     @pytest.mark.parametrize("offset, span", [(0.0, 20.0), (1e9, 0.001)])
     def test_stencil_hole_union_and_resident_geometry(self, offset, span):
         pytest.importorskip("PySide6")
-        pytest.importorskip("OpenGL")
         pytest.importorskip("mapbox_earcut")
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
@@ -434,7 +615,7 @@ class TestRendering:
         try:
             QTest.qWait(200)
             app.processEvents()
-            assert view.isValid(), "No usable OpenGL context"
+            assert view.renderer.device is not None, view.error
             assert view.error is None, view.error
             image = view.grabFramebuffer()
             assert not image.isNull()
@@ -480,12 +661,12 @@ class TestRendering:
     def test_drill_only_layer_remains_visible_without_other_geometry_or_net_matches(self, color_by_net, monkeypatch):
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
 
         from pyedb.viewer import LayoutScene, SceneLayer, ScenePad
         from pyedb.viewer.mesh import prepare_scene
+        from pyedb.viewer.qt import rhi
         from pyedb.viewer.qt.canvas import LayoutView
 
         scene = LayoutScene(
@@ -507,8 +688,8 @@ class TestRendering:
         try:
             QTest.qWait(70)
             view.grabFramebuffer()
-            upload = Mock(wraps=GL.glBufferData)
-            monkeypatch.setattr(GL, "glBufferData", upload)
+            upload = Mock(wraps=rhi.allocate_geometry_buffer)
+            monkeypatch.setattr(rhi, "allocate_geometry_buffer", upload)
 
             def pixel(x=0):
                 frame = view.grabFramebuffer()
@@ -551,15 +732,14 @@ class TestRendering:
         import math
 
         pytest.importorskip("PySide6")
-        pytest.importorskip("OpenGL")
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
 
         from pyedb.viewer import LayoutScene, SceneLayer, ScenePad, ScenePolygon, SceneTrace
         from pyedb.viewer.mesh import prepare_scene
+        from pyedb.viewer.qt import rhi
         from pyedb.viewer.qt.canvas import LayoutView
 
         def point(x, y):
@@ -587,9 +767,7 @@ class TestRendering:
         view.visible_layers = {layer.name for layer in scene.layers}
         view.color_by_net = False  # This fixture verifies exact source-layer colors.
         view.components_on_both_sides = False  # Exercise current-face filtering explicitly.
-        surface = view.format()
-        surface.setSamples(samples)
-        view.setFormat(surface)
+        view.setSampleCount(max(1, samples))
         view.resize(800, 800)
         view.opacity = 1
         view.set_prepared(prepare_scene(scene))
@@ -597,7 +775,7 @@ class TestRendering:
         try:
             QTest.qWait(100)
             app.processEvents()
-            assert view.isValid()
+            assert view.renderer.device is not None, view.error
             assert view.error is None, view.error
 
             def color(frame, x, y):
@@ -620,10 +798,10 @@ class TestRendering:
             assert color(frame, 6.5, -4) == (0, 0, 255)
             assert view.renderer.draw_calls <= 7
             uploads = view.renderer.upload_count
-            buffer_data = Mock(wraps=GL.glBufferData)
-            buffer_sub_data = Mock(wraps=GL.glBufferSubData)
-            monkeypatch.setattr(GL, "glBufferData", buffer_data)
-            monkeypatch.setattr(GL, "glBufferSubData", buffer_sub_data)
+            buffer_data = Mock(wraps=rhi.allocate_geometry_buffer)
+            buffer_sub_data = Mock(wraps=rhi.upload_geometry_buffer)
+            monkeypatch.setattr(rhi, "allocate_geometry_buffer", buffer_data)
+            monkeypatch.setattr(rhi, "upload_geometry_buffer", buffer_sub_data)
 
             from pyedb.viewer.colors import net_color
 
@@ -671,7 +849,7 @@ class TestRendering:
             assert view.error is None, view.error
         finally:
             view.cleanup()
-            assert view.renderer.sdf.program == view.renderer.sdf.vbo == view.renderer.sdf.fbo == 0
+            assert view.renderer.sdf.vbo is view.renderer.sdf.palette is None
             view.close()
             app.processEvents()
 
@@ -733,13 +911,13 @@ class TestRendering:
     def test_white_canvas_and_same_layer_zone_trace_pad_transparency(self, monkeypatch):
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
 
         from pyedb.viewer import LayoutScene, SceneLayer, ScenePad, ScenePolygon, SceneTrace
         from pyedb.viewer.colors import net_color
         from pyedb.viewer.mesh import prepare_scene
+        from pyedb.viewer.qt import rhi
         from pyedb.viewer.qt.canvas import LayoutView
 
         scene = LayoutScene(
@@ -758,10 +936,10 @@ class TestRendering:
         try:
             QTest.qWait(60)
             view.grabFramebuffer()
-            upload = Mock(wraps=GL.glBufferData)
-            sub_upload = Mock(wraps=GL.glBufferSubData)
-            monkeypatch.setattr(GL, "glBufferData", upload)
-            monkeypatch.setattr(GL, "glBufferSubData", sub_upload)
+            upload = Mock(wraps=rhi.allocate_geometry_buffer)
+            sub_upload = Mock(wraps=rhi.upload_geometry_buffer)
+            monkeypatch.setattr(rhi, "allocate_geometry_buffer", upload)
+            monkeypatch.setattr(rhi, "upload_geometry_buffer", sub_upload)
 
             def rgb(image, x, y):
                 px, py = view.camera.world_to_screen(x, y)
@@ -792,62 +970,86 @@ class TestRendering:
             view.close()
             app.processEvents()
 
-    def test_outlines_draw_near_black_edges_for_polygons_traces_and_pads_and_toggle_off(self, monkeypatch):
+    @pytest.mark.parametrize("opacity", [0.0, 0.25, 0.75])
+    @pytest.mark.parametrize("color_by_net", [False, True])
+    def test_all_shape_outlines_use_opaque_net_colors(self, opacity, color_by_net, monkeypatch):
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
 
         from pyedb.viewer import LayoutScene, SceneLayer, ScenePad, ScenePolygon, SceneTrace
+        from pyedb.viewer.colors import net_color
         from pyedb.viewer.mesh import prepare_scene
+        from pyedb.viewer.qt import rhi
         from pyedb.viewer.qt.canvas import LayoutView
 
         scene = LayoutScene(
             (SceneLayer("copper", (0.9, 0.6, 0.2, 1)),),
-            (ScenePolygon(1, "copper", "zone", ((-10, -2), (-4, -2), (-4, 4), (-10, 4))),),
+            (
+                ScenePolygon(
+                    1,
+                    "copper",
+                    "zone",
+                    ((-10, -2), (-4, -2), (-4, 4), (-10, 4)),
+                    (((-8, 0), (-6, 0), (-6, 2), (-8, 2)),),
+                ),
+            ),
             traces=(SceneTrace(2, "copper", "trace", (0, -1), (6, -1), 2),),
-            pads=(ScenePad(3, "copper", "pad", (3, 3), (2, 2)),),
-            net_names=("zone", "trace", "pad"),
+            pads=(
+                ScenePad(3, "copper", "pad", (3, 3), (2, 2)),
+                ScenePad(4, "copper", "via", (8, 3), (2, 2), hole_radius=0.4),
+                ScenePad(5, "copper", "rectangle", (3, -5), (2, 2), "rectangle"),
+            ),
+            net_names=("zone", "trace", "pad", "via", "rectangle"),
         )
         app = QApplication.instance() or QApplication([])
         view = LayoutView(scene)
-        view.show_grid = False
-        view.color_by_net = False
+        view.show_grid = view.show_components = False
+        view.color_by_net = color_by_net
+        view.opacity = opacity
+        view.setSampleCount(1)
         view.resize(640, 480)
-        view.set_prepared(prepare_scene(scene))
+        prepared = prepare_scene(scene)
+        view.set_prepared(prepared)
         view.show()
         try:
             QTest.qWait(60)
-            view.grabFramebuffer()
-            upload = Mock(wraps=GL.glBufferData)
-            monkeypatch.setattr(GL, "glBufferData", upload)
+            view.camera.center_x = view.camera.center_y = 0
+            view.camera.scale = 20
             ratio = view.devicePixelRatioF()
-            width, height = round(view.width() * ratio), round(view.height() * ratio)
+            view.camera.pan(0.5 / ratio, 0.5 / ratio)
+            view.grabFramebuffer()
+            upload = Mock(wraps=rhi.upload_geometry_buffer)
+            monkeypatch.setattr(rhi, "upload_geometry_buffer", upload)
 
-            def darkest(image, x0, x1, y):
-                # Scan across a vertical edge (clamped to the frame) and return the darkest device-pixel sum.
+            def nearest_error(image, x0, x1, y, name):
+                expected = tuple(round(c * 255) for c in net_color(prepared.nets.index(name)))
                 (ax, py), (bx, _) = view.camera.world_to_screen(x0, y), view.camera.world_to_screen(x1, y)
-                row = min(height - 1, max(0, round(py * ratio)))
-                left = max(0, round(min(ax, bx) * ratio))
-                right = min(width, round(max(ax, bx) * ratio) + 1)
-                assert left < right, (x0, x1, y)
-                return min(sum(image.pixelColor(x, row).getRgb()[:3]) for x in range(left, right))
+                row = min(image.height() - 1, max(0, int(py * ratio)))
+                left = max(0, int(min(ax, bx) * ratio))
+                right = min(image.width(), int(max(ax, bx) * ratio) + 1)
+                return min(
+                    max(abs(a - b) for a, b in zip(image.pixelColor(x, row).getRgb()[:3], expected))
+                    for x in range(left, right)
+                )
 
-            # Zone left edge, trace start cap and pad left edge; each scan also covers fill and canvas.
-            edges = ((-10.6, -9.4, 1), (-1.6, 0.6, -1), (1.4, 2.6, 3))
-            assert view.show_outlines is True
+            edges = (
+                (-10.6, -9.4, 1, "zone"),
+                (-8.6, -7.4, 1, "zone"),  # Polygon hole.
+                (-1.6, 0.6, -1, "trace"),
+                (1.4, 2.6, 3, "pad"),
+                (6.4, 7.6, 3, "via"),
+                (7.3, 7.9, 3, "via"),  # Drill edge keeps the via net color.
+                (1.4, 2.6, -5, "rectangle"),
+            )
             frame = view.grabFramebuffer()
-            fx, fy = view.camera.world_to_screen(-7, 1)
-            fill = sum(frame.pixelColor(round(fx * ratio), round(fy * ratio)).getRgb()[:3])
-            assert fill < 3 * 255 - 30  # Sampled inside the zone, not on the white canvas.
             for edge in edges:
-                # A 1 px near-black stroke is far darker than both copper fill and white canvas.
-                assert darkest(frame, *edge) < 0.75 * fill, edge
+                assert nearest_error(frame, *edge) <= 3, edge
             view.show_outlines = False
             frame = view.grabFramebuffer()
             for edge in edges:
-                assert darkest(frame, *edge) >= fill - 6, edge
+                assert nearest_error(frame, *edge) > 5, edge
             upload.assert_not_called()
             assert view.error is None, view.error
         finally:
@@ -858,12 +1060,12 @@ class TestRendering:
     def test_shader_grid_is_world_anchored_and_uses_no_navigation_uploads(self, monkeypatch):
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
 
         from pyedb.viewer import LayoutScene, SceneLayer
         from pyedb.viewer.mesh import prepare_scene
+        from pyedb.viewer.qt import rhi
         from pyedb.viewer.qt.canvas import LayoutView
 
         app = QApplication.instance() or QApplication([])
@@ -877,10 +1079,10 @@ class TestRendering:
             QTest.qWait(60)
             view.camera.center_x, view.camera.center_y, view.camera.scale = 0.37, -0.23, 10
             view.grabFramebuffer()
-            upload = Mock(wraps=GL.glBufferData)
-            sub_upload = Mock(wraps=GL.glBufferSubData)
-            monkeypatch.setattr(GL, "glBufferData", upload)
-            monkeypatch.setattr(GL, "glBufferSubData", sub_upload)
+            upload = Mock(wraps=rhi.allocate_geometry_buffer)
+            sub_upload = Mock(wraps=rhi.upload_geometry_buffer)
+            monkeypatch.setattr(rhi, "allocate_geometry_buffer", upload)
+            monkeypatch.setattr(rhi, "upload_geometry_buffer", sub_upload)
 
             def rgb(image, x, y):
                 px, py = view.camera.world_to_screen(x, y)
@@ -911,7 +1113,7 @@ class TestRendering:
             assert view.error is None, view.error
         finally:
             view.cleanup()
-            assert view.renderer.grid.program == view.renderer.grid.vao == 0
+            assert view.renderer.device is None
             view.close()
             app.processEvents()
 
@@ -921,12 +1123,12 @@ class TestComponentRendering:
         """Component overlays and text must share filtering and keep GPU data resident."""
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
 
         from pyedb.viewer import LayoutScene, SceneComponent, SceneLayer, ScenePolygon
         from pyedb.viewer.mesh import prepare_scene
+        from pyedb.viewer.qt import rhi
         from pyedb.viewer.qt.canvas import LayoutView
 
         layers = (SceneLayer("TOP", (1, 0, 0, 1)), SceneLayer("BOTTOM", (0, 0, 1, 1)))
@@ -960,10 +1162,10 @@ class TestComponentRendering:
                 w, h = round(width * ratio), round(height * ratio)
                 return image.copy(round(px * ratio) - w // 2, round(py * ratio) - h // 2, w, h)
 
-            upload = Mock(wraps=GL.glBufferData)
-            sub_upload = Mock(wraps=GL.glBufferSubData)
-            monkeypatch.setattr(GL, "glBufferData", upload)
-            monkeypatch.setattr(GL, "glBufferSubData", sub_upload)
+            upload = Mock(wraps=rhi.allocate_geometry_buffer)
+            sub_upload = Mock(wraps=rhi.upload_geometry_buffer)
+            monkeypatch.setattr(rhi, "allocate_geometry_buffer", upload)
+            monkeypatch.setattr(rhi, "upload_geometry_buffer", sub_upload)
             atlas = view.renderer.labels.texture
             view.show_components = False
             plain = view.grabFramebuffer()
@@ -1042,7 +1244,7 @@ class TestComponentRendering:
             assert not view.message.isVisible()
         finally:
             view.cleanup()
-            assert view.renderer.labels.program == view.renderer.labels.texture == view.renderer.labels.vbo == 0
+            assert view.renderer.labels.texture is view.renderer.labels.vbo is None
             view.close()
             app.processEvents()
 
@@ -1050,12 +1252,12 @@ class TestComponentRendering:
         """Component annotations must not add borders or remove physical pin copper."""
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
 
         from pyedb.viewer import LayoutScene, SceneComponent, SceneLayer, ScenePad, ScenePolygon
         from pyedb.viewer.mesh import prepare_scene
+        from pyedb.viewer.qt import rhi
         from pyedb.viewer.qt.canvas import LayoutView
 
         layers = (SceneLayer("TOP", (1, 0, 0, 1)), SceneLayer("BOTTOM", (0, 0, 1, 1)))
@@ -1102,10 +1304,10 @@ class TestComponentRendering:
                 width = round(span * ratio)
                 return image.copy(round(px * ratio) - width // 2, round(py * ratio) - width // 2, width, width)
 
-            upload = Mock(wraps=GL.glBufferData)
-            sub_upload = Mock(wraps=GL.glBufferSubData)
-            monkeypatch.setattr(GL, "glBufferData", upload)
-            monkeypatch.setattr(GL, "glBufferSubData", sub_upload)
+            upload = Mock(wraps=rhi.allocate_geometry_buffer)
+            sub_upload = Mock(wraps=rhi.upload_geometry_buffer)
+            monkeypatch.setattr(rhi, "allocate_geometry_buffer", upload)
+            monkeypatch.setattr(rhi, "upload_geometry_buffer", sub_upload)
             view.show_components = False
             plain = view.grabFramebuffer()
             assert patch(frame, -6, -2) == patch(plain, -6, -2)  # No extra circle border.
@@ -1256,9 +1458,7 @@ class TestComponentRendering:
         )
         view = LayoutView(scene)
         view.show_grid = view.show_outlines = False
-        surface = view.format()
-        surface.setSamples(0)
-        view.setFormat(surface)
+        view.setSampleCount(1)
         view.resize(640, 480)
         view.set_prepared(prepare_scene(scene))
         view.show()
@@ -1280,7 +1480,6 @@ class TestComponentRendering:
 class TestWindowControls:
     def test_window_worker_controls_and_resource_recreation(self):
         pytest.importorskip("PySide6")
-        pytest.importorskip("OpenGL")
         pytest.importorskip("mapbox_earcut")
         import time
 
@@ -1326,7 +1525,7 @@ class TestWindowControls:
             canvas.grabFramebuffer()
             assert canvas.renderer.upload_count == initial_uploads
             window.close()
-            assert canvas.renderer.program == 0
+            assert canvas.renderer.device is None
             window.show()
             QTest.qWait(100)
             canvas.grabFramebuffer()
@@ -1390,13 +1589,13 @@ class TestWindowControls:
     def test_navigation_capsule_defaults_and_controls_keep_geometry_resident(self, monkeypatch):
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtCore import QPoint, Qt
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
 
         from pyedb.viewer import launch_viewer
         from pyedb.viewer.demo import demo_scene
+        from pyedb.viewer.qt import rhi
 
         app = QApplication.instance() or QApplication([])
         window = launch_viewer(scene=demo_scene(), block=False)
@@ -1414,10 +1613,10 @@ class TestWindowControls:
             assert pill.geometry().bottom() < canvas.height()
             assert not hasattr(pill, "mirror_button")
 
-            upload = Mock(wraps=GL.glBufferData)
-            sub_upload = Mock(wraps=GL.glBufferSubData)
-            monkeypatch.setattr(GL, "glBufferData", upload)
-            monkeypatch.setattr(GL, "glBufferSubData", sub_upload)
+            upload = Mock(wraps=rhi.allocate_geometry_buffer)
+            sub_upload = Mock(wraps=rhi.upload_geometry_buffer)
+            monkeypatch.setattr(rhi, "allocate_geometry_buffer", upload)
+            monkeypatch.setattr(rhi, "upload_geometry_buffer", sub_upload)
             scale = canvas.camera.scale
             QTest.mouseClick(pill.zoom_in_button, Qt.MouseButton.LeftButton)
             assert canvas.camera.scale == pytest.approx(scale * 1.2)
@@ -1496,12 +1695,12 @@ class TestWindowControls:
         """Bulk selection synchronizes the list in one repaint, without new GPU uploads."""
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtCore import Qt
         from PySide6.QtTest import QTest
         from PySide6.QtWidgets import QApplication
 
         from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon, launch_viewer
+        from pyedb.viewer.qt import rhi
 
         names = ["copper_first", "metal_middle", "copper_last"][:layer_count]
         layers = tuple(SceneLayer(name, (1, 0, 0, 1)) for name in names)
@@ -1521,11 +1720,11 @@ class TestWindowControls:
             )
             assert window.show_all_layers_button.isEnabled() == (layer_count > 1)
             assert window.hide_all_layers_button.isEnabled() == (layer_count > 0)
-            upload = Mock(wraps=GL.glBufferData)
-            sub_upload = Mock(wraps=GL.glBufferSubData)
+            upload = Mock(wraps=rhi.allocate_geometry_buffer)
+            sub_upload = Mock(wraps=rhi.upload_geometry_buffer)
             update = Mock(wraps=canvas.update)
-            monkeypatch.setattr(GL, "glBufferData", upload)
-            monkeypatch.setattr(GL, "glBufferSubData", sub_upload)
+            monkeypatch.setattr(rhi, "allocate_geometry_buffer", upload)
+            monkeypatch.setattr(rhi, "upload_geometry_buffer", sub_upload)
             monkeypatch.setattr(canvas, "update", update)
             if names:
                 QTest.mouseClick(window.hide_all_layers_button, Qt.MouseButton.LeftButton)
@@ -1569,7 +1768,6 @@ class TestWindowControls:
     def test_workspace_search_theme_and_display_controls_preserve_scene_state(self, monkeypatch):
         from unittest.mock import Mock
 
-        from OpenGL import GL
         from PySide6.QtCore import Qt
         from PySide6.QtGui import QPalette
         from PySide6.QtTest import QTest
@@ -1577,6 +1775,7 @@ class TestWindowControls:
 
         from pyedb.viewer import launch_viewer
         from pyedb.viewer.demo import demo_scene
+        from pyedb.viewer.qt import rhi
 
         app = QApplication.instance() or QApplication([])
         host = QWidget()
@@ -1592,16 +1791,16 @@ class TestWindowControls:
             assert app.styleSheet() == original_app_style
             assert not window.menuBar().isVisible()
             assert window.view_options_button.menu() is not None
-            assert window.opacity_readout.text() == "75%"
-            assert canvas.opacity == 0.75
+            assert window.opacity_readout.text() == "60%"
+            assert canvas.opacity == 0.60
             assert window.dockWidgetArea(window.layers_dock) == Qt.DockWidgetArea.LeftDockWidgetArea
             assert window.dockWidgetArea(window.networks_dock) == Qt.DockWidgetArea.RightDockWidgetArea
             assert not hasattr(window.layer_panel, "search")
             assert window.color_control.geometry().center().y() == window.opacity_control.geometry().center().y()
             assert window.layer_panel.counter.text() == "1 / 3"
             assert window.layer_panel.geometry().top() >= window.layer_panel.header.geometry().bottom()
-            upload = Mock(wraps=GL.glBufferData)
-            monkeypatch.setattr(GL, "glBufferData", upload)
+            upload = Mock(wraps=rhi.allocate_geometry_buffer)
+            monkeypatch.setattr(rhi, "allocate_geometry_buffer", upload)
             canvas.camera.pan(15, 9)
             position = canvas.camera.center_x, canvas.camera.center_y, canvas.camera.scale
             panel = window.network_panel
@@ -1919,121 +2118,99 @@ class TestPicking:
             app.processEvents()
 
 
-class TestTheme:
-    def test_dark_theme_switches_canvas_and_overlays_without_geometry_uploads(self, monkeypatch):
-        from unittest.mock import Mock
+def test_uniform_arena_growth_and_resizing_keep_geometry_resident():
+    """Zooming out can add hundreds of draws without changing the scene."""
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
 
-        from OpenGL import GL
-        from PySide6.QtTest import QTest
-        from PySide6.QtWidgets import QApplication
+    from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon
+    from pyedb.viewer.mesh import prepare_scene
+    from pyedb.viewer.qt.canvas import LayoutView
 
-        from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon
-        from pyedb.viewer.colors import CANVAS_PALETTES
-        from pyedb.viewer.mesh import prepare_scene
-        from pyedb.viewer.qt.canvas import LayoutView
-        from pyedb.viewer.qt.theme import DARK_COLORS, LIGHT_COLORS
-
-        scene = LayoutScene(
-            (SceneLayer("TOP", (0.9, 0.6, 0.2, 1)),),
-            (ScenePolygon(1, "TOP", "GND", ((0, 0), (10, 0), (10, 10), (0, 10))),),
+    def rect(x, y, margin):
+        return (
+            (x + margin, y + margin),
+            (x + 4 - margin, y + margin),
+            (x + 4 - margin, y + 4 - margin),
+            (x + margin, y + 4 - margin),
         )
-        app = QApplication.instance() or QApplication([])
-        view = LayoutView(scene)
-        view.color_by_net = False
-        view.opacity = 1
-        view.resize(640, 480)
-        view.set_prepared(prepare_scene(scene))
-        view.show()
-        try:
-            QTest.qWait(60)
-            view.zoom(1 / 3)  # Leave canvas around the board for background and grid samples.
-            view.grabFramebuffer()
-            upload = Mock(wraps=GL.glBufferData)
-            sub_upload = Mock(wraps=GL.glBufferSubData)
-            monkeypatch.setattr(GL, "glBufferData", upload)
-            monkeypatch.setattr(GL, "glBufferSubData", sub_upload)
-            dark = tuple(round(value * 255) for value in CANVAS_PALETTES["dark"].background[:3])
 
-            def background_and_grid(frame):
-                # A canvas band below the board: mostly background, crossed by grid lines in both directions.
-                ratio = view.devicePixelRatioF()
-                top = round(view.camera.world_to_screen(5, -2)[1] * ratio)
-                bottom = round(view.camera.world_to_screen(5, -4)[1] * ratio)
-                assert 0 <= top < bottom < frame.height()
-                pixels = [
-                    frame.pixelColor(x, y).getRgb()[:3] for y in range(top, bottom) for x in range(0, frame.width(), 3)
-                ]
-                return max(set(pixels), key=pixels.count), max(pixels, key=sum)
+    scene = LayoutScene(
+        (SceneLayer("TOP", (1, 0, 0, 1)),),
+        tuple(
+            ScenePolygon(i, "TOP", "A", rect(i % 10 * 6, i // 10 * 6, 0), (rect(i % 10 * 6, i // 10 * 6, 1),))
+            for i in range(100)
+        ),
+    )
+    app = QApplication.instance() or QApplication([])
+    view = LayoutView(scene)
+    view.resize(800, 600)
+    view.show_grid = view.show_components = view.show_outlines = False
+    view.color_by_net = False
+    view.opacity = 1
+    view.set_prepared(prepare_scene(scene))
+    # Fit to a small part before exposing the widget, then reveal the full board.
+    view.camera.resize(800, 600)
+    view.camera.fit((0, 0, 5, 5))
+    view._fitted = True
+    view.show()
+    try:
+        QTest.qWait(80)
+        view.grabFramebuffer()
+        device = view.renderer.device
+        capacity = device.uniform_capacity
+        uploaded = device.geometry_upload_bytes
+        view.fit_all()
+        view.grabFramebuffer()
+        assert device.uniform_capacity > capacity
+        view.resize(920, 680)
+        QTest.qWait(40)
+        image = view.grabFramebuffer()
+        for point, expected in (((0.5, 0.5), (255, 0, 0)), ((2, 2), (255, 255, 255)), ((54.5, 54.5), (255, 0, 0))):
+            x, y = view.camera.world_to_screen(*point)
+            pixel = image.pixelColor(round(x * view.devicePixelRatioF()), round(y * view.devicePixelRatioF()))
+            assert (pixel.red(), pixel.green(), pixel.blue()) == expected
+        assert view.renderer.device is device
+        assert device.geometry_upload_bytes == uploaded
+        assert view.renderer.upload_count == 1
+        assert view.error is None
+    finally:
+        view.cleanup()
+        view.close()
+        app.processEvents()
 
-            def copper(frame):
-                px, py = view.camera.world_to_screen(5, 5)
-                ratio = view.devicePixelRatioF()
-                return frame.pixelColor(round(px * ratio), round(py * ratio)).getRgb()[:3]
 
-            assert background_and_grid(view.grabFramebuffer())[0] == (255, 255, 255)
-            view.set_theme("dark")
-            assert view.theme == "dark"
-            frame = view.grabFramebuffer()
-            background, brightest = background_and_grid(frame)
-            assert background == dark
-            assert sum(brightest) > sum(dark) + 20  # Grid lines are lighter than the dark canvas.
-            assert copper(frame) == pytest.approx((230, 153, 51), abs=1)  # Copper does not change with the theme.
-            for widget in (view.inspector, view.loading, view.message):
-                assert DARK_COLORS["panel"] in widget.styleSheet()
-            view.show_grid = False
-            assert background_and_grid(view.grabFramebuffer()) == (dark, dark)
-            view.set_theme("light")
-            assert background_and_grid(view.grabFramebuffer())[0] == (255, 255, 255)
-            assert LIGHT_COLORS["panel"] in view.inspector.styleSheet()
-            with pytest.raises(ValueError, match="Unknown layout viewer theme"):
-                view.set_theme("sepia")
-            assert view.renderer.upload_count == 1
-            upload.assert_not_called()
-            sub_upload.assert_not_called()
-            assert view.error is None, view.error
-        finally:
-            view.cleanup()
-            view.close()
-            app.processEvents()
+@pytest.mark.parametrize("color_by_net", [False, True])
+def test_polygon_with_holes_and_no_network_keeps_layer_color(color_by_net):
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
 
-    def test_window_dark_theme_option_menu_toggle_and_rebuilt_panels(self):
-        import time
+    from pyedb.viewer import LayoutScene, SceneLayer, ScenePolygon
+    from pyedb.viewer.mesh import prepare_scene
+    from pyedb.viewer.qt.canvas import LayoutView
 
-        from PySide6.QtGui import QColor
-        from PySide6.QtTest import QTest
-        from PySide6.QtWidgets import QApplication
-
-        from pyedb.viewer import launch_viewer
-        from pyedb.viewer.demo import demo_scene
-        from pyedb.viewer.qt.theme import DARK_COLORS, LIGHT_COLORS
-
-        app = QApplication.instance() or QApplication([])
-        window = launch_viewer(scene=demo_scene(), theme="dark", block=False)
-        try:
-            canvas = window.canvas
-            deadline = time.monotonic() + 10
-            while canvas.renderer.prepared is None and not canvas.error and time.monotonic() < deadline:
-                QTest.qWait(20)
-            assert canvas.error is None, canvas.error
-            assert window.theme == canvas.theme == "dark"
-            assert window.dark_theme_action.isChecked()
-            assert DARK_COLORS["window"] in window.styleSheet()
-            assert window.layer_list.item(0).foreground().color() == QColor(DARK_COLORS["text"])
-            # Panels rebuilt for a new snapshot keep the active theme.
-            window._display_scene(canvas.scene)
-            assert window.layer_list.item(0).foreground().color() == QColor(DARK_COLORS["text"])
-            changes = []
-            window.theme_changed.connect(changes.append)
-            uploads = canvas.renderer.upload_count
-            window.dark_theme_action.trigger()
-            assert window.theme == canvas.theme == "light"
-            assert changes == ["light"]
-            assert LIGHT_COLORS["window"] in window.styleSheet()
-            assert window.layer_list.item(0).foreground().color() == QColor(LIGHT_COLORS["text"])
-            window.set_theme("light")
-            assert changes == ["light"]  # Re-applying the active theme does not signal a change.
-            canvas.grabFramebuffer()
-            assert canvas.renderer.upload_count == uploads
-        finally:
-            window.close()
-            app.processEvents()
+    scene = LayoutScene(
+        (SceneLayer("TOP", (0.2, 0.4, 0.8, 1)),),
+        (ScenePolygon(1, "TOP", None, ((0, 0), (4, 0), (4, 4), (0, 4)), (((1, 1), (3, 1), (3, 3), (1, 3)),)),),
+    )
+    app = QApplication.instance() or QApplication([])
+    view = LayoutView(scene)
+    view.resize(400, 400)
+    view.show_grid = view.show_components = view.show_outlines = False
+    view.color_by_net = color_by_net
+    view.opacity = 1
+    view.set_prepared(prepare_scene(scene))
+    view.show()
+    try:
+        QTest.qWait(60)
+        image = view.grabFramebuffer()
+        for point, expected in (((0.5, 0.5), (51, 102, 204)), ((2, 2), (255, 255, 255))):
+            x, y = view.camera.world_to_screen(*point)
+            pixel = image.pixelColor(round(x * view.devicePixelRatioF()), round(y * view.devicePixelRatioF()))
+            assert (pixel.red(), pixel.green(), pixel.blue()) == pytest.approx(expected, abs=1)
+        assert view.error is None
+    finally:
+        view.cleanup()
+        view.close()
+        app.processEvents()
+        app.processEvents()

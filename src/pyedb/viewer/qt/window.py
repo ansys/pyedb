@@ -27,11 +27,11 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable
 from concurrent.futures import Future, ThreadPoolExecutor
 from typing import TYPE_CHECKING
+import weakref
 
-from PySide6.QtCore import QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, Signal, Slot
+from PySide6.QtCore import QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, QTimer, Signal, Slot
 from PySide6.QtGui import QAction, QCloseEvent, QFont, QResizeEvent
 from PySide6.QtWidgets import (
-    QApplication,
     QComboBox,
     QDockWidget,
     QHBoxLayout,
@@ -47,14 +47,13 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pyedb.viewer.colors import viewer_theme
 from pyedb.viewer.mesh import prepare_scene
 from pyedb.viewer.progress import throttle_progress
 from pyedb.viewer.qt.canvas import LayoutView
 from pyedb.viewer.qt.icons import workspace_icon
 from pyedb.viewer.qt.navigation import NavigationCapsule
 from pyedb.viewer.qt.panels import ElidedLabel, LayerPanel, NetworkPanel
-from pyedb.viewer.qt.theme import COLORS, apply_viewer_theme, theme_colors
+from pyedb.viewer.qt.theme import COLORS, apply_viewer_theme
 from pyedb.viewer.scene import union_bounds
 
 if TYPE_CHECKING:
@@ -72,10 +71,22 @@ class _PreparationSignals(QObject):
 
 
 class _Prepare(QRunnable):
-    def __init__(self, scene: LayoutScene, loader: Callable[..., LayoutScene] | None = None) -> None:
+    def __init__(
+        self,
+        scene: LayoutScene,
+        loader: Callable[..., LayoutScene] | None = None,
+        *,
+        previews=True,
+        incremental=False,
+        previous=None,
+    ) -> None:
         super().__init__()
         self.scene = scene
         self.loader = loader
+        self.previews = previews
+        self.incremental = incremental
+        self.previous = previous
+        self.result = None
         self.preview_scene = self.preview_prepared = None
         self._preview_executor: ThreadPoolExecutor | None = None
         self._preview_jobs: list[Future[None]] = []
@@ -90,10 +101,14 @@ class _Prepare(QRunnable):
                 # session remains on this single source-reading thread.
                 with ThreadPoolExecutor(max_workers=1, thread_name_prefix="pyedb-mesh") as executor:
                     self._preview_executor = executor
-                    if hasattr(self.loader, "set_preview"):
+                    if self.previews and hasattr(self.loader, "set_preview"):
                         self.loader.set_preview(self._queue_preview)
                     try:
-                        self.scene = self.loader(progress)
+                        if getattr(self.loader, "changes", None) is not None:
+                            self.result = self.loader.capture(progress, previous=self.scene, full=not self.incremental)
+                            self.scene = self.result.scene
+                        else:
+                            self.scene = self.loader(progress)
                     finally:
                         if hasattr(self.loader, "release_source"):
                             self.loader.release_source()
@@ -106,7 +121,14 @@ class _Prepare(QRunnable):
                 _ = self.scene.bounds  # Cache derived bounds off the GUI thread.
                 self.signals.scene_ready.emit(self.scene)
             mesh = (self.preview_scene, self.preview_prepared) if self.preview_prepared is not None else None
-            prepared = prepare_scene(self.scene, progress=progress, polygon_mesh=mesh)
+            if self.result is not None and self.result.patch is not None and self.previous is not None:
+                from pyedb.viewer.incremental import prepare_incremental
+
+                prepared = prepare_incremental(
+                    self.scene, self.previous[0], self.previous[1], self.result.patch, self.result.changed
+                )
+            else:
+                prepared = prepare_scene(self.scene, progress=progress, polygon_mesh=mesh)
             self.signals.ready.emit(prepared)
         except Exception as exc:
             self.signals.failed.emit(exc)
@@ -125,6 +147,27 @@ class _Prepare(QRunnable):
         self.signals.preview_ready.emit(scene, self.preview_prepared)
 
 
+class _ScriptSignals(QObject):
+    finished = Signal(object)
+    failed = Signal(object)
+
+
+class _Script(QRunnable):
+    def __init__(self, callback, args, kwargs):
+        super().__init__()
+        self.callback, self.args, self.kwargs = callback, args, kwargs
+        self.signals = _ScriptSignals()
+
+    @Slot()
+    def run(self):
+        try:
+            result = self.callback(*self.args, **self.kwargs)
+        except Exception as exc:
+            self.signals.failed.emit(exc)
+        else:
+            self.signals.finished.emit(result)
+
+
 class LayoutWindow(QMainWindow):
     """Layout viewer window.
 
@@ -135,12 +178,16 @@ class LayoutWindow(QMainWindow):
 
     scene_ready = Signal(object)
     scene_failed = Signal(object)
+    refresh_finished = Signal(object)
+    refresh_failed = Signal(object)
+    script_finished = Signal(object)
+    script_failed = Signal(object)
+    _source_changed = Signal(int)
     object_selected = Signal(object)
     selection_cleared = Signal()
     object_hovered = Signal(object)
     net_changed = Signal(object)
     visible_layers_changed = Signal(object)
-    theme_changed = Signal(str)
 
     def __init__(
         self,
@@ -153,23 +200,43 @@ class LayoutWindow(QMainWindow):
         plot_components_on_both_side: bool = True,
         plot_outlines: bool = True,
         loader: Callable[..., LayoutScene] | None = None,
-        theme: str = "light",
+        backend: str | None = None,
+        live: bool = False,
+        refresh_interval: int = 50,
     ) -> None:
         super().__init__(parent)
-        theme = viewer_theme(theme)
-        self._theme = "light"
-        self._colors = COLORS
-        # Set by show_scene: only a viewer-owned QApplication follows the theme's color scheme.
-        self._owns_application = False
         self._capturing = loader is not None
         self._capture_error = None
         self._has_preview = False
         self._close_after_capture = False
+        self._source = loader if getattr(loader, "changes", None) is not None else None
+        self._busy = True
+        self._refreshing = False
+        self._pending_refresh = False
+        self._pending_full_refresh = False
+        self._closed = False
+        self._next_scene = None
+        self._script = None
+        self._unsubscribe = None
+        self._refresh_timer = QTimer(self)
+        self._refresh_timer.setSingleShot(True)
+        self._refresh_timer.setInterval(refresh_interval)
+        self._refresh_timer.timeout.connect(self._start_refresh)
+        self._source_changed.connect(self._queue_source_refresh)
+        if live and self._source is not None:
+            reference = weakref.ref(self)
+
+            def changed(revision):
+                window = reference()
+                if window is not None and not window._closed:
+                    window._source_changed.emit(revision)
+
+            self._unsubscribe = self._source.changes.subscribe(changed)
         apply_viewer_theme(self)
         self.setWindowTitle(f"{scene.title} — PyEDB Layout Viewer")
         self.resize(1280, 800)
         self.setMinimumSize(640, 400)
-        self.canvas = LayoutView(scene, self)
+        self.canvas = LayoutView(scene, self, backend=backend)
         self.canvas.setMinimumWidth(180)
         self.canvas.color_by_net = color_by_net
         self.canvas.show_components = plot_components
@@ -189,9 +256,9 @@ class LayoutWindow(QMainWindow):
         self.coordinates.setMinimumWidth(220)
         self.statusBar().setSizeGripEnabled(False)
         self.statusBar().setMinimumHeight(30)
-        self.engine_badge = QLabel("●  OpenGL")
+        self.engine_badge = QLabel({"d3d11": "Direct3D 11", "vulkan": "Vulkan", "metal": "Metal"}[self.canvas.backend])
         self.engine_badge.setProperty("role", "engine")
-        self.engine_badge.setToolTip("OpenGL layout renderer")
+        self.engine_badge.setToolTip("Qt RHI layout renderer")
         self.statusBar().addPermanentWidget(self.engine_badge)
         self.statusBar().addPermanentWidget(self.coordinates)
         self.statusBar().showMessage("Preparing layout…")
@@ -214,17 +281,16 @@ class LayoutWindow(QMainWindow):
         self._preparation.signals.preview_ready.connect(self._scene_preview)
         self._preparation.signals.failed.connect(self._load_failed)
         self._preparation.signals.progress.connect(self.canvas.set_progress)
-        if theme != "light":
-            self.set_theme(theme)
         QThreadPool.globalInstance().start(self._preparation)
 
     @Slot(object)
     def _scene_loaded(self, scene: LayoutScene) -> None:
         self._capturing = False
+        if self._refreshing:
+            self._next_scene = scene
+            return
         self._display_scene(scene, preserve_view=self._has_preview)
         self.scene_ready.emit(scene)
-        if self._close_after_capture:
-            self.close()
 
     @Slot(object, object)
     def _scene_preview(self, scene: LayoutScene, prepared: PreparedScene) -> None:
@@ -235,8 +301,10 @@ class LayoutWindow(QMainWindow):
         self.canvas.set_prepared(prepared, final=False)
 
     def _display_scene(self, scene: LayoutScene, preserve_view: bool = False) -> None:
+        previous_scene = self.canvas.scene
         visible = self.canvas.visible_layers
         selected_net = self.canvas.net
+        search = self.network_panel.search.text() if preserve_view else ""
         self.canvas.scene = scene
         self.canvas.visible_layers = (
             visible.intersection(layer.name for layer in scene.layers)
@@ -247,15 +315,27 @@ class LayoutWindow(QMainWindow):
         )
         self.setWindowTitle(f"{scene.title} — PyEDB Layout Viewer")
         self.project_title.setText(scene.title)
-        self._set_layer_panel(scene)
-        self._set_network_panel(scene)
-        if preserve_view:
-            self.canvas.net = None
-            for index in range(self.network_list.count()):
-                if self.network_list.item(index).data(Qt.ItemDataRole.UserRole) == selected_net:
-                    self.network_list.setCurrentRow(index)
-                    self.canvas.net = selected_net
-                    break
+        if not preserve_view or scene.layers != previous_scene.layers:
+            self._set_layer_panel(scene)
+        network_names = sorted(
+            {item.net for item in scene.geometry if item.net is not None}
+            | {net for component in scene.components for net in component.nets}
+        )
+        rebuild_networks = not preserve_view or network_names != self.network_panel.names
+        if rebuild_networks:
+            self._set_network_panel(scene)
+        if preserve_view and rebuild_networks:
+            with QSignalBlocker(self.network_list):
+                self.canvas.net = None
+                for index in range(self.network_list.count()):
+                    if self.network_list.item(index).data(Qt.ItemDataRole.UserRole) == selected_net:
+                        self.network_list.setCurrentRow(index)
+                        self.canvas.net = selected_net
+                        break
+            self.network_panel._selection_changed(self.network_list.currentRow())
+            self.network_panel.search.setText(search)
+            if self.canvas.net != selected_net:
+                self.net_changed.emit(self.canvas.net)
         has_components = bool(scene.components) or any(getattr(item, "component", None) for item in scene.geometry)
         sides = {component.side for component in scene.components}
         sides.update(item.component_side for item in scene.geometry if getattr(item, "component", None))
@@ -276,10 +356,129 @@ class LayoutWindow(QMainWindow):
     def _load_failed(self, error: BaseException) -> None:
         capturing = self._capturing
         self._capturing = False
-        self.canvas.fail(error)
-        if capturing:
+        if self._refreshing:
+            # Keep the previous, usable snapshot on a refresh failure.
+            self.statusBar().showMessage(f"Layout refresh failed: {error}")
+            self.refresh_failed.emit(error)
+        else:
+            self.canvas.fail(error)
+        if capturing and not self._refreshing:
             self._capture_error = error
             self.scene_failed.emit(error)
+        self._finish_preparation()
+
+    def refresh(self) -> None:
+        """Asynchronously recapture the EDB session, preserving the current view.
+
+        Repeated requests during a capture are merged into one subsequent
+        refresh. ``refresh_finished(scene)`` fires after geometry and picking
+        are prepared; ``refresh_failed(error)`` leaves the old snapshot intact.
+        Call on the GUI thread while the Qt event loop is running.
+        """
+        if self._closed:
+            raise RuntimeError("The layout viewer is closed.")
+        if self._source is None:
+            raise RuntimeError("Refresh requires a viewer opened from an EDB session.")
+        if self._source.changes.closed:
+            raise RuntimeError("The source EDB session is closed.")
+        self._pending_refresh = True
+        self._pending_full_refresh = True
+        self._refresh_timer.stop()
+        if not self._busy:
+            self._start_refresh()
+
+    def batch_update(self):
+        """Group geometry edits into one notification and exclude viewer reads.
+
+        Use as a context manager on the modeling thread. This batches updates;
+        it does not roll back EDB edits if an exception occurs.
+        """
+        if self._closed or self._source is None:
+            raise RuntimeError("Batch updates require an open EDB-backed viewer.")
+        return self._source.changes.batch()
+
+    def stop_live(self) -> None:
+        """Unsubscribe automatic updates; manual refresh remains available."""
+        if self._unsubscribe is not None:
+            self._unsubscribe()
+            self._unsubscribe = None
+        self._refresh_timer.stop()
+        self._pending_refresh = False
+        self._pending_full_refresh = False
+
+    @Slot(int)
+    def _queue_source_refresh(self, revision: int) -> None:
+        if self._closed or self._unsubscribe is None:
+            return
+        if self._source.changes.closed:
+            self.stop_live()
+            return
+        if revision <= self._source.revision:
+            return
+        self._pending_refresh = True
+        if not self._busy and not self._refresh_timer.isActive():
+            self._refresh_timer.start()
+
+    @Slot()
+    def _start_refresh(self) -> None:
+        if self._closed or self._busy or not self._pending_refresh:
+            return
+        self._pending_refresh = False
+        if self._source.changes.closed:
+            self.stop_live()
+            return
+        self._busy = self._refreshing = self._capturing = True
+        self._next_scene = None
+        self._preparation = _Prepare(
+            self.canvas.scene,
+            self._source,
+            previews=False,
+            incremental=not self._pending_full_refresh,
+            previous=(self.canvas.scene, self.canvas._prepared),
+        )
+        self._pending_full_refresh = False
+        self._preparation.signals.ready.connect(self._prepared)
+        self._preparation.signals.scene_ready.connect(self._scene_loaded)
+        self._preparation.signals.failed.connect(self._load_failed)
+        self.statusBar().showMessage("Refreshing layout…")
+        QThreadPool.globalInstance().start(self._preparation)
+
+    def _finish_preparation(self) -> None:
+        self._busy = self._refreshing = False
+        self._next_scene = None
+        if self._close_after_capture:
+            self.close()
+        elif self._pending_refresh:
+            self._refresh_timer.start()
+
+    def run_script(self, callback: Callable, *args, **kwargs) -> None:
+        """Run one modeling callback off the GUI thread, keeping rendering active.
+
+        The callback may edit EDB and use ``batch_update()`` but must not access
+        Qt widgets. Results/errors are emitted on ``script_finished`` and
+        ``script_failed``. Run the Qt event loop after scheduling the callback.
+        """
+        if self._closed:
+            raise RuntimeError("The layout viewer is closed.")
+        if self._script is not None:
+            raise RuntimeError("A modeling script is already running.")
+        self._script = _Script(callback, args, kwargs)
+        self._script.signals.finished.connect(self._script_finished)
+        self._script.signals.failed.connect(self._script_failed)
+        QThreadPool.globalInstance().start(self._script)
+
+    @Slot(object)
+    def _script_finished(self, result):
+        self._script = None
+        self.script_finished.emit(result)
+        if self._close_after_capture:
+            self.close()
+
+    @Slot(object)
+    def _script_failed(self, error):
+        self._script = None
+        self.statusBar().showMessage(f"Modeling script failed: {error}")
+        self.script_failed.emit(error)
         if self._close_after_capture:
             self.close()
 
@@ -290,7 +489,7 @@ class LayoutWindow(QMainWindow):
         header.setFloatable(False)
         header.setFixedHeight(62)
         self.addToolBar(header)
-        mark = self._brand_mark = QLabel()
+        mark = QLabel()
         mark.setFixedSize(32, 32)
         mark.setAlignment(Qt.AlignmentFlag.AlignCenter)
         mark.setPixmap(workspace_icon("pcb", COLORS["accent"]).pixmap(QSize(27, 27)))
@@ -320,7 +519,7 @@ class LayoutWindow(QMainWindow):
         self.view_options_button.setToolTip("Layers and component display options (Alt+V)")
         self.view_options_button.setMinimumHeight(34)
         header.addWidget(self.view_options_button)
-        notes = self._notes_button = QToolButton()
+        notes = QToolButton()
         notes.setIcon(workspace_icon("info", COLORS["muted"]))
         notes.setIconSize(QSize(18, 18))
         notes.setAccessibleName("Display notes")
@@ -472,12 +671,6 @@ class LayoutWindow(QMainWindow):
             action.toggled.connect(lambda checked, setting=setting: self._display_option(setting, checked))
             setattr(self, attribute, action)
             menu.addAction(action)
-        menu.addSeparator()
-        self.dark_theme_action = QAction("Dark theme", self)
-        self.dark_theme_action.setCheckable(True)
-        self.dark_theme_action.setToolTip("Switch the workspace and canvas between light and dark themes")
-        self.dark_theme_action.toggled.connect(lambda checked: self.set_theme("dark" if checked else "light"))
-        menu.addAction(self.dark_theme_action)
 
     def _set_layer_panel(self, scene: LayoutScene) -> None:
         dock = self.layers_dock
@@ -493,8 +686,6 @@ class LayoutWindow(QMainWindow):
         self.layer_panel.header.setParent(dock)
         dock.setTitleBarWidget(self.layer_panel.header)
         dock.setWidget(self.layer_panel)
-        if self._theme != "light":
-            self.layer_panel.apply_theme(self._colors)
         self._sync_layer_buttons()
         for widget in (previous, header):
             if widget is not None:
@@ -527,16 +718,20 @@ class LayoutWindow(QMainWindow):
         self.network_panel.header.setParent(dock)
         dock.setTitleBarWidget(self.network_panel.header)
         dock.setWidget(self.network_panel)
-        if self._theme != "light":
-            self.network_panel.apply_theme(self._colors)
         for widget in (previous, header):
             if widget is not None:
                 widget.deleteLater()
 
     @Slot(object)
     def _prepared(self, prepared: PreparedScene) -> None:
+        refreshing = self._refreshing
+        if self._source is not None and self._preparation.result is not None:
+            self._source.revision = self._preparation.result.revision
+        if refreshing and not self._closed:
+            self._display_scene(self._next_scene, preserve_view=any(True for _ in self.canvas.scene.geometry))
         self.canvas.set_prepared(prepared)
         if self.canvas.error:
+            self._finish_preparation()
             return
         pin_count = len(
             {
@@ -551,6 +746,9 @@ class LayoutWindow(QMainWindow):
         )
         self._compact_stats = f"Scene · {len(prepared.batches):,} areas · {pin_count:,} pins"
         self._refresh_status()
+        if refreshing and not self._closed:
+            self.refresh_finished.emit(self.canvas.scene)
+        self._finish_preparation()
 
     @Slot(float, float)
     def _position_changed(self, x: float, y: float) -> None:
@@ -558,8 +756,8 @@ class LayoutWindow(QMainWindow):
 
     @Slot(str)
     def _rendering_failed(self, error: str) -> None:
-        self.engine_badge.setText("OpenGL error")
-        self.engine_badge.setStyleSheet(f"color: {self._colors['error']};")
+        self.engine_badge.setText("Renderer error")
+        self.engine_badge.setStyleSheet(f"color: {COLORS['error']};")
         self.engine_badge.setToolTip(error)
         self._render_error = "Layout rendering failed. See the canvas for details."
         self._refresh_status()
@@ -634,37 +832,6 @@ class LayoutWindow(QMainWindow):
             self.object_selected.emit(picked)
 
     @property
-    def theme(self) -> str:
-        """The active theme name: ``"light"`` or ``"dark"``."""
-        return self._theme
-
-    def set_theme(self, theme: str) -> None:
-        """Switch the workspace and canvas theme. GPU geometry and the view are unchanged."""
-        name = viewer_theme(theme)
-        previous = self._theme
-        colors = self._colors = theme_colors(name)
-        self._theme = name
-        apply_viewer_theme(self, colors)
-        self.canvas.set_theme(name)
-        self.navigation.apply_theme(colors)
-        self.layer_panel.apply_theme(colors)
-        self.network_panel.apply_theme(colors)
-        self._brand_mark.setPixmap(workspace_icon("pcb", colors["accent"]).pixmap(QSize(27, 27)))
-        self.view_options_button.setIcon(workspace_icon("settings", colors["text"]))
-        self._notes_button.setIcon(workspace_icon("info", colors["muted"]))
-        self.pick_action.setIcon(workspace_icon("pick", colors["text"]))
-        if self._render_error:
-            self.engine_badge.setStyleSheet(f"color: {colors['error']};")
-        with QSignalBlocker(self.dark_theme_action):
-            self.dark_theme_action.setChecked(name == "dark")
-        hints = QApplication.styleHints()
-        if self._owns_application and hasattr(hints, "setColorScheme"):
-            # Native frames (such as the Windows title bar) follow the application color scheme.
-            hints.setColorScheme(Qt.ColorScheme.Dark if name == "dark" else Qt.ColorScheme.Light)
-        if name != previous:
-            self.theme_changed.emit(name)
-
-    @property
     def selected_object(self) -> PickedObject | None:
         """The selected ``PickedObject``, or None."""
         return None if self.canvas.selection is None else self.canvas.selection.picked
@@ -729,18 +896,27 @@ class LayoutWindow(QMainWindow):
         notes = list(self.canvas.scene.diagnostics) or ["Scene supplied by caller. Coordinates are in millimeters."]
         prepared = self.canvas.renderer.prepared
         if prepared is not None:
+            instance_count = sum(batch.instance_count for batch in prepared.sdf_batches) + len(
+                prepared.component_batches
+            )
             notes.insert(
                 0,
-                f"Geometry: {len(prepared.indices) // 3:,} triangles, {len(prepared.instances):,} GPU instances. "
+                f"Geometry: {sum(b.outer_count + b.hole_count for b in prepared.batches) // 3:,} triangles, "
+                f"{instance_count:,} GPU instances. "
                 f"Geometry uploads: {self.canvas.renderer.upload_count}.",
             )
         QMessageBox.information(self, "Layout display notes", "\n\n".join(notes))
 
     def closeEvent(self, event: QCloseEvent) -> None:
-        if self._capturing:
+        self._closed = True
+        self.stop_live()
+        if self._busy or self._script is not None:
             self._close_after_capture = True
             self.hide()
             event.ignore()
             return
+        if self._source is not None:
+            self._source.close()
+            self._source = None
         self.canvas.cleanup()
         super().closeEvent(event)

@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#version 330 core
+#version 440
+#extension GL_GOOGLE_include_directive : require
+#include "uniforms.glsl"
 
-in vec2 uv;
-flat in float bottom_side;
-uniform sampler2D atlas;
-uniform float opacity;
-uniform vec3 label_color;
-out vec4 fragment_color;
+layout(location = 0) in vec2 uv;
+layout(location = 1) flat in float bottom_side;
+layout(binding = 1) uniform sampler2D atlas;
+layout(location = 0) out vec4 fragment_color;
 
 void main() {
     vec4 glyph = texture(atlas, uv);

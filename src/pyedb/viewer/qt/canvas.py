@@ -20,11 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Embeddable, on-demand OpenGL canvas with cursor-anchored navigation."""
+"""Embeddable, on-demand RHI canvas with cursor-anchored navigation."""
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QEvent, QLineF, Qt, QTimer, Signal, Slot
@@ -34,20 +33,19 @@ from PySide6.QtGui import (
     QKeyEvent,
     QMouseEvent,
     QResizeEvent,
+    QRhi,
     QShowEvent,
-    QSurfaceFormat,
     QWheelEvent,
 )
-from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtWidgets import QLabel, QWidget
+from PySide6.QtWidgets import QLabel, QRhiWidget, QWidget
 
 from pyedb.viewer.camera import Camera
-from pyedb.viewer.colors import CANVAS_PALETTES, viewer_theme
 from pyedb.viewer.picking import PickHit
 from pyedb.viewer.qt.inspector import ObjectInspector
 from pyedb.viewer.qt.loading import LoadingPanel
 from pyedb.viewer.qt.renderer import Renderer
-from pyedb.viewer.qt.theme import COLORS, theme_colors
+from pyedb.viewer.qt.rhi import graphics_api
+from pyedb.viewer.qt.theme import COLORS
 
 if TYPE_CHECKING:
     from pyedb.viewer.mesh import PreparedScene
@@ -55,25 +53,7 @@ if TYPE_CHECKING:
     from pyedb.viewer.scene import Bounds, LayoutScene
 
 
-def layout_surface_format() -> QSurfaceFormat:
-    """Return the core OpenGL format required by the layout canvas."""
-    surface = QSurfaceFormat()
-    surface.setVersion(3, 3)
-    surface.setProfile(QSurfaceFormat.OpenGLContextProfile.CoreProfile)
-    surface.setDepthBufferSize(24)
-    surface.setStencilBufferSize(8)
-    surface.setSamples(4)
-    return surface
-
-
-def _message_style(colors: Mapping[str, str]) -> str:
-    return (
-        f"background: {colors['panel']}; color: {colors['text']}; border: 1px solid {colors['border']}; "
-        "border-radius: 12px; padding: 20px;"
-    )
-
-
-class LayoutView(QOpenGLWidget):
+class LayoutView(QRhiWidget):
     """Display a detached scene inside an existing QApplication.
 
     Call ``set_prepared`` with ``prepare_scene(scene)`` to supply geometry.
@@ -85,14 +65,17 @@ class LayoutView(QOpenGLWidget):
     selection_changed = Signal(object)
     hover_changed = Signal(object)
 
-    def __init__(self, scene: LayoutScene, parent: QWidget | None = None) -> None:
+    def __init__(self, scene: LayoutScene, parent: QWidget | None = None, *, backend: str | None = None) -> None:
         super().__init__(parent)
-        self.setFormat(layout_surface_format())
+        self.backend, api = graphics_api(backend)
+        self.setApi(api)
+        self.setSampleCount(4)
+        self.renderFailed.connect(self._render_failed)
         self.scene = scene
         self.camera = Camera()
         self.renderer = Renderer()
         self.visible_layers = {scene.layers[0].name} if scene.layers else set()
-        self.opacity = 0.75
+        self.opacity = 0.60
         self.color_by_net = True
         self.show_grid = True
         self.show_outlines = True
@@ -100,7 +83,6 @@ class LayoutView(QOpenGLWidget):
         self.annotate_component_names = True
         self.components_on_both_sides = True
         self.fit_padding = (0, 0, 0, 0)
-        self.theme = "light"
         self.net = None
         self.error = None
         self._prepared = None
@@ -130,7 +112,10 @@ class LayoutView(QOpenGLWidget):
         self.message = QLabel(self)
         self.message.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.message.setWordWrap(True)
-        self.message.setStyleSheet(_message_style(COLORS))
+        self.message.setStyleSheet(
+            f"background: {COLORS['panel']}; color: {COLORS['text']}; border: 1px solid {COLORS['border']}; "
+            "border-radius: 12px; padding: 20px;"
+        )
         self.message.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.message.hide()
         self.inspector = ObjectInspector(self)
@@ -151,6 +136,9 @@ class LayoutView(QOpenGLWidget):
             obj = self._pick_index.by_key.get(self.selection.key) if self._pick_index is not None else None
             if obj is not None:
                 item = next((item for item in obj.items if item.layer == self.selection.layer), obj.items[0])
+                if item.bounds != self.selection.item.bounds:
+                    x0, y0, x1, y1 = item.bounds
+                    self._selection_anchor = ((x0 + x1) / 2, (y0 + y1) / 2)
                 self.selection = PickHit(obj, item, 0)
                 self.inspector.set_hit(self.selection)
             else:
@@ -167,15 +155,6 @@ class LayoutView(QOpenGLWidget):
             self.message.setText("No geometry matches this layout selection.")
         self.update()
 
-    def set_theme(self, theme: str) -> None:
-        """Switch canvas and overlay colors between ``"light"`` and ``"dark"``; geometry stays resident."""
-        self.theme = viewer_theme(theme)
-        colors = theme_colors(self.theme)
-        self.loading.apply_theme(colors)
-        self.inspector.apply_theme(colors)
-        self.message.setStyleSheet(_message_style(colors))
-        self.update()
-
     def fail(self, error: object) -> None:
         self.error = str(error)
         self.loading.hide()
@@ -183,25 +162,35 @@ class LayoutView(QOpenGLWidget):
         self.message.show()
         self.rendering_failed.emit(self.error)
 
-    def initializeGL(self) -> None:
+    def initialize(self, command_buffer):
         try:
-            self.renderer.initialize()
-            self.context().aboutToBeDestroyed.connect(self.cleanup)
-            self._pending_upload = self._prepared is not None
+            expected = {
+                "d3d11": QRhi.Implementation.D3D11,
+                "vulkan": QRhi.Implementation.Vulkan,
+                "metal": QRhi.Implementation.Metal,
+            }[self.backend]
+            if self.rhi().backend() != expected:
+                raise RuntimeError(f"The host window uses an incompatible graphics API; requested {self.backend}.")
+            self.renderer.initialize(self)
+            self._pending_upload = self._prepared is not None and self.renderer.prepared is None
+            self.camera.resize(self.width(), self.height())
+            if not self._fitted:
+                self.fit_all()
+                self._fitted = True
         except Exception as exc:
-            self.renderer.release()
             self.fail(exc)
 
-    def paintGL(self) -> None:
+    def render(self, command_buffer):
         if self.error:
             return
         try:
-            # A closed window can be shown again with the same Qt context.
-            if not self.renderer.program:
-                self.renderer.initialize()
-                self._pending_upload = self._prepared is not None
+            if self.renderer.device is None:
+                self.initialize(command_buffer)
+                if self.error:
+                    return
+            updates = self.rhi().nextResourceUpdateBatch()
             if self._pending_upload:
-                self.renderer.upload(self._prepared)
+                self.renderer.upload(self._prepared, updates)
                 self._pending_upload = False
             if self.selection is not None and not self._hit_visible(self.selection):
                 self.clear_selection()
@@ -212,6 +201,8 @@ class LayoutView(QOpenGLWidget):
             if self.hover is not None and not self._hit_visible(self.hover):
                 self.hover = None
             self.renderer.draw(
+                command_buffer,
+                updates,
                 self.scene,
                 self.camera,
                 self.visible_layers,
@@ -226,7 +217,6 @@ class LayoutView(QOpenGLWidget):
                 selection=self.selection,
                 hover=self.hover,
                 show_outlines=self.show_outlines,
-                palette=CANVAS_PALETTES[self.theme],
             )
             self._position_inspector()
             if self.renderer.prepared is not None and self._loading_complete:
@@ -234,16 +224,9 @@ class LayoutView(QOpenGLWidget):
         except Exception as exc:
             self.fail(exc)
 
-    def resizeGL(self, width: int, height: int) -> None:
-        # QOpenGLWidget's GL dimensions may be physical pixels on high-DPI displays.
-        # Navigation and shader projection consistently use logical widget pixels.
-        self.camera.resize(self.width(), self.height())
-        if not self._fitted:
-            self.fit_all()
-            self._fitted = True
-
     def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)
+        self.camera.resize(self.width(), self.height())
         self.message.setGeometry(20, max(20, self.height() // 2 - 55), max(1, self.width() - 40), 110)
         self._position_loading()
         if hasattr(self, "inspector"):
@@ -257,7 +240,6 @@ class LayoutView(QOpenGLWidget):
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
-        QTimer.singleShot(100, self._check_context)
         QTimer.singleShot(150, self._show_loading)
 
     def _show_loading(self) -> None:
@@ -265,9 +247,8 @@ class LayoutView(QOpenGLWidget):
             self.loading.show()
             self.loading.raise_()
 
-    def _check_context(self) -> None:
-        if self.isVisible() and not self.isValid() and not self.error:
-            self.fail("Could not create an OpenGL 3.3 context. Check the desktop graphics driver.")
+    def _render_failed(self):
+        self.fail(f"Could not initialize the {self.backend} renderer. Check the graphics driver and desktop session.")
 
     def fit_all(self) -> None:
         self.camera.resize(self.width(), self.height())
@@ -513,12 +494,9 @@ class LayoutView(QOpenGLWidget):
         self._clear_hover()
         super().leaveEvent(event)
 
-    def cleanup(self) -> None:
-        if self.context() is None or not self.renderer.program:
-            return
-        self.makeCurrent()
-        try:
-            self.renderer.release()
-            self._pending_upload = self._prepared is not None
-        finally:
-            self.doneCurrent()
+    def releaseResources(self):
+        self.cleanup()
+
+    def cleanup(self):
+        self.renderer.release()
+        self._pending_upload = self._prepared is not None

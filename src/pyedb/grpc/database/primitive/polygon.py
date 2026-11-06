@@ -25,6 +25,8 @@ from __future__ import annotations
 import math
 from typing import TYPE_CHECKING, Union
 
+from pyedb.grpc.database.layout_changes import layout_mutation
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
@@ -60,6 +62,7 @@ class Polygon(Primitive):
         return Layer(self.core.layer)
 
     @layer.setter
+    @layout_mutation
     def layer(self, value: Union[str, Layer]):
         """Set layer of the polygon.
 
@@ -102,6 +105,7 @@ class Polygon(Primitive):
         return self.polygon_data.has_self_intersections()
 
     @classmethod
+    @layout_mutation
     def create(cls, layout: Layout, layer: Union[str, Layer], net: Union[str, "Net"] = None, polygon_data=None):
         """
         Create a polygon in the specified layout, layer, and net using the provided polygon data.
@@ -157,6 +161,7 @@ class Polygon(Primitive):
         core = CorePolygon.create(layout=layout.core, layer=layer, net=net, polygon_data=polygon_data)
         return cls(layout._pedb, core)
 
+    @layout_mutation
     def fix_self_intersections(self) -> list[Polygon]:
         """Remove self intersections if they exist.
 
@@ -177,6 +182,7 @@ class Polygon(Primitive):
                 new_polys.append(cloned_poly)
         return new_polys
 
+    @layout_mutation
     def clone(self):
         """Duplicate polygon.
 
@@ -195,6 +201,7 @@ class Polygon(Primitive):
             cloned_polygon.add_void(void)
         return cloned_polygon
 
+    @layout_mutation
     def duplicate_across_layers(self, layers) -> bool:
         """Duplicate across layer a primitive object.
 
@@ -226,6 +233,7 @@ class Polygon(Primitive):
                 return False
         return True
 
+    @layout_mutation
     def move(self, vector) -> bool:
         """Move polygon along a vector.
 
@@ -253,6 +261,7 @@ class Polygon(Primitive):
             return True
         return False
 
+    @layout_mutation
     def scale(self, factor, center=None) -> bool:
         """Scales the polygon relative to a center point by a factor.
 
@@ -289,6 +298,7 @@ class Polygon(Primitive):
                 return True
         return False
 
+    @layout_mutation
     def rotate(self, angle, center=None) -> bool:
         """Rotate polygon around a center point by an angle.
 
@@ -327,6 +337,7 @@ class Polygon(Primitive):
                 return True
         return False
 
+    @layout_mutation
     def move_layer(self, layer) -> bool:
         """Move polygon to given layer.
 
@@ -383,6 +394,7 @@ class Polygon(Primitive):
         else:
             return False
 
+    @layout_mutation
     def add_void(self, polygon):
         """
         Add a void to the polygon.

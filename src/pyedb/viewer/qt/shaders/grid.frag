@@ -20,19 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#version 330 core
+#version 440
+#extension GL_GOOGLE_include_directive : require
+#include "uniforms.glsl"
 
-uniform vec2 viewport;
-uniform float scale;
-uniform float pixel_ratio;
-uniform float mirror_x;
-uniform float spacing;
-uniform vec2 minor_phase;
-uniform vec2 major_phase;
-uniform vec3 background;
-uniform vec3 minor_color;
-uniform vec3 major_color;
-out vec4 fragment_color;
+layout(location = 0) out vec4 fragment_color;
 
 float grid_line(vec2 world, vec2 phase, float step_size, float half_width) {
     vec2 distance = abs(fract((world + phase) / step_size + 0.5) - 0.5) * step_size * scale;
@@ -41,11 +33,12 @@ float grid_line(vec2 world, vec2 phase, float step_size, float half_width) {
 }
 
 void main() {
-    vec2 world = (gl_FragCoord.xy / pixel_ratio - viewport * 0.5) * vec2(mirror_x, 1.0) / scale;
+    if (modes.w < 0.5) { fragment_color = vec4(1.0); return; }
+    vec2 world = (world_fragment / pixel_ratio - viewport * 0.5) * vec2(mirror_x, 1.0) / scale;
     float minor = grid_line(world, minor_phase, spacing, 0.35);
     float major = grid_line(world, major_phase, spacing * 5.0, 0.55);
-    // Theme colors; the light canvas uses the reference #dadaea minor / #c4c4de major lines.
-    vec3 color = mix(background, minor_color, minor);
-    color = mix(color, major_color, major);
+    // Sampled from the user's reference: #dadaea minor / #c4c4de major.
+    vec3 color = mix(vec3(1.0), vec3(218.0, 218.0, 234.0) / 255.0, minor);
+    color = mix(color, vec3(196.0, 196.0, 222.0) / 255.0, major);
     fragment_color = vec4(color, 1.0);
 }

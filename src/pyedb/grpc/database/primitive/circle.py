@@ -22,6 +22,8 @@
 
 from typing import TYPE_CHECKING, Union
 
+from pyedb.grpc.database.layout_changes import layout_mutation
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
@@ -40,6 +42,7 @@ class Circle(Primitive):
         self._pedb = pedb
 
     @classmethod
+    @layout_mutation
     def create(
         cls,
         layout,
@@ -92,6 +95,7 @@ class Circle(Primitive):
         params = self.core.get_parameters()
         return Value(params[0]), Value(params[1]), Value(params[2])
 
+    @layout_mutation
     def set_parameters(self, center_x, center_y, radius):
         """Set parameters.
 

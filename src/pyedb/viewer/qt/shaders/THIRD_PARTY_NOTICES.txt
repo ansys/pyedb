@@ -2,7 +2,7 @@ Third-party shader notices
 ==========================
 
 The selection dot pattern in selection.frag is adapted
-from Pomelo (https://github.com/HaiwenZhang/Pomelo), with a new OpenGL mask-based
+from Pomelo (https://github.com/HaiwenZhang/Pomelo), with a new RHI mask-based
 implementation for PyEDB. PyEDB uses its own high-contrast highlight palette and
 dark keyline for a white canvas. The upstream MIT license follows:
 
@@ -34,7 +34,7 @@ Portions of common.glsl, trace.glsl and pad.glsl are adapted from
 Pomelo-Native (https://github.com/HaiwenZhang/Pomelo-Native).
 Upstream license: Apache License, Version 2.0.
 
-The adapted shader modules have been modified for PyEDB: GLSL/OpenGL 3.3,
+The adapted shader modules have been modified for PyEDB: Vulkan GLSL/Qt RHI,
 split-coordinate arithmetic, resident instanced geometry, Qt-owned framebuffers,
 and stencil-based coverage composition. Their Apache-2.0 SPDX identifiers
 are retained in the source files.

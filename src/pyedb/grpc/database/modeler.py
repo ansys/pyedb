@@ -37,6 +37,7 @@ from pyedb.grpc.database.geometry.point_data import PointData
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.hierarchy.group import Group
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
+from pyedb.grpc.database.layout_changes import layout_mutation
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.primitive.path import Path
@@ -350,6 +351,7 @@ class Modeler(object):
         """
         return self._pedb.layout.get_polygon_points(polygon)
 
+    @layout_mutation
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None) -> bool:
         """Parametrize polygon points based on another polygon.
 
@@ -431,6 +433,7 @@ class Modeler(object):
         polygon.polygon_data = polygon_data
         return True
 
+    @layout_mutation
     def _create_path(
         self,
         points,
@@ -508,6 +511,7 @@ class Modeler(object):
             return False
         return path
 
+    @layout_mutation
     def create_trace(
         self,
         path_list: Union[Iterable[float], CorePolygonData],
@@ -555,6 +559,7 @@ class Modeler(object):
         return primitive
 
     @deprecate_argument_name({"main_shape": "points"})
+    @layout_mutation
     def create_polygon(
         self,
         points: Union[List[List[float]], CorePolygonData],
@@ -615,6 +620,7 @@ class Modeler(object):
             raise RuntimeError("Null polygon created")
         return polygon
 
+    @layout_mutation
     def create_rectangle(
         self,
         layer_name: str,
@@ -709,6 +715,7 @@ class Modeler(object):
             return rect
         return False
 
+    @layout_mutation
     def create_circle(
         self, layer_name: str, x: Union[float, str], y: Union[float, str], radius: Union[float, str], net_name: str = ""
     ) -> Optional[Primitive]:
@@ -778,6 +785,7 @@ class Modeler(object):
             return text
         return False
 
+    @layout_mutation
     def delete_primitives(self, net_names: Union[str, List[str]]) -> bool:
         """Delete primitives by net name(s).
 
@@ -831,6 +839,7 @@ class Modeler(object):
             is_void=is_void,
         )
 
+    @layout_mutation
     def fix_circle_void_for_clipping(self) -> bool:
         """Fix circle void clipping issues.
 
@@ -904,6 +913,7 @@ class Modeler(object):
             self._pedb.logger.error("Arc point descriptor has incorrect number of elements (%s)", len(point))
             return False
 
+    @layout_mutation
     def parametrize_trace_width(
         self,
         nets_name: Union[str, List[str]],
@@ -952,6 +962,7 @@ class Modeler(object):
                             p.width = self._pedb.value(_parameter_name)
         return True
 
+    @layout_mutation
     def unite_polygons_on_layer(
         self,
         layer_name: Optional[Union[str, List[str]]] = None,
@@ -1024,6 +1035,7 @@ class Modeler(object):
         self.clear_cache()
         return True
 
+    @layout_mutation
     def defeature_polygon(self, poly: Polygon, tolerance: float = 0.001) -> bool:
         """Defeature polygon.
 
@@ -1253,6 +1265,7 @@ class Modeler(object):
         )
 
     @staticmethod
+    @layout_mutation
     def add_void(shape: "Primitive", void_shape: Union["Primitive", List["Primitive"]]) -> bool:
         """Add void to shape.
 
@@ -1643,6 +1656,7 @@ class Modeler(object):
             local_origin_z=local_origin_z,
         )
 
+    @layout_mutation
     def create_taper(
         self,
         start_point: tuple[str | float, str | float, str | float, str | float],

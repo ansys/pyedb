@@ -1428,9 +1428,11 @@ class Edb(EdbInit):
         exact_component_bounds=False,
         chord_error=0.002,
         progressive=True,
-        theme="light",
+        live=False,
+        refresh_interval=50,
+        backend=None,
     ):
-        """Open a PySide6/OpenGL 2D layout viewer using a detached snapshot.
+        """Open a PySide6/RHI 2D layout viewer with optional live updates.
 
         Parameters
         ----------
@@ -1445,6 +1447,12 @@ class Edb(EdbInit):
             subdivisions chosen from radius and sweep and at most 10 degrees per chord.
         progressive : bool, optional
             Display copper first while remaining geometry loads. Default is True.
+        live : bool, optional
+            Refresh automatically after PyEDB geometry edits. Default is False.
+            Manual refresh is available through the returned window's ``refresh()``.
+        refresh_interval : int, optional
+            Coalesce automatic refreshes over this many milliseconds. Default is 50.
+            Nonblocking callers must run or integrate the Qt event loop.
         analytic_traces : bool, optional
             Preserve analytic traces at deep zoom. Default is False to read
             source contours with fewer remote geometry-property requests.
@@ -1467,11 +1475,13 @@ class Edb(EdbInit):
             Display components on all visible placement layers. Default is True.
             Set False to restrict components to the current view side.
         plot_outlines : bool, optional
-            Draw a thin near-black outline, one screen pixel wide, around every
+            Draw an opaque net-colored outline, one screen pixel wide, around every
             shape. Default is True. It can also be toggled from the View menu.
-        theme : str, optional
-            Workspace and canvas theme, ``"light"`` (default) or ``"dark"``. It
-            can also be switched from the viewer's View menu.
+
+        backend : str, optional
+            Rendering API: "auto", "vulkan", "d3d11", or "metal". The default
+            uses Direct3D 11 on Windows, Vulkan on Linux, and Metal on macOS.
+            PYEDB_VIEWER_BACKEND can override the default.
 
         Returns
         -------
@@ -1480,11 +1490,13 @@ class Edb(EdbInit):
             signals (``object_selected``, ``selection_cleared``, ``object_hovered``,
             ``net_changed``, ``visible_layers_changed``) report user interaction, and
             ``select_net``, ``set_visible_layers``, ``select_object``, ``fit_view``,
-            ``zoom_to_object`` and ``zoom_to_net`` drive the view.
+            ``zoom_to_object`` and ``zoom_to_net`` drive the view. Use ``refresh``
+            to recapture the source and ``run_script`` to model off the GUI
+            thread. ``batch_update`` groups related edits into one notification.
 
         Notes
         -----
-        Requires ``pip install pyedb[viewer]`` and an OpenGL 3.3-capable desktop.
+        Requires ``pip install pyedb[viewer]`` and a desktop with Vulkan (Linux/Windows) or Direct3D 11 (Windows).
         Displays SDF traces/arcs, per-layer pads and circular drills, and stencil
         zones, component envelopes and reference names. 3D bodies, arbitrary text
         and bondwires are not displayed. The window does not close or save
@@ -1492,6 +1504,9 @@ class Edb(EdbInit):
         """
         from pyedb.viewer import launch_viewer
 
+        options = {"backend": backend} if backend is not None else {}
+        if live or refresh_interval != 50:
+            options.update(live=live, refresh_interval=refresh_interval)
         return launch_viewer(
             self,
             layers=layers,
@@ -1507,7 +1522,7 @@ class Edb(EdbInit):
             exact_component_bounds=exact_component_bounds,
             chord_error=chord_error,
             progressive=progressive,
-            theme=theme,
+            **options,
         )
 
     @property

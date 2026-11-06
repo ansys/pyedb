@@ -88,6 +88,11 @@ class PreparedScene:
     mesh_parent_id: int = 0
     picking: object = None
     sdf_sources: np.ndarray | None = None
+    outlines: Any = None
+    dead_rows: int = 0
+    update_count: int = 0
+    dead_bytes: int = 0
+    sdf_ranges: Any = None
 
 
 @dataclass(frozen=True)
@@ -286,10 +291,19 @@ def _prepare_sdf(
 
 
 def _pickable(prepared: PreparedScene, scene: LayoutScene, sources: np.ndarray) -> PreparedScene:
+    from pyedb.viewer.incremental import outline_data
     from pyedb.viewer.picking import PickIndex
 
     sources.setflags(write=False)
-    return replace(prepared, picking=PickIndex(scene), sdf_sources=sources)
+    ranges = {}
+    if len(sources):
+        edges = np.flatnonzero(np.r_[True, sources[1:] != sources[:-1], True])
+        for start, end in zip(edges[:-1], edges[1:]):
+            if sources[start]:
+                ranges.setdefault(int(sources[start]), []).append((int(start), int(end - start)))
+    return replace(
+        prepared, picking=PickIndex(scene), sdf_sources=sources, sdf_ranges=ranges, outlines=outline_data(prepared)
+    )
 
 
 def _can_reuse_polygons(scene: LayoutScene, previous: LayoutScene, mesh: PreparedScene) -> bool:

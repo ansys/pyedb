@@ -30,10 +30,8 @@ import threading
 
 # Import dependencies before creating QApplication, producing actionable errors.
 from PySide6.QtCore import QCoreApplication, QEventLoop, Qt, QThread
-from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication
 
-from pyedb.viewer.qt.canvas import layout_surface_format
 from pyedb.viewer.qt.window import LayoutWindow
 from pyedb.viewer.scene import LayoutScene
 
@@ -52,10 +50,6 @@ def _get_application() -> tuple[QApplication, bool]:
     if existing is not None and not isinstance(existing, QApplication):
         raise RuntimeError("The layout viewer requires QApplication; an incompatible QCoreApplication already exists.")
     owns_application = existing is None
-    if owns_application:
-        # Required before QApplication on platforms such as macOS when sharing
-        # core-profile contexts. Embedded hosts should set this themselves.
-        QSurfaceFormat.setDefaultFormat(layout_surface_format())
     _application = QApplication([]) if owns_application else existing
     if owns_application:
         _application.setStyle("Fusion")
@@ -78,7 +72,9 @@ def show_scene(
     *,
     loader: Callable[..., LayoutScene] | None = None,
     title: str = "EDB layout",
-    theme: str = "light",
+    backend: str | None = None,
+    live: bool = False,
+    refresh_interval: int = 50,
 ) -> LayoutWindow:
     """Create a native window, reusing the host application's event loop if present."""
     application, owns_application = _get_application()
@@ -94,11 +90,10 @@ def show_scene(
         plot_components_on_both_side=plot_components_on_both_side,
         plot_outlines=plot_outlines,
         loader=loader,
-        theme=theme,
+        backend=backend,
+        live=live,
+        refresh_interval=refresh_interval,
     )
-    window._owns_application = owns_application
-    if owns_application and window.theme == "dark":
-        window.set_theme("dark")  # Also switch the owned application's native color scheme.
     # Keep QApplication alive for the lifetime of non-blocking standalone windows.
     window._application = application
     window.scene_failed.connect(lambda error: window.close())
