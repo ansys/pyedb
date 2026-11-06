@@ -348,4 +348,3 @@ class TestDependencyCacheIntegration:
 
         assert checks._DEPENDENCY_CACHE.get("sys") is True
         assert checks._DEPENDENCY_CACHE.get("nonexistent_xyz_mixed") is False
-
