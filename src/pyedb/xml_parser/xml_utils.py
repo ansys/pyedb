@@ -114,7 +114,9 @@ def _emit(tag: str, value: Any, level: int, pretty: bool, out: list) -> None:
             out.append(f"{indent}<{tag}>{escape(_to_text(value))}</{tag}>{nl}")
         return
 
-    attrs = "".join(f" {k[1:]}={quoteattr(_to_text(v))}" for k, v in value.items() if k.startswith("@") and v is not None)
+    attrs = "".join(
+        f" {k[1:]}={quoteattr(_to_text(v))}" for k, v in value.items() if k.startswith("@") and v is not None
+    )
     text = value.get("#text")
     children = [(k, v) for k, v in value.items() if not k.startswith("@") and k != "#text"]
 
@@ -156,5 +158,3 @@ def dict_to_xml(data: dict, pretty: bool = True) -> str:
     _emit(root_tag, root_value, 0, pretty, out)
     xml_str = "".join(out)
     return xml_str.rstrip("\n") if pretty else xml_str
-
-
