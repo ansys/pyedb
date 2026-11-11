@@ -33,9 +33,10 @@ Namespace prefixes (for example ``c:Control``) are preserved verbatim.
 """
 
 from typing import Any
-import defusedxml
 from xml.parsers import expat
 from xml.sax.saxutils import escape, quoteattr
+
+import defusedxml
 
 # Protect stdlib XML parsers against entity expansion and XXE attacks
 defusedxml.defuse_stdlib()
