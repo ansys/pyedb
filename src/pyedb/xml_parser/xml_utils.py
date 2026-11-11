@@ -33,12 +33,37 @@ Namespace prefixes (for example ``c:Control``) are preserved verbatim.
 """
 
 from typing import Any
+import re
 import defusedxml
 from xml.parsers import expat
 from xml.sax.saxutils import escape, quoteattr
 
 # Protect stdlib XML parsers against entity expansion and XXE attacks
 defusedxml.defuse_stdlib()
+
+# XML name pattern: starts with letter/underscore/colon, followed by word chars/hyphens/underscores/colons/dots
+# See: https://www.w3.org/TR/xml/#NT-Name
+_XML_NAME_PATTERN = re.compile(r'^[a-zA-Z_:][a-zA-Z0-9_:.\-]*$')
+
+
+def _validate_xml_name(name: str) -> None:
+    """Validate that a string is a valid XML element or attribute name.
+
+    Parameters
+    ----------
+    name : str
+        The name to validate.
+
+    Raises
+    ------
+    ValueError
+        If the name is not a valid XML name.
+    """
+    if not name or not _XML_NAME_PATTERN.match(name):
+        raise ValueError(
+            f"Invalid XML name: {name!r}. Must start with letter, underscore, or colon, "
+            f"and contain only alphanumeric characters, hyphens, underscores, dots, and colons."
+        )
 
 
 def parse_xml_to_dict(xml_string: str) -> dict:
@@ -103,6 +128,9 @@ def _to_text(value: Any) -> str:
 
 
 def _emit(tag: str, value: Any, level: int, pretty: bool, out: list) -> None:
+    # Validate tag name to prevent XML injection
+    _validate_xml_name(tag)
+
     if isinstance(value, list):
         for item in value:
             _emit(tag, item, level, pretty, out)
@@ -118,9 +146,14 @@ def _emit(tag: str, value: Any, level: int, pretty: bool, out: list) -> None:
             out.append(f"{indent}<{tag}>{escape(_to_text(value))}</{tag}>{nl}")
         return
 
-    attrs = "".join(
-        f" {k[1:]}={quoteattr(_to_text(v))}" for k, v in value.items() if k.startswith("@") and v is not None
-    )
+    # Validate attribute names and escape their values
+    attrs = ""
+    for k, v in value.items():
+        if k.startswith("@") and v is not None:
+            attr_name = k[1:]
+            _validate_xml_name(attr_name)  # Validate attribute name
+            attrs += f" {attr_name}={quoteattr(_to_text(v))}"
+
     text = value.get("#text")
     children = [(k, v) for k, v in value.items() if not k.startswith("@") and k != "#text"]
 
@@ -154,10 +187,16 @@ def dict_to_xml(data: dict, pretty: bool = True) -> str:
     -------
     str
         XML document, including the XML declaration.
+
+    Raises
+    ------
+    ValueError
+        If the data doesn't have exactly one root element or contains invalid XML names.
     """
     if len(data) != 1:
         raise ValueError("Document must have exactly one root element.")
     root_tag, root_value = next(iter(data.items()))
+    _validate_xml_name(root_tag)  # Validate root tag name
     out: list = ['<?xml version="1.0" encoding="utf-8"?>' + ("\n" if pretty else "")]
     _emit(root_tag, root_value, 0, pretty, out)
     xml_str = "".join(out)
