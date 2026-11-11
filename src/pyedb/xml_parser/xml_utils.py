@@ -35,12 +35,55 @@ Namespace prefixes (for example ``c:Control``) are preserved verbatim.
 import re
 from typing import Any
 from xml.parsers import expat
-from xml.sax.saxutils import escape, quoteattr
 
 import defusedxml
 
 # Protect stdlib XML parsers against entity expansion and XXE attacks
 defusedxml.defuse_stdlib()
+
+
+def _escape_xml_text(text: str) -> str:
+    """Escape XML special characters in text content.
+
+    Parameters
+    ----------
+    text : str
+        Text to escape.
+
+    Returns
+    -------
+    str
+        Text with XML special characters escaped.
+    """
+    text = text.replace("&", "&amp;")
+    text = text.replace("<", "&lt;")
+    text = text.replace(">", "&gt;")
+    return text
+
+
+def _quoteattr(value: str) -> str:
+    """Quote and escape an XML attribute value.
+
+    Parameters
+    ----------
+    value : str
+        Attribute value to quote.
+
+    Returns
+    -------
+    str
+        Quoted and escaped attribute value.
+    """
+    value = value.replace("&", "&amp;")
+    value = value.replace("<", "&lt;")
+    value = value.replace(">", "&gt;")
+    value = value.replace('"', "&quot;")
+    return f'"{value}"'
+
+
+# Aliases for backward compatibility with existing code patterns
+escape = _escape_xml_text
+quoteattr = _quoteattr
 
 # XML name pattern: starts with letter/underscore/colon, followed by word chars/hyphens/underscores/colons/dots
 # See: https://www.w3.org/TR/xml/#NT-Name
