@@ -32,18 +32,19 @@ The dictionary convention mirrors the one used by ``xmltodict``:
 Namespace prefixes (for example ``c:Control``) are preserved verbatim.
 """
 
-from typing import Any
 import re
-import defusedxml
+from typing import Any
 from xml.parsers import expat
 from xml.sax.saxutils import escape, quoteattr
+
+import defusedxml
 
 # Protect stdlib XML parsers against entity expansion and XXE attacks
 defusedxml.defuse_stdlib()
 
 # XML name pattern: starts with letter/underscore/colon, followed by word chars/hyphens/underscores/colons/dots
 # See: https://www.w3.org/TR/xml/#NT-Name
-_XML_NAME_PATTERN = re.compile(r'^[a-zA-Z_:][a-zA-Z0-9_:.\-]*$')
+_XML_NAME_PATTERN = re.compile(r"^[a-zA-Z_:][a-zA-Z0-9_:.\-]*$")
 
 
 def _validate_xml_name(name: str) -> None:
