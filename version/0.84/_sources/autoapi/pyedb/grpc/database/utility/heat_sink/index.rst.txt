@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``heat_sink.py`` module
+===========================
+
+.. py:module:: pyedb.grpc.database.utility.heat_sink
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: heat_sink
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility.heat_sink.HeatSink`
+            - Heatsink model description.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HeatSink</autoapi/pyedb/grpc/database/utility/heat_sink/HeatSink>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

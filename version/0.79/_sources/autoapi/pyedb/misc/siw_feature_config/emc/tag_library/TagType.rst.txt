@@ -1,0 +1,59 @@
+
+
+
+
+
+
+:class:`TagType`
+================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.tag_library.TagType(element)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages tag type configuration.
+
+   This class handles individual tag type definitions within the tag library.
+
+   :Parameters:
+
+       **element** : :obj:`xml.etree.ElementTree.Element` or :data:`python:None`
+           XML element to initialize from.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.siw_feature_config.emc.tag_library import TagType
+   >>> tag_type = TagType(None)
+   >>> tag_type.name = "ClockNet"
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.tag_library import TagType
+
+
+
+
+

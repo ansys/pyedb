@@ -1,0 +1,6 @@
+model\_post\_init
+=================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinLineWidth.model_post_init

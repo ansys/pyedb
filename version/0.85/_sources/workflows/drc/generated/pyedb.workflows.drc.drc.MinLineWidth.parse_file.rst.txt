@@ -1,0 +1,6 @@
+parse\_file
+===========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinLineWidth.parse_file

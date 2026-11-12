@@ -1,0 +1,95 @@
+
+
+
+
+
+
+:class:`TagLibrary`
+===================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.tag_library.TagLibrary(element)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages the complete tag library collection.
+
+   This class handles the top-level tag library containing all tag definitions
+   with their types and configurations.
+
+   :Parameters:
+
+       **element** : :obj:`xml.etree.ElementTree.Element` or :data:`python:None`
+           XML element to initialize from.
+
+   :Attributes:
+
+       **CLS_MAPPING** : :class:`python:dict`
+           Mapping of element types to their corresponding classes.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.siw_feature_config.emc.tag_library import TagLibrary
+   >>> tag_library = TagLibrary(None)
+   >>> # Tag library ready to use
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: TagLibrary
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~CLS_MAPPING`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.tag_library import TagLibrary
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: CLS_MAPPING
+   :type:  dict
+
+
+
+
+

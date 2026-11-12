@@ -1,0 +1,25 @@
+
+
+
+
+
+
+:class:`SourceExcitationInternal`
+=================================
+
+
+.. py:class:: pyedb.grpc.database.source_excitations.SourceExcitationInternal
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.source_excitations import SourceExcitationInternal
+
+
+
+
+

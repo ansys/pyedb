@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_spice_models`` library
+====================================================
+
+.. py:module:: pyedb.configuration.cfg_spice_models
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_spice_models
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_spice_models.CfgSpiceModel`
+            - Represent one SPICE subcircuit model assignment.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_spice_models.CfgSpiceModels`
+            - Collect SPICE model assignments for serialization.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgSpiceModel</autoapi/pyedb/configuration/cfg_spice_models/CfgSpiceModel>
+    <span class="nf nf-cod-symbol_class"></span> CfgSpiceModels</autoapi/pyedb/configuration/cfg_spice_models/CfgSpiceModels>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Build SPICE model assignment entries for configuration payloads.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

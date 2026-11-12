@@ -1,0 +1,167 @@
+
+
+
+
+
+
+:class:`CfgCoordinateTerminalInfo`
+==================================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgCoordinateTerminalInfo(pedb, **kwargs)
+
+   Bases: :py:obj:`CfgTerminalInfo`
+
+
+   
+   Represent a coordinate-based terminal selector.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgCoordinateTerminalInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~export_properties`
+            - Serialize to a dictionary with a ``"coordinates"`` key.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~point_x`
+            - 
+          * - :py:attr:`~point_y`
+            - 
+          * - :py:attr:`~net`
+            - Create a terminal selector that targets all pins of a net on a component.
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgCoordinateTerminalInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: layer
+
+.. py:attribute:: point_x
+
+.. py:attribute:: point_y
+
+.. py:attribute:: net
+
+   
+   Create a terminal selector that targets all pins of a net on a component.
+
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`
+           Net name, e.g. ``"VDD"``.
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Component whose pins should be used, e.g. ``"U1"``.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Terminal-selector dictionary.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> TerminalInfo.net("VDD", reference_designator="U1")
+   {'net': 'VDD', 'reference_designator': 'U1'}
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: export_properties()
+
+   
+   Serialize to a dictionary with a ``"coordinates"`` key.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ``{"coordinates": {"layer": ..., "point": [...], "net": ...}}``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

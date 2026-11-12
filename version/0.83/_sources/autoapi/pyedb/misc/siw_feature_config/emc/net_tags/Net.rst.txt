@@ -1,0 +1,65 @@
+
+
+
+
+
+
+:class:`Net`
+============
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.net_tags.Net(element=None)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages individual net configuration and properties.
+
+   This class handles net-specific attributes including bus status, clock signals,
+   criticality, and differential pair configurations.
+
+   :Parameters:
+
+       **element** : :obj:`xml.etree.ElementTree.Element` or :data:`python:None`, :obj:`optional`
+           XML element to initialize from.
+           The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.siw_feature_config.emc.net_tags import Net
+   >>> net = Net()
+   >>> net.name = "DDR_DQ0"
+   >>> net.isClock = "0"
+   >>> net.isBus = "1"
+   >>> net.isCritical = "1"
+   >>> net.type = "Single-Ended"
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.net_tags import Net
+
+
+
+
+

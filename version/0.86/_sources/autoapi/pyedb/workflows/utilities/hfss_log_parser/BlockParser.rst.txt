@@ -1,0 +1,129 @@
+
+
+
+
+
+
+:class:`BlockParser`
+====================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.BlockParser(lines: list[str])
+
+   
+   Base class for a single block parser.
+
+
+   :Parameters:
+
+       **lines** : :class:`python:list` :obj:`of` :class:`python:str`
+           Lines of text to parse from the log file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = ["Line 1", "Line 2"]
+   >>> parser = BlockParser(lines)
+   >>> parser.lines
+   ['Line 1', 'Line 2']
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: BlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse the stored lines.
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~lines`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import BlockParser
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: lines
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> Any
+   :abstractmethod:
+
+
+   
+   Parse the stored lines.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Any`
+           Parsed data structure.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

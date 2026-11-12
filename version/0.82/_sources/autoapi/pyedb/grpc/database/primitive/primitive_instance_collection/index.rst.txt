@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``primitive_instance_collection.py`` module
+===============================================
+
+.. py:module:: pyedb.grpc.database.primitive.primitive_instance_collection
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: primitive_instance_collection
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.primitive_instance_collection.PrimitiveInstanceCollection`
+            - Manages EDB functionalities for a primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> PrimitiveInstanceCollection</autoapi/pyedb/grpc/database/primitive/primitive_instance_collection/PrimitiveInstanceCollection>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

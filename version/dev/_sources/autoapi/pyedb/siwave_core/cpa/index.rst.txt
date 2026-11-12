@@ -1,0 +1,69 @@
+
+
+
+
+
+
+The ``pyedb.siwave_core.cpa`` library
+=====================================
+
+.. py:module:: pyedb.siwave_core.cpa
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cpa
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.siwave_core.cpa.simulation_setup_data_model`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> simulation_setup_data_model</autoapi/pyedb/siwave_core/cpa/simulation_setup_data_model/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

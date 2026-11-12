@@ -1,0 +1,195 @@
+
+
+
+
+
+
+:class:`HFSSProductProperty`
+============================
+
+
+.. py:class:: pyedb.grpc.database.inner.layout_obj.HFSSProductProperty
+
+   
+   Represents the HFSS product properties.
+
+   This class encapsulates configuration settings for HFSS simulations, including
+   port type, orientation, layer alignment, and extent factors for various dimensions.
+
+
+   :Attributes:
+
+       **hfss_type** : :class:`python:str`
+           The type of HFSS port (e.g., "Gap", "Wave(coax)"). Default is "Gap".
+
+       **orientation** : :class:`python:str`
+           The orientation of the port (e.g., "Horizontal", "Vertical"). Default is "".
+
+       **layer_alignment** : :class:`python:str`
+           The layer alignment setting (e.g., "Upper", "Lower"). Default is "".
+
+       **horizontal_extent_factor** : :class:`python:float` | :class:`python:int`
+           Horizontal extent factor for the port. Default is 0.0.
+
+       **vertical_extent_factor** : :class:`python:float` | :class:`python:int`
+           Vertical extent factor for the port. Default is 0.0.
+
+       **radial_extent_factor** : :class:`python:float` | :class:`python:int`
+           Radial extent factor for the port. Default is 0.0.
+
+       **pec_launch_width** : :class:`python:str`
+           PEC (Perfect Electric Conductor) launch width. Default is "10um".
+
+       **reference_name** : :class:`python:str`
+           Reference name for the port. Default is "".
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSProductProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_hfss_string`
+            - Convert HFSSProductProperty instance into an HFSS configuration string.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~hfss_type`
+            - 
+          * - :py:attr:`~orientation`
+            - 
+          * - :py:attr:`~layer_alignment`
+            - 
+          * - :py:attr:`~horizontal_extent_factor`
+            - 
+          * - :py:attr:`~vertical_extent_factor`
+            - 
+          * - :py:attr:`~radial_extent_factor`
+            - 
+          * - :py:attr:`~pec_launch_width`
+            - 
+          * - :py:attr:`~reference_name`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.inner.layout_obj import HFSSProductProperty
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: hfss_type
+   :type:  str
+   :value: 'Gap'
+
+
+.. py:attribute:: orientation
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: layer_alignment
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: horizontal_extent_factor
+   :type:  float | int
+   :value: 0.0
+
+
+.. py:attribute:: vertical_extent_factor
+   :type:  float | int
+   :value: 0.0
+
+
+.. py:attribute:: radial_extent_factor
+   :type:  float | int
+   :value: 0.0
+
+
+.. py:attribute:: pec_launch_width
+   :type:  str
+   :value: '10um'
+
+
+.. py:attribute:: reference_name
+   :type:  str
+   :value: ''
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: to_hfss_string() -> str
+
+   
+   Convert HFSSProductProperty instance into an HFSS configuration string.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           A formatted HFSS configuration string with all properties encoded.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

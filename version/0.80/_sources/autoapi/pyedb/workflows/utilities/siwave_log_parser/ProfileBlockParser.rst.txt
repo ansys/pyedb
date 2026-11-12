@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`ProfileBlockParser`
+===========================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.ProfileBlockParser(lines: list[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract profile entries showing task timing and resource usage.
+
+   This parser processes [PROFILE] tagged lines to extract performance metrics
+   including real time, CPU time, memory usage, and additional task-specific data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = [
+   ...     "11/10/2025 09:30:00 AM [PROFILE] Mesh Generation : Real Time 00:05:30 : "
+   ...     "CPU Time 00:05:25 : Memory 2.5 GB : Number of elements: 50000"
+   ... ]
+   >>> parser = ProfileBlockParser(lines)
+   >>> profiles = parser.parse()
+   >>> profiles[0].task
+   'Mesh Generation'
+   >>> profiles[0].real_time
+   '00:05:30'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ProfileBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse profile entries showing task timing and resource usage.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import ProfileBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> list[ProfileEntry]
+
+   
+   Parse profile entries showing task timing and resource usage.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :obj:`ProfileEntry`
+           List of profile entries with timing and resource consumption data.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = ["Regular log line without profile"]
+   >>> parser = ProfileBlockParser(lines)
+   >>> profiles = parser.parse()
+   >>> len(profiles)
+   0
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

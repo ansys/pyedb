@@ -1,0 +1,101 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_common`` library
+==============================================
+
+.. py:module:: pyedb.configuration.cfg_common
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_common
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_common.CfgBase`
+            - Provide common attribute export and assignment helpers.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_common.CfgVar`
+            - Represent one design or project variable entry.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_common.CfgVariables`
+            - Collect variable definitions for the ``variables`` section.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_common.CfgBaseModel`
+            - Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgBase</autoapi/pyedb/configuration/cfg_common/CfgBase>
+    <span class="nf nf-cod-symbol_class"></span> CfgVar</autoapi/pyedb/configuration/cfg_common/CfgVar>
+    <span class="nf nf-cod-symbol_class"></span> CfgVariables</autoapi/pyedb/configuration/cfg_common/CfgVariables>
+    <span class="nf nf-cod-symbol_class"></span> CfgBaseModel</autoapi/pyedb/configuration/cfg_common/CfgBaseModel>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Shared helpers, base classes, and variable models for configuration builders.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

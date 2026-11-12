@@ -1,0 +1,6 @@
+layers
+======
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: CopperBalance.layers

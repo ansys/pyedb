@@ -1,0 +1,90 @@
+
+
+
+
+
+
+:class:`Timer`
+==============
+
+
+.. py:class:: pyedb.misc.utilities.Timer(func_name: str = '')
+
+
+
+
+.. py:currentmodule:: Timer
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~func_name`
+            - 
+          * - :py:attr:`~start`
+            - 
+          * - :py:attr:`~elapsed`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__enter__`
+            - 
+          * - :py:attr:`~__exit__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.utilities import Timer
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: func_name
+   :value: ''
+
+
+.. py:attribute:: start
+   :value: None
+
+
+.. py:attribute:: elapsed
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __enter__()
+
+.. py:method:: __exit__(*args)
+
+
+
+

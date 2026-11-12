@@ -1,0 +1,88 @@
+
+
+
+
+
+
+:class:`Text`
+=============
+
+
+.. py:class:: pyedb.grpc.database.primitive.text.Text(pedb, core=None)
+
+   Bases: :py:obj:`pyedb.grpc.database.primitive.primitive.Primitive`
+
+
+   
+   Manages EDB functionalities for a primitives.
+   It inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("myedb", version="2026.1", grpc=True)
+   >>> edb_prim = edb.layout.primitives[0]
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Text
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - 
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.primitive.text import Text
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, layer: Union[str, pyedb.grpc.database.layers.layer.Layer] = None, center_x: float = None, center_y: float = None, text: str = None)
+   :classmethod:
+
+
+
+
+

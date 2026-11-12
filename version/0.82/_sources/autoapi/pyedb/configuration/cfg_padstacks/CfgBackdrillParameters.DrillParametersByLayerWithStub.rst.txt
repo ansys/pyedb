@@ -1,0 +1,80 @@
+
+
+
+
+
+
+:class:`DrillParametersByLayerWithStub`
+=======================================
+
+
+.. py:class:: pyedb.configuration.cfg_padstacks.CfgBackdrillParameters.DrillParametersByLayerWithStub(/, **data: Any)
+
+   Bases: :py:obj:`DrillParametersByLayer`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DrillParametersByLayerWithStub
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~stub_length`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_padstacks.CfgBackdrillParameters import DrillParametersByLayerWithStub
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: stub_length
+   :type:  str | None
+
+
+
+
+
