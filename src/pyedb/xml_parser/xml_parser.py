@@ -23,20 +23,12 @@
 """XML parser module for handling EDB XML configuration files."""
 
 from pathlib import Path
-import re
 from typing import Optional
 
 from pydantic import BaseModel, Field
 
-try:
-    import xmltodict
-except ImportError as e:  # pragma: no cover
-    raise ImportError(
-        "xmltodict is required for PyEDB XML parsing. Please install with 'pip install pyedb[all]' or "
-        "'pip install xmltodict'."
-    ) from e
-
 from pyedb.xml_parser.xml_stackup import XmlStackup
+from pyedb.xml_parser.xml_utils import dict_to_xml, parse_xml_to_dict
 
 
 class XmlNet(BaseModel):
@@ -145,7 +137,7 @@ class XmlParser(BaseModel):
         with open(path, "r", encoding="utf-8") as f:
             xml_data = f.read()
 
-        data_dict = xmltodict.parse(xml_data)
+        data_dict = parse_xml_to_dict(xml_data)
 
         control_dict = list(data_dict.values())[0]
 
@@ -181,10 +173,8 @@ class XmlParser(BaseModel):
         stackup.setdefault("@schemaVersion", "1.0")
 
         d = {root_name: root}
-        xml_str = xmltodict.unparse(d, pretty=pretty)
-        # Convert empty elements (e.g. <Layer ...></Layer>) to self-closing (<Layer .../>)
-        xml_str = re.sub(r"></(\w+)>", r"/>", xml_str)
-        return xml_str
+        # Empty elements are emitted as self-closing tags (e.g. <Layer .../>)
+        return dict_to_xml(d, pretty=pretty)
 
     def to_xml_file(self, file_path: str | Path) -> str:
         """Write the parser configuration to an XML file.
