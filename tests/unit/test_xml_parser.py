@@ -43,6 +43,30 @@ class TestClass:
         del temp
         del self.edb_examples
 
+    def test_add_e_layers(self):
+        stackup = XmlParser().add_stackup()
+
+        default_e_layers = stackup.add_e_layers()
+        assert default_e_layers.length_unit == "mm"
+
+        e_layers = stackup.add_e_layers(length_unit="um")
+        assert stackup.e_layers is e_layers
+        assert e_layers.length_unit == "um"
+
+    def test_add_e_layer_entries(self):
+        e_layers = XmlParser().add_stackup().add_e_layers()
+
+        layer = e_layers.add_layer(name="TOP", type="conductor", thickness=0.035)
+        via = e_layers.add_via_layer(name="VIA1", start_layer="TOP", stop_layer="BOTTOM")
+        dielectric = e_layers.add_dielectric_layer(name="CORE", material="fr4", thickness=0.2)
+
+        assert e_layers.layers.layer == [layer]
+        assert e_layers.vias.layer == [via]
+        assert e_layers.dielectrics.layer == [dielectric]
+        assert layer.type == "conductor"
+        assert via.start_layer == "TOP"
+        assert dielectric.material == "fr4"
+
     def test_create(self, get_edb_examples):
         xml_parser = XmlParser()
         xml_stackup = xml_parser.add_stackup()

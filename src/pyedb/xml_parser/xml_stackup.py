@@ -318,6 +318,30 @@ class XmlELayers(BaseModel):
 
     model_config = dict(populate_by_name=True)
 
+    def add_layer(self, **kwargs) -> XmlELayer:
+        """Add a conductor or other layer to the extended layers section."""
+        if self.layers is None:
+            self.layers = XmlELayerGroup()
+        layer = XmlELayer(**kwargs)
+        self.layers.layer.append(layer)
+        return layer
+
+    def add_via_layer(self, **kwargs) -> XmlViaLayer:
+        """Add a via layer to the extended vias section."""
+        if self.vias is None:
+            self.vias = XmlViaLayerGroup()
+        layer = XmlViaLayer(**kwargs)
+        self.vias.layer.append(layer)
+        return layer
+
+    def add_dielectric_layer(self, **kwargs) -> XmlELayer:
+        """Add a dielectric layer to the extended dielectrics section."""
+        if self.dielectrics is None:
+            self.dielectrics = XmlELayerGroup()
+        layer = XmlELayer(**kwargs)
+        self.dielectrics.layer.append(layer)
+        return layer
+
 
 class XmlStackup(BaseModel):
     """Main stackup configuration for EDB XML files.
@@ -386,6 +410,22 @@ class XmlStackup(BaseModel):
         self.layers = XmlLayers(length_unit=length_unit)
 
         return self.layers
+
+    def add_e_layers(self, length_unit="mm") -> XmlELayers:
+        """Add an extended layers container to the stackup.
+
+        Parameters
+        ----------
+        length_unit : str, optional
+            Unit for layer dimensions. The default is ``"mm"``.
+
+        Returns
+        -------
+        XmlELayers
+            The newly created extended layers object.
+        """
+        self.e_layers = XmlELayers(length_unit=length_unit)
+        return self.e_layers
 
     def import_from_cfg_stackup(self, cfg_stackup: "CfgStackup") -> None:
         """Import stackup configuration from a CFG stackup object.
