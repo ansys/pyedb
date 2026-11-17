@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns1:Control xmlns:ns1="http://www.ansys.com/control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.0">
+	<Stackup schemaVersion="1.0">
+		<Materials>
+			<Material Name="trace">
+				<Permittivity>
+					<Double>1.0</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0.0</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>5.8e7</Double>
+				</Conductivity>
+			</Material>
+			<Material Name="resistor">
+				<Permittivity>
+					<Double>1.0</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0.0</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>6.67e5</Double>
+				</Conductivity>
+			</Material>
+			<Material Name="captop">
+				<Permittivity>
+					<Double>1.0</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0.0</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>5.8e7</Double>
+				</Conductivity>
+			</Material>
+			<Material Name="via">
+				<Permittivity>
+					<Double>1.0</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0.0</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>5.8e7</Double>
+				</Conductivity>
+			</Material>
+			<Material Name="viamim">
+				<Permittivity>
+					<Double>1.0</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0.0</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>5.8e7</Double>
+				</Conductivity>
+			</Material>
+			<Material Name="viagnd">
+				<Permittivity>
+					<Double>1.0</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0.0</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>5.8e7</Double>
+				</Conductivity>
+			</Material>
+			<Material Name="via0">
+				<Permittivity>
+					<Double>1.0</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0.0</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>5.8e7</Double>
+				</Conductivity>
+			</Material>
+			<Material Name="gnd">
+				<Permittivity>
+					<Double>1.0</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0.0</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>5.8e7</Double>
+				</Conductivity>
+			</Material>
+			<Material Name="GaN">
+				<Permittivity>
+					<Double>9.5</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0.001</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>0.0</Double>
+				</Conductivity>
+			</Material>
+			<Material Name="SiN">
+				<Permittivity>
+					<Double>6.5</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0.001</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>0.0</Double>
+				</Conductivity>
+			</Material>
+			<Material Name="MiM">
+				<Permittivity>
+					<Double>7</Double>
+				</Permittivity>
+				<Permeability>
+					<Double>1</Double>
+				</Permeability>
+				<DielectricLossTangent>
+					<Double>0</Double>
+				</DielectricLossTangent>
+				<MagneticLossTangent>
+					<Double>0.0</Double>
+				</MagneticLossTangent>
+				<Conductivity>
+					<Double>0.0</Double>
+				</Conductivity>
+			</Material>
+		</Materials>
+		<ELayers LengthUnit="um">				 
+			<Dielectrics>
+				<Layer Color="#8080ff" Material="MiM" Name="MiM_1" Thickness="0.1"/>
+				<Layer Color="#8080ff" Material="SiN" Name="SiN_1" Thickness="2.0"/>
+				<Layer Color="#8080ff" Material="GaN" Name="GaN_1" Thickness="100.0"/>
+			</Dielectrics>				 
+			<Layers>
+				<Layer Color="#ff8000" Elevation="102.1" Material="captop" TargetLayer="captop" Name="4" Thickness="1.0" Type="conductor"/>
+				<Layer Color="#ff8000" Elevation="100.0" Material="resistor" TargetLayer="resistor" Name="6" Thickness="0.03" Type="conductor"/>
+				<Layer Color="#ff8000" Elevation="100.0" Material="trace" TargetLayer="trace" Name="1" Thickness="2.0" Type="conductor"/>
+				<Layer Color="#ff8000" Elevation="0.0" Material="gnd" TargetLayer="gnd" Name="2" Thickness="0.0" Type="conductor"/>
+			</Layers>				 
+			<Vias>
+				<Layer Color="#c0c0c0" Material="viamim" Name="3" TargetLayer="mimvia" StartLayer="resistor" StopLayer="captop"/>
+				<Layer Color="#c0c0c0" Material="via" Name="8" TargetLayer="via" StartLayer="resistor" StopLayer="captop"/>
+				<Layer Color="#c0c0c0" Material="viagnd" Name="7" TargetLayer="gndvia" StartLayer="gnd" StopLayer="resistor"/>
+				<Layer Color="#c0c0c0" Material="via0" Name="5" TargetLayer="via0" StartLayer="gnd" StopLayer="resistor"/>
+			</Vias>
+		</ELayers>
+	</Stackup>
+</ns1:Control>

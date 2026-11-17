@@ -49,7 +49,7 @@ ruff format src/                    # Format
 - `ansys-edb-core` — gRPC client stubs for EDB server communication
 - `ansys-pythonnet` — .NET CLR bridge for legacy dotnet backend
 - Pydantic v2 — all configuration/validation models
-- `defusedxml`/`xmltodict` — XML parsing for EDB data
+- `defusedxml` — XML parsing for EDB data (`pyedb.xml_parser.xml_utils` provides stdlib XML<->dict helpers)
 
 ## When Modifying Code
 

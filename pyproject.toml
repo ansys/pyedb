@@ -62,7 +62,6 @@ all = [
     "Rtree>=1.2.0",
     "shapely",
     "typer>=0.20.0",
-    "xmltodict",
 ]
 
 [dependency-groups]

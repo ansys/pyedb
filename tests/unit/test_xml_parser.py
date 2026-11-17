@@ -26,6 +26,7 @@ import secrets
 import pytest
 
 from pyedb.xml_parser.xml_parser import XmlParser
+from pyedb.xml_parser.xml_stackup import XmlELayer, XmlViaLayer
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
@@ -41,6 +42,30 @@ class TestClass:
         yield
         del temp
         del self.edb_examples
+
+    def test_add_e_layers(self):
+        stackup = XmlParser().add_stackup()
+
+        default_e_layers = stackup.add_e_layers()
+        assert default_e_layers.length_unit == "mm"
+
+        e_layers = stackup.add_e_layers(length_unit="um")
+        assert stackup.e_layers is e_layers
+        assert e_layers.length_unit == "um"
+
+    def test_add_e_layer_entries(self):
+        e_layers = XmlParser().add_stackup().add_e_layers()
+
+        layer = e_layers.add_layer(name="TOP", type="conductor", thickness=0.035)
+        via = e_layers.add_via_layer(name="VIA1", start_layer="TOP", stop_layer="BOTTOM")
+        dielectric = e_layers.add_dielectric_layer(name="CORE", material="fr4", thickness=0.2)
+
+        assert e_layers.layers.layer == [layer]
+        assert e_layers.vias.layer == [via]
+        assert e_layers.dielectrics.layer == [dielectric]
+        assert layer.type == "conductor"
+        assert via.start_layer == "TOP"
+        assert dielectric.material == "fr4"
 
     def test_create(self, get_edb_examples):
         xml_parser = XmlParser()
@@ -123,6 +148,34 @@ class TestClass:
         assert l2.groiss_surface_roughness.roughness == "1um"
         assert l2.groiss_bottom_surface_roughness.roughness == "1um"
         assert l2.groiss_side_surface_roughness.roughness == "1um"
+
+    def test_load_xml_overlapping(self):
+        from pyedb.configuration.cfg_data import CfgStackup
+
+        xml_file = self.edb_examples.copy_test_files_into_local_folder("unit_test_xml_parser/overlapping.xml")[0]
+        xml_parser = XmlParser.load_xml_file(str(xml_file))
+        e_layers = xml_parser.stackup.e_layers
+        assert e_layers.length_unit == "um"
+        assert len(e_layers.dielectrics.layer) == 3
+        assert len(e_layers.layers.layer) == 4
+        assert len(e_layers.vias.layer) == 4
+        assert isinstance(e_layers.layers.layer[0], XmlELayer)
+        assert isinstance(e_layers.vias.layer[0], XmlViaLayer)
+        assert e_layers.layers.layer[0].elevation == 102.1
+        assert e_layers.layers.layer[0].target_layer == "captop"
+        assert e_layers.vias.layer[0].start_layer == "resistor"
+        assert e_layers.vias.layer[0].stop_layer == "captop"
+
+        layers = e_layers.dielectrics.layer + e_layers.layers.layer + e_layers.vias.layer
+        layer_names = [layer.name for layer in layers]
+        assert len(layer_names) == len(set(layer_names))  # Ensure no overlapping layer names
+        assert len(CfgStackup(**xml_parser.stackup.to_dict()).layers) == 7
+
+        round_trip_path = Path(self.edb_examples.test_folder) / "overlapping_round_trip.xml"
+        xml_parser.to_xml_file(round_trip_path)
+        round_trip = XmlParser.load_xml_file(round_trip_path)
+        assert round_trip.stackup.e_layers.layers.layer[0].elevation == 102.1
+        assert round_trip.stackup.e_layers.vias.layer[0].start_layer == "resistor"
 
     def test_load_from_cfg_stackup(self):
         from pyedb.configuration.cfg_data import CfgStackup
