@@ -89,6 +89,26 @@ DC_ATTRIBUTES = [
     "dc_permittivity",
 ]
 PERMEABILITY_DEFAULT_VALUE = 1
+FREQUENCY_VARIABLE = "Freq"
+_FREQUENCY_VARIABLE_PATTERN = re.compile(rf"\b{FREQUENCY_VARIABLE}\b", re.IGNORECASE)
+# Material properties defined in the XML ``<Material>`` element mapped to the pyedb property names.
+XML_MATERIAL_ATTRIBUTES = (
+    "permittivity",
+    "permeability",
+    "conductivity",
+    "dielectric_loss_tangent",
+    "magnetic_loss_tangent",
+)
+
+
+def _core_property(property_name: str) -> CoreMaterialProperty:
+    """Convert a pyedb material property name into the core material property enum."""
+    name = property_name.lower()
+    if name == "poisson_ratio":
+        return CoreMaterialProperty.POISSONS_RATIO
+    if name not in ATTRIBUTES:
+        raise ValueError(f"Unknown material property '{property_name}'. Available properties are {ATTRIBUTES}.")
+    return CoreMaterialProperty[name.upper()]
 
 
 def get_line_float_value(line):
@@ -615,12 +635,130 @@ class Material:
         #  when the model is assigned to the material
         self.dielectric_material_model.frequency = 1e9
 
+    @property
+    def equations(self) -> dict[str, str]:
+        """Material properties defined by an equation.
+
+        A property is defined by an equation when its value is an expression instead of a constant. Frequency
+        dependent equations use the ``Freq`` variable, which is expressed in Hz.
+
+        Returns
+        -------
+        dict[str, str]
+            Equation of each property defined by an expression, keyed by property name.
+
+        Examples
+        --------
+        >>> equation = "4+0.1*ln((1e22+Freq*Freq)/(1e9+Freq*Freq))"
+        >>> material = edb.materials.add_material("ds_like", permittivity=equation)
+        >>> material.equations
+        {'permittivity': '4+0.1*ln((1e22+Freq*Freq)/(1e9+Freq*Freq))'}
+        """
+        equations = {}
+        available = self.all_properties
+        for property_name in ATTRIBUTES:
+            core_property = _core_property(property_name)
+            if core_property.name.lower() not in available:
+                continue
+            value = self.core.get_property(core_property)
+            if value.is_parametric:
+                equations[property_name] = str(value)
+        return equations
+
+    @property
+    def is_frequency_dependent(self) -> bool:
+        """Whether at least one material property is a function of the frequency (``Freq`` variable).
+
+        Returns
+        -------
+        bool
+        """
+        return any(_FREQUENCY_VARIABLE_PATTERN.search(equation) for equation in self.equations.values())
+
+    def get_property_equation(self, property_name: str) -> str | None:
+        """Get the equation assigned to a material property.
+
+        Parameters
+        ----------
+        property_name : str
+            Name of the property, for instance ``"permittivity"`` or ``"conductivity"``.
+
+        Returns
+        -------
+        str or None
+            Equation, or ``None`` when the property is not defined or is a constant.
+        """
+        core_property = _core_property(property_name)
+        if core_property.name.lower() not in self.all_properties:
+            return None
+        value = self.core.get_property(core_property)
+        return str(value) if value.is_parametric else None
+
+    def set_property_equation(self, property_name: str, equation: str) -> bool:
+        """Assign an equation to a material property.
+
+        This is the way to define frequency dependent properties, such as the Djordjevic-Sarkar or Debye
+        dielectric behavior or a frequency dependent metal conductivity. The frequency is
+        referenced with the ``Freq`` variable and is expressed in Hz.
+
+        Parameters
+        ----------
+        property_name : str
+            Name of the property, for instance ``"permittivity"`` or ``"conductivity"``.
+        equation : str
+            Equation of the property.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful.
+
+        Examples
+        --------
+        >>> material = edb.materials.add_material("my_dielectric")
+        >>> material.set_property_equation("permittivity", "3.3+0.02*ln((2.5e22+Freq*Freq)/(3.6e9+Freq*Freq))")
+        >>> material.set_property_equation("conductivity", "1e-12+2e-12*Freq*(atan(Freq/6e4)-atan(Freq/1.6e11))")
+        """
+        _core_property(property_name)
+        if not isinstance(equation, str) or not equation.strip():
+            raise ValueError("The equation must be a non-empty string.")
+        setattr(self, property_name.lower(), equation.strip())
+        return True
+
+    def get_property_at_frequency(self, property_name: str, frequency: float | str) -> float:
+        """Evaluate a material property at a given frequency.
+
+        Parameters
+        ----------
+        property_name : str
+            Name of the property, for instance ``"permittivity"`` or ``"conductivity"``.
+        frequency : float or str
+            Frequency, in Hz when numeric. A string with units such as ``"2.5GHz"`` is accepted.
+
+        Returns
+        -------
+        float
+            Property value at the frequency. The constant value is returned when the property
+            is not defined by an equation.
+        """
+        _core_property(property_name)
+        equation = self.get_property_equation(property_name)
+        if equation is None:
+            return float(getattr(self, property_name.lower()))
+        frequency_hz = float(self.__edb.value(frequency))
+        expression = _FREQUENCY_VARIABLE_PATTERN.sub(f"({frequency_hz!r})", equation)
+        return float(self.__edb.value(expression))
+
     def to_dict(self):
-        """Convert material into dictionary."""
+        """Convert material into dictionary.
+
+        Properties defined by an equation are returned as their equation string.
+        """
         properties = self.__load_all_properties()
 
         res = {"name": self.name}
         res.update(properties.model_dump())
+        res.update(self.equations)
         return res
 
     def update(self, input_dict: dict):
@@ -1175,6 +1313,63 @@ class Materials(object):
                 else:
                     material_dlt = material["dielectric_loss_tangent"]
                 self.add_dielectric_material(material_name, material_permittivity, material_dlt)
+
+    def load_xml(self, xml_file: Union[str, os.PathLike], overwrite: bool = True) -> dict[str, Material]:
+        """Load materials from the ``Stackup/Materials`` section of an XML control file.
+
+        Material properties can be constants (``<Double>``) or equations (``<Equation>``). Equations can
+        depend on the frequency with the ``Freq`` variable, which is expressed in Hz. Existing materials are
+        updated in place and the new ones are created.
+
+        Parameters
+        ----------
+        xml_file : str or os.PathLike
+            Path to the XML file.
+        overwrite : bool, optional
+            Whether to update the properties of the materials already existing in the database.
+            The default is ``True``. If ``False``, existing materials are left untouched.
+
+        Returns
+        -------
+        dict[str, :class:`Material <pyedb.grpc.database.definition.materials.Material>`]
+            Materials defined in the XML file, keyed by name.
+
+        Examples
+        --------
+        >>> edb.materials.load_xml("stackup.xml")
+        >>> edb.materials["GL107_Nom"].equations
+        {'permittivity': '3.24799+0.00785013*ln((2.53303e+22+Freq*Freq)/(1.93339e+09+Freq*Freq))'}
+        """
+        from pyedb.xml_parser.xml_parser import XmlParser
+
+        xml_file = str(xml_file)
+        if not os.path.isfile(xml_file):
+            raise FileNotFoundError(f"XML file {xml_file} does not exist.")
+        parser = XmlParser.load_xml_file(xml_file)
+        if parser.stackup is None or parser.stackup.materials is None:
+            return {}
+
+        existing = {name.lower(): name for name in self.materials}
+        loaded = {}
+        for xml_material in parser.stackup.materials.material or []:
+            properties = {}
+            for attribute in XML_MATERIAL_ATTRIBUTES:
+                xml_property = getattr(xml_material, attribute)
+                if xml_property is None or xml_property.content is None:
+                    continue
+                value = xml_property.content
+                properties[attribute] = value.strip() if isinstance(value, str) else value
+
+            current_name = existing.get(xml_material.name.lower())
+            if current_name is None:
+                material = self.add_material(xml_material.name, **properties)
+            else:
+                material = self[current_name]
+                if overwrite:
+                    for attribute, value in properties.items():
+                        setattr(material, attribute, value)
+            loaded[xml_material.name] = material
+        return loaded
 
     def material_property_to_id(self, property_name):
         """Convert a material property name to a material property ID.

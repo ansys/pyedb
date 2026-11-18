@@ -120,6 +120,27 @@ class TestClass:
         xml_path = xml_parser.to_xml_file(Path(get_edb_examples.test_folder) / "test_xml_parser_create.xml")
         assert Path(xml_path).exists()
 
+    def test_create_material_with_equation(self, get_edb_examples):
+        equation = "3.24799+0.00785013*ln((2.53303e+22+Freq*Freq)/(1.93339e+09+Freq*Freq))"
+        xml_parser = XmlParser()
+        xml_materials = xml_parser.add_stackup().add_materials()
+        xml_materials.add_material(name="copper", conductivity="5.8e7")
+        material = xml_materials.add_material(name="ds", permittivity=equation, dielectric_loss_tangent="0.02")
+
+        assert material.permittivity.equation == equation
+        assert material.permittivity.value is None
+        assert material.dielectric_loss_tangent.value == 0.02
+        assert material.dielectric_loss_tangent.equation is None
+
+        material_dict = xml_parser.stackup.to_dict()["materials"][1]
+        assert material_dict["permittivity"] == equation
+        assert material_dict["dielectric_loss_tangent"] == 0.02
+
+        xml_path = xml_parser.to_xml_file(Path(get_edb_examples.test_folder) / "test_xml_parser_equation.xml")
+        assert f"<Equation>{equation}</Equation>" in Path(xml_path).read_text(encoding="utf-8")
+        reloaded = XmlParser.load_xml_file(xml_path)
+        assert reloaded.stackup.materials.material[1].permittivity.equation == equation
+
     def test_load_from_xml(self):
         xml_file = self.edb_examples.copy_test_files_into_local_folder(
             "unit_test_xml_parser/ANSYS-SI-Verse-PCB_V1_1_CONTROL.xml"
