@@ -2242,14 +2242,15 @@ class Stackup(LayerCollection):
                 "or 'pip install matplotlib'.",
                 UserWarning,
             )
+        from pyedb.configuration.cfg_data import CfgData
         from pyedb.xml_parser.xml_parser import XmlParser
 
         file_path = Path(file_path)
 
         xml = XmlParser.load_xml_file(file_path)
         cfg = xml.to_dict()
-        self._pedb.configuration.load(cfg)
-        return self._pedb.configuration.run()
+        # A CfgData instance is applied as-is, without merging previously loaded configuration.
+        return self._pedb.configuration.run(CfgData(self._pedb, **cfg))
 
     def _export_xml(self, file_path):
         """Export stackup information to an external XMLfile.
@@ -2305,6 +2306,10 @@ class Stackup(LayerCollection):
         """Import stackup from a file. The file format can be XML, CSV, or JSON. Valid control file must
         have the same number of signal layers. Signals layers can be renamed. Dielectric layers can be
         added and deleted.
+
+        Only stackup data (materials and layers) is read and applied. Other design content such as components,
+        ports, sources and simulation setups is never created or modified, and any configuration previously
+        loaded with ``edb.configuration.load()`` is neither applied nor altered.
 
 
         Parameters
