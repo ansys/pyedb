@@ -866,7 +866,7 @@ class TestClass(BaseTestClass):
         prim = [prim for prim in edbapp.layout.primitives if prim.primitive_type == "text"]
         assert prim
         assert not prim[0].is_null
-        assert prim[0].aedt_name == "text_5958"
+        assert prim[0].aedt_name == "text__5958"
 
         edbapp.close(terminate_rpc_session=False)
 
