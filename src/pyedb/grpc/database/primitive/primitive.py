@@ -275,7 +275,7 @@ class Primitive:
                 ptype = "bwr"
             else:
                 ptype = self.core.primitive_type.name.lower()
-            name = "{}_{}".format(ptype, self.core.edb_uid)
+            name = "{}__{}".format(ptype, self.core.edb_uid)
             self.aedt_name = name
         return name
 
