@@ -526,6 +526,17 @@ class TestMaterialEquations(BaseTestClass):
         assert edbapp.materials["GL107_Nom"].equations["conductivity"] == self.CONDUCTIVITY_EQUATION
         edbapp.close(terminate_rpc_session=False)
 
+    def test_stackup_load_xml_does_not_apply_other_configuration(self):
+        """Stackup load applies only the stackup, not previously loaded configuration such as setups."""
+        edbapp = self.edb_examples.create_empty_edb()
+        edbapp.configuration.load(
+            {"setups": [{"name": "pending_setup", "type": "hfss", "adapt_type": "single", "freq_sweep": []}]}
+        )
+        assert edbapp.stackup.load(self._write_xml())
+        assert list(edbapp.stackup.layers) == ["TOP", "DIEL", "BOTTOM"]
+        assert not edbapp.setups
+        edbapp.close(terminate_rpc_session=False)
+
     def test_stackup_load_from_xml_with_equations(self):
         """Load a stackup XML file with the control file import."""
         edbapp = self.edb_examples.create_empty_edb()
