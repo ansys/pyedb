@@ -1,0 +1,47 @@
+
+
+
+
+
+
+:class:`SparamInterpolationMapper`
+==================================
+
+.. toctree::
+   :hidden:
+
+    GRPC</autoapi/pyedb/generic/constants/SparamInterpolationMapper.GRPC>
+    DOTNET</autoapi/pyedb/generic/constants/SparamInterpolationMapper.DOTNET>
+
+
+.. py:class:: pyedb.generic.constants.SparamInterpolationMapper
+
+   Bases: :py:obj:`CommonMapper`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SparamInterpolationMapper
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.generic.constants.SparamInterpolationMapper.GRPC
+    pyedb.generic.constants.SparamInterpolationMapper.DOTNET
+
+
+
+

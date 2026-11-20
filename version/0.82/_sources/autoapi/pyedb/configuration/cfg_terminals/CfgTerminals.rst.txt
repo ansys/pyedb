@@ -1,0 +1,429 @@
+
+
+
+
+
+
+:class:`CfgTerminals`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_terminals.CfgTerminals(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Collect low-level terminal definitions for serialization.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CfgTerminals
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Reconstruct a :class:`CfgTerminals` instance from raw dictionaries.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_padstack_instance_terminal`
+            - Add a terminal created from a named padstack instance.
+          * - :py:attr:`~add_pin_group_terminal`
+            - Add a terminal created from a named pin group.
+          * - :py:attr:`~add_point_terminal`
+            - Add a terminal placed at exact XY coordinates.
+          * - :py:attr:`~add_edge_terminal`
+            - Add a terminal attached to a primitive edge.
+          * - :py:attr:`~add_bundle_terminal`
+            - Add a bundle terminal that groups several existing terminals.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~terminals`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_terminals import CfgTerminals
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: terminals
+   :type:  list[CfgPadstackInstanceTerminal | CfgPinGroupTerminal | CfgPointTerminal | CfgEdgeTerminal | CfgBundleTerminal | dict]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(terminals: list[dict])
+   :classmethod:
+
+
+   
+   Reconstruct a :class:`CfgTerminals` instance from raw dictionaries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_padstack_instance_terminal(name: str, padstack_instance: str | None = None, impedance: float | int | str = 50, boundary_type: Literal['port', 'dc_terminal', 'voltage_probe', 'voltage_source', 'current_source', 'rlc', 'pec'] = 'port', hfss_type: Literal['Wave', 'Gap'] | None = None, is_circuit_port: bool = False, reference_terminal: str | None = None, amplitude: float | int | str = 1, phase: float | int | str = 0, terminal_to_ground: Literal['no_ground', 'negative', 'positive'] = 'no_ground', padstack_instance_id: int | None = None, layer: str | None = None)
+
+   
+   Add a terminal created from a named padstack instance.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique terminal name.
+
+       **padstack_instance** : :class:`python:str`
+           AEDT name of the padstack instance.
+
+       **impedance** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`
+           Terminal impedance.
+
+       **boundary_type** : :class:`python:str`
+           Boundary type string (e.g. ``"PortBoundary"``).
+
+       **hfss_type** : :class:`python:str`, :obj:`optional`
+           HFSS terminal type, e.g. ``"Wave"`` or ``"Gap"``.
+
+       **is_circuit_port** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Default is ``False``.
+
+       **reference_terminal** : :class:`python:str`, :obj:`optional`
+           Name of the reference terminal this terminal is paired with.
+
+       **amplitude** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`, :obj:`optional`
+           Default is ``1``.
+
+       **phase** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`, :obj:`optional`
+           Default is ``0``.
+
+       **terminal_to_ground** : :class:`python:str`, :obj:`optional`
+           Default is ``"kNoGround"``.
+
+       **padstack_instance_id** : :class:`python:int`, :obj:`optional`
+           Internal padstack-instance integer ID.
+
+       **layer** : :class:`python:str`, :obj:`optional`
+           Layer name override.
+
+
+
+   :Returns:
+
+       :obj:`CfgPadstackInstanceTerminal`
+           The newly created terminal object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_pin_group_terminal(name: str, pin_group: str, impedance: float | int | str, boundary_type: Literal['PortBoundary', 'PecBoundary', 'RlcBoundary', 'kCurrentSource', 'kVoltageSource', 'kNexximGround', 'kNexximPort', 'kDcTerminal', 'kVoltageProbe', 'InvalidBoundary', 'port', 'dc_terminal', 'voltage_probe', 'voltage_source', 'current_source', 'rlc', 'pec'], reference_terminal: str | None = None, amplitude: float | int | str = 1, phase: float | int | str = 0, terminal_to_ground: Literal['kNoGround', 'kNegative', 'kNegativeNode', 'kPositive', 'kPositiveNode', 'no_ground', 'negative', 'positive'] = 'kNoGround')
+
+   
+   Add a terminal created from a named pin group.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique terminal name.
+
+       **pin_group** : :class:`python:str`
+           Pin-group name, e.g. ``"pg_VDD"``.
+
+       **impedance** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`
+           Terminal impedance.
+
+       **boundary_type** : :class:`python:str`
+           Boundary type string.
+
+       **reference_terminal** : :class:`python:str`, :obj:`optional`
+           Name of the paired reference terminal.
+
+       **amplitude** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`, :obj:`optional`
+           Default is ``1``.
+
+       **phase** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`, :obj:`optional`
+           Default is ``0``.
+
+       **terminal_to_ground** : :class:`python:str`, :obj:`optional`
+           Default is ``"kNoGround"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgPinGroupTerminal`
+           The newly created terminal object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg.terminals.add_pin_group_terminal("t_vdd", "pg_VDD", 50, "port")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_point_terminal(name: str, x: float | int | str, y: float | int | str, layer: str, net: str, impedance: float | int | str, boundary_type: Literal['PortBoundary', 'PecBoundary', 'RlcBoundary', 'kCurrentSource', 'kVoltageSource', 'kNexximGround', 'kNexximPort', 'kDcTerminal', 'kVoltageProbe', 'InvalidBoundary', 'port', 'dc_terminal', 'voltage_probe', 'voltage_source', 'current_source', 'rlc', 'pec'], reference_terminal: str | None = None, amplitude: float | int | str = 1, phase: float | int | str = 0, terminal_to_ground: Literal['kNoGround', 'kNegative', 'kNegativeNode', 'kPositive', 'kPositiveNode', 'no_ground', 'negative', 'positive'] = 'kNoGround')
+
+   
+   Add a terminal placed at exact XY coordinates.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique terminal name.
+
+       **x** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`
+           X coordinate in metres.
+
+       **y** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`
+           Y coordinate in metres.
+
+       **layer** : :class:`python:str`
+           Layer name on which the terminal is placed.
+
+       **net** : :class:`python:str`
+           Net name.
+
+       **impedance** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`
+           Terminal impedance.
+
+       **boundary_type** : :class:`python:str`
+           Boundary type string.
+
+       **reference_terminal** : :class:`python:str`, :obj:`optional`
+           Paired reference terminal name.
+
+       **amplitude** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`, :obj:`optional`
+           Default is ``1``.
+
+       **phase** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`, :obj:`optional`
+           Default is ``0``.
+
+       **terminal_to_ground** : :class:`python:str`, :obj:`optional`
+           Default is ``"kNoGround"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgPointTerminal`
+           The newly created terminal object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_edge_terminal(name: str, primitive: str, point_on_edge_x: float | int | str, point_on_edge_y: float | int | str, impedance: float | int | str, boundary_type: Literal['PortBoundary', 'PecBoundary', 'RlcBoundary', 'kCurrentSource', 'kVoltageSource', 'kNexximGround', 'kNexximPort', 'kDcTerminal', 'kVoltageProbe', 'InvalidBoundary', 'port', 'dc_terminal', 'voltage_probe', 'voltage_source', 'current_source', 'rlc', 'pec'], hfss_type: Literal['Wave', 'Gap'] | None = 'Wave', horizontal_extent_factor: int | str = 6, vertical_extent_factor: int | str = 8, pec_launch_width: str = '0.02mm', is_circuit_port: bool = False, reference_terminal: str | None = None, amplitude: float | int | str = 1, phase: float | int | str = 0, terminal_to_ground: Literal['kNoGround', 'kNegative', 'kNegativeNode', 'kPositive', 'kPositiveNode', 'no_ground', 'negative', 'positive'] = 'kNoGround')
+
+   
+   Add a terminal attached to a primitive edge.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique terminal name.
+
+       **primitive** : :class:`python:str`
+           AEDT name of the hosting primitive.
+
+       **point_on_edge_x** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`
+           X coordinate of the point on the edge.
+
+       **point_on_edge_y** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`
+           Y coordinate of the point on the edge.
+
+       **impedance** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`
+           Terminal impedance.
+
+       **boundary_type** : :class:`python:str`
+           Boundary type string.
+
+       **hfss_type** : :class:`python:str`, :obj:`optional`
+           ``"Wave"`` (default) or ``"Gap"``.
+
+       **horizontal_extent_factor** : :class:`python:int` or :class:`python:str`, :obj:`optional`
+           Default is ``6``.
+
+       **vertical_extent_factor** : :class:`python:int` or :class:`python:str`, :obj:`optional`
+           Default is ``8``.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           Default is ``"0.02mm"``.
+
+       **is_circuit_port** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Default is ``False``.
+
+       **reference_terminal** : :class:`python:str`, :obj:`optional`
+           Paired reference terminal name.
+
+       **amplitude** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`, :obj:`optional`
+           Default is ``1``.
+
+       **phase** : :class:`python:float`, :class:`python:int`, :obj:`or` :class:`python:str`, :obj:`optional`
+           Default is ``0``.
+
+       **terminal_to_ground** : :class:`python:str`, :obj:`optional`
+           Default is ``"kNoGround"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgEdgeTerminal`
+           The newly created terminal object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_bundle_terminal(name: str, terminals: list[str])
+
+   
+   Add a bundle terminal that groups several existing terminals.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Unique bundle name.
+
+       **terminals** : :class:`python:list` :obj:`of` :class:`python:str`
+           Names of the terminals to bundle, e.g.
+           ``["t_vdd", "t_gnd"]``.
+
+
+
+   :Returns:
+
+       :obj:`CfgBundleTerminal`
+           The newly created bundle-terminal object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg.terminals.add_bundle_terminal("bundle_demo", ["t_vdd", "t_gnd"])
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

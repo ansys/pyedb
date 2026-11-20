@@ -1,0 +1,28 @@
+
+
+
+
+
+
+:class:`SweepType`
+==================
+
+
+.. py:class:: pyedb.generic.constants.SweepType
+
+   Bases: :py:obj:`object`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SweepType
+
+
+
+
+

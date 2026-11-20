@@ -1,0 +1,126 @@
+
+
+
+
+
+
+The ``emc_rule_checker_settings.py`` module
+===========================================
+
+.. py:module:: pyedb.misc.siw_feature_config.emc_rule_checker_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: emc_rule_checker_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc_rule_checker_settings.EMCRuleCheckerSettings`
+            - Manages EMI scanner settings.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~kwargs_parser`
+            - Parse and convert keyword arguments to string format.
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EMCRuleCheckerSettings</autoapi/pyedb/misc/siw_feature_config/emc_rule_checker_settings/EMCRuleCheckerSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: kwargs_parser(kwargs: dict) -> dict[str, str]
+
+   
+   Parse and convert keyword arguments to string format.
+
+
+   :Parameters:
+
+       **kwargs** : :class:`python:dict`
+           Dictionary of keyword arguments to parse.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`python:str`]
+           Dictionary with all values converted to strings.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.siw_feature_config.emc_rule_checker_settings import kwargs_parser
+   >>> kwargs = {"key1": True, "key2": 123, "key3": "test"}
+   >>> result = kwargs_parser(kwargs)
+   >>> result
+   {'key1': '1', 'key2': '123', 'key3': 'test'}
+
+   ..
+       !! processed by numpydoc !!
+
+
+

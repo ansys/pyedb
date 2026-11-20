@@ -1,0 +1,200 @@
+
+
+
+
+
+
+The ``pyedb.internal.checks`` library
+=====================================
+
+.. py:module:: pyedb.internal.checks
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: checks
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~install_message`
+            - Generate an installation message for missing dependencies.
+
+
+          * - :py:obj:`~check_dependency`
+            - Check whether a Python dependency can be imported.
+
+
+          * - :py:obj:`~requires_dotnet_dependency`
+            - Decorate a method as requiring specific graphics dependencies.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides functions for performing common checks.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: install_message(dependency: str | list[str], target: str, level: str = 'method') -> str
+
+   
+   Generate an installation message for missing dependencies.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.internal.checks import install_message
+   >>> install_message("pyvista", "graphics")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: check_dependency(dependency: str, target: str = 'all', warning: bool = False) -> bool
+
+   
+   Check whether a Python dependency can be imported.
+
+
+   :Parameters:
+
+       **dependency** : :class:`python:str`
+           Dependency name or importable module path. Known aliases in
+           ``_DEPENDENCY_IMPORT_ALIASES`` are resolved to their import module automatically.
+
+       **target** : :class:`python:str`, :obj:`optional`
+           PyAEDT installation target to mention in the error message. Defaults to ``"all"``.
+
+       **warning** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           If True, issue a warning instead of raising an error. Default is False.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the dependency is available, False if unavailable and warning is True.
+
+
+
+
+   :Raises:
+
+       :obj:`ImportError`
+           If dependency is not available and warning is False.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.internal.checks import check_dependency
+   >>> check_dependency("pyvista", target="graphics")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: requires_dotnet_dependency(*dependencies: str) -> collections.abc.Callable[[_F], _F]
+
+   
+   Decorate a method as requiring specific graphics dependencies.
+
+   The main goal of this decorator is to isolate the logic around checking graphics
+   dependencies and providing consistent error messages across methods that require
+   such dependencies.
+
+   :Parameters:
+
+       **\*dependencies** : :class:`python:str`
+           Names of required dependencies (e.g., 'pyvista', 'matplotlib', 'vtk').
+
+
+
+   :Returns:
+
+       :func:`python:callable`
+           Decorated method.
+
+
+
+
+   :Raises:
+
+       :obj:`ImportError`
+           If any of the required dependencies are not available.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.internal.checks import requires_dotnet_dependency
+   >>> decorator = requires_dotnet_dependency("ansys-pythonnet", "dotnet")
+   >>> callable(decorator)
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+
+

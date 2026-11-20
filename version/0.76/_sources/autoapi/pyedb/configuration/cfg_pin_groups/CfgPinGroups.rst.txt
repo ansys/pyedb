@@ -1,0 +1,329 @@
+
+
+
+
+
+
+:class:`CfgPinGroups`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_pin_groups.CfgPinGroups(pedb=None, pin_group_data=None, pingroup_data=None)
+
+   
+   Manage configuration pin group class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPinGroups
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_pin_groups_to_edb`
+            - Write all configured pin groups into the open EDB design.
+          * - :py:attr:`~get_data_from_edb`
+            - Read existing pin groups from the open EDB design.
+          * - :py:attr:`~get`
+            - Return the :class:`CfgPinGroup` for an existing pin group.
+          * - :py:attr:`~add`
+            - Add one or more pin groups to this configuration.
+          * - :py:attr:`~apply`
+            - Write all configured pin groups into the open EDB design.
+          * - :py:attr:`~get_data_from_db`
+            - Read pin groups from the EDB design.
+          * - :py:attr:`~export_properties`
+            - Serialize all pin groups to plain dictionaries.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_pingroup_to_edb`
+            - 
+          * - :py:attr:`~pin_groups`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: set_pingroup_to_edb
+
+.. py:attribute:: pin_groups
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_pin_groups_to_edb()
+
+   
+   Write all configured pin groups into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_edb()
+
+   
+   Read existing pin groups from the open EDB design.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`python:dict`
+           Serialized pin-group payloads.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get(name: str) -> CfgPinGroup
+
+   
+   Return the :class:`CfgPinGroup` for an existing pin group.
+
+   If the group has already been registered via :meth:`add` the cached
+   entry is returned.  Otherwise the group is looked up in the live EDB
+   session and a new entry is created from its current pin membership.
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Pin-group name, e.g. ``"pg_VDD"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgPinGroup`
+           Pin-group builder pre-populated with the current pin list.
+
+
+
+
+   :Raises:
+
+       :obj:`KeyError`
+           If no EDB session is attached or the pin group does not exist.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg = edb.configuration.create_config_builder()
+   >>> pg = cfg.pin_groups.get("pg_VDD")
+   >>> print(pg.pins)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add(name=None, reference_designator=None, pins=None, nets=None, net=None)
+
+   
+   Add one or more pin groups to this configuration.
+
+   Provide either *pins* (explicit list) **or** *nets* (one or more net
+   names), not both.
+
+   When *nets* is a single string, one pin group is created using *name*.
+   When *nets* is a list of strings, one pin group is created **per net**
+   and the auto-generated name follows the convention
+   ``"Pingroup_{reference_designator}.{net_name}"``.  The explicit *name*
+   argument is ignored in the multi-net case.
+
+   When an EDB session is attached the component pins are resolved
+   immediately; otherwise resolution is deferred to :meth:`apply`.
+
+   :Parameters:
+
+       **reference_designator** : :class:`python:str`
+           Reference designator of the owning component, e.g. ``"U1"``.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Unique pin-group name.  When omitted the name is auto-generated:
+           ``"Pingroup_{reference_designator}.{net_name}"`` for a single net
+           and ``"Pingroup_{reference_designator}"`` for explicit pins.
+           In the multi-net case the name is always auto-generated.
+
+       **pins** : :class:`python:list` :obj:`of` :class:`python:str`, :obj:`optional`
+           Explicit list of pin names, e.g. ``["A1", "A2", "B1"]``.
+
+       **nets** : :class:`python:str` or :class:`python:list` :obj:`of` :class:`python:str`, :obj:`optional`
+           Net name(s).  All component pins on each net are collected into a
+           dedicated pin group.
+
+
+
+   :Returns:
+
+       :obj:`CfgPinGroup` or :class:`python:list` :obj:`of` :obj:`CfgPinGroup`
+           The newly created pin-group object(s).  A single object is
+           returned when *nets* is a string or *pins* is used; a list is
+           returned when *nets* is a list with more than one entry.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cfg.pin_groups.add("pg_VDD", "U1", nets="VDD")
+   >>> cfg.pin_groups.add("pg_GND", "U1", pins=["A1", "A2", "B1"])
+   >>> cfg.pin_groups.add("", "U1", nets=["VDD", "GND"])
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Write all configured pin groups into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db()
+
+   
+   Read pin groups from the EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_properties()
+
+   
+   Serialize all pin groups to plain dictionaries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

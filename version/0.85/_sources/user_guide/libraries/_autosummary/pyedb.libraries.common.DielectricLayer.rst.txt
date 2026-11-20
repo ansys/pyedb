@@ -1,0 +1,15 @@
+﻿DielectricLayer
+===============
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoclass:: DielectricLayer
+
+   
+
+   
+   
+
+   
+   
+   

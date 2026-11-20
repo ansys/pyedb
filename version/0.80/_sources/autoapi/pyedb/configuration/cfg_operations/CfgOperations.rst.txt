@@ -1,0 +1,150 @@
+
+
+
+
+
+
+:class:`CfgOperations`
+======================
+
+
+.. py:class:: pyedb.configuration.cfg_operations.CfgOperations(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Collect operations to apply after the core design sections.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgOperations
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_cutout`
+            - Create and store a cutout operation.
+          * - :py:attr:`~model_dump`
+            - Override to propagate exclude_none=True to nested models.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~cutout`
+            - 
+          * - :py:attr:`~generate_auto_hfss_regions`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_operations import CfgOperations
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: cutout
+   :type:  Optional[CfgCutout]
+   :value: None
+
+
+.. py:attribute:: generate_auto_hfss_regions
+   :type:  bool
+   :value: False
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_cutout(signal_nets=None, reference_nets=None, extent_type: str = 'ConvexHull', expansion_size: float | int | str = 0.002, expansion_factor: float | int = 0, auto_identify_nets_enabled: bool = False, resistor_below: float | int = 100, inductor_below: float | int = 1, capacitor_above: float | int | str = '10nF', **kwargs)
+
+   
+   Create and store a cutout operation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: model_dump(**kwargs) -> dict
+
+   
+   Override to propagate exclude_none=True to nested models.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

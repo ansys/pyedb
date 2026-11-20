@@ -1,0 +1,80 @@
+
+
+
+
+
+
+:class:`LengthMeshOperationDeprecated`
+======================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.mesh_operation.LengthMeshOperationDeprecated
+
+   
+   PyEDB Length Mesh Operation class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: LengthMeshOperationDeprecated
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~restrict_length`
+            - 
+          * - :py:attr:`~nets_layers_list`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.mesh_operation import LengthMeshOperationDeprecated
+
+Property detail
+---------------
+
+.. py:property:: restrict_length
+
+.. py:property:: nets_layers_list
+
+
+
+
+
+

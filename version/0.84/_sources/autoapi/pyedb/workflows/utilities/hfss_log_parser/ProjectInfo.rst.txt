@@ -1,0 +1,127 @@
+
+
+
+
+
+
+:class:`ProjectInfo`
+====================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.ProjectInfo
+
+   
+   Basic meta-data extracted from the header of an HFSS batch log.
+
+
+
+   :Attributes:
+
+       **name** : :class:`python:str`
+           Project name (without extension).
+
+       **file** : :obj:`pathlib.Path`
+           Full path to the project file.
+
+       **design** : :class:`python:str`, :obj:`optional`
+           Active design name. The default is ``""``.
+
+       **user** : :class:`python:str`, :obj:`optional`
+           OS user that launched the solve. The default is ``""``.
+
+       **cmd_line** : :class:`python:str`, :obj:`optional`
+           Exact command line used for the run. The default is ``""``.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pathlib import Path
+   >>> info = ProjectInfo(
+   ...     name="Patch_Antenna", file=Path("/project/antenna.aedt"), design="HFSSDesign1", user="engineer"
+   ... )
+   >>> info.name
+   'Patch_Antenna'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ProjectInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~file`
+            - 
+          * - :py:attr:`~design`
+            - 
+          * - :py:attr:`~user`
+            - 
+          * - :py:attr:`~cmd_line`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import ProjectInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: file
+   :type:  pathlib.Path
+
+.. py:attribute:: design
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: user
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: cmd_line
+   :type:  str
+   :value: ''
+
+
+
+
+
+

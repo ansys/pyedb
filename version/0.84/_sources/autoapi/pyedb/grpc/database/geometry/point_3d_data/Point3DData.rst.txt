@@ -1,0 +1,182 @@
+
+
+
+
+
+
+:class:`Point3DData`
+====================
+
+
+.. py:class:: pyedb.grpc.database.geometry.point_3d_data.Point3DData(x, y, z)
+
+   
+   Point 3D Data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Point3DData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~x`
+            - X position.
+          * - :py:attr:`~y`
+            - Y position.
+          * - :py:attr:`~z`
+            - Z position.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.geometry.point_3d_data import Point3DData
+
+Property detail
+---------------
+
+.. py:property:: x
+   :type: float
+
+
+   
+   X position.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           X position value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: y
+   :type: float
+
+
+   
+   Y position.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Y position value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: z
+   :type: float
+
+
+   
+   Z position.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Z position value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :value: None
+
+
+
+
+
+

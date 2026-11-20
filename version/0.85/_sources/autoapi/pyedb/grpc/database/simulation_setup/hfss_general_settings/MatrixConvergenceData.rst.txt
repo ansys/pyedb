@@ -1,0 +1,381 @@
+
+
+
+
+
+
+:class:`MatrixConvergenceData`
+==============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_general_settings.MatrixConvergenceData(pedb, core)
+
+
+.. py:currentmodule:: MatrixConvergenceData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_entry`
+            - Add a matrix convergence data entry.
+          * - :py:attr:`~set_all_constant`
+            - Set all matrix convergence data entries to constant values.
+          * - :py:attr:`~set_all_diag_constant`
+            - Set all diagonal matrix convergence data entries to constant values.
+          * - :py:attr:`~set_all_off_diag_constant`
+            - Set all off-diagonal matrix convergence data entries to constant values.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~all_constant`
+            - Indicates whether all matrix convergence data entries are constant.
+          * - :py:attr:`~all_diag_constant`
+            - Indicates whether all diagonal matrix convergence data entries are constant.
+          * - :py:attr:`~all_off_diag_constant`
+            - Indicates whether all off-diagonal matrix convergence data entries are constant.
+          * - :py:attr:`~entry_list`
+            - List of matrix convergence data entries.
+          * - :py:attr:`~mag_min_threshold`
+            - Magnitude minimum threshold for matrix convergence data.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_general_settings import MatrixConvergenceData
+
+Property detail
+---------------
+
+.. py:property:: all_constant
+   :type: bool
+
+
+   
+   Indicates whether all matrix convergence data entries are constant.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if all entries are constant, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: all_diag_constant
+   :type: bool
+
+
+   
+   Indicates whether all diagonal matrix convergence data entries are constant.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if all diagonal entries are constant, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: all_off_diag_constant
+   :type: bool
+
+
+   
+   Indicates whether all off-diagonal matrix convergence data entries are constant.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if all off-diagonal entries are constant, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: entry_list
+   :type: list[MatrixConvergenceDataEntry]
+
+
+   
+   List of matrix convergence data entries.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:obj:`MatrixConvergenceDataEntry`]
+           List of matrix convergence data entries.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mag_min_threshold
+   :type: float
+
+
+   
+   Magnitude minimum threshold for matrix convergence data.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Magnitude minimum threshold value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_entry(port_name_1, port_name_2, mag_limit, phase_limit)
+
+   
+   Add a matrix convergence data entry.
+
+
+   :Parameters:
+
+       **port_name_1** : :class:`python:str`
+           Name of the first port.
+
+       **port_name_2** : :class:`python:str`
+           Name of the second port.
+
+       **mag_limit** : :class:`python:float`
+           Magnitude limit.
+
+       **phase_limit** : :class:`python:float`
+           Phase limit.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_all_constant(mag_limit, phase_limit, port_names)
+
+   
+   Set all matrix convergence data entries to constant values.
+
+
+   :Parameters:
+
+       **mag_limit** : :class:`python:float`
+           Magnitude limit.
+
+       **phase_limit** : :class:`python:float`
+           Phase limit.
+
+       **port_names** : :class:`python:list`\[:class:`python:str`]
+           List of port names.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_all_diag_constant(mag_limit, phase_limit, port_names, clear_entries)
+
+   
+   Set all diagonal matrix convergence data entries to constant values.
+
+
+   :Parameters:
+
+       **mag_limit** : :class:`python:float`
+           Magnitude limit.
+
+       **phase_limit** : :class:`python:float`
+           Phase limit.
+
+       **port_names** : :class:`python:list`\[:class:`python:str`]
+           List of port names.
+
+       **clear_entries** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to clear existing entries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_all_off_diag_constant(mag_limit, phase_limit, port_names, clear_entries)
+
+   
+   Set all off-diagonal matrix convergence data entries to constant values.
+
+
+   :Parameters:
+
+       **mag_limit** : :class:`python:float`
+           Magnitude limit.
+
+       **phase_limit** : :class:`python:float`
+           Phase limit.
+
+       **port_names** : :class:`python:list`\[:class:`python:str`]
+           List of port names.
+
+       **clear_entries** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to clear existing entries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

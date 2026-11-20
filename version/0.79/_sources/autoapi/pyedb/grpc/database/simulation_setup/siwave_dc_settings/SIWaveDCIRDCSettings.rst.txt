@@ -1,0 +1,373 @@
+
+
+
+
+
+
+:class:`SIWaveDCIRDCSettings`
+=============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_dc_settings.SIWaveDCIRDCSettings(pedb, dc_core: ansys.edb.core.simulation_setup.siwave_simulation_settings.SIWaveDCSettings, dcir_core: ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSettings)
+
+   Bases: :py:obj:`SIWaveDCSettings`
+
+
+   
+   SIWave DC settings for DCIR setups — extends base DC settings with DCIR-specific properties
+   accessible via the parent DCIR settings core.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SIWaveDCIRDCSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dc_report_config_file`
+            - DC report configuration file path.
+          * - :py:attr:`~dc_report_show_active_devices`
+            - Whether to show active devices in the DC report.
+          * - :py:attr:`~export_dc_thermal_data`
+            - Whether to export DC thermal data.
+          * - :py:attr:`~full_dc_report_path`
+            - Full DC report path.
+          * - :py:attr:`~icepak_temp_file`
+            - Icepak temperature file path.
+          * - :py:attr:`~import_thermal_data`
+            - Whether to import thermal data.
+          * - :py:attr:`~per_pin_res_path`
+            - Per-pin resistance file path.
+          * - :py:attr:`~per_pin_use_pin_format`
+            - Whether to use pin format for per-pin resistance.
+          * - :py:attr:`~source_terms_to_ground`
+            - Source terms to ground mapping.
+          * - :py:attr:`~use_loop_res_for_per_pin`
+            - Whether to use loop resistance for per-pin resistance.
+          * - :py:attr:`~via_report_path`
+            - Via report file path.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCIRDCSettings
+
+Property detail
+---------------
+
+.. py:property:: dc_report_config_file
+   :type: str
+
+
+   
+   DC report configuration file path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_report_show_active_devices
+   :type: bool
+
+
+   
+   Whether to show active devices in the DC report.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: export_dc_thermal_data
+   :type: bool
+
+
+   
+   Whether to export DC thermal data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: full_dc_report_path
+   :type: str
+
+
+   
+   Full DC report path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: icepak_temp_file
+   :type: str
+
+
+   
+   Icepak temperature file path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: import_thermal_data
+   :type: bool
+
+
+   
+   Whether to import thermal data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: per_pin_res_path
+   :type: str
+
+
+   
+   Per-pin resistance file path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: per_pin_use_pin_format
+   :type: bool
+
+
+   
+   Whether to use pin format for per-pin resistance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_terms_to_ground
+   :type: dict
+
+
+   
+   Source terms to ground mapping.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_loop_res_for_per_pin
+   :type: bool
+
+
+   
+   Whether to use loop resistance for per-pin resistance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_report_path
+   :type: str
+
+
+   
+   Via report file path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

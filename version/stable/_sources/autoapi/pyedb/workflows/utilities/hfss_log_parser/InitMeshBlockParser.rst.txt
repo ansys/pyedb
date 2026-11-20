@@ -1,0 +1,126 @@
+
+
+
+
+
+
+:class:`InitMeshBlockParser`
+============================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.InitMeshBlockParser(lines: list[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract initial mesh statistics from the log.
+
+   This parser searches for the initial meshing profile section and extracts
+   tetrahedra count, memory usage, and timing information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = [
+   ...     "[PROFILE] Initial Meshing",
+   ...     "Tetrahedra: 5000",
+   ...     "Memory 128.5 MB",
+   ...     "Real Time 00:45",
+   ...     "CPU Time 00:42",
+   ... ]
+   >>> parser = InitMeshBlockParser(lines)
+   >>> mesh = parser.parse()
+   >>> mesh.tetrahedra
+   5000
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: InitMeshBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse initial mesh statistics from log lines.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import InitMeshBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> InitMesh
+
+   
+   Parse initial mesh statistics from log lines.
+
+
+
+
+
+   :Returns:
+
+       :obj:`InitMesh`
+           Initial mesh metrics including tetrahedra count, memory, and timing.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = ["[PROFILE] Initial Meshing", "Tetrahedra: 10000"]
+   >>> parser = InitMeshBlockParser(lines)
+   >>> mesh = parser.parse()
+   >>> mesh.tetrahedra
+   10000
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

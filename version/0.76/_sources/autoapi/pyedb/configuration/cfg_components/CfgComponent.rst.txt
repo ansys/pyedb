@@ -1,0 +1,552 @@
+
+
+
+
+
+
+:class:`CfgComponent`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_components.CfgComponent(_pedb=None, pedb_object=None, **kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+   
+   Fluent builder for a single component entry.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgComponent
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~retrieve_model_properties_from_edb`
+            - Retrieve model properties from the EDB design.
+          * - :py:attr:`~set_parameters_to_edb`
+            - Set component parameters to the EDB design.
+          * - :py:attr:`~retrieve_parameters_from_edb`
+            - Retrieve component parameters from the EDB design.
+          * - :py:attr:`~add_pin_pair_rlc`
+            - Append a pin-pair RLC model between two component pins.
+          * - :py:attr:`~set_s_parameter_model`
+            - Assign a Touchstone S-parameter model to this component.
+          * - :py:attr:`~set_spice_model`
+            - Assign a SPICE subcircuit model to this component.
+          * - :py:attr:`~set_netlist_model`
+            - Assign a raw netlist model to this component.
+          * - :py:attr:`~set_ic_die_properties`
+            - Configure IC die and orientation properties.
+          * - :py:attr:`~set_solder_ball_properties`
+            - Configure solder-ball geometry for this component.
+          * - :py:attr:`~set_port_properties`
+            - Configure port reference geometry for this IC component.
+          * - :py:attr:`~to_dict`
+            - Serialize the component configuration.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pyedb_obj`
+            - 
+          * - :py:attr:`~enabled`
+            - 
+          * - :py:attr:`~reference_designator`
+            - 
+          * - :py:attr:`~definition`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~placement_layer`
+            - 
+          * - :py:attr:`~pins`
+            - 
+          * - :py:attr:`~port_properties`
+            - 
+          * - :py:attr:`~solder_ball_properties`
+            - 
+          * - :py:attr:`~ic_die_properties`
+            - 
+          * - :py:attr:`~pin_pair_model`
+            - 
+          * - :py:attr:`~spice_model`
+            - 
+          * - :py:attr:`~s_parameter_model`
+            - 
+          * - :py:attr:`~netlist_model`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_components import CfgComponent
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: pyedb_obj
+   :value: None
+
+
+.. py:attribute:: enabled
+
+.. py:attribute:: reference_designator
+
+.. py:attribute:: definition
+
+.. py:attribute:: type
+
+.. py:attribute:: placement_layer
+
+.. py:attribute:: pins
+
+.. py:attribute:: port_properties
+
+.. py:attribute:: solder_ball_properties
+
+.. py:attribute:: ic_die_properties
+
+.. py:attribute:: pin_pair_model
+
+.. py:attribute:: spice_model
+
+.. py:attribute:: s_parameter_model
+
+.. py:attribute:: netlist_model
+
+
+
+Method detail
+-------------
+
+.. py:method:: retrieve_model_properties_from_edb()
+
+   
+   Retrieve model properties from the EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_parameters_to_edb()
+
+   
+   Set component parameters to the EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: retrieve_parameters_from_edb()
+
+   
+   Retrieve component parameters from the EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_pin_pair_rlc(first_pin: str, second_pin: str, resistance=None, inductance=None, capacitance=None, is_parallel: bool = False, resistance_enabled: bool = False, inductance_enabled: bool = False, capacitance_enabled: bool = False)
+
+   
+   Append a pin-pair RLC model between two component pins.
+
+
+   :Parameters:
+
+       **first_pin** : :class:`python:str`
+           Name of the first pin, e.g. ``"1"``.
+
+       **second_pin** : :class:`python:str`
+           Name of the second pin, e.g. ``"2"``.
+
+       **resistance** : :class:`python:str`, :class:`python:float`, :obj:`or` :data:`python:None`, :obj:`optional`
+           Resistance value, e.g. ``"100ohm"`` or ``100.0``.
+
+       **inductance** : :class:`python:str`, :class:`python:float`, :obj:`or` :data:`python:None`, :obj:`optional`
+           Inductance value, e.g. ``"1nH"``.
+
+       **capacitance** : :class:`python:str`, :class:`python:float`, :obj:`or` :data:`python:None`, :obj:`optional`
+           Capacitance value, e.g. ``"100nF"``.
+
+       **is_parallel** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           ``True`` for a parallel RLC topology.  Default is ``False``
+           (series).
+
+       **resistance_enabled** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Activate the resistance element.  Default is ``False``.
+
+       **inductance_enabled** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Activate the inductance element.  Default is ``False``.
+
+       **capacitance_enabled** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Activate the capacitance element.  Default is ``False``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> r1 = cfg.components.add("R1", part_type="resistor")
+   >>> r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_s_parameter_model(model_name: str, model_path: str, reference_net: str)
+
+   
+   Assign a Touchstone S-parameter model to this component.
+
+
+   :Parameters:
+
+       **model_name** : :class:`python:str`
+           Name registered in the EDB component model library.
+
+       **model_path** : :class:`python:str`
+           Absolute path to the ``.sNp`` Touchstone file.
+
+       **reference_net** : :class:`python:str`
+           Reference (ground) net for the model, e.g. ``"GND"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> u1.set_s_parameter_model("cap_100nF", "/snp/cap.s2p", "GND")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_spice_model(model_name: str, model_path: str, sub_circuit: str = '', terminal_pairs=None)
+
+   
+   Assign a SPICE subcircuit model to this component.
+
+
+   :Parameters:
+
+       **model_name** : :class:`python:str`
+           SPICE model name registered in the library.
+
+       **model_path** : :class:`python:str`
+           Absolute path to the ``.sp`` SPICE file.
+
+       **sub_circuit** : :class:`python:str`, :obj:`optional`
+           Subcircuit name inside the file.  Default is ``""``.
+
+       **terminal_pairs** : :class:`python:list`, :obj:`optional`
+           Pin-to-node mapping list.  Default is ``[]``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> u1.set_spice_model("ic_spice", "/spice/ic.sp", sub_circuit="IC_TOP")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_netlist_model(netlist: str)
+
+   
+   Assign a raw netlist model to this component.
+
+
+   :Parameters:
+
+       **netlist** : :class:`python:str`
+           SPICE-compatible netlist string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_ic_die_properties(die_type: str = 'no_die', orientation: str = 'chip_up', height=None)
+
+   
+   Configure IC die and orientation properties.
+
+
+   :Parameters:
+
+       **die_type** : :class:`python:str`, :obj:`optional`
+           Die type.  Accepted values: ``"flip_chip"`` | ``"wire_bond"`` |
+           ``"no_die"``.  Default is ``"no_die"``.
+
+       **orientation** : :class:`python:str`, :obj:`optional`
+           Die orientation.  ``"chip_up"`` (default) or ``"chip_down"``.
+
+       **height** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Die height (wire bond only), e.g. ``"100um"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> u1.set_ic_die_properties("flip_chip", orientation="chip_down")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_solder_ball_properties(shape: str = 'cylinder', diameter: str = None, height: str = None, material: str = 'solder', mid_diameter=None, orientation: str = 'chip_down', reference_designator: str = None)
+
+   
+   Configure solder-ball geometry for this component.
+
+
+   :Parameters:
+
+       **shape** : :class:`python:str`, :obj:`optional`
+           Solder-ball shape.  ``"cylinder"`` (default), ``"spheroid"``, or
+           ``"no_solder_ball"``.
+
+       **diameter** : :class:`python:str`, :obj:`optional`
+           Outer diameter, e.g. ``"150um"``.  When *None* and a live EDB
+           session is attached the smallest pin pad size found on the
+           component is used automatically.  Falls back to ``"150um"`` if
+           the pad size cannot be determined.
+
+       **height** : :class:`python:str`, :obj:`optional`
+           Solder-ball height, e.g. ``"100um"``.  When *None* the height is
+           set to ``2 * diameter / 3``.
+
+       **material** : :class:`python:str`, :obj:`optional`
+           Material name.  Default is ``"solder"``.
+
+       **mid_diameter** : :class:`python:str` or :data:`python:None`, :obj:`optional`
+           Mid-diameter for spheroid shape.  Defaults to *diameter* when
+           *None*.
+
+       **orientation** : :class:`python:str`, :obj:`optional`
+           Die orientation for IC components.  ``"chip_down"`` (default) or
+           ``"chip_up"``.
+
+       **reference_designator** : :class:`python:str`, :obj:`optional`
+           Override the component reference designator used when querying pin
+           sizes from EDB.  When *None* ``self.reference_designator`` is
+           used.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
+   >>> u1.set_solder_ball_properties()  # auto-sizes from pin pads
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_port_properties(reference_height: str = '0', reference_size_auto: bool = True, reference_size_x: str = '0', reference_size_y: str = '0')
+
+   
+   Configure port reference geometry for this IC component.
+
+
+   :Parameters:
+
+       **reference_height** : :class:`python:str`, :obj:`optional`
+           Port reference height, e.g. ``"50um"``.  Default is ``"0"``.
+
+       **reference_size_auto** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Let the solver auto-compute the reference size.  Default is
+           ``True``.
+
+       **reference_size_x** : :class:`python:str`, :obj:`optional`
+           Explicit reference size in X when *reference_size_auto* is
+           ``False``.  Default is ``"0"``.
+
+       **reference_size_y** : :class:`python:str`, :obj:`optional`
+           Explicit reference size in Y.  Default is ``"0"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> u1.set_port_properties(reference_height="50um")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict() -> dict
+
+   
+   Serialize the component configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
