@@ -509,6 +509,44 @@ class Path(Primitive):
             points.append([Value(x), Value(y)])
         return points
 
+    def stroke_data(self, arc_segments: int = 6) -> dict | None:
+        """Return the data needed to draw the path as a thick line instead of a polygon.
+
+        The path is described by its center line (with arcs converted to segments), its width and its end cap and
+        corner styles. This is much cheaper than getting the polygon computed by the server, which is useful
+        when plotting.
+
+        Parameters
+        ----------
+        arc_segments : int, optional
+            Number of facets used to convert an arc of the center line. The default is ``6``.
+
+        Returns
+        -------
+        dict or None
+            Dictionary with the keys ``"x"``, ``"y"`` (lists of floats), ``"width"`` (float), ``"end_cap"``
+            (``"flat"``, ``"round"`` or ``"extended"``) and ``"corner_style"`` (``"round"``, ``"miter"`` or
+            ``"sharp"``). ``None`` if the path cannot be represented as a simple thick line (different or
+            clipped end caps, less than 2 points).
+        """
+        end_cap1, end_cap2 = self.core.get_end_cap_style()
+        if end_cap1 != end_cap2 or end_cap1 not in (
+            CorePathEndCapType.FLAT,
+            CorePathEndCapType.ROUND,
+            CorePathEndCapType.EXTENDED,
+        ):
+            return None
+        x, y = self._get_points_for_plot(self.core.center_line.points, arc_segments)
+        if len(x) < 2:
+            return None
+        return {
+            "x": x,
+            "y": y,
+            "width": self.core.width.double,
+            "end_cap": end_cap1.name.lower(),
+            "corner_style": self.core.corner_style.name.lower(),
+        }
+
     @property
     def corner_style(self) -> str:
         """Path's corner style as string.

@@ -108,7 +108,9 @@ class Primitive:
 
         """
         primitive = self.core.cast()
-        return PolygonData(self._pedb, primitive.polygon_data) if hasattr(primitive, "polygon_data") else None
+        # ``polygon_data`` is a backend call: read it once instead of ``hasattr`` followed by the access.
+        polygon_data = getattr(primitive, "polygon_data", None)
+        return PolygonData(self._pedb, polygon_data) if polygon_data is not None else None
 
     @polygon_data.setter
     def polygon_data(self, value):
@@ -275,7 +277,7 @@ class Primitive:
                 ptype = "bwr"
             else:
                 ptype = self.core.primitive_type.name.lower()
-            name = "{}_{}".format(ptype, self.core.edb_uid)
+            name = "{}__{}".format(ptype, self.core.edb_uid)
             self.aedt_name = name
         return name
 
@@ -327,19 +329,21 @@ class Primitive:
         Get the points to be plotted.
         """
         # fmt: off
+        # Plain floats (``Value.double``) are used on purpose: wrapping every coordinate in a pyedb ``Value`` is slow
+        # and makes the arithmetic in ``compute_arc_points`` create a new ``Value`` for each operation.
         x = []
         y = []
+        n_points = len(my_net_points)
         for i, point in enumerate(my_net_points):
             if not point.is_arc:
-                x.append(Value(point.x))
-                y.append(Value(point.y))
+                x.append(point.x.double)
+                y.append(point.y.double)
             else:
-                arc_h = Value(point.arc_height)
-                p1 = [Value(my_net_points[i - 1].x), Value(my_net_points[i - 1].y)]
-                if i + 1 < len(my_net_points):
-                    p2 = [Value(my_net_points[i + 1].x), Value(my_net_points[i + 1].y)]
-                else:
-                    p2 = [Value(my_net_points[0].x), Value(my_net_points[0].y)]
+                arc_h = point.arc_height.double
+                prev_point = my_net_points[i - 1]
+                next_point = my_net_points[i + 1] if i + 1 < n_points else my_net_points[0]
+                p1 = [prev_point.x.double, prev_point.y.double]
+                p2 = [next_point.x.double, next_point.y.double]
                 x_arc, y_arc = compute_arc_points(p1, p2, arc_h, num)
                 x.extend(x_arc)
                 y.extend(y_arc)
@@ -807,22 +811,30 @@ class Primitive:
             )
         return self.add_void(void_poly)
 
-    def points(self, arc_segments=6) -> tuple[list[float], list[float]] | None:
+    def points(self, arc_segments=6, orient=True) -> tuple[list[float], list[float]] | None:
         """Return the list of points with arcs converted to segments.
 
         Parameters
         ----------
         arc_segments : int, optional
             Number of facets to convert an arc. The default is ``6``.
+        orient : bool, optional
+            Whether to orient the points clockwise. The default is ``True``. Set it to ``False`` to skip this
+            step when the orientation is not needed (e.g. when plotting) as it is slow on large polygons.
 
         Returns
         -------
         tuple[list[float], list[float]] or None
             Tuple of ``(x, y)`` coordinate lists, or ``None`` if no points are found.
         """
-        xt, yt = self._get_points_for_plot(self.polygon_data.core.points, arc_segments)
+        polygon_data = self.polygon_data
+        if polygon_data is None:
+            return None
+        xt, yt = self._get_points_for_plot(polygon_data.core.points, arc_segments)
         if not xt:
             return None
+        if not orient:
+            return xt, yt
         x, y = GeometryOperators.orient_polygon(xt, yt, clockwise=True)
         return x, y
 

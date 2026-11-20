@@ -750,9 +750,9 @@ class Edb(EdbInit):
         self.standalone = self.standalone
         n_try = 10
         while not self.db and n_try:
+            n_try -= 1
             try:
                 self._open(self.edbpath, self.isreadonly, restart_rpc_server=restart_rpc_server)
-                n_try -= 1
             except Exception as e:
                 self.logger.error(e.args[0])
         if not self.db:
@@ -840,9 +840,9 @@ class Edb(EdbInit):
         self.standalone = self.standalone
         n_try = 10
         while not self.db and n_try:
+            n_try -= 1
             try:
                 self._create(self.edbpath, restart_rpc_server=restart_rpc_server)
-                n_try -= 1
             except Exception as e:
                 self.logger.error(e.args[0])
         if not self.db:
