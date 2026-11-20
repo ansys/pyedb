@@ -35,15 +35,37 @@ SurfaceOption = Literal["all", "top", "bottom", "side"]
 class XmlMaterialProperty(BaseModel):
     """Represents a material property value in the XML stackup.
 
+    A property is either a constant (``<Double>``) or an equation (``<Equation>``). Equations can
+    depend on the frequency with the ``Freq`` variable, expressed in Hz.
+
     Parameters
     ----------
     value : float, optional
         Numerical value of the material property. The default is ``None``.
+    equation : str, optional
+        Equation defining the material property, for instance a frequency dependent permittivity.
+        The default is ``None``.
     """
 
     value: float | None = Field(None, alias="Double")
+    equation: str | None = Field(None, alias="Equation")
 
     model_config = dict(populate_by_name=True)
+
+    @classmethod
+    def from_value(cls, value: "float | str") -> "XmlMaterialProperty":
+        """Create a property from a number, a numeric string or an equation string."""
+        if isinstance(value, str):
+            try:
+                return cls(value=float(value))
+            except ValueError:
+                return cls(equation=value.strip())
+        return cls(value=value)
+
+    @property
+    def content(self) -> "float | str | None":
+        """Constant value when defined, otherwise the equation."""
+        return self.value if self.value is not None else self.equation
 
 
 class XmlMaterial(BaseModel):
@@ -197,10 +219,11 @@ class XmlMaterials(BaseModel):
         ----------
         name : str
             Name of the material.
-        **kwargs : float
+        **kwargs : float or str
             Material properties as keyword arguments. Supported properties include
             ``permittivity``, ``permeability``, ``conductivity``,
-            ``dielectric_loss_tangent``, and ``magnetic_loss_tangent``.
+            ``dielectric_loss_tangent``, and ``magnetic_loss_tangent``. A string that is not a number
+            is stored as an equation, which can use the ``Freq`` variable (in Hz).
 
         Returns
         -------
@@ -213,10 +236,11 @@ class XmlMaterials(BaseModel):
         >>> materials = XmlMaterials()
         >>> copper = materials.add_material("copper", conductivity=5.8e7)
         >>> fr4 = materials.add_material("fr4", permittivity=4.5, dielectric_loss_tangent=0.02)
+        >>> dielectric = materials.add_material("ds", permittivity="4+0.1*ln((1e22+Freq*Freq)/(1e9+Freq*Freq))")
         """
         mat = XmlMaterial(
             **{"name": name},
-            **{p_name: XmlMaterialProperty(**{"value": p_value}) for p_name, p_value in kwargs.items()},
+            **{p_name: XmlMaterialProperty.from_value(p_value) for p_name, p_value in kwargs.items()},
         )
         self.material.append(mat)
         return mat
@@ -566,7 +590,7 @@ class XmlStackup(BaseModel):
             _mat = {}
             for key, value in mat.model_dump(exclude_none=True).items():
                 if isinstance(getattr(mat, key), XmlMaterialProperty):
-                    value = getattr(mat, key).value
+                    value = getattr(mat, key).content
                 _mat[key] = value
             material_data.append(_mat)
 

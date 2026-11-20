@@ -2279,7 +2279,17 @@ class Stackup:
         materials = {}
         for name, val in self._pedb.materials.materials.items():
             material = {}
-            if val.conductivity:
+            equations = val.equations
+            if "permittivity" in equations or "conductivity" in equations:
+                # Materials defined by equations (e.g. Djordjevic-Sarkar) keep them in the export.
+                permittivity = equations.get("permittivity", val.permittivity)
+                loss_tangent = equations.get("dielectric_loss_tangent", val.dielectric_loss_tangent)
+                if val.conductivity or "conductivity" in equations:
+                    material["Conductivity"] = equations.get("conductivity", val.conductivity)
+                if not (permittivity == 1 and loss_tangent == 0 and "conductivity" in equations):
+                    material["Permittivity"] = permittivity
+                    material["DielectricLossTangent"] = loss_tangent
+            elif val.conductivity:
                 if val.conductivity > 4e7:
                     material["Conductivity"] = val.conductivity
             else:
@@ -2358,7 +2368,15 @@ class Stackup:
             material.set("Name", mat)
             for pname, pval in val.items():
                 mat_prop = ET.SubElement(material, pname)
-                value = ET.SubElement(mat_prop, "Double")
+                if isinstance(pval, str):
+                    try:
+                        float(pval)
+                        tag = "Double"
+                    except ValueError:
+                        tag = "Equation"
+                else:
+                    tag = "Double"
+                value = ET.SubElement(mat_prop, tag)
                 value.text = str(pval)
 
         el_layers = ET.SubElement(el_stackup, "Layers", {"LengthUnit": "meter"})
@@ -2422,6 +2440,9 @@ class Stackup:
     def load_from_xml(self, file_path: str) -> bool:
         """Load stackup from an XML file.
 
+        Materials of the ``Materials`` section are loaded first, including the frequency dependent ones
+        defined with ``<Equation>`` (``Freq`` variable in Hz). Layers are then imported from the control file.
+
         Parameters
         ----------
         file_path : str
@@ -2433,6 +2454,7 @@ class Stackup:
             ``True`` when successful, ``False`` when failed.
         """
         try:
+            self._pedb.materials.load_xml(file_path)
             self.core.import_from_control_file(file_path)
             return True
         except Exception as e:

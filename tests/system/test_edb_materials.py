@@ -22,6 +22,7 @@
 
 """Tests related to Edb"""
 
+import math
 import os
 
 import pytest
@@ -365,6 +366,190 @@ class TestClass(BaseTestClass):
         material.conductivity = 5.7e8
         assert material.set_thermal_modifier("conductivity", **THERMAL_MODIFIER)
         edbapp.close(terminate_rpc_session=False)
+
+
+@pytest.mark.skipif(not config.use_grpc, reason="Material equations are only supported by the gRPC backend")
+class TestMaterialEquations(BaseTestClass):
+    PERMITTIVITY_EQUATION = "3.24799+0.00785013*ln((2.53303e+22+Freq*Freq)/(1.93339e+09+Freq*Freq))"
+    CONDUCTIVITY_EQUATION = "1e-12+8.73444e-13*Freq*(atan(Freq/43970.3)-atan(Freq/1.59155e+11))"
+    XML_CONTENT = f"""<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<c:Control xmlns:c="http://www.ansys.com/control" schemaVersion="1.0">
+  <Stackup schemaVersion="1.0">
+    <Materials>
+      <Material Name="AIR">
+        <Permittivity><Double>1</Double></Permittivity>
+        <Permeability><Double>1</Double></Permeability>
+        <DielectricLossTangent><Double>0</Double></DielectricLossTangent>
+      </Material>
+      <Material Name="COPPER_LEGACY">
+        <Conductivity><Double>58000000</Double></Conductivity>
+      </Material>
+      <Material Name="GL107_Nom">
+        <Permittivity><Equation>{PERMITTIVITY_EQUATION}</Equation></Permittivity>
+        <Conductivity><Equation>{CONDUCTIVITY_EQUATION}</Equation></Conductivity>
+        <DielectricLossTangent><Double>0</Double></DielectricLossTangent>
+        <MagneticLossTangent><Double>0</Double></MagneticLossTangent>
+      </Material>
+    </Materials>
+    <Layers LengthUnit="um">
+      <Layer Color="#d63b07" FillMaterial="GL107_Nom" Material="COPPER_LEGACY" Name="TOP"
+             Thickness="18" Type="conductor"/>
+      <Layer Color="#44614c" Material="GL107_Nom" Name="DIEL" Thickness="30" Type="dielectric"/>
+      <Layer Color="#5c4300" FillMaterial="GL107_Nom" Material="COPPER_LEGACY" Name="BOTTOM"
+             Thickness="18" Type="conductor"/>
+      <Layer Color="#88c36a" Name="Outline" Type="outline"/>
+    </Layers>
+  </Stackup>
+</c:Control>
+"""
+
+    @staticmethod
+    def _permittivity(frequency):
+        return 3.24799 + 0.00785013 * math.log((2.53303e22 + frequency**2) / (1.93339e9 + frequency**2))
+
+    @staticmethod
+    def _conductivity(frequency):
+        return 1e-12 + 8.73444e-13 * frequency * (math.atan(frequency / 43970.3) - math.atan(frequency / 1.59155e11))
+
+    def _write_xml(self):
+        xml_file = os.path.join(self.edb_examples.test_folder, "equation_stackup.xml")
+        with open(xml_file, "w", encoding="utf-8") as f:
+            f.write(self.XML_CONTENT)
+        return xml_file
+
+    def test_material_equation_properties(self):
+        """Set frequency dependent equations on dielectric properties."""
+        edbapp = self.edb_examples.create_empty_edb()
+        material = edbapp.materials.add_material(MATERIAL_NAME)
+        assert not material.is_frequency_dependent
+        assert material.equations == {}
+
+        material.set_property_equation("permittivity", self.PERMITTIVITY_EQUATION)
+        material.set_property_equation("conductivity", self.CONDUCTIVITY_EQUATION)
+        assert material.equations == {
+            "permittivity": self.PERMITTIVITY_EQUATION,
+            "conductivity": self.CONDUCTIVITY_EQUATION,
+        }
+        assert material.is_frequency_dependent
+        assert material.get_property_equation("permittivity") == self.PERMITTIVITY_EQUATION
+        assert material.get_property_equation("permeability") is None
+        for frequency in (1e6, 1e9, 10e9):
+            assert material.get_property_at_frequency("permittivity", frequency) == pytest.approx(
+                self._permittivity(frequency), rel=1e-6
+            )
+            assert material.get_property_at_frequency("conductivity", frequency) == pytest.approx(
+                self._conductivity(frequency), rel=1e-6
+            )
+        assert material.get_property_at_frequency("permittivity", "1GHz") == pytest.approx(
+            self._permittivity(1e9), rel=1e-6
+        )
+        # Constant properties are returned as is
+        assert material.get_property_at_frequency("permeability", 1e9) == PERMEABILITY_DEFAULT_VALUE
+        # The equation is kept when the material is converted to a dictionary
+        material_dict = material.to_dict()
+        assert material_dict["permittivity"] == self.PERMITTIVITY_EQUATION
+        assert material_dict["conductivity"] == self.CONDUCTIVITY_EQUATION
+
+        material.permittivity = 4.4
+        assert "permittivity" not in material.equations
+        assert material.permittivity == 4.4
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_material_equation_invalid_arguments(self):
+        edbapp = self.edb_examples.create_empty_edb()
+        material = edbapp.materials.add_material(MATERIAL_NAME)
+        with pytest.raises(ValueError):
+            material.set_property_equation("unknown_property", "1+Freq")
+        with pytest.raises(ValueError):
+            material.set_property_equation("permittivity", "")
+        with pytest.raises(ValueError):
+            material.get_property_equation("unknown_property")
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_add_material_with_equations(self):
+        """Create materials with frequency dependent equations."""
+        edbapp = self.edb_examples.create_empty_edb()
+        dielectric = edbapp.materials.add_dielectric_material("ds_equation", self.PERMITTIVITY_EQUATION, 0.0)
+        dielectric.conductivity = self.CONDUCTIVITY_EQUATION
+        assert dielectric.is_frequency_dependent
+        assert dielectric.permittivity == pytest.approx(self._permittivity(1e9), rel=1e-6)
+
+        conductor = edbapp.materials.add_conductor_material("metal_equation", "5.8e7*(1-1e-12*Freq)")
+        assert conductor.equations == {"conductivity": "5.8e7*(1-1e-12*Freq)"}
+        assert conductor.get_property_at_frequency("conductivity", 1e9) == pytest.approx(5.8e7 * (1 - 1e-3))
+        assert conductor.get_property_at_frequency("conductivity", 1e6) == pytest.approx(5.8e7 * (1 - 1e-6))
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_materials_load_xml(self):
+        """Load materials with equations from an XML file."""
+        edbapp = self.edb_examples.create_empty_edb()
+        xml_file = self._write_xml()
+        materials = edbapp.materials.load_xml(xml_file)
+        assert set(materials) == {"AIR", "COPPER_LEGACY", "GL107_Nom"}
+        assert {"AIR", "COPPER_LEGACY", "GL107_Nom"} <= set(edbapp.materials.materials)
+
+        material = edbapp.materials["GL107_Nom"]
+        assert material.equations == {
+            "permittivity": self.PERMITTIVITY_EQUATION,
+            "conductivity": self.CONDUCTIVITY_EQUATION,
+        }
+        assert material.get_property_at_frequency("permittivity", 5e9) == pytest.approx(
+            self._permittivity(5e9), rel=1e-6
+        )
+        assert material.get_property_at_frequency("conductivity", 5e9) == pytest.approx(
+            self._conductivity(5e9), rel=1e-6
+        )
+        assert edbapp.materials["COPPER_LEGACY"].conductivity == 58000000
+        assert edbapp.materials["AIR"].permittivity == 1
+        assert not edbapp.materials["COPPER_LEGACY"].is_frequency_dependent
+
+        # Existing materials are updated in place, unless overwrite is disabled
+        material.permittivity = 4.4
+        edbapp.materials.load_xml(xml_file, overwrite=False)
+        assert "permittivity" not in edbapp.materials["GL107_Nom"].equations
+        edbapp.materials.load_xml(xml_file)
+        assert edbapp.materials["GL107_Nom"].equations["permittivity"] == self.PERMITTIVITY_EQUATION
+
+        with pytest.raises(FileNotFoundError):
+            edbapp.materials.load_xml(os.path.join(self.edb_examples.test_folder, "missing.xml"))
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_stackup_load_xml_with_equations(self):
+        """Load a stackup XML file with frequency dependent materials."""
+        edbapp = self.edb_examples.create_empty_edb()
+        xml_file = self._write_xml()
+        assert edbapp.stackup.load(xml_file)
+        assert list(edbapp.stackup.layers) == ["TOP", "DIEL", "BOTTOM"]
+        assert edbapp.stackup.layers["TOP"].material == "COPPER_LEGACY"
+        assert edbapp.stackup.layers["DIEL"].material == "GL107_Nom"
+        assert edbapp.materials["GL107_Nom"].equations["permittivity"] == self.PERMITTIVITY_EQUATION
+        assert edbapp.materials["GL107_Nom"].equations["conductivity"] == self.CONDUCTIVITY_EQUATION
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_stackup_load_from_xml_with_equations(self):
+        """Load a stackup XML file with the control file import."""
+        edbapp = self.edb_examples.create_empty_edb()
+        xml_file = self._write_xml()
+        assert edbapp.stackup.load_from_xml(xml_file)
+        assert {"TOP", "DIEL", "BOTTOM"} <= set(edbapp.stackup.layers)
+        assert edbapp.stackup.layers["DIEL"].material == "GL107_Nom"
+        assert edbapp.materials["GL107_Nom"].equations["permittivity"] == self.PERMITTIVITY_EQUATION
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_stackup_export_xml_with_equations(self):
+        """Equations are preserved when the stackup is exported to XML."""
+        from pyedb.xml_parser.xml_parser import XmlParser
+
+        edbapp = self.edb_examples.create_empty_edb()
+        assert edbapp.stackup.load_from_xml(self._write_xml())
+        exported = os.path.join(self.edb_examples.test_folder, "exported_stackup.xml")
+        assert edbapp.stackup.export(exported)
+        edbapp.close(terminate_rpc_session=False)
+
+        materials = {m.name: m for m in XmlParser.load_xml_file(exported).stackup.materials.material}
+        assert materials["GL107_Nom"].permittivity.equation == self.PERMITTIVITY_EQUATION
+        assert materials["GL107_Nom"].conductivity.equation == self.CONDUCTIVITY_EQUATION
+        assert materials["COPPER_LEGACY"].conductivity.value == 58000000
 
 
 class TestDielectricModel(BaseTestClass):

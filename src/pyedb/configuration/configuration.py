@@ -868,6 +868,8 @@ class Configuration:
         layers_ = list()
         layers_.extend(self.cfg_data.stackup.layers)
         for l_attrs in layers_:
+            if (l_attrs.type or "").lower() == "outline":
+                continue
             attrs = l_attrs.model_dump(exclude_none=True, by_alias=False)
             self._pedb.stackup.add_layer_bottom(**attrs)
 
