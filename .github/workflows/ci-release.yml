@@ -10,6 +10,7 @@ env:
   MAIN_PYTHON_VERSION: '3.14'
   ON_CI: True
   PACKAGE_NAME: 'pyedb'
+  PYAEDT_TEST_VERSION: '3.13'
   PYEDB_CI_NO_DISPLAY: '1'
   TESTS_VERSION: '3.10'
 
@@ -529,7 +530,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: ${{ env.TESTS_VERSION }}
+          python-version: ${{ env.PYAEDT_TEST_VERSION }}
 
       # Bootstrap from the PSF-published wheel and hash: an index-based upgrade
       # would still rely on the old pip's compromised CA bundle.
@@ -626,7 +627,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.PYAEDT_TEST_VERSION }}
 
       # Bootstrap from the PSF-published wheel and hash: an index-based upgrade
       # would still rely on the old pip's compromised CA bundle.
