@@ -1,0 +1,197 @@
+
+
+
+
+
+
+:class:`XmlMaterialProperty`
+============================
+
+
+.. py:class:: pyedb.xml_parser.xml_stackup.XmlMaterialProperty(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Represents a material property value in the XML stackup.
+
+   A property is either a constant (``<Double>``) or an equation (``<Equation>``). Equations can
+   depend on the frequency with the ``Freq`` variable, expressed in Hz.
+
+   :Parameters:
+
+       **value** : :class:`python:float`, :obj:`optional`
+           Numerical value of the material property. The default is ``None``.
+
+       **equation** : :class:`python:str`, :obj:`optional`
+           Equation defining the material property, for instance a frequency dependent permittivity.
+           The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: XmlMaterialProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~from_value`
+            - Create a property from a number, a numeric string or an equation string.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~content`
+            - Constant value when defined, otherwise the equation.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~value`
+            - 
+          * - :py:attr:`~equation`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.xml_parser.xml_stackup import XmlMaterialProperty
+
+Property detail
+---------------
+
+.. py:property:: content
+   :type: float | str | None
+
+
+   
+   Constant value when defined, otherwise the equation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: value
+   :type:  float | None
+
+.. py:attribute:: equation
+   :type:  str | None
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: from_value(value: float | str) -> XmlMaterialProperty
+   :classmethod:
+
+
+   
+   Create a property from a number, a numeric string or an equation string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

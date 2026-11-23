@@ -1,0 +1,6 @@
+model\_construct
+================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinClearance.model_construct

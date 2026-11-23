@@ -1,0 +1,6 @@
+diff\_pair\_length\_match
+=========================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: Rules.diff_pair_length_match

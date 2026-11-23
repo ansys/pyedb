@@ -1,0 +1,175 @@
+
+
+
+
+
+
+:class:`FrequencyData`
+======================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.sweep_data.FrequencyData(core: ansys.edb.core.simulation_setup.simulation_setup.FrequencyData)
+
+
+.. py:currentmodule:: FrequencyData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~distribution`
+            - Get the distribution type of the frequency data.
+          * - :py:attr:`~start_frequency`
+            - Get the start frequency in Hz.
+          * - :py:attr:`~end_frequency`
+            - Get the end frequency in Hz.
+          * - :py:attr:`~step`
+            - Get the frequency step in Hz.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.sweep_data import FrequencyData
+
+Property detail
+---------------
+
+.. py:property:: distribution
+   :type: str
+
+
+   
+   Get the distribution type of the frequency data.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Distribution type. Values are: "lin", "dec", "estp", "linc", "oct".
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: start_frequency
+   :type: str
+
+
+   
+   Get the start frequency in Hz.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Start frequency in Hz.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: end_frequency
+   :type: str
+
+
+   
+   Get the end frequency in Hz.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           End frequency in Hz.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: step
+   :type: str
+
+
+   
+   Get the frequency step in Hz.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Frequency step in Hz.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: MinAnnularRing.name

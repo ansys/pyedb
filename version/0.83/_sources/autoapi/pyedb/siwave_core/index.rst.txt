@@ -1,0 +1,92 @@
+
+
+
+
+
+
+The ``siwave_core`` package
+===============================
+
+.. py:module:: pyedb.siwave_core
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave_core
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.siwave_core.cpa`
+            - 
+
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.siwave_core.icepak`
+            - 
+
+
+          * - :py:obj:`~pyedb.siwave_core.product_properties`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> cpa</autoapi/pyedb/siwave_core/cpa/index>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> icepak</autoapi/pyedb/siwave_core/icepak/index>
+    <span class="nf nf-fa-file"></span> product_properties</autoapi/pyedb/siwave_core/product_properties/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

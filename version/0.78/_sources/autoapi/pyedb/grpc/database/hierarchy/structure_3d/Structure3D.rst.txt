@@ -1,0 +1,322 @@
+
+
+
+
+
+
+:class:`Structure3D`
+====================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.structure_3d.Structure3D(pedb, core)
+
+   
+   Class for storing structure 3D components.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Structure3D
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create structure 3D component.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete`
+            - Delete structure 3D component.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - Return structure 3D component.
+          * - :py:attr:`~location`
+            - "Return structure 3D component.
+          * - :py:attr:`~name`
+            - "Return structure 3D component.
+          * - :py:attr:`~material`
+            - "Return structure 3D component.
+          * - :py:attr:`~net`
+            - "Return structure 3D component net name
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.structure_3d import Structure3D
+
+Property detail
+---------------
+
+.. py:property:: id
+   :type: int
+
+
+   
+   Return structure 3D component.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           The structure 3D component unique ID.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+   :type: tuple[float, float]
+
+
+   
+   "Return structure 3D component.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[:class:`python:float`, :class:`python:float`]
+           The structure 3D component location as a tuple of x and y coordinates.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+   :type: str
+
+
+   
+   "Return structure 3D component.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The structure 3D component name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: material
+   :type: str
+
+
+   
+   "Return structure 3D component.
+
+   str
+       The structure 3D component material.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net
+   :type: str
+
+
+   
+   "Return structure 3D component net name
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The structure 3D component net name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(edb, name: str) -> Structure3D
+   :classmethod:
+
+
+   
+   Create structure 3D component.
+
+
+   :Parameters:
+
+       **edb** : :obj:`EDB`
+           The EDB instance the structure 3D component belongs to.
+
+       **name** : :class:`python:str`
+           The name of the structure 3D component.
+
+
+
+   :Returns:
+
+       :obj:`Structure3D`
+           The created structure 3D component.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   Delete structure 3D component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

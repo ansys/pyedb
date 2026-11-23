@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``structure_3d.py`` module
+==============================
+
+.. py:module:: pyedb.grpc.database.hierarchy.structure_3d
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: structure_3d
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.hierarchy.structure_3d.Structure3D`
+            - Class for storing structure 3D components.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Structure3D</autoapi/pyedb/grpc/database/hierarchy/structure_3d/Structure3D>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

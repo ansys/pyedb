@@ -1,0 +1,206 @@
+
+
+
+
+
+
+:class:`XmlELayers`
+===================
+
+
+.. py:class:: pyedb.xml_parser.xml_stackup.XmlELayers(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Container for the extended layer stackup sections in EDB XML files.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: XmlELayers
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_layer`
+            - Add a conductor or other layer to the extended layers section.
+          * - :py:attr:`~add_via_layer`
+            - Add a via layer to the extended vias section.
+          * - :py:attr:`~add_dielectric_layer`
+            - Add a dielectric layer to the extended dielectrics section.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~length_unit`
+            - 
+          * - :py:attr:`~dielectrics`
+            - 
+          * - :py:attr:`~layers`
+            - 
+          * - :py:attr:`~vias`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.xml_parser.xml_stackup import XmlELayers
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: length_unit
+   :type:  str | None
+
+.. py:attribute:: dielectrics
+   :type:  XmlELayerGroup | None
+
+.. py:attribute:: layers
+   :type:  XmlELayerGroup | None
+
+.. py:attribute:: vias
+   :type:  XmlViaLayerGroup | None
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_layer(**kwargs) -> XmlELayer
+
+   
+   Add a conductor or other layer to the extended layers section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_via_layer(**kwargs) -> XmlViaLayer
+
+   
+   Add a via layer to the extended vias section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_dielectric_layer(**kwargs) -> XmlELayer
+
+   
+   Add a dielectric layer to the extended dielectrics section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

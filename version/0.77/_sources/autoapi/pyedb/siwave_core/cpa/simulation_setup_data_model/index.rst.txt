@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``simulation_setup_data_model.py`` module
+=============================================
+
+.. py:module:: pyedb.siwave_core.cpa.simulation_setup_data_model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: simulation_setup_data_model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.siwave_core.cpa.simulation_setup_data_model.SolverOptions`
+            - Configuration options for the SI-Wave solver.
+
+
+          * - :py:obj:`~pyedb.siwave_core.cpa.simulation_setup_data_model.Vrm`
+            - Voltage Regulator Module configuration.
+
+
+          * - :py:obj:`~pyedb.siwave_core.cpa.simulation_setup_data_model.ChannelSetup`
+            - Channel configuration setup.
+
+
+          * - :py:obj:`~pyedb.siwave_core.cpa.simulation_setup_data_model.SIwaveCpaSetup`
+            - Main configuration class for SI-Wave CPA (Channel Parameter Analyzer) setup.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SolverOptions</autoapi/pyedb/siwave_core/cpa/simulation_setup_data_model/SolverOptions>
+    <span class="nf nf-cod-symbol_class"></span> Vrm</autoapi/pyedb/siwave_core/cpa/simulation_setup_data_model/Vrm>
+    <span class="nf nf-cod-symbol_class"></span> ChannelSetup</autoapi/pyedb/siwave_core/cpa/simulation_setup_data_model/ChannelSetup>
+    <span class="nf nf-cod-symbol_class"></span> SIwaveCpaSetup</autoapi/pyedb/siwave_core/cpa/simulation_setup_data_model/SIwaveCpaSetup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

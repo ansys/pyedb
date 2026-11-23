@@ -1,0 +1,103 @@
+
+
+
+
+
+
+:class:`CfgFrequencies`
+=======================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgFrequencies(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Represent one frequency range or single-point sweep segment.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgFrequencies
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~start`
+            - 
+          * - :py:attr:`~stop`
+            - 
+          * - :py:attr:`~increment`
+            - 
+          * - :py:attr:`~distribution`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgFrequencies
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: start
+   :type:  float | str
+   :value: None
+
+
+.. py:attribute:: stop
+   :type:  float | str
+   :value: None
+
+
+.. py:attribute:: increment
+   :type:  int | float | str
+   :value: None
+
+
+.. py:attribute:: distribution
+   :type:  FrequencyDistribution
+   :value: None
+
+
+
+
+
+

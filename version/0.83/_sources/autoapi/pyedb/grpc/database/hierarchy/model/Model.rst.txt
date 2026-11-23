@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`Model`
+==============
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.model.Model(pedb)
+
+   Bases: :py:obj:`ansys.edb.core.hierarchy.model.Model`
+
+
+   
+   Manages model :class:`Model <ansys.edb.core.hierarchy.model.Model>`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.model import Model
+
+
+
+
+

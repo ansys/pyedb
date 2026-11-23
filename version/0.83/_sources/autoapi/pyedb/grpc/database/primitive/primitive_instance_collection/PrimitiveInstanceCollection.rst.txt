@@ -1,0 +1,107 @@
+
+
+
+
+
+
+:class:`PrimitiveInstanceCollection`
+====================================
+
+
+.. py:class:: pyedb.grpc.database.primitive.primitive_instance_collection.PrimitiveInstanceCollection(pedb, core=None)
+
+   Bases: :py:obj:`pyedb.grpc.database.primitive.primitive.Primitive`
+
+
+   
+   Manages EDB functionalities for a primitives.
+   It inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("myedb", version="2026.1", grpc=True)
+   >>> edb_prim = edb.layout.primitives[0]
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PrimitiveInstanceCollection
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~decompose`
+            - Decompose into individual primitives.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.primitive.primitive_instance_collection import PrimitiveInstanceCollection
+
+
+
+Method detail
+-------------
+
+.. py:method:: decompose()
+
+   
+   Decompose into individual primitives.
+   A primitive will be created for each geometry instantiation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

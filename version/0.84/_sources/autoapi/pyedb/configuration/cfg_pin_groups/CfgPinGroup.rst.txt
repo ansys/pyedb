@@ -1,0 +1,225 @@
+
+
+
+
+
+
+:class:`CfgPinGroup`
+====================
+
+
+.. py:class:: pyedb.configuration.cfg_pin_groups.CfgPinGroup(/, **data: Any)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Represent one pin-group definition bound to a component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPinGroup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_post_init`
+            - Transfer the ``pedb`` field value to the private ``_pedb`` attribute.
+          * - :py:attr:`~create`
+            - Write this pin group into the open EDB design.
+          * - :py:attr:`~export_properties`
+            - Serialize this pin group to a plain dictionary.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~reference_designator`
+            - 
+          * - :py:attr:`~pins`
+            - 
+          * - :py:attr:`~net`
+            - 
+          * - :py:attr:`~pedb`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_pin_groups import CfgPinGroup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: name
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: reference_designator
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: pins
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: net
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: pedb
+   :type:  Optional[Any]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: model_post_init(__context: Any) -> None
+
+   
+   Transfer the ``pedb`` field value to the private ``_pedb`` attribute.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create()
+
+   
+   Write this pin group into the open EDB design.
+
+
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`RuntimeError`
+           If no pins and no net are configured, or if EDB creation fails.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_properties()
+
+   
+   Serialize this pin group to a plain dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

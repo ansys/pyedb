@@ -1,0 +1,176 @@
+
+
+
+
+
+
+The ``pyedb.xml_parser.xml_utils`` library
+==========================================
+
+.. py:module:: pyedb.xml_parser.xml_utils
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: xml_utils
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~parse_xml_to_dict`
+            - Parse an XML string into a dictionary.
+
+
+          * - :py:obj:`~dict_to_xml`
+            - Serialize a dictionary with a single root key into an XML string.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~escape`
+            - 
+
+
+          * - :py:obj:`~quoteattr`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Minimal stdlib XML <-> dict conversion helpers.
+
+The dictionary convention mirrors the one used by ``xmltodict``:
+
+- attributes are stored with an ``@`` prefix,
+- text of elements that also have attributes/children is stored under ``#text``,
+- elements with only text are plain strings, empty elements are ``None``,
+- repeated sibling tags become lists.
+
+Namespace prefixes (for example ``c:Control``) are preserved verbatim.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: parse_xml_to_dict(xml_string: str) -> dict
+
+   
+   Parse an XML string into a dictionary.
+
+
+   :Parameters:
+
+       **xml_string** : :class:`python:str`
+           XML document content.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary with a single key (the root tag).
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: dict_to_xml(data: dict, pretty: bool = True) -> str
+
+   
+   Serialize a dictionary with a single root key into an XML string.
+
+
+   :Parameters:
+
+       **data** : :class:`python:dict`
+           Dictionary with exactly one root key, using the ``@``/``#text`` convention.
+
+       **pretty** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to indent the output with tabs. The default is ``True``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           XML document, including the XML declaration.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If the data doesn't have exactly one root element or contains invalid XML names.
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: escape
+
+.. py:data:: quoteattr
+
+
+

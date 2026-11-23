@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_operations`` library
+==================================================
+
+.. py:module:: pyedb.configuration.cfg_operations
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_operations
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_operations.CfgAutoIdentifyNets`
+            - Store threshold settings for automatic cutout net discovery.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_operations.CfgCutout`
+            - Represent one cutout operation configuration payload.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_operations.CfgOperations`
+            - Collect operations to apply after the core design sections.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgAutoIdentifyNets</autoapi/pyedb/configuration/cfg_operations/CfgAutoIdentifyNets>
+    <span class="nf nf-cod-symbol_class"></span> CfgCutout</autoapi/pyedb/configuration/cfg_operations/CfgCutout>
+    <span class="nf nf-cod-symbol_class"></span> CfgOperations</autoapi/pyedb/configuration/cfg_operations/CfgOperations>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Build the ``operations`` configuration section, including cutouts.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

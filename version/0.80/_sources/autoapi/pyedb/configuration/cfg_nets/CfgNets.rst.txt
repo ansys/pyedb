@@ -1,0 +1,424 @@
+
+
+
+
+
+
+:class:`CfgNets`
+================
+
+.. toctree::
+   :hidden:
+
+    CfgNet</autoapi/pyedb/configuration/cfg_nets/CfgNets.CfgNet>
+
+
+.. py:class:: pyedb.configuration.cfg_nets.CfgNets(pedb=None, signal_nets=None, power_nets=None, reference_nets=None)
+
+   
+   Fluent builder for the ``nets`` configuration section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgNets
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_parameters_to_edb`
+            - Write signal / power-ground net classifications into the open EDB design.
+          * - :py:attr:`~get_parameters_from_edb`
+            - Read net classifications from EDB.
+          * - :py:attr:`~to_dict`
+            - Serialize the in-memory net classification lists.
+          * - :py:attr:`~get`
+            - Return a :class:`CfgNet` object for an existing net in the EDB layout.
+          * - :py:attr:`~add_signal_nets`
+            - Append signal net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
+          * - :py:attr:`~add_power_ground_nets`
+            - Append power/ground net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
+          * - :py:attr:`~add_reference_nets`
+            - Append reference net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
+          * - :py:attr:`~apply`
+            - Apply net configuration on the layout.
+          * - :py:attr:`~get_data_from_db`
+            - Read net classifications from EDB.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~power_ground_nets`
+            - list of str: Power and ground net names (alias for ``power_nets``).
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~signal_nets`
+            - 
+          * - :py:attr:`~power_nets`
+            - 
+          * - :py:attr:`~reference_nets`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_nets import CfgNets
+
+Property detail
+---------------
+
+.. py:property:: power_ground_nets
+
+   
+   list of str: Power and ground net names (alias for ``power_nets``).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: signal_nets
+   :value: []
+
+
+.. py:attribute:: power_nets
+   :value: []
+
+
+.. py:attribute:: reference_nets
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_parameters_to_edb()
+
+   
+   Write signal / power-ground net classifications into the open EDB design.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_parameters_from_edb()
+
+   
+   Read net classifications from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict()
+
+   
+   Serialize the in-memory net classification lists.
+
+   Unlike :meth:`get_parameters_from_edb`, this method does **not** query
+   the live EDB session and therefore preserves any pending changes made
+   via :meth:`add_power_ground_nets` / :meth:`add_signal_nets` before
+   :meth:`set_parameters_to_edb` has been called.
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary with ``"signal_nets"`` and ``"power_ground_nets"`` keys.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get(net_name: str)
+
+   
+   Return a :class:`CfgNet` object for an existing net in the EDB layout.
+
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`
+           Net name to look up, e.g. ``"GND"`` or ``"CLK"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgNet` or :data:`python:False`
+           A :class:`CfgNet` instance bound to the live EDB session, or
+           ``False`` if the net does not exist in EDB.
+
+
+
+
+   :Raises:
+
+       :obj:`KeyError`
+           If no EDB session is attached.
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   cfg = edb.configuration.create_config_builder()
+   net = cfg.nets.get("GND")
+   if net:
+       print(net.classification)  # 'power_ground'
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_signal_nets(nets)
+
+   
+   Append signal net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
+
+   Any net already present in ``power_nets`` or ``reference_nets`` is
+   removed from those lists before being added here.
+
+   :Parameters:
+
+       **nets** : :class:`python:str`, :obj:`CfgNet`, :obj:`or` :class:`python:list` :obj:`of` str/CfgNet
+           Net name(s) to classify as signal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_power_ground_nets(nets)
+
+   
+   Append power/ground net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
+
+   Any net already present in ``signal_nets`` or ``reference_nets`` is
+   removed from those lists before being added here.
+
+   :Parameters:
+
+       **nets** : :class:`python:str`, :obj:`CfgNet`, :obj:`or` :class:`python:list` :obj:`of` str/CfgNet
+           Net name(s) to classify as power/ground.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_reference_nets(nets)
+
+   
+   Append reference net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
+
+   Any net already present in ``signal_nets`` or ``power_nets`` is
+   removed from those lists before being added here.
+
+   :Parameters:
+
+       **nets** : :class:`python:str`, :obj:`CfgNet`, :obj:`or` :class:`python:list` :obj:`of` str/CfgNet
+           Net name(s) to use as reference nets.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Apply net configuration on the layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db()
+
+   
+   Read net classifications from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.configuration.cfg_nets.CfgNets.CfgNet
+
+
+
+

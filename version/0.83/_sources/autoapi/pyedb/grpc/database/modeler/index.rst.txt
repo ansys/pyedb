@@ -1,0 +1,118 @@
+
+
+
+
+
+
+The ``modeler.py`` module
+=========================
+
+.. py:module:: pyedb.grpc.database.modeler
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: modeler
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.modeler.Modeler`
+            - Manages EDB methods for primitives management accessible from `Edb.modeler`.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~normalize_pairs`
+            - Convert any reasonable point description into [[x1, y1], [x2, y2], …]
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Modeler</autoapi/pyedb/grpc/database/modeler/Modeler>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains these classes: `EdbLayout` and `Shape`.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: normalize_pairs(points: Iterable[float]) -> List[List[float]]
+
+   
+   Convert any reasonable point description into [[x1, y1], [x2, y2], …]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

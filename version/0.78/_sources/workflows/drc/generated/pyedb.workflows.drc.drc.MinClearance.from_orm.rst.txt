@@ -1,0 +1,6 @@
+from\_orm
+=========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinClearance.from_orm

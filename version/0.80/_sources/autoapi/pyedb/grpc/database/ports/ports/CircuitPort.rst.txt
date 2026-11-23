@@ -1,0 +1,59 @@
+
+
+
+
+
+
+:class:`CircuitPort`
+====================
+
+
+.. py:class:: pyedb.grpc.database.ports.ports.CircuitPort(pedb, edb_object)
+
+   Bases: :py:obj:`GapPort`
+
+
+   
+   Manages gap port properties.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           EDB object from the ``Edblib`` library.
+
+       **edb_object** : :obj:`Ansys.Ansoft.Edb.Cell.Terminal.EdgeTerminal`
+           Edge terminal instance from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   This example shows how to access the ``GapPort`` class.
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.ports.ports import CircuitPort
+
+
+
+
+

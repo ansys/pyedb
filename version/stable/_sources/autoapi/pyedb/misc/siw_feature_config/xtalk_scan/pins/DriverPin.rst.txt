@@ -1,0 +1,156 @@
+
+
+
+
+
+
+:class:`DriverPin`
+==================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.xtalk_scan.pins.DriverPin
+
+   
+   Driver pin class handler.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.misc.siw_feature_config.xtalk_scan.pins import DriverPin
+   >>> pin = DriverPin()
+   >>> pin.name = "A1"
+   >>> pin.ref_des = "U1"
+   >>> pin.driver_rise_time = "50ps"
+   >>> pin.voltage = 1.8
+   >>> pin.driver_impedance = 40.0
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DriverPin
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~extend_xml`
+            - Write object to XML section.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~ref_des`
+            - 
+          * - :py:attr:`~driver_rise_time`
+            - 
+          * - :py:attr:`~voltage`
+            - 
+          * - :py:attr:`~driver_impedance`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.xtalk_scan.pins import DriverPin
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: ref_des
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: driver_rise_time
+   :type:  str | float | None
+   :value: None
+
+
+.. py:attribute:: voltage
+   :type:  float | None
+   :value: None
+
+
+.. py:attribute:: driver_impedance
+   :type:  float | None
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: extend_xml(parent) -> None
+
+   
+   Write object to XML section.
+
+
+   :Parameters:
+
+       **parent** : :obj:`xml.etree.ElementTree.Element`
+           Parent XML element to extend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

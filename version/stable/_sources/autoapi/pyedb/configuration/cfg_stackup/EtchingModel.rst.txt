@@ -1,0 +1,96 @@
+
+
+
+
+
+
+:class:`EtchingModel`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_stackup.EtchingModel(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Represent trapezoidal etching settings for a conductor layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EtchingModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~factor`
+            - 
+          * - :py:attr:`~etch_power_ground_nets`
+            - 
+          * - :py:attr:`~enabled`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_stackup import EtchingModel
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: factor
+   :type:  Optional[float | int | str]
+   :value: 0.5
+
+
+.. py:attribute:: etch_power_ground_nets
+   :type:  Optional[bool]
+   :value: False
+
+
+.. py:attribute:: enabled
+   :type:  Optional[bool]
+   :value: False
+
+
+
+
+
+

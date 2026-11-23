@@ -1,0 +1,153 @@
+
+
+
+
+
+
+:class:`SiwaveScanConfig`
+=========================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.xtalk_scan.scan_config.SiwaveScanConfig(pedb, scan_type: str = 'impedance')
+
+   
+   XML control file handle for SIwave crosstalk scan.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`object`
+           PyEDB instance.
+
+       **scan_type** : :class:`python:str`, :obj:`optional`
+           Type of scan to configure. Options are ``"impedance"``, ``"frequency_xtalk"``, or ``"time_xtalk"``.
+           The default is ``"impedance"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("path/to/aedb")
+   >>> scan_config = SiwaveScanConfig(edb, scan_type="impedance")
+   >>> scan_config.file_path = "output_config.xml"
+   >>> scan_config.write_xml()
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SiwaveScanConfig
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~write_xml`
+            - Write XML control file.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~file_path`
+            - 
+          * - :py:attr:`~impedance_scan`
+            - 
+          * - :py:attr:`~frequency_xtalk_scan`
+            - 
+          * - :py:attr:`~time_xtalk_scan`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: file_path
+   :value: ''
+
+
+.. py:attribute:: impedance_scan
+
+.. py:attribute:: frequency_xtalk_scan
+
+.. py:attribute:: time_xtalk_scan
+
+
+
+Method detail
+-------------
+
+.. py:method:: write_xml() -> bool
+
+   
+   Write XML control file.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the file was written successfully, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> scan_config = SiwaveScanConfig(pedb, scan_type="impedance")
+   >>> scan_config.file_path = "impedance_scan.xml"
+   >>> scan_config.impedance_scan.add_net("CLK", threshold_near=5.0, threshold_far=10.0)
+   >>> success = scan_config.write_xml()
+   >>> success
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

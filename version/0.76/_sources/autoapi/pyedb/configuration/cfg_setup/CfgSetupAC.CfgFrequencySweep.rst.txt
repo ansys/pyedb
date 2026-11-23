@@ -1,0 +1,386 @@
+
+
+
+
+
+
+:class:`CfgFrequencySweep`
+==========================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSetupAC.CfgFrequencySweep(name: str = '', **kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBaseModel`
+
+
+   
+   Base Pydantic model used by typed configuration payload classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgFrequencySweep
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_frequencies`
+            - Append a pre-built :class:`CfgFrequencies` range to this sweep.
+          * - :py:attr:`~add_linear_count_frequencies`
+            - Append a linear-count frequency range to this sweep.
+          * - :py:attr:`~add_log_count_frequencies`
+            - Append a logarithmic-count frequency range to this sweep.
+          * - :py:attr:`~add_linear_scale_frequencies`
+            - Append a linear-step frequency range to this sweep.
+          * - :py:attr:`~add_log_scale_frequencies`
+            - Append a logarithmic-step frequency range to this sweep.
+          * - :py:attr:`~add_single_frequency`
+            - Append a single discrete frequency point to this sweep.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~frequencies`
+            - 
+          * - :py:attr:`~use_q3d_for_dc`
+            - 
+          * - :py:attr:`~compute_dc_point`
+            - 
+          * - :py:attr:`~enforce_causality`
+            - 
+          * - :py:attr:`~enforce_passivity`
+            - 
+          * - :py:attr:`~adv_dc_extrapolation`
+            - 
+          * - :py:attr:`~use_hfss_solver_regions`
+            - 
+          * - :py:attr:`~hfss_solver_region_setup_name`
+            - 
+          * - :py:attr:`~hfss_solver_region_sweep_name`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup.CfgSetupAC import CfgFrequencySweep
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: type
+   :type:  Literal['discrete', 'interpolation', 'interpolating']
+   :value: None
+
+
+.. py:attribute:: frequencies
+   :type:  list[CfgFrequencies | str]
+   :value: None
+
+
+.. py:attribute:: use_q3d_for_dc
+   :type:  bool
+   :value: None
+
+
+.. py:attribute:: compute_dc_point
+   :type:  bool
+   :value: None
+
+
+.. py:attribute:: enforce_causality
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: enforce_passivity
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: adv_dc_extrapolation
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: use_hfss_solver_regions
+   :type:  bool
+   :value: None
+
+
+.. py:attribute:: hfss_solver_region_setup_name
+   :type:  str | None
+   :value: '<default>'
+
+
+.. py:attribute:: hfss_solver_region_sweep_name
+   :type:  str | None
+   :value: '<default>'
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_frequencies(freq: CfgFrequencies)
+
+   
+   Append a pre-built :class:`CfgFrequencies` range to this sweep.
+
+
+   :Parameters:
+
+       **freq** : :obj:`CfgFrequencies`
+           Fully constructed frequency-range object to append.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_linear_count_frequencies(start, stop, count)
+
+   
+   Append a linear-count frequency range to this sweep.
+
+
+   :Parameters:
+
+       **start** : :class:`python:str` or :class:`python:float`
+           Start frequency, e.g. ``"1GHz"`` or ``1e9``.
+
+       **stop** : :class:`python:str` or :class:`python:float`
+           Stop frequency, e.g. ``"20GHz"`` or ``20e9``.
+
+       **count** : :class:`python:int`
+           Number of evenly spaced frequency points.
+
+
+
+   :Returns:
+
+       :obj:`CfgFrequencySweep`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> sw = hfss.add_frequency_sweep("sw")
+   >>> sw.add_linear_count_frequencies("1GHz", "10GHz", 100)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_log_count_frequencies(start: str | float, stop: str | float, count: int)
+
+   
+   Append a logarithmic-count frequency range to this sweep.
+
+
+   :Parameters:
+
+       **start** : :class:`python:str` or :class:`python:float`
+           Start frequency, e.g. ``"1MHz"``.
+
+       **stop** : :class:`python:str` or :class:`python:float`
+           Stop frequency, e.g. ``"1GHz"``.
+
+       **count** : :class:`python:int`
+           Number of frequency points distributed on a log scale.
+
+
+
+   :Returns:
+
+       :obj:`CfgFrequencySweep`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_linear_scale_frequencies(start: str | float, stop: str | float, step: str | float)
+
+   
+   Append a linear-step frequency range to this sweep.
+
+
+   :Parameters:
+
+       **start** : :class:`python:str` or :class:`python:float`
+           Start frequency, e.g. ``"0Hz"``.
+
+       **stop** : :class:`python:str` or :class:`python:float`
+           Stop frequency, e.g. ``"1GHz"``.
+
+       **step** : :class:`python:str` or :class:`python:float`
+           Step size between consecutive points, e.g. ``"10MHz"``.
+
+
+
+   :Returns:
+
+       :obj:`CfgFrequencySweep`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_log_scale_frequencies(start: str | float, stop: str | float, step: str | float)
+
+   
+   Append a logarithmic-step frequency range to this sweep.
+
+
+   :Parameters:
+
+       **start** : :class:`python:str` or :class:`python:float`
+           Start frequency.
+
+       **stop** : :class:`python:str` or :class:`python:float`
+           Stop frequency.
+
+       **step** : :class:`python:str` or :class:`python:float`
+           Decade step size.
+
+
+
+   :Returns:
+
+       :obj:`CfgFrequencySweep`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_single_frequency(freq: str | float)
+
+   
+   Append a single discrete frequency point to this sweep.
+
+
+   :Parameters:
+
+       **freq** : :class:`python:str` or :class:`python:float`
+           Frequency value, e.g. ``"5GHz"`` or ``5e9``.
+
+
+
+   :Returns:
+
+       :obj:`CfgFrequencySweep`
+           *self* — enables method chaining.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> sw.add_single_frequency("0Hz")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
