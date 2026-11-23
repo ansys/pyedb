@@ -9,6 +9,113 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.88.0 <https://github.com/ansys/pyedb/releases/tag/v0.88.0>`_ - November 23, 2026
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Material equation and xml file with equation based support added
+          - `#2666 <https://github.com/ansys/pyedb/pull/2666>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Use_grpc
+          - `#2647 <https://github.com/ansys/pyedb/pull/2647>`_
+
+        * - Cfg stackup apply edit other parameters
+          - `#2667 <https://github.com/ansys/pyedb/pull/2667>`_
+
+        * - Aedt_name
+          - `#2669 <https://github.com/ansys/pyedb/pull/2669>`_
+
+        * - Improve plot method
+          - `#2670 <https://github.com/ansys/pyedb/pull/2670>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/setup-python from 7.0.0 to 7.1.0
+          - `#2632 <https://github.com/ansys/pyedb/pull/2632>`_
+
+        * - Bump the ansys-actions group across 1 directory with 12 updates
+          - `#2649 <https://github.com/ansys/pyedb/pull/2649>`_
+
+        * - Bump prek from 0.5.7 to 0.5.9
+          - `#2650 <https://github.com/ansys/pyedb/pull/2650>`_
+
+        * - Bump pyvista/setup-headless-display-action from 5.1.0 to 5.2.0
+          - `#2651 <https://github.com/ansys/pyedb/pull/2651>`_
+
+        * - Bump astral-sh/setup-uv from 10.3.1 to 10.3.3
+          - `#2652 <https://github.com/ansys/pyedb/pull/2652>`_
+
+        * - Bump pytest from 9.1.1 to 9.2.0
+          - `#2653 <https://github.com/ansys/pyedb/pull/2653>`_
+
+        * - Bump pydantic from 2.14.1 to 2.14.2
+          - `#2654 <https://github.com/ansys/pyedb/pull/2654>`_
+
+        * - Bump jupyterlab from 4.6.4 to 4.6.5
+          - `#2655 <https://github.com/ansys/pyedb/pull/2655>`_
+
+        * - Bump ruff from 0.17.2 to 0.17.3
+          - `#2656 <https://github.com/ansys/pyedb/pull/2656>`_
+
+        * - Bump ty from 0.0.91 to 0.0.95
+          - `#2657 <https://github.com/ansys/pyedb/pull/2657>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.87.0
+          - `#2641 <https://github.com/ansys/pyedb/pull/2641>`_
+
+        * - Bump release 0.88.dev0
+          - `#2645 <https://github.com/ansys/pyedb/pull/2645>`_
+
+        * - Pre-commit automatic update
+          - `#2658 <https://github.com/ansys/pyedb/pull/2658>`_, `#2664 <https://github.com/ansys/pyedb/pull/2664>`_
+
+        * - Improve logic in open and create methods of Edb (grpc) class
+          - `#2668 <https://github.com/ansys/pyedb/pull/2668>`_
+
+        * - Update python version when testing pyaedt
+          - `#2677 <https://github.com/ansys/pyedb/pull/2677>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Dependency decorator
+          - `#2648 <https://github.com/ansys/pyedb/pull/2648>`_
+
+        * - Replace xmltodict with stdlib XML helpers
+          - `#2659 <https://github.com/ansys/pyedb/pull/2659>`_
+
+
 `0.87.0 <https://github.com/ansys/pyedb/releases/tag/v0.87.0>`_ - November 03, 2026
 ===================================================================================
 
