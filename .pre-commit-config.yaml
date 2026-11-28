@@ -41,7 +41,7 @@ repos:
     exclude: tests/example_models
 
 - repo: https://github.com/ansys/pre-commit-hooks
-  rev: v0.8.1
+  rev: v0.8.3
   hooks:
   - id: add-license-headers
     args:
